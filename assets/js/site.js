@@ -223,7 +223,7 @@
       qs.forEach((q) => box.appendChild(qCard(q, data.levels, "Q" + ++n)));
     });
     box.appendChild(h("h3", { class: "qgroup", text: `考古題（${exam.length} 題）` }));
-    if (!exam.length) box.appendChild(h("p", { class: "qempty", text: "這個主題還沒有收錄考古題，之後匯入後會自動出現在這裡。" }));
+    if (!exam.length) box.appendChild(h("p", { class: "qempty", text: "尚未收錄考古題。" }));
     exam.forEach((q) => box.appendChild(qCard(q, data.levels, "Q" + ++n)));
     // 頁面上「例題」連結改成顯示題號；找不到題目的連結標成錯誤，方便發現
     document.querySelectorAll('a.q-link[href^="#q-"]').forEach((a) => {
@@ -300,10 +300,17 @@
   async function renderBankEntry(el, subjectId) {
     const data = await loadQuestions(subjectId);
     const exam = data.questions.filter((q) => q.source && q.source.kind === "exam").length;
-    el.textContent = `${data.questions.length - exam} 題練習題 · ${exam} 題考古題 · 可依主題、難度、學校篩選`;
+    el.textContent = `${data.questions.length - exam} 題練習題 · ${exam} 題考古題`;
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
+    // 頁首：標出目前所在的科目或題庫（主題頁屬於科目，所以標科目）
+    const here = location.pathname.replace(/index\.html$/, "");
+    document.querySelectorAll(".nav-links a").forEach((a) => {
+      const p = new URL(a.href, location.href).pathname.replace(/index\.html$/, "");
+      const inSubject = p.includes("/subjects/") && p.endsWith("/") && here.startsWith(p) && !here.endsWith("questions.html");
+      if (here === p || inSubject) a.setAttribute("aria-current", "page");
+    });
     renderToc();
     renderQuizToggle();
     renderCodeBlocks();

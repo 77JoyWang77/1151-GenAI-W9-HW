@@ -11,7 +11,7 @@
       "icon": "tree",
       "color": 5,
       "status": "active",
-      "desc": "堆疊、樹、圖、排序、雜湊——用動畫看懂每一步"
+      "desc": "堆疊、佇列、樹、圖、排序、雜湊"
     },
     {
       "id": "algorithms",

@@ -268,9 +268,28 @@ def check_no_emoji(errors):
                 break
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+
+def check_headers(errors):
+    """每一頁的 <header> 都要和 scripts/header.py 產生的完全一樣（CLAUDE.md 6.6）"""
+    from header import site_header
+    zh = {s["id"]: s["zh"] for s in load("data/subjects.json")["subjects"]}
+    for path in [ROOT / "index.html", *ROOT.glob("subjects/**/*.html")]:
+        html = path.read_text(encoding="utf-8")
+        body = re.search(r"<body[^>]*>", html)
+        root = re.search(r'data-root="([^"]*)"', body.group(0)) if body else None
+        sid = re.search(r'data-subject="([^"]*)"', body.group(0)) if body else None
+        m = re.search(r"  <header class=\"site-header\">.*?</header>", html, re.S)
+        want = site_header(root.group(1) if root else "", sid and sid.group(1), sid and zh.get(sid.group(1)))
+        if not m or m.group(0) != want:
+            errors.append(f"[{path.relative_to(ROOT)}] 頁首要和全站統一的寫法一致（用 scripts/header.py 的 site_header() 產生）")
+
+
 def main():
     errors = []
     check_no_emoji(errors)
+    check_headers(errors)
     css = (ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
     reg = load("data/subjects.json")
     total_done = total = 0

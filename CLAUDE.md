@@ -202,7 +202,8 @@
 - meta 列：`Ch<編號> 章節 English`、難度、tags。
 - 頁尾「最後更新：YYYY-MM-DD」與 JSON 的 `updated` 一致。
 - 難度寫成 `<span class="chip" data-difficulty="1～3">難度</span>`，星星由 `site.js` 畫。
-- `<head>` 載入 `theme.js`；頁首要有 `<button class="theme-toggle" data-theme-toggle>`。
+- **全站頁首統一**：每一頁的 `<header class="site-header">` 都由 `scripts/header.py` 的 `site_header()` 產生，不可自行修改（`check.py` 會比對）。內容固定是：logo＋站名、「科目」、所在科目的中文名稱、「題庫」，以及亮暗切換按鈕；首頁沒有科目，只有「科目」。目前所在的連結由 `site.js` 自動標示，手機寬度時只留 logo 和連結。
+- `<head>` 載入 `theme.js`。
 - 結尾載入 `site.js`，再依序載入 `viz-core.js` → `viz/<subject-id>/<topic-id>.js`（圖和動畫都寫在這個腳本裡）。
 
 ---
@@ -403,8 +404,9 @@ figure("bst-valid-invalid", () => ({
 - 章節色依 `data-chno` 從 12 色色盤取（`--ch-1`～`--ch-12`），科目卡片依 `color` 取同一組色盤。
 - 顏色**只能**使用 `style.css` 最上方 `:root` 的變數，不在其他地方寫死色碼。
 - **預設淺色**，頁首按鈕可切換深色：`theme.js` 在 `<html>` 設定 `data-theme="dark"`，深色配色寫在 `:root[data-theme="dark"]`，選擇存在 localStorage。
-- 新元件一律用 CSS 變數上色，才會自動適用兩種模式；也要支援手機寬度（≥ 360px）。
+- 新元件一律用 CSS 變數上色，才會自動適用兩種模式；也要支援手機寬度（≥ 360px）：窄螢幕的樣式統一寫在 `style.css` 最後的 `@media (max-width: 600px)` 區塊（放在最後才能蓋過基本樣式），改完要用 360px 寬度截圖確認沒有橫向捲動。
 - 動畫要平滑、不炫技：顏色代表狀態（第 9.4 節），位置移動代表資料移動。
+- **用語實用導向**：首頁、科目頁、題庫頁只放標題和功能（科目卡片、進度、題庫入口、篩選），不寫宣傳性標語或「這裡可以做什麼」之類的說明文字。
 - 科目頁的主題列表保持簡潔：已完成的主題是連結、籌備中的灰色並標「籌備中」，高頻主題名稱前有火焰 icon；不要再加其他標籤。
 
 ### 10.1 Icon

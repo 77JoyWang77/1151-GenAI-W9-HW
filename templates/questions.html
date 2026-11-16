@@ -15,9 +15,11 @@
 <body data-subject="{{subject-id}}" data-root="../../">
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>{{English}}</small></a>
+      <a class="brand" href="../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
       <nav class="nav-links">
-        <a href="index.html">所有章節</a>
+        <a href="../../index.html#subjects">科目</a>
+        <a href="../../subjects/{{subject-id}}/index.html">{{中文}}</a>
+        <a href="../../subjects/{{subject-id}}/questions.html">題庫</a>
         <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
       </nav>
     </div>
@@ -25,10 +27,8 @@
 
   <main class="wrap">
     <nav class="breadcrumb"><a href="../../index.html">首頁</a> › <a href="index.html">{{English}}（{{中文}}）</a> › 題庫</nav>
-    <section class="hero">
-      <span class="eyebrow">{{中文}} · 題庫</span>
+    <section class="page-head">
       <h1>題庫：練習題與考古題</h1>
-      <p>依主題、難度（基礎／進階／考研級）、題型和來源篩選。先自己作答，再點「看答案與詳解」。</p>
       <div class="practice-tools"><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button></div>
     </section>
     <div id="qbank-all"></div>

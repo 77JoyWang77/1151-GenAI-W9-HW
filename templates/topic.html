@@ -18,8 +18,13 @@
 <body data-subject="{{subject-id}}" data-chapter="{{chapter-id}}" data-chno="{{章節編號}}" data-topic="{{subject-id}}/{{chapter-id}}/{{topic-id}}" data-root="../../../">
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="../../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>{{科目 English}}</small></a>
-      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>深色</button></nav>
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../subjects/{{subject-id}}/index.html">{{科目中文}}</a>
+        <a href="../../../subjects/{{subject-id}}/questions.html">題庫</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
     </div>
   </header>
 

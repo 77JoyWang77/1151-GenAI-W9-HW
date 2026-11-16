@@ -15,10 +15,11 @@
 <body data-subject="{{subject-id}}" data-root="../../">
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>{{English}}</small></a>
+      <a class="brand" href="../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
       <nav class="nav-links">
-        <a href="questions.html">題庫</a>
-        <a href="../../index.html#subjects">所有科目</a>
+        <a href="../../index.html#subjects">科目</a>
+        <a href="../../subjects/{{subject-id}}/index.html">{{中文}}</a>
+        <a href="../../subjects/{{subject-id}}/questions.html">題庫</a>
         <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
       </nav>
     </div>
@@ -26,10 +27,8 @@
 
   <main class="wrap">
     <nav class="breadcrumb"><a href="../../index.html">首頁</a> › {{English}}（{{中文}}）</nav>
-    <section class="hero">
-      <span class="eyebrow">{{中文}} · {{English}}</span>
+    <section class="page-head">
       <h1>{{English}}（{{中文}}）</h1>
-      <p>{{一句話介紹}}</p>
       <div id="progress"></div>
       <a class="entry-card" href="questions.html">
         <span class="entry-icon"><svg class="icon" aria-hidden="true"><use href="../../assets/icons.svg#i-book"></use></svg></span>
