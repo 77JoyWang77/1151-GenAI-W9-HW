@@ -1,0 +1,140 @@
+{
+  "subject": "linear-algebra",
+  "levels": {
+    "basic": "基礎",
+    "advanced": "進階",
+    "exam": "考研級"
+  },
+  "questions": [
+    {
+      "id": "la-0001",
+      "topics": [
+        "gaussian-elimination"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "下列哪一個矩陣是簡化列梯形（RREF）？",
+      "choices": [
+        "(A) [[1, 0, 2], [0, 1, 3], [0, 0, 0]]",
+        "(B) [[1, 2, 0], [0, 0, 1], [0, 1, 0]]",
+        "(C) [[1, 0, 0], [0, 2, 0], [0, 0, 1]]",
+        "(D) [[0, 0, 0], [1, 0, 0], [0, 1, 0]]"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>RREF 四個條件：零列在最下面、pivot 往右下排、pivot 是 1、pivot 那一行其他位置都是 0。</p><ul><li>(A) pivot 在第 1、2 行，都是 1，同行其他位置是 0，零列在最下面，<b>是 RREF</b>。第 3 行沒有 pivot，數字是多少都可以。</li><li>(B) 第 2 列的 pivot 在第 3 行，第 3 列的 pivot 卻在第 2 行，往左跑了，不是階梯。</li><li>(C) 第 2 列的 pivot 是 2，不是 1。</li><li>(D) 零列在最上面。</li></ul>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0002",
+      "topics": [
+        "gaussian-elimination"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "一個有 3 條方程式、5 個未知數的<b>齊次</b>方程組 Ax = 0，下列敘述何者一定正確？",
+      "choices": [
+        "(A) 可能無解",
+        "(B) 只有零解",
+        "(C) 有無限多解，且至少有 2 個自由變數",
+        "(D) 恰有 2 組解"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>齊次方程組的常數行全是 0，不會出現 0 = c（c ≠ 0）的矛盾，x = 0 一定是解，所以 (A) 錯。</p><p>A 是 3 × 5，pivot 個數 rank(A) ≤ 3（每列最多一個 pivot），自由變數個數 = 5 − rank ≥ 2，所以一定有無限多解，(C) 正確，(B) 錯。線性方程組的解只會是 0、1 或無限多組，不可能恰好 2 組，(D) 錯。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0003",
+      "topics": [
+        "gaussian-elimination"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "question": "用 Gauss–Jordan 消去法解：<br>x + y + z = 4<br>2x + 3y − z = −2<br>3x − y + 2z = 13",
+      "answer": "(x, y, z) = (2, −1, 3)",
+      "explanation": "<p>增廣矩陣 [1 1 1 | 4]、[2 3 −1 | −2]、[3 −1 2 | 13]。</p><ol><li>R<sub>2</sub> ← R<sub>2</sub> − 2R<sub>1</sub>、R<sub>3</sub> ← R<sub>3</sub> − 3R<sub>1</sub>：[0 1 −3 | −10]、[0 −4 −1 | 1]。</li><li>第二行 pivot 已是 1。R<sub>1</sub> ← R<sub>1</sub> − R<sub>2</sub>：[1 0 4 | 14]；R<sub>3</sub> ← R<sub>3</sub> + 4R<sub>2</sub>：[0 0 −13 | −39]。</li><li>R<sub>3</sub> ← (−1/13)R<sub>3</sub>：[0 0 1 | 3]。再 R<sub>1</sub> ← R<sub>1</sub> − 4R<sub>3</sub>：[1 0 0 | 2]；R<sub>2</sub> ← R<sub>2</sub> + 3R<sub>3</sub>：[0 1 0 | −1]。</li></ol><p>得到 <b>(2, −1, 3)</b>。驗算：2 − 1 + 3 = 4、4 − 3 − 3 = −2、6 + 1 + 6 = 13。（已用程式驗算，det(A) = −13 ≠ 0，所以是唯一解）</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0004",
+      "topics": [
+        "gaussian-elimination"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "question": "解下列方程組，並寫出通解（用參數表示）：<br>x<sub>1</sub> + 2x<sub>2</sub> − x<sub>3</sub> + 3x<sub>4</sub> = 4<br>2x<sub>1</sub> + 4x<sub>2</sub> − x<sub>3</sub> + 7x<sub>4</sub> = 11<br>−x<sub>1</sub> − 2x<sub>2</sub> + 3x<sub>3</sub> + x<sub>4</sub> = 6",
+      "answer": "x = (−1 − 2t, t, 1, 2)，t 為任意實數",
+      "explanation": "<p>化成 RREF：</p><ol><li>R<sub>2</sub> ← R<sub>2</sub> − 2R<sub>1</sub>：[0 0 1 1 | 3]；R<sub>3</sub> ← R<sub>3</sub> + R<sub>1</sub>：[0 0 2 4 | 10]。</li><li>第二行從 R<sub>2</sub> 往下都是 0，<b>沒有 pivot</b>，x<sub>2</sub> 是自由變數。第三行 pivot 在 R<sub>2</sub>：R<sub>1</sub> ← R<sub>1</sub> + R<sub>2</sub>：[1 2 0 4 | 7]；R<sub>3</sub> ← R<sub>3</sub> − 2R<sub>2</sub>：[0 0 0 2 | 4]。</li><li>R<sub>3</sub> ← (1/2)R<sub>3</sub>：[0 0 0 1 | 2]；R<sub>1</sub> ← R<sub>1</sub> − 4R<sub>3</sub>：[1 2 0 0 | −1]；R<sub>2</sub> ← R<sub>2</sub> − R<sub>3</sub>：[0 0 1 0 | 1]。</li></ol><p>pivot 在第 1、3、4 行，rank = 3 &lt; 4 個未知數，有 1 個自由變數。令 x<sub>2</sub> = t：x<sub>1</sub> = −1 − 2t、x<sub>3</sub> = 1、x<sub>4</sub> = 2。</p><p>注意這題沒有零列，但仍然是無限多解：判斷依據是 rank 小於未知數個數，而不是有沒有零列。（已用程式驗算）</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0005",
+      "topics": [
+        "gaussian-elimination"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "question": "對方程組<br>x + y + kz = 1<br>x + ky + z = 1<br>kx + y + z = 1<br>求 k 的值使得方程組 (1) 有唯一解 (2) 無解 (3) 有無限多解，並在有解時寫出解。",
+      "answer": "(1) k ≠ 1 且 k ≠ −2，解為 x = y = z = 1/(k + 2)　(2) k = −2　(3) k = 1，解為 x = 1 − s − t、y = s、z = t",
+      "explanation": "<p><b>Step 1：找出可能不是唯一解的 k</b>。係數矩陣的行列式 det(A) = −(k − 1)²(k + 2)，只有 k = 1 或 k = −2 時為 0。其他 k 時 A 可逆，<b>唯一解</b>。把三式相加得 (k + 2)(x + y + z) = 3；再用第一式減第二式得 (1 − k)(y − z) = 0，k ≠ 1 時 y = z，同理 x = y，所以 x = y = z = 1/(k + 2)。</p><p><b>Step 2：k = 1</b>。三條方程式都是 x + y + z = 1，RREF 只剩一列 [1 1 1 | 1]，rank = 1 &lt; 3，有 2 個自由變數：<b>無限多解</b>，x = 1 − s − t、y = s、z = t。</p><p><b>Step 3：k = −2</b>。三式相加得 0·(x + y + z) = 3，也就是 0 = 3，<b>無解</b>。用列運算也一樣會在最後一列得到 [0 0 0 | 3]。</p><p>常見錯誤：看到 det = 0 就直接說無解。det = 0 只排除了唯一解，一定要代回去判斷。（已用程式對 k = 1、−2、0、3 驗算）</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0006",
+      "topics": [
+        "gaussian-elimination"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "question": "設 A 是 m × n 矩陣且 m &lt; n。證明：齊次方程組 Ax = 0 一定有非零解。",
+      "answer": "把 A 化成 RREF，每列最多一個 pivot，所以 pivot 數 r ≤ m &lt; n，至少有 n − r ≥ 1 個沒有 pivot 的行；令一個自由變數為 1、其餘為 0，就得到非零解。",
+      "explanation": "<p>用列運算把 [A | 0] 化成 RREF [R | 0]。列運算不改變解集合，而且常數行始終是 0，所以不會出現矛盾，方程組有解。</p><p>R 的每一列最多只有一個 pivot，所以 pivot 個數 r ≤ m。又 m &lt; n，得到 r &lt; n，也就是至少有 n − r ≥ 1 行沒有 pivot，對應的未知數是自由變數。</p><p>令某一個自由變數 x<sub>j</sub> = 1、其餘自由變數為 0，每個 basic variable 都能由 RREF 的那一列唯一算出，於是得到一組解，而且 x<sub>j</sub> = 1 ≠ 0，所以是非零解。∎</p><p>推論：n 個 ℝ<sup>m</sup> 中的向量，若 n &gt; m 則一定線性相關（把它們當成 A 的行就得到這個定理）。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0007",
+      "topics": [
+        "gaussian-elimination"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "question": "用高斯消去法（前進消去＋回代）解 n × n 的方程組，乘除法共需 n³/3 + n² − n/3 次；Gauss–Jordan 需要 n³/2 + n²/2 次。(1) 當 n = 100 時，Gauss–Jordan 比高斯消去法多做了多少比例？ (2) 當 n 很大時，兩者的比值趨近多少？說明原因。",
+      "answer": "(1) 約多 47%（505,000 對 343,300）　(2) 趨近 3/2",
+      "explanation": "<p>(1) n = 100：高斯消去法 = 1,000,000/3 + 10,000 − 100/3 = 343,300；Gauss–Jordan = 500,000 + 5,000 = 505,000。505,000 / 343,300 ≈ 1.471，多約 <b>47%</b>。（已用程式逐步計數驗證兩個公式）</p><p>(2) 最高次項主導：(n³/2) / (n³/3) = <b>3/2</b>。原因是高斯消去法處理第 k 行時只需要消去下方的 n − k 列，越後面要處理的列越少；Gauss–Jordan 每一行都要處理其他全部 n − 1 列（上方和下方），工作量沒有隨著往下而減少。兩者都是 <code>O(n³)</code>，差的是常數倍。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0008",
+      "topics": [
+        "gaussian-elimination"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "對增廣矩陣做下列哪一個動作，<b>可能改變</b>方程組的解？",
+      "choices": [
+        "(A) R<sub>1</sub> ↔ R<sub>3</sub>",
+        "(B) R<sub>2</sub> ← −5R<sub>2</sub>",
+        "(C) R<sub>3</sub> ← R<sub>3</sub> + 4R<sub>1</sub>",
+        "(D) R<sub>2</sub> ← 0·R<sub>2</sub>"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>三種基本列運算都必須<b>可逆</b>，才能保證前後的解相同。(A) 換回來即可；(B) 再乘 −1/5 即可還原；(C) 再減 4R<sub>1</sub> 即可還原（R<sub>1</sub> 本身沒變）。</p><p>(D) 把整條方程式變成 0 = 0，等於刪掉一條方程式，解集合可能變大，而且無法還原，所以「乘以常數」一定要求常數不為 0。</p>",
+      "source": {
+        "kind": "original"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # 資工考研互動學習站（CS Grad Exam Review）
 
-資工所考研複習網站，目前在做 **Data Structures（資料結構）** 和 **Discrete Mathematics（離散數學）**。每個主題頁有完整的文字講解、靜態圖解、可以自己輸入資料逐步播放的動畫（旁邊的程式碼會亮起正在執行的那一行），以及考研重點、易錯點和分級練習題。
+資工所考研複習網站，目前在做 **Data Structures（資料結構）**、**Discrete Mathematics（離散數學）** 和 **Linear Algebra（線性代數）**。每個主題頁有完整的文字講解、靜態圖解、可以自己輸入資料逐步播放的動畫（旁邊的程式碼會亮起正在執行的那一行），以及考研重點、易錯點和分級練習題。
 
 🔗 網站：https://77joywang77.github.io/1151-GenAI-W9-HW/
 
@@ -13,7 +13,7 @@
 | Computer Organization（計算機組織） | 籌備中 | |
 | Operating Systems（作業系統） | 籌備中 | |
 | Discrete Mathematics（離散數學） | 進行中：12 章、38 個主題（高頻 18 個），已完成 1 個 | Rosen《Discrete Mathematics and Its Applications》 |
-| Linear Algebra（線性代數） | 籌備中 | |
+| Linear Algebra（線性代數） | 進行中：8 章、30 個主題（高頻 18 個），已完成 1 個 | Leon《Linear Algebra with Applications》 |
 
 ### 資料結構已完成的主題
 
@@ -30,6 +30,12 @@
 | 主題 | 互動動畫 |
 |---|---|
 | Euler and Hamilton Paths（Euler 與 Hamilton 路徑） | 自己輸入圖（可有重邊）：數奇點判斷、Hierholzer 找 Euler 路徑、回溯法找 Hamilton 迴路 |
+
+### 線性代數已完成的主題
+
+| 主題 | 互動動畫 |
+|---|---|
+| Gaussian Elimination（高斯消去法與列梯形） | 自己輸入增廣矩陣（可用分數），逐步列運算化成 RREF，判斷唯一解／無限多解／無解並寫出通解 |
 
 ## 這個專案的重點：CLAUDE.md
 

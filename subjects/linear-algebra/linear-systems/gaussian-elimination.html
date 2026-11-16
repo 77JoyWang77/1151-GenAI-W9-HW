@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gaussian Elimination（高斯消去法與列梯形） · 線性代數 | 資工考研互動學習站</title>
+  <meta name="description" content="用列運算化成 REF 與 RREF 解方程組；考研必考含參數方程組與解的判斷。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=764e2077">
+  <script src="../../../assets/js/theme.js?v=764e2077"></script>
+</head>
+<body data-subject="linear-algebra" data-chapter="linear-systems" data-chno="1" data-topic="linear-algebra/linear-systems/gaussian-elimination" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Linear Algebra（線性代數）</a> › Ch1 Matrices and Systems of Equations（矩陣與線性方程組） › Gaussian Elimination（高斯消去法與列梯形）</nav>
+      <div class="topic-head">
+        <h1>Gaussian Elimination（高斯消去法與列梯形）<small>用列運算把方程組化成階梯，看 pivot 就知道有幾組解</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch1 Matrices and Systems of Equations</span>
+          <span class="chip" data-difficulty="1">難度</span>
+          <span class="chip">REF</span>
+          <span class="chip">RREF</span>
+          <span class="chip">rank</span>
+          <span class="chip">pivot</span>
+        </div>
+      </div>
+
+      <section id="motivation">
+        <h2>為什麼需要高斯消去法</h2>
+        <div class="panel prose">
+          <p>線性代數一開始要解決的問題，就是解 <span class="term">System of Linear Equations<small>（線性方程組）</small></span>：好幾條一次方程式、好幾個未知數，要找出同時滿足所有方程式的解。兩個未知數的時候，國中學過的代入消去法就夠了；但未知數一多，隨意代入很容易算亂，也很難判斷到底有沒有解、有幾組解。</p>
+          <p>從幾何來看，兩個未知數的每條方程式是平面上的一條直線，解就是直線的交點。兩條直線只有三種關係：相交於一點（唯一解）、平行（無解）、重合（無限多解）。三個未知數時每條方程式是空間中的一個平面，情況一樣只有這三種。<b>不可能剛好有 2 組解</b>：只要有兩組不同的解，連線上的每一點都是解。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="gauss-geometry"></div>
+            <figcaption><b>圖 1</b>：兩條直線的三種關係。(a) 相交於一點，唯一解；(b) 斜率相同但截距不同，平行沒有交點，無解；(c) 第二條方程式只是第一條乘以 2，是同一條直線，無限多解。</figcaption>
+          </figure>
+          <p><span class="term">Gaussian Elimination<small>（高斯消去法）</small></span>就是把代入消去法變成一套<b>固定步驟</b>：不管有幾條方程式、幾個未知數，都照同樣的規則一行一行消下去，最後一定能看出是哪一種情況，並把解寫出來。它也是之後求反矩陣、算秩、找基底、求特徵向量的共同工具，幾乎每一章都會用到。</p>
+        </div>
+      </section>
+
+      <section id="augmented-matrix">
+        <h2>增廣矩陣與三種列運算</h2>
+        <div class="panel prose">
+          <p>解方程組時，真正在變的只有係數，未知數的名字只是佔位置。所以把每條方程式的係數寫成一列，等號右邊的常數放在最後一行，就得到 <span class="term">Augmented Matrix<small>（增廣矩陣）</small></span> [A | b]。例如：</p>
+          <pre class="formula"> x +  y +  z = 6          [ 1   1   1 |  6 ]
+2x −  y +  z = 3    →     [ 2  −1   1 |  3 ]
+ x + 2y −  z = 2          [ 1   2  −1 |  2 ]</pre>
+          <p>對方程式做下面三種動作，<b>解完全不會改變</b>，對應到矩陣就是三種 <span class="term">Elementary Row Operations<small>（基本列運算）</small></span>：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>列運算</th><th>寫法</th><th>對方程式來說</th><th>為什麼解不變</th></tr></thead>
+              <tbody>
+                <tr><td>列交換</td><td>R<sub>i</sub> ↔ R<sub>j</sub></td><td>兩條方程式換順序</td><td>方程式的集合沒變</td></tr>
+                <tr><td>列乘以非零常數</td><td>R<sub>i</sub> ← cR<sub>i</sub>（c ≠ 0）</td><td>整條方程式乘以 c</td><td>可以再乘 1/c 變回來</td></tr>
+                <tr><td>列加上另一列的倍數</td><td>R<sub>i</sub> ← R<sub>i</sub> + cR<sub>j</sub></td><td>把第 j 條的 c 倍加到第 i 條</td><td>可以再減 cR<sub>j</sub> 變回來</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>三種運算都是<b>可逆的</b>，所以運算前後的方程組有完全相同的解集合，稱為 <span class="term">Row Equivalent<small>（列等價）</small></span>。注意第二種一定要 c ≠ 0：乘以 0 會把一條方程式整個抹掉，資訊就消失了。</p>
+        </div>
+      </section>
+
+      <section id="echelon-form">
+        <h2>列梯形與簡化列梯形</h2>
+        <div class="panel prose">
+          <p>消去的目標是把矩陣化成「階梯」的樣子。每一列從左邊數來第一個不是 0 的數叫 <span class="term">Pivot<small>（樞軸、領頭元素）</small></span>。</p>
+          <ul>
+            <li><span class="term">Row Echelon Form<small>（列梯形，REF）</small></span>：(1) 全是 0 的列放在最下面；(2) 每一列的 pivot 都在上一列 pivot 的<b>右邊</b>；所以 pivot 下方全是 0，像一個往右下走的階梯。</li>
+            <li><span class="term">Reduced Row Echelon Form<small>（簡化列梯形，RREF）</small></span>：在 REF 之外再要求 (3) 每個 pivot 都是 1；(4) pivot 所在的那一行，<b>上下</b>其他位置都是 0。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="gauss-ref-rref"></div>
+            <figcaption><b>圖 2</b>：同一個方程組的 REF 與 RREF，橘色是 pivot。REF 只保證 pivot 下面是 0，還要從最後一列往上回代；RREF 每一列只剩一個未知數，答案直接讀出來。</figcaption>
+          </figure>
+          <p>一個矩陣的 REF 不唯一（列運算的順序不同，數字會不同），但 <b>RREF 是唯一的</b>。所以 pivot 的位置和個數是矩陣本身的性質，pivot 的個數就叫做 <span class="term">Rank<small>（秩）</small></span>。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 判斷題常考「這個矩陣是不是 RREF」：檢查零列在最下面、pivot 往右下排、pivot 都是 1、pivot 那一行其他位置全是 0，四個條件缺一不可。</p></div>
+        </div>
+      </section>
+
+      <section id="gaussian">
+        <h2>高斯消去法：化成 REF 再回代</h2>
+        <div class="panel prose">
+          <p>高斯消去法分兩個階段：</p>
+          <ol>
+            <li><b>前進消去</b>（forward elimination）：從第一行開始，選一個非零的數當 pivot（如果那個位置是 0，就和下面的列交換），再用「列加上倍數」把 pivot <b>下方</b>的數全部消成 0。然後移到下一列、下一行重複。</li>
+            <li><b>回代</b>（back substitution）：化成上三角之後，最後一條方程式只剩一個未知數，直接算出來；再往上一列代入，依序解出全部。</li>
+          </ol>
+          <h3>例子：x + y + z = 6，2x − y + z = 3，x + 2y − z = 2</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>列運算</th><th>結果</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>R<sub>2</sub> ← R<sub>2</sub> − 2R<sub>1</sub>、R<sub>3</sub> ← R<sub>3</sub> − R<sub>1</sub></td><td>[1 1 1 | 6]、[0 −3 −1 | −9]、[0 1 −2 | −4]</td></tr>
+                <tr><td>2</td><td>R<sub>3</sub> ← R<sub>3</sub> + (1/3)R<sub>2</sub></td><td>[0 0 −7/3 | −7]，化成 REF</td></tr>
+                <tr><td>3</td><td>回代：−(7/3)z = −7</td><td>z = 3</td></tr>
+                <tr><td>4</td><td>−3y − z = −9 → −3y = −6</td><td>y = 2</td></tr>
+                <tr><td>5</td><td>x + y + z = 6 → x = 6 − 2 − 3</td><td>x = 1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>答案 (x, y, z) = (1, 2, 3)，代回原式三條都成立。</p>
+          <details class="code-fold">
+            <summary>看程式碼：高斯消去法（前進消去＋回代）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="前進消去">
+                <div class="code-head">forwardElim()：化成 REF</div>
+                <pre class="code">#define MAXR 8
+#define MAXC 9
+#define EPS 1e-9
+double a[MAXR][MAXC];                          /* 增廣矩陣 [A | b] */
+int m, n;                                      /* m 列；n 行（含最後一行常數 b） */
+
+void swapRows(int r1, int r2) {
+  for (int j = 0; j &lt; n; j++) { double t = a[r1][j]; a[r1][j] = a[r2][j]; a[r2][j] = t; }
+}
+
+int forwardElim(void) {                        /* 回傳 pivot 個數；假設方陣且有唯一解時才回代 */
+  int r = 0;
+  for (int c = 0; c &lt; n - 1 &amp;&amp; r &lt; m; c++) {
+    int p = r;
+    while (p &lt; m &amp;&amp; fabs(a[p][c]) &lt; EPS) p++;  /* 往下找第一個非零的當 pivot */
+    if (p == m) continue;                      /* 這一行都是 0：沒有 pivot */
+    swapRows(r, p);
+    for (int i = r + 1; i &lt; m; i++) {          /* 只消去 pivot 下面的列 */
+      double f = a[i][c] / a[r][c];
+      for (int j = c; j &lt; n; j++) a[i][j] -= f * a[r][j];
+    }
+    r++;
+  }
+  return r;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="回代">
+                <div class="code-head">backSub()：由下往上回代</div>
+                <pre class="code">void backSub(double x[]) {                     /* 上三角（n-1 個未知數）由下往上回代 */
+  int k = n - 1;
+  for (int i = k - 1; i &gt;= 0; i--) {
+    double s = a[i][k];
+    for (int j = i + 1; j &lt; k; j++) s -= a[i][j] * x[j];
+    x[i] = s / a[i][i];
+  }
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="gauss-jordan">
+        <h2>Gauss–Jordan 消去法：一路化到 RREF</h2>
+        <div class="panel prose">
+          <p><span class="term">Gauss–Jordan Elimination<small>（高斯–喬登消去法）</small></span>不回代，而是在消去時就把 pivot 化成 1、並且把 pivot <b>上面和下面</b>都消成 0，一路化到 RREF。每處理完一行，那一行就只剩 pivot 的 1。上一節的例子繼續做下去：R<sub>2</sub> 除以 −3，再用它消掉 R<sub>1</sub> 和 R<sub>3</sub> 的第二行；R<sub>3</sub> 除以 −7/3，再消掉上面兩列的第三行，最後得到 [1 0 0 | 1]、[0 1 0 | 2]、[0 0 1 | 3]，答案直接寫在常數行。</p>
+          <p>Gauss–Jordan 每一步都很規律，適合手算判斷題和程式實作，也是求反矩陣的標準方法（對 [A | I] 做 Gauss–Jordan，左邊變成 I 時右邊就是 A<sup>−1</sup>）。代價是運算量比較多，下一節比較。</p>
+          <details class="code-fold">
+            <summary>看程式碼：rref()：Gauss–Jordan 化成 RREF</summary>
+            <div class="code-block">
+              <div class="code-head">rref()：Gauss–Jordan 化成 RREF</div>
+              <pre class="code">int rref(int pivotCol[]) {                     /* 回傳 rank；pivotCol[k] 是第 k 個 pivot 所在的行 */
+  int r = 0;
+  for (int c = 0; c &lt; n &amp;&amp; r &lt; m; c++) {
+    int p = r;
+    while (p &lt; m &amp;&amp; fabs(a[p][c]) &lt; EPS) p++;  /* 往下找第一個非零的當 pivot */
+    if (p == m) continue;                      /* 這一行沒有 pivot：對應自由變數 */
+    if (p != r) swapRows(r, p);                /* 列交換：把 pivot 換到第 r 列 */
+    double piv = a[r][c];
+    for (int j = 0; j &lt; n; j++) a[r][j] /= piv;   /* 列乘以常數：pivot 變成 1 */
+    for (int i = 0; i &lt; m; i++)                /* 列相加：把同一行其他列消成 0 */
+      if (i != r &amp;&amp; fabs(a[i][c]) &gt; EPS) {
+        double f = a[i][c];
+        for (int j = 0; j &lt; n; j++) a[i][j] -= f * a[r][j];
+      }
+    pivotCol[r++] = c;
+  }
+  return r;
+}</pre>
+            </div>
+          </details>
+          <p>下面的動畫用的就是這個 rref()。動畫用分數精確計算，所以會看到 −7/3 而不是 −2.333，和手算一樣。</p>
+        </div>
+        <div class="viz" data-viz="gauss-jordan"></div>
+      </section>
+
+      <section id="solution-types">
+        <h2>從 RREF 判斷解的情況</h2>
+        <div class="panel prose">
+          <p>化成 RREF（或 REF）之後，只要看 <b>pivot 落在哪些行</b>就能判斷，不需要真的解出來。設有 n 個未知數、係數矩陣 A 的 rank 為 r：</p>
+          <ul>
+            <li><b>無解</b>：某一列變成 [0 0 … 0 | c] 且 c ≠ 0，代表 0 = c 的矛盾。等價的說法是 pivot 落在常數行，或 rank(A) &lt; rank([A | b])。</li>
+            <li><b>唯一解</b>：沒有矛盾，而且每個未知數那一行都有 pivot，也就是 r = n。</li>
+            <li><b>無限多解</b>：沒有矛盾，但 r &lt; n。沒有 pivot 的行對應的未知數是 <span class="term">Free Variable<small>（自由變數）</small></span>，可以任意取值，共有 n − r 個；有 pivot 的叫 basic variable，用自由變數表示出來。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="gauss-three-cases"></div>
+            <figcaption><b>圖 3</b>：三種情況的 RREF。(a) 三行都有 pivot（綠色），唯一解；(b) x<sub>2</sub> 那一行沒有 pivot（橘色），令 x<sub>2</sub> = t，得到 x<sub>1</sub> = 3 − 2t、x<sub>3</sub> = 2；(c) 最後一列是 0 = 1（紅色），無解。</figcaption>
+          </figure>
+          <h3>齊次方程組</h3>
+          <p>右邊全是 0 的 Ax = 0 叫 <span class="term">Homogeneous System<small>（齊次方程組）</small></span>。它一定有解 x = 0（trivial solution），常數行永遠是 0，不可能出現矛盾，所以只有「唯一解（只有零解）」和「無限多解」兩種。特別是：<b>方程式比未知數少（m &lt; n）時，一定有非零解</b>，因為 rank 最多是 m &lt; n，至少有 n − m 個自由變數。</p>
+          <details class="code-fold">
+            <summary>看程式碼：classify()：判斷解的情況</summary>
+            <div class="code-block">
+              <div class="code-head">classify()：判斷解的情況</div>
+              <pre class="code">/* 0 = 無解，1 = 唯一解，2 = 無限多解 */
+int classify(int rank, int pivotCol[]) {
+  if (rank &gt; 0 &amp;&amp; pivotCol[rank - 1] == n - 1) return 0;   /* pivot 落在常數行：出現 0 = 1 */
+  if (rank == n - 1) return 1;                 /* 每個未知數都有 pivot */
+  return 2;                                    /* 有沒有 pivot 的行：自由變數 */
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="cost">
+        <h2>運算量與數值問題</h2>
+        <div class="panel prose">
+          <p>以 n 條方程式、n 個未知數為例，計算需要幾次乘法和除法（加減法的次數同級）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>方法</th><th>乘除法次數</th><th>n = 100 時</th></tr></thead>
+              <tbody>
+                <tr><td>高斯消去法＋回代</td><td>n³/3 + n² − n/3</td><td>343,300 次</td></tr>
+                <tr><td>Gauss–Jordan</td><td>n³/2 + n²/2</td><td>505,000 次，約多 47%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩者都是 <code>O(n³)</code>，差別在最高次項的係數：Gauss–Jordan 要把 pivot 上方也消掉，每一行都要處理全部 n 列，而高斯消去法越往下需要處理的列越少。所以電腦解方程組通常用高斯消去法（或它的矩陣版本 LU 分解），Gauss–Jordan 多用在手算、求反矩陣與判斷題。</p>
+          <p>實際用浮點數計算時，還有一個問題：如果 pivot 很接近 0，除下去會把誤差放大。常見做法是 <span class="term">Partial Pivoting<small>（部分樞軸選取）</small></span>：每次在同一行中挑<b>絕對值最大</b>的數當 pivot。手算考題通常用「第一個非零的數」就好，本頁的程式和動畫也是這樣做。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>含參數 k 的方程組</td><td>很常考</td><td>先算 det(A) 找出讓它為 0 的 k；其餘 k 唯一解；把特殊的 k 代回去做列運算判斷無解或無限多解</td><td><a class="q-link" href="#q-la-0005">例題</a></td></tr>
+                <tr><td>解方程組、寫出通解</td><td>很常考</td><td>化成 RREF，沒有 pivot 的行設為參數，把 basic variable 用參數表示</td><td><a class="q-link" href="#q-la-0003">例題</a> <a class="q-link" href="#q-la-0004">例題</a></td></tr>
+                <tr><td>判斷 RREF、rank</td><td>常考</td><td>逐條檢查 RREF 的四個條件；rank = pivot 個數</td><td><a class="q-link" href="#q-la-0001">例題</a></td></tr>
+                <tr><td>齊次方程組有沒有非零解</td><td>常考</td><td>未知數比方程式多 ⇒ 一定有；方陣看 rank 是否小於 n</td><td><a class="q-link" href="#q-la-0002">例題</a> <a class="q-link" href="#q-la-0006">例題</a></td></tr>
+                <tr><td>運算量</td><td>偶爾</td><td>高斯消去法約 n³/3、Gauss–Jordan 約 n³/2 次乘除法</td><td><a class="q-link" href="#q-la-0007">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> pivot 是 1 就是 RREF</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 還要 pivot 那一行上下都是 0、零列在最下面、pivot 往右下排</span> <a class="q-link" href="#q-la-0001">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 有一列全是 0 就代表無限多解</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 零列只是多餘的方程式；要看 rank 是否小於未知數個數，還要先確定沒有 0 = c 的矛盾列</span> <a class="q-link" href="#q-la-0004">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> det(A) = 0 就是無解</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> det(A) = 0 只代表「不是唯一解」，可能無解也可能無限多解，要代回去用列運算判斷</span> <a class="q-link" href="#q-la-0005">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 齊次方程組可能無解</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> x = 0 一定是解；未知數比方程式多時一定有無限多解</span> <a class="q-link" href="#q-la-0002">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 列運算可以乘以 0、或把一列換成兩列的和而不保留原列</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 三種列運算都必須可逆：乘的常數不能是 0，R<sub>i</sub> ← R<sub>i</sub> + cR<sub>j</sub> 時 R<sub>j</sub> 本身不能被改掉</span> <a class="q-link" href="#q-la-0008">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="gaussian-elimination"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=764e2077"></script>
+  <script src="../../../assets/js/viz-core.js?v=764e2077"></script>
+  <script src="../../../assets/js/viz/linear-algebra/gaussian-elimination.js?v=764e2077"></script>
+</body>
+</html>

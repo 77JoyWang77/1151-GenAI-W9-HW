@@ -55,7 +55,7 @@
       "zh": "線性代數",
       "icon": "matrix",
       "color": 6,
-      "status": "planned",
+      "status": "active",
       "desc": "向量空間、特徵值、對角化"
     }
   ]

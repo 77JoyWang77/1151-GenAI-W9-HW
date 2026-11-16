@@ -21,7 +21,7 @@
 | Computer Organization（計算機組織） | `computer-organization` | 籌備中 |
 | Operating Systems（作業系統） | `operating-systems` | 籌備中 |
 | Discrete Mathematics（離散數學） | `discrete-math` | 進行中（參考書：Rosen《Discrete Mathematics and Its Applications》8th，僅供 AI 查閱；題號前綴 `dm-`） |
-| Linear Algebra（線性代數） | `linear-algebra` | 籌備中 |
+| Linear Algebra（線性代數） | `linear-algebra` | 進行中（參考書：Leon《Linear Algebra with Applications》Global Edition，僅供 AI 查閱；題號前綴 `la-`） |
 
 不要自行新增或刪除科目；使用者要求時才改。
 
