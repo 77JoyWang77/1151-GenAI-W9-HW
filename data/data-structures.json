@@ -12,42 +12,46 @@
   "chapters": [
     {
       "id": "basic-concepts",
+      "no": 1,
       "en": "Basic Concepts",
       "zh": "基本概念",
-      "desc": "演算法規格與效能分析",
+      "desc": "複雜度分析與遞迴",
       "topics": [
         {
-          "id": "asymptotic-notation",
-          "en": "Asymptotic Notation",
-          "zh": "漸進符號",
+          "id": "complexity-analysis",
+          "en": "Complexity Analysis",
+          "zh": "複雜度分析",
           "book": "1.4",
           "status": "planned",
+          "priority": "high",
           "viz": false
         },
         {
-          "id": "performance-analysis",
-          "en": "Performance Analysis",
-          "zh": "效能分析",
-          "book": "1.4",
+          "id": "recursion",
+          "en": "Recursion",
+          "zh": "遞迴",
+          "book": "1.2",
           "status": "planned",
-          "viz": false
+          "priority": "high",
+          "viz": true
         }
-      ],
-      "no": 1
+      ]
     },
     {
       "id": "arrays",
+      "no": 2,
       "en": "Arrays and Structures",
       "zh": "陣列與結構",
-      "desc": "多項式、稀疏矩陣、字串",
+      "desc": "位址計算、稀疏矩陣、字串比對",
       "topics": [
         {
-          "id": "polynomial",
-          "en": "Polynomial",
-          "zh": "多項式",
-          "book": "2.3",
+          "id": "array-address",
+          "en": "Array Address & Special Matrices",
+          "zh": "陣列位址與特殊矩陣",
+          "book": "2.5",
           "status": "planned",
-          "viz": true
+          "priority": "high",
+          "viz": false
         },
         {
           "id": "sparse-matrix",
@@ -55,14 +59,7 @@
           "zh": "稀疏矩陣",
           "book": "2.4",
           "status": "planned",
-          "viz": true
-        },
-        {
-          "id": "array-address",
-          "en": "Multidimensional Array Address",
-          "zh": "多維陣列位址計算",
-          "book": "2.5",
-          "status": "planned",
+          "priority": "mid",
           "viz": true
         },
         {
@@ -71,13 +68,23 @@
           "zh": "字串比對",
           "book": "2.6",
           "status": "planned",
+          "priority": "mid",
+          "viz": true
+        },
+        {
+          "id": "polynomial",
+          "en": "Polynomial",
+          "zh": "多項式",
+          "book": "2.3",
+          "status": "planned",
+          "priority": "low",
           "viz": true
         }
-      ],
-      "no": 2
+      ]
     },
     {
       "id": "stack-queue",
+      "no": 3,
       "en": "Stacks and Queues",
       "zh": "堆疊與佇列",
       "desc": "LIFO / FIFO 與運算式求值",
@@ -95,7 +102,8 @@
             "postfix"
           ],
           "updated": "2026-11-16",
-          "book": "3.1, 3.4"
+          "book": "3.1, 3.4",
+          "priority": "high"
         },
         {
           "id": "circular-queue",
@@ -103,14 +111,7 @@
           "zh": "環狀佇列",
           "book": "3.2",
           "status": "planned",
-          "viz": true
-        },
-        {
-          "id": "maze",
-          "en": "A Mazing Problem",
-          "zh": "迷宮問題",
-          "book": "3.3",
-          "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -119,6 +120,7 @@
           "zh": "運算式求值",
           "book": "3.4",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -127,13 +129,23 @@
           "zh": "多重堆疊與佇列",
           "book": "3.5",
           "status": "planned",
+          "priority": "low",
+          "viz": true
+        },
+        {
+          "id": "maze",
+          "en": "A Mazing Problem",
+          "zh": "迷宮問題",
+          "book": "3.3",
+          "status": "planned",
+          "priority": "low",
           "viz": true
         }
-      ],
-      "no": 3
+      ]
     },
     {
       "id": "lists",
+      "no": 4,
       "en": "Lists",
       "zh": "鏈結串列",
       "desc": "指標操作與各種變形",
@@ -144,6 +156,16 @@
           "zh": "單向鏈結串列",
           "book": "4.2",
           "status": "planned",
+          "priority": "high",
+          "viz": true
+        },
+        {
+          "id": "circular-linked-list",
+          "en": "Circular Linked List",
+          "zh": "環狀鏈結串列",
+          "book": "4.5",
+          "status": "planned",
+          "priority": "mid",
           "viz": true
         },
         {
@@ -152,6 +174,7 @@
           "zh": "鏈結堆疊與佇列",
           "book": "4.3",
           "status": "planned",
+          "priority": "mid",
           "viz": true
         },
         {
@@ -160,23 +183,34 @@
           "zh": "雙向鏈結串列",
           "book": "4.8",
           "status": "planned",
+          "priority": "mid",
           "viz": true
         }
-      ],
-      "no": 4
+      ]
     },
     {
       "id": "tree",
+      "no": 5,
       "en": "Trees",
       "zh": "樹",
       "desc": "二元樹、堆積、搜尋樹、集合",
       "topics": [
         {
+          "id": "binary-tree-properties",
+          "en": "Binary Tree Properties & Representation",
+          "zh": "二元樹性質與表示法",
+          "book": "5.2",
+          "status": "planned",
+          "priority": "high",
+          "viz": false
+        },
+        {
           "id": "binary-tree-traversal",
           "en": "Binary Tree Traversal",
-          "zh": "二元樹走訪",
+          "zh": "二元樹走訪與重建",
           "book": "5.3",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -185,6 +219,7 @@
           "zh": "引線二元樹",
           "book": "5.5",
           "status": "planned",
+          "priority": "mid",
           "viz": true
         },
         {
@@ -193,6 +228,7 @@
           "zh": "堆積",
           "book": "5.6",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -208,7 +244,8 @@
             "delete"
           ],
           "updated": "2026-11-16",
-          "book": "5.7"
+          "book": "5.7",
+          "priority": "high"
         },
         {
           "id": "selection-tree",
@@ -216,6 +253,16 @@
           "zh": "選擇樹",
           "book": "5.8",
           "status": "planned",
+          "priority": "mid",
+          "viz": true
+        },
+        {
+          "id": "forest",
+          "en": "Forests",
+          "zh": "樹林與二元樹轉換",
+          "book": "5.9",
+          "status": "planned",
+          "priority": "mid",
           "viz": true
         },
         {
@@ -224,31 +271,43 @@
           "zh": "集合表示法",
           "book": "5.10",
           "status": "planned",
+          "priority": "mid",
           "viz": true
-        },
-        {
-          "id": "counting-binary-trees",
-          "en": "Counting Binary Trees",
-          "zh": "二元樹計數",
-          "book": "5.11",
-          "status": "planned",
-          "viz": false
         }
-      ],
-      "no": 5
+      ]
     },
     {
       "id": "graph",
+      "no": 6,
       "en": "Graphs",
       "zh": "圖",
-      "desc": "走訪、生成樹、最短路徑、活動網路",
+      "desc": "表示法、走訪、生成樹、最短路徑、活動網路",
       "topics": [
+        {
+          "id": "graph-representation",
+          "en": "Graph Representation",
+          "zh": "圖的表示法",
+          "book": "6.1",
+          "status": "planned",
+          "priority": "high",
+          "viz": false
+        },
         {
           "id": "bfs-dfs",
           "en": "BFS & DFS",
           "zh": "廣度與深度優先搜尋",
           "book": "6.2",
           "status": "planned",
+          "priority": "high",
+          "viz": true
+        },
+        {
+          "id": "articulation-point",
+          "en": "Articulation Points & Biconnected Components",
+          "zh": "關節點與雙連通元件",
+          "book": "6.2",
+          "status": "planned",
+          "priority": "mid",
           "viz": true
         },
         {
@@ -257,6 +316,7 @@
           "zh": "最小成本生成樹",
           "book": "6.3",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -265,6 +325,7 @@
           "zh": "最短路徑",
           "book": "6.4",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -273,23 +334,42 @@
           "zh": "活動網路",
           "book": "6.5",
           "status": "planned",
+          "priority": "high",
           "viz": true
         }
-      ],
-      "no": 6
+      ]
     },
     {
       "id": "sorting",
-      "en": "Sorting",
-      "zh": "排序",
-      "desc": "內部排序與外部排序",
+      "no": 7,
+      "en": "Searching and Sorting",
+      "zh": "搜尋與排序",
+      "desc": "二分搜尋、各種排序與下界",
       "topics": [
         {
-          "id": "insertion-sort",
-          "en": "Insertion Sort",
-          "zh": "插入排序",
+          "id": "binary-search",
+          "en": "Binary Search",
+          "zh": "二分搜尋",
+          "book": "7.1",
+          "status": "planned",
+          "priority": "high",
+          "viz": true
+        },
+        {
+          "id": "elementary-sorts",
+          "en": "Insertion / Selection / Bubble Sort",
+          "zh": "基本排序",
           "book": "7.3",
           "status": "planned",
+          "priority": "high",
+          "viz": true
+        },
+        {
+          "id": "shell-sort",
+          "en": "Shell Sort",
+          "zh": "謝爾排序",
+          "status": "planned",
+          "priority": "mid",
           "viz": true
         },
         {
@@ -298,6 +378,7 @@
           "zh": "快速排序",
           "book": "7.4",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -306,6 +387,7 @@
           "zh": "合併排序",
           "book": "7.6",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -314,15 +396,35 @@
           "zh": "堆積排序",
           "book": "7.7",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
           "id": "radix-sort",
-          "en": "Radix Sort",
-          "zh": "基數排序",
+          "en": "Radix & Counting Sort",
+          "zh": "基數與計數排序",
           "book": "7.8",
           "status": "planned",
+          "priority": "mid",
           "viz": true
+        },
+        {
+          "id": "sorting-lower-bound",
+          "en": "Lower Bound of Comparison Sort",
+          "zh": "比較排序的下界",
+          "book": "7.5",
+          "status": "planned",
+          "priority": "mid",
+          "viz": false
+        },
+        {
+          "id": "sorting-summary",
+          "en": "Sorting Summary",
+          "zh": "排序總整理",
+          "book": "7.10",
+          "status": "planned",
+          "priority": "high",
+          "viz": false
         },
         {
           "id": "external-sorting",
@@ -330,23 +432,34 @@
           "zh": "外部排序",
           "book": "7.11",
           "status": "planned",
+          "priority": "low",
           "viz": true
         }
-      ],
-      "no": 7
+      ]
     },
     {
       "id": "hashing",
+      "no": 8,
       "en": "Hashing",
       "zh": "雜湊",
       "desc": "雜湊函數與碰撞處理",
       "topics": [
         {
-          "id": "static-hashing",
-          "en": "Static Hashing",
-          "zh": "靜態雜湊",
+          "id": "hash-functions",
+          "en": "Hash Functions",
+          "zh": "雜湊函數",
           "book": "8.2",
           "status": "planned",
+          "priority": "mid",
+          "viz": false
+        },
+        {
+          "id": "collision-resolution",
+          "en": "Collision Resolution",
+          "zh": "碰撞處理",
+          "book": "8.2",
+          "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -355,32 +468,26 @@
           "zh": "動態雜湊",
           "book": "8.3",
           "status": "planned",
+          "priority": "low",
           "viz": true
         }
-      ],
-      "no": 8
+      ]
     },
     {
       "id": "heap-structures",
+      "no": 9,
       "en": "Heap Structures",
       "zh": "進階堆積",
       "desc": "雙端與可合併的優先佇列",
       "topics": [
         {
-          "id": "min-max-heap",
-          "en": "Min-Max Heap",
-          "zh": "最小最大堆積",
-          "book": "9.1",
+          "id": "advanced-heaps-overview",
+          "en": "Advanced Heaps Overview",
+          "zh": "進階堆積總覽",
+          "book": "9",
           "status": "planned",
-          "viz": true
-        },
-        {
-          "id": "deap",
-          "en": "Deap",
-          "zh": "雙端堆積",
-          "book": "9.2",
-          "status": "planned",
-          "viz": true
+          "priority": "mid",
+          "viz": false
         },
         {
           "id": "leftist-tree",
@@ -388,6 +495,16 @@
           "zh": "左傾樹",
           "book": "9.3",
           "status": "planned",
+          "priority": "mid",
+          "viz": true
+        },
+        {
+          "id": "min-max-heap",
+          "en": "Min-Max Heap",
+          "zh": "最小最大堆積",
+          "book": "9.1",
+          "status": "planned",
+          "priority": "low",
           "viz": true
         },
         {
@@ -396,21 +513,14 @@
           "zh": "二項式堆積",
           "book": "9.4",
           "status": "planned",
-          "viz": true
-        },
-        {
-          "id": "fibonacci-heap",
-          "en": "Fibonacci Heap",
-          "zh": "費氏堆積",
-          "book": "9.5",
-          "status": "planned",
+          "priority": "low",
           "viz": true
         }
-      ],
-      "no": 9
+      ]
     },
     {
       "id": "search-structures",
+      "no": 10,
       "en": "Search Structures",
       "zh": "搜尋結構",
       "desc": "平衡樹與多路搜尋樹",
@@ -421,22 +531,7 @@
           "zh": "AVL 樹",
           "book": "10.2",
           "status": "planned",
-          "viz": true
-        },
-        {
-          "id": "2-3-tree",
-          "en": "2-3 Tree",
-          "zh": "2-3 樹",
-          "book": "10.3",
-          "status": "planned",
-          "viz": true
-        },
-        {
-          "id": "2-3-4-tree",
-          "en": "2-3-4 Tree",
-          "zh": "2-3-4 樹",
-          "book": "10.4",
-          "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -445,7 +540,26 @@
           "zh": "紅黑樹",
           "book": "10.5",
           "status": "planned",
+          "priority": "high",
           "viz": true
+        },
+        {
+          "id": "2-3-4-tree",
+          "en": "2-3 & 2-3-4 Tree",
+          "zh": "2-3 與 2-3-4 樹",
+          "book": "10.3, 10.4",
+          "status": "planned",
+          "priority": "mid",
+          "viz": true
+        },
+        {
+          "id": "m-way-search-tree",
+          "en": "m-way Search Tree",
+          "zh": "m 路搜尋樹",
+          "book": "10.6",
+          "status": "planned",
+          "priority": "mid",
+          "viz": false
         },
         {
           "id": "b-tree",
@@ -453,14 +567,15 @@
           "zh": "B 樹",
           "book": "10.6",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
-          "id": "splay-tree",
-          "en": "Splay Tree",
-          "zh": "伸展樹",
-          "book": "10.7",
+          "id": "b-plus-tree",
+          "en": "B+ Tree",
+          "zh": "B+ 樹",
           "status": "planned",
+          "priority": "high",
           "viz": true
         },
         {
@@ -469,10 +584,19 @@
           "zh": "字典樹",
           "book": "10.9",
           "status": "planned",
+          "priority": "mid",
+          "viz": true
+        },
+        {
+          "id": "splay-tree",
+          "en": "Splay Tree",
+          "zh": "伸展樹",
+          "book": "10.7",
+          "status": "planned",
+          "priority": "low",
           "viz": true
         }
-      ],
-      "no": 10
+      ]
     }
   ]
 }

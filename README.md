@@ -8,7 +8,7 @@
 
 | 科目 | 狀態 | 參考書（僅供 AI 查閱） |
 |---|---|---|
-| Data Structures（資料結構） | 進行中：10 章、45 個主題，已完成 2 個 | Horowitz《Fundamentals of Data Structures in C》 |
+| Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 2 個 | Horowitz《Fundamentals of Data Structures in C》 |
 | Algorithms（演算法） | 籌備中 | |
 | Computer Organization（計算機組織） | 籌備中 | |
 | Operating Systems（作業系統） | 籌備中 | |
@@ -28,7 +28,7 @@
 
 - 科目 → 章節 → 主題的結構、資料夾與命名、JSON 登錄格式
 - **參考書只給 AI 查閱**：頁面內容獨立完整，不在網站上提到課本
-- 主題頁固定的 7 個段落與各段的內容規則
+- 主題頁依主題安排內容，提供常用段落元件；互動只在有助理解時使用
 - **共用動畫播放器的使用方式**：Frame 格式、狀態色的意義、動畫規則
 - 新增主題、開始新科目的 SOP，以及禁止事項、完成的定義
 

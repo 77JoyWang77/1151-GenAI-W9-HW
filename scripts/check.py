@@ -10,16 +10,17 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SECTIONS = ["intro", "viz", "ops", "code", "exam", "pitfalls", "quiz"]
 SLUG = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
 
 class Page(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.sections, self.body, self.desc, self.scripts = [], {}, None, []
+        self.body, self.desc, self.scripts = {}, None, []
         self.style_tag = self.inline_style = self.toggle = False
-        self.viz = self.exam = self.quiz = self.pitfalls = self.callout = self.terms = 0
+        self.sections = []          # [section id, 是否有 h2]
+        self.viz = 0
+        self._depth = 0             # 目前在第幾層 section 裡
 
     def handle_starttag(self, tag, a):
         a = dict(a)
@@ -36,17 +37,18 @@ class Page(HTMLParser):
             self.scripts.append(a["src"])
         if "data-theme-toggle" in a:
             self.toggle = True
-        if tag == "section" and a.get("id"):
-            self.sections.append(a["id"])
+        if tag == "section":
+            self._depth += 1
+            if self._depth == 1:
+                self.sections.append([a.get("id"), False])
+        if tag == "h2" and self._depth == 1 and self.sections:
+            self.sections[-1][1] = True
         if tag == "div" and "viz" in cls and a.get("data-viz"):
             self.viz += 1
-        self.exam += "exam-q" in cls
-        self.callout += "callout" in cls
-        self.terms += "term" in cls
-        if tag == "details" and "quiz" in cls:
-            self.quiz += 1
-        if tag == "li" and self.sections and self.sections[-1] == "pitfalls":
-            self.pitfalls += 1
+
+    def handle_endtag(self, tag):
+        if tag == "section":
+            self._depth -= 1
 
 
 def load(path):
@@ -61,8 +63,6 @@ def check_topic(path, subj, ch, t, errors):
     p.feed(html)
     if "{{" in html:
         err("還有模板佔位符 {{...}} 沒有取代")
-    if p.sections != SECTIONS:
-        err(f"section 應依序為 {SECTIONS}，實際為 {p.sections}")
     want = {"data-subject": subj["id"], "data-chapter": ch["id"], "data-chno": str(ch["no"]), "data-topic": key, "data-root": "../../../"}
     for k, v in want.items():
         if p.body.get(k) != v:
@@ -71,26 +71,26 @@ def check_topic(path, subj, ch, t, errors):
         err("主題頁不可使用 <style> 或 inline style")
     if not p.toggle:
         err("頁首缺少 data-theme-toggle 切換按鈕")
-    if p.viz < 1:
-        err('至少要有一個 <div class="viz" data-viz=...>')
-    if p.callout < 1:
-        err("核心概念至少要有一個 .callout")
-    if p.terms < 2:
-        err('專有名詞應使用 <span class="term">English<small>（中文）</small></span>')
-    if not 2 <= p.exam <= 4:
-        err(f"考研重點應為 2～4 題，實際 {p.exam}")
-    if not 3 <= p.pitfalls <= 5:
-        err(f"易錯點應為 3～5 點，實際 {p.pitfalls}")
-    if not 3 <= p.quiz <= 6:
-        err(f"自我測驗應為 3～6 題，實際 {p.quiz}")
+    # 段落不限定，但每個頂層 section 要有 id 和 h2（目錄 TOC 靠它）
+    if len(p.sections) < 2:
+        err("至少要有 2 個 <section>")
+    for sid, has_h2 in p.sections:
+        if not sid or not SLUG.match(sid):
+            err(f"每個 <section> 都要有 kebab-case 的 id（找到：{sid}）")
+        if not has_h2:
+            err(f"<section id=\"{sid}\"> 缺少 <h2> 標題")
     if not p.desc or len(p.desc) > 70:
         err("<meta description> 必須存在且 ≤ 70 字")
     js = "../../../assets/js/"
-    expected = [js + "theme.js", js + "site.js", js + "viz-core.js", f"{js}viz/{subj['id']}/{t['id']}.js"]
+    expected = [js + "theme.js", js + "site.js"]
+    if p.viz:
+        expected += [js + "viz-core.js", f"{js}viz/{subj['id']}/{t['id']}.js"]
+        if not (ROOT / "assets" / "js" / "viz" / subj["id"] / f"{t['id']}.js").exists():
+            err(f"找不到動畫腳本 assets/js/viz/{subj['id']}/{t['id']}.js")
     if p.scripts != expected:
-        err(f"script 應依序為 {expected}")
-    if not (ROOT / "assets" / "js" / "viz" / subj["id"] / f"{t['id']}.js").exists():
-        err(f"找不到動畫腳本 assets/js/viz/{subj['id']}/{t['id']}.js")
+        err(f"script 應依序為 {expected}（有互動元件時才載入 viz-core 和動畫腳本）")
+    if bool(t.get("viz")) != bool(p.viz):
+        err(f"JSON 的 viz = {t.get('viz')}，但頁面{'有' if p.viz else '沒有'}互動元件")
     if re.search(r'(href|src)="/', html):
         err("不可使用 / 開頭的絕對路徑")
     if f"最後更新：{t.get('updated')}" not in html:
@@ -135,8 +135,8 @@ def main():
                 ids.add(t["id"])
                 if not SLUG.match(t["id"]):
                     errors.append(f"[{s['id']}] 主題 id「{t['id']}」不是 kebab-case")
-                if subj.get("textbook") and not t.get("book"):
-                    errors.append(f"[{s['id']}/{t['id']}] 科目有參考書，主題要填 book（參考書節次，只給 AI 查閱）")
+                if t.get("priority") not in ("high", "mid", "low"):
+                    errors.append(f"[{s['id']}/{t['id']}] priority 必須是 high / mid / low")
                 page = ROOT / "subjects" / s["id"] / ch["id"] / f"{t['id']}.html"
                 if t["status"] == "done":
                     total_done += 1

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <!--
   主題頁模板：複製到 subjects/<subject-id>/<chapter-id>/<topic-id>.html 後填寫。
-  規則見 CLAUDE.md 第 5 節。7 個 section 的 id 與順序不可更改。
+  規則見 CLAUDE.md 第 6 節。段落不固定：依主題挑選、增刪、改名、調整順序，
+  不需要的段落直接刪掉。每個頂層 <section> 要有 kebab-case 的 id 和 <h2>（目錄靠它）。
+  沒有互動元件時，刪掉 .viz 段落和結尾的 viz-core.js、動畫腳本。
   所有 {{...}} 都要被取代（scripts/check.py 會檢查）。
 -->
 <html lang="zh-Hant">
@@ -33,42 +35,49 @@
         </div>
       </div>
 
+      <!-- ===== 以下是常用的段落元件，依主題挑選 ===== -->
+
       <section id="intro">
-        <h2>核心概念</h2>
+        <h2>{{核心概念}}</h2>
         <div class="panel">
-          <p>{{用 2～4 段說明概念。專有名詞第一次出現用 <span class="term">English<small>（中文）</small></span>}}</p>
-          <div class="callout"><p>{{一句話記憶法}}</p></div>
+          <p>{{專有名詞第一次出現用 <span class="term">English<small>（中文）</small></span>}}</p>
+          <div class="callout"><p>{{一句話記憶法（選用）}}</p></div>
         </div>
       </section>
 
+      <!-- 互動元件（選用，能幫助理解時才做）：動畫、計算器、可切換的比較表… -->
       <section id="viz">
-        <h2>互動動畫</h2>
+        <h2>{{互動動畫}}</h2>
         <div class="viz" data-viz="{{viz-name}}"></div>
       </section>
 
-      <section id="ops">
-        <h2>操作與複雜度</h2>
+      <!-- 表格類：操作與複雜度、做法比較、公式整理… -->
+      <section id="{{section-id}}">
+        <h2>{{表格標題}}</h2>
         <div class="panel table-scroll">
           <table>
-            <thead><tr><th>操作 Operation</th><th>做法</th><th>時間複雜度</th></tr></thead>
-            <tbody><tr><td>{{op}}</td><td>{{說明}}</td><td><code>O(1)</code></td></tr></tbody>
+            <thead><tr><th>{{欄}}</th><th>{{欄}}</th></tr></thead>
+            <tbody><tr><td>{{內容}}</td><td>{{內容}}</td></tr></tbody>
           </table>
         </div>
       </section>
 
+      <!-- 程式碼 / 虛擬碼 -->
       <section id="code">
         <h2>程式碼</h2>
-        <pre class="code">{{C 語言實作，與動畫右側程式碼一致}}</pre>
+        <pre class="code">{{C 語言實作；有動畫時要和動畫右側程式碼一致}}</pre>
       </section>
 
+      <!-- 考研重點：題型 + 解題方向 -->
       <section id="exam">
         <h2>考研重點</h2>
         <div class="exam-q">
-          <p><span class="qtype">{{計算/追蹤/比較/證明/實作}}</span>{{題型描述}}</p>
+          <p><span class="qtype">{{追蹤/計算/判斷/比較/證明/實作}}</span>{{題型描述}}</p>
           <p>{{解題方向}}</p>
         </div>
       </section>
 
+      <!-- 易錯點 -->
       <section id="pitfalls">
         <h2>易錯點</h2>
         <div class="panel">
@@ -78,6 +87,7 @@
         </div>
       </section>
 
+      <!-- 自我測驗（答案收合，要附理由） -->
       <section id="quiz">
         <h2>自我測驗</h2>
         <div class="quiz-tools"><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button></div>
@@ -93,6 +103,7 @@
     <div class="wrap">最後更新：{{YYYY-MM-DD}} · 依 CLAUDE.md 規則產生</div>
   </footer>
   <script src="../../../assets/js/site.js"></script>
+  <!-- 有互動元件時才需要下面兩行 -->
   <script src="../../../assets/js/viz-core.js"></script>
   <script src="../../../assets/js/viz/{{subject-id}}/{{topic-id}}.js"></script>
 </body>

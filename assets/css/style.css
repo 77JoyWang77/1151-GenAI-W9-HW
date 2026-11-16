@@ -139,6 +139,8 @@ a.subject:hover { transform: translateY(-2px); border-color: var(--accent); }
 .badge { font-size: .72em; padding: 1px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid var(--line-strong); color: var(--ink-soft); }
 .badge.done { border-color: var(--s-found); color: var(--s-found); background: var(--s-found-fill); }
 .badge.viz { border-color: var(--accent); color: var(--accent); }
+.badge.hot { border-color: var(--s-removed); color: var(--s-removed); background: var(--s-removed-fill); }
+.badges { display: inline-flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
 
 /* ---------- 主題頁 ---------- */
 .topic-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
