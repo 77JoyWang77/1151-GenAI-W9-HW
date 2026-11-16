@@ -63,10 +63,9 @@
     data.chapters.forEach((ch) => {
       const list = h("ul", {}, ch.topics.map((t) => {
         const name = `${t.en}（${t.zh}）`;
-        const sec = t.book ? h("span", { class: "sec", text: "§" + t.book }) : null;
-        if (t.status !== "done") return h("li", {}, [h("span", { class: "planned" }, [sec, name]), h("span", { class: "badge", text: "籌備中" })]);
+        if (t.status !== "done") return h("li", {}, [h("span", { class: "planned", text: name }), h("span", { class: "badge", text: "籌備中" })]);
         const badges = h("span", {}, [t.viz ? h("span", { class: "badge viz", text: "▶ 互動" }) : null, " ", h("span", { class: "badge done", text: "完成" })]);
-        return h("li", {}, [h("a", { href: `${ch.id}/${t.id}.html` }, [sec, name]), badges]);
+        return h("li", {}, [h("a", { href: `${ch.id}/${t.id}.html`, text: name }), badges]);
       }));
       box.appendChild(h("article", { class: "chapter", style: `--accent: ${chColor(ch.no)}` }, [
         h("div", { class: "no", text: "CHAPTER " + ch.no }),
