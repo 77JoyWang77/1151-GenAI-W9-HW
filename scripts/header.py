@@ -1,30 +1,20 @@
 """全站統一頁首（CLAUDE.md 6.6）：每一頁都一模一樣，只有相對路徑 root 不同。
-連結固定是：科目、每個進行中科目的名稱；只有一個進行中科目時再加「題庫」直達它的題庫頁。
+頁首只放每一頁都適用的東西：logo＋站名、「科目」、亮暗切換。
+屬於某個科目的連結（科目首頁、題庫）放在頁面裡（麵包屑、題庫卡片），不放頁首。
 check.py 用它比對每一頁的 <header>。"""
-import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def active_subjects():
-    data = json.loads((ROOT / "data" / "subjects.json").read_text(encoding="utf-8"))
-    return [(s["id"], s["zh"]) for s in data["subjects"] if s["status"] == "active"]
-
-
-def site_header(root, active=None):
+def site_header(root):
     """root：到網站根目錄的相對路徑（"" / "../../" / "../../../"）"""
-    active = active_subjects() if active is None else active
-    links = [f'        <a href="{root}index.html#subjects">科目</a>']
-    links += [f'        <a href="{root}subjects/{sid}/index.html">{zh}</a>' for sid, zh in active]
-    if len(active) == 1:
-        links.append(f'        <a href="{root}subjects/{active[0][0]}/questions.html">題庫</a>')
     return "\n".join([
         '  <header class="site-header">',
         '    <div class="wrap">',
         f'      <a class="brand" href="{root}index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>',
         '      <nav class="nav-links">',
-        *links,
+        f'        <a href="{root}index.html#subjects">科目</a>',
         '        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>',
         '      </nav>',
         '    </div>',

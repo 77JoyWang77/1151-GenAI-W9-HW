@@ -352,13 +352,6 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
-    // 頁首：標出目前所在的科目或題庫（主題頁屬於科目，所以標科目）
-    const here = location.pathname.replace(/index\.html$/, "");
-    document.querySelectorAll(".nav-links a").forEach((a) => {
-      const p = new URL(a.href, location.href).pathname.replace(/index\.html$/, "");
-      const inSubject = p.includes("/subjects/") && p.endsWith("/") && here.startsWith(p) && !here.endsWith("questions.html");
-      if (here === p || inSubject) a.setAttribute("aria-current", "page");
-    });
     renderToc();
     renderQuizToggle();
     renderCodeBlocks();
