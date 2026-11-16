@@ -367,7 +367,17 @@ details.code-fold > summary { cursor: pointer; list-style: none; display: inline
 details.code-fold > summary::-webkit-details-marker { display: none; }
 details.code-fold > summary .fold-arrow { transition: transform .15s; }
 details.code-fold[open] > summary .fold-arrow { transform: rotate(90deg); }
-details.code-fold[open] > summary { margin-bottom: 4px; }
+details.code-fold > summary:hover { border-color: var(--accent); }
+/* 展開後：summary 變成程式碼框的標題列，點一下收起 */
+details.code-fold[open] > summary { display: flex; width: 100%; border-radius: 10px 10px 0 0; border: 1px solid var(--line); border-bottom: 0; background: color-mix(in srgb, var(--code-bg) 60%, var(--paper)); padding: 7px 12px; margin: 0; }
+details.code-fold[open] > summary .code-copy { margin-left: auto; font-weight: 500; white-space: nowrap; flex-shrink: 0; align-self: flex-start; }
+details.code-fold > summary .fold-label { min-width: 0; }
+details.code-fold[open] > .code-block, details.code-fold[open] > .code-tabs { margin-top: 0; }
+details.code-fold[open] > .code-block { border-radius: 0 0 10px 10px; }
+details.code-fold.is-single .code-head { display: none; }
+details.code-fold:not([open]) > summary .code-copy { display: none; }
+details.code-fold[open] > .code-tabs .tab-bar { padding: 6px 8px 0; border: 1px solid var(--line); border-top: 0; border-bottom: 0; background: color-mix(in srgb, var(--code-bg) 60%, var(--paper)); }
+details.code-fold[open] > .code-tabs .code-block { border-radius: 0 0 10px 10px; }
 a.vop { display: inline-block; text-decoration: none; }
 a.linkbtn { text-decoration: none; display: inline-block; }
 

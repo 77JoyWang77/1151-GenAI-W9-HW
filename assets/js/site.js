@@ -126,15 +126,32 @@
       const btn = h("button", { type: "button", class: "code-copy" });
       const label = (ico, text) => btn.replaceChildren(icon(ico), document.createTextNode(text));
       label("copy", "複製");
-      btn.addEventListener("click", async () => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         try { await navigator.clipboard.writeText(pre.innerText); label("check", "已複製"); }
         catch (e) { label("alert", "請手動選取"); }
         setTimeout(() => label("copy", "複製"), 1500);
       });
       head.appendChild(btn);
     });
-    // 「看程式碼」前面加上會轉動的箭頭 icon
-    document.querySelectorAll("details.code-fold > summary").forEach((sm) => sm.prepend(icon("chevron-right", "fold-arrow")));
+    // 「看程式碼」收合：展開後 summary 直接變成程式碼框的標題列（點一下就收起），
+    // 單一程式碼時把複製按鈕移到這一列，並隱藏重複的 .code-head
+    document.querySelectorAll("details.code-fold").forEach((fold) => {
+      const sm = fold.querySelector(":scope > summary");
+      const raw = sm.textContent.trim();
+      const cut = raw.indexOf("：");
+      const title = cut >= 0 ? raw.slice(cut + 1) : raw;
+      const verb = h("span", { class: "fold-verb", text: "看程式碼" });
+      sm.replaceChildren(icon("chevron-right", "fold-arrow"), h("span", { class: "fold-label" }, [verb, "：" + title]));
+      const blocks = fold.querySelectorAll(".code-block");
+      if (blocks.length === 1 && !fold.querySelector(".code-tabs")) {
+        fold.classList.add("is-single");
+        const copy = blocks[0].querySelector(".code-copy");
+        if (copy) sm.appendChild(copy);   // 複製按鈕自己會 preventDefault，不會觸發收合
+      }
+      fold.addEventListener("toggle", () => (verb.textContent = fold.open ? "收起程式碼" : "看程式碼"));
+    });
     document.querySelectorAll(".code-tabs").forEach((tabs) => {
       const blocks = Array.from(tabs.querySelectorAll(":scope > .code-block[data-tab]"));
       if (!blocks.length) return;
