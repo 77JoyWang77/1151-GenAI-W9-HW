@@ -61,6 +61,7 @@
 | 樣式 | 全部寫在 `assets/css/style.css`。HTML 頁面 **不准寫 `<style>` 或 inline style**（JS 動態產生的元素可以設 CSS 變數）。 |
 | 動畫 | 一律使用 `assets/js/viz-core.js` 的 Player，**不另外寫一套動畫系統**，也不用 canvas 或外部函式庫。 |
 | 外部資源 | 不引入外部字型、圖片 URL、追蹤碼。 |
+| 快取 | 頁面引用 CSS、JS 時都帶版本號 `?v=<雜湊>`，避免瀏覽器拿新 HTML 配舊 JS。改過 `assets/` 之後、push 之前執行 `python scripts/stamp.py` 更新版本號（`check.py` 會檢查）。 |
 
 ---
 
@@ -95,7 +96,9 @@
 │       ├── viz-core.js           ← 共用的動畫播放器與靜態圖（不要為了單一主題改它）
 │       └── viz/<subject-id>/<topic-id>.js   ← 每個主題自己的圖與動畫
 └── scripts/
-    └── check.py                  ← 檢查所有科目與主題是否符合本文件
+    ├── check.py                  ← 檢查所有科目與主題是否符合本文件
+    ├── header.py                 ← 產生全站統一頁首（6.6）
+    └── stamp.py                  ← 替 CSS / JS 加版本號（4）
 ```
 
 - 所有 id：**小寫英文 kebab-case**，用最常見的英文名稱。✅ `binary-search-tree` ❌ `BST`、`二元樹`、`topic1`
@@ -447,7 +450,7 @@ figure("bst-valid-invalid", () => ({
 4. 先寫好完整的 C 程式並實際編譯執行（第 6.3 節），再撰寫文字講解，把圖、動畫和程式碼片段放在對應的文字旁；片段和動畫右側程式碼都從完整程式取出；不提到參考書。
 5. 在 `data/questions/<subject-id>.json` 新增這個主題的練習題（每個難度至少 2 題，答案用程式驗算），寫好考研重點的題型地圖和易錯點的例題連結（第 6.4 節）。
 6. JSON 中把 `status` 改成 `"done"`，補上 `difficulty`、`tags`、`updated`，`viz` 依頁面實際情況填。
-7. 執行 `python scripts/check.py`，必須顯示 `All checks passed`。
+7. 執行 `python scripts/stamp.py` 更新 CSS / JS 版本號，再執行 `python scripts/check.py`，必須顯示 `All checks passed`。
 8. 本機預覽：`python -m http.server 8000` → `http://localhost:8000`（直接雙擊 html 會讀不到 json）。
 9. 截圖檢查每張圖有沒有文字重疊或超出畫面；有動畫時實際操作：正常輸入、經典例子、邊界情況（空、滿、重複、找不到）、非法輸入；亮暗兩種模式都看一次。
 10. 回報：新增或修改了哪些檔案、動畫支援哪些操作、預設採用哪種做法、哪些地方標了「（待確認）」。

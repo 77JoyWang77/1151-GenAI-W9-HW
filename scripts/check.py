@@ -50,7 +50,7 @@ class Page(HTMLParser):
         if tag == "meta" and a.get("name") == "description":
             self.desc = a.get("content")
         if tag == "script" and a.get("src"):
-            self.scripts.append(a["src"])
+            self.scripts.append(a["src"].split("?")[0])   # 版本號 ?v= 另外檢查
         if "data-theme-toggle" in a:
             self.toggle = True
         if tag == "section":
@@ -284,8 +284,19 @@ def check_headers(errors):
             errors.append(f"[{path.relative_to(ROOT)}] 頁首要和全站統一的寫法一致（執行 python scripts/header.py 重新產生）")
 
 
+def check_versions(errors):
+    """CSS / JS 的引用都要帶目前的版本號（python scripts/stamp.py）"""
+    from stamp import asset_version, pages, stale
+    v = asset_version()
+    for path in pages():
+        bad = stale(path.read_text(encoding="utf-8"), v)
+        if bad:
+            errors.append(f"[{path.relative_to(ROOT)}] CSS / JS 的版本號不是最新（{bad[0][:60]}…），請執行 python scripts/stamp.py")
+
+
 def main():
     errors = []
+    check_versions(errors)
     check_no_emoji(errors)
     check_headers(errors)
     css = (ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
