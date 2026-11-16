@@ -430,15 +430,7 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 .stat b { font-size: 1.5em; line-height: 1.1; }
 .stat small { color: color-mix(in srgb, var(--banner-ink) 55%, transparent); font-size: .85em; }
 .stat-label { color: color-mix(in srgb, var(--banner-ink) 62%, transparent); font-size: .82em; white-space: nowrap; }
-.home-block h2 { font-size: 1.2em; margin: 32px 0 12px; }
-.done-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.done-topic { display: flex; flex-direction: column; gap: 4px; padding: 14px 18px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
-.done-topic:hover { transform: translateY(-1px); border-color: var(--brand); }
-.dt-meta { font-size: .78em; color: var(--ink-soft); }
-.dt-name { font-weight: 600; display: flex; align-items: flex-start; gap: 4px; }
-.dt-name .icon { margin-top: .3em; }
-.dt-name .icon { flex: none; }
-.dt-name .is-hot { color: var(--s-removed); }
+.home-block { margin-top: 24px; }
 
 /* ---------- 窄螢幕（手機）：放在檔案最後，才能蓋過上面的基本樣式 ---------- */
 @media (max-width: 600px) {

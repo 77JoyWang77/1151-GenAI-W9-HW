@@ -65,21 +65,16 @@
     }
   }
 
-  // ---------- 全站首頁：概況（科目名稱、數字、已完成的主題）----------
+  // ---------- 全站首頁：概況（科目名稱、數字）----------
   async function renderHome() {
     const reg = await getJSON("data/subjects.json");
     const names = $("#home-subjects");
     if (names) names.textContent = reg.subjects.map((s) => s.zh).join(" · ");
     let done = 0, total = 0, practice = 0, exam = 0;
-    const topics = [];
     for (const s of reg.subjects.filter((x) => x.status === "active")) {
       const subj = await getJSON(`data/${s.id}.json`);
       total += allTopics(subj).length;
-      subj.chapters.forEach((c, ci) => c.topics.forEach((t, ti) => {
-        if (t.status !== "done") return;
-        done++;
-        topics.push({ s, c, t, order: ci * 100 + ti });
-      }));
+      done += doneCount(subj);
       try {
         const q = await loadQuestions(s.id);
         const e = q.questions.filter((x) => x.source && x.source.kind === "exam").length;
@@ -98,19 +93,6 @@
         tile("bookmark", String(exam), " 題", "考古題"),
       );
     }
-    const box = $("#home-topics");
-    if (!box) return;
-    if (!topics.length) { box.appendChild(h("p", { class: "qempty", text: "還沒有完成的主題。" })); return; }
-    topics.sort((a, b) => (b.t.updated || "").localeCompare(a.t.updated || "") || a.order - b.order);
-    topics.forEach(({ s, c, t }) => {
-      const stars = h("span", { class: "stars" });
-      for (let i = 1; i <= 3; i++) stars.appendChild(i <= (t.difficulty || 0) ? icon("star-fill", "on") : icon("star", "off"));
-      box.appendChild(h("a", { class: "done-topic", href: `subjects/${s.id}/${c.id}/${t.id}.html` }, [
-        h("span", { class: "dt-meta", text: `${s.zh} · Ch${c.no} ${c.en}` }),
-        h("span", { class: "dt-name" }, [t.priority === "high" ? icon("flame", "is-hot") : "", nameOf(t)]),
-        stars,
-      ]));
-    });
   }
 
   // ---------- 科目首頁：章節地圖 ----------
