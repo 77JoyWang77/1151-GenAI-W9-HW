@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Binary Search Tree（二元搜尋樹） · 樹 | DS 考研互動學習站</title>
+  <meta name="description" content="左小右大的二元樹，搜尋、插入、刪除都是 O(h)；考研必考刪除的三種情況與樹高退化。">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body data-chapter="tree" data-topic="tree/binary-search-tree" data-root="../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../index.html"><span class="logo">DS</span>考研互動學習站<small>Data Structures</small></a>
+      <nav class="nav-links"><a href="../../index.html#chapters">所有章節</a></nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../index.html">首頁</a> › Tree（樹） › Binary Search Tree（二元搜尋樹）</nav>
+      <div class="topic-head">
+        <h1>Binary Search Tree（二元搜尋樹）<small>左子樹都比我小，右子樹都比我大</small></h1>
+        <div class="meta">
+          <span class="chip accent">Tree</span>
+          <span class="chip">難度 ★★☆</span>
+          <span class="chip">BST</span>
+          <span class="chip">insert</span>
+          <span class="chip">delete</span>
+        </div>
+      </div>
+
+      <section id="intro">
+        <h2>核心概念</h2>
+        <div class="panel">
+          <p><span class="term">Binary Search Tree<small>（二元搜尋樹，BST）</small></span>是一棵二元樹，且每個節點都滿足：<b>左子樹所有 key &lt; 節點 key &lt; 右子樹所有 key</b>。注意是「整棵子樹」，不只是直接的左右子節點。</p>
+          <p>這個性質讓搜尋像二分搜尋：每比較一次就可以丟掉一整棵子樹。所以搜尋、插入、刪除的時間都是 <code>O(h)</code>，h 是 <span class="term">height<small>（樹高）</small></span>。樹平衡時 h ≈ log₂n，但如果按照排序好的順序插入，樹會退化成一條鏈，h = n。</p>
+          <p>最重要的性質：BST 的 <span class="term">Inorder Traversal<small>（中序走訪）</small></span>結果一定是<b>遞增排序</b>的。刪除有兩個子節點的節點時，會用到中序走訪的下一個節點，也就是 <span class="term">Inorder Successor<small>（中序後繼）</small></span>。</p>
+          <div class="callout"><p>💡 刪除記三種情況：<b>沒有小孩</b>直接刪；<b>一個小孩</b>讓小孩頂上來；<b>兩個小孩</b>找右子樹最小值（或左子樹最大值）來替代。</p></div>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>互動動畫</h2>
+        <p>右側程式碼會依你選的操作切換。試試刪除 <code>30</code>（兩個子節點）、<code>20</code>（葉節點）、<code>60</code>（一個子節點），或按「中序走訪」看看結果是不是排序好的。</p>
+        <div class="viz" data-viz="bst"></div>
+      </section>
+
+      <section id="ops">
+        <h2>操作與複雜度</h2>
+        <div class="panel table-scroll">
+          <table>
+            <thead><tr><th>操作 Operation</th><th>做法</th><th>平均</th><th>最差（退化成鏈）</th></tr></thead>
+            <tbody>
+              <tr><td><code>search(x)</code></td><td>從 root 開始，小往左、大往右</td><td><code>O(log n)</code></td><td><code>O(n)</code></td></tr>
+              <tr><td><code>insert(x)</code></td><td>像搜尋一樣往下走，走到 NULL 的位置接上新節點</td><td><code>O(log n)</code></td><td><code>O(n)</code></td></tr>
+              <tr><td><code>delete(x)</code></td><td>找到後依子節點數分三種情況處理</td><td><code>O(log n)</code></td><td><code>O(n)</code></td></tr>
+              <tr><td>找最小 / 最大</td><td>一路往左 / 一路往右走到底</td><td><code>O(log n)</code></td><td><code>O(n)</code></td></tr>
+              <tr><td>Inorder 走訪</td><td>左 → 根 → 右，每個節點拜訪一次</td><td colspan="2"><code>O(n)</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>刪除的三種情況</h3>
+        <div class="panel table-scroll">
+          <table>
+            <thead><tr><th>情況 Case</th><th>處理方式</th></tr></thead>
+            <tbody>
+              <tr><td>Case 1：葉節點 leaf</td><td>直接移除，父節點對應的指標設為 NULL</td></tr>
+              <tr><td>Case 2：一個子節點</td><td>讓唯一的子節點接到被刪節點的位置</td></tr>
+              <tr><td>Case 3：兩個子節點</td><td>用中序後繼（右子樹最小）或中序前驅（左子樹最大）的值取代，再刪掉那個節點；後繼最多只有右子節點，所以會變成 Case 1 或 2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="code">
+        <h2>程式碼</h2>
+        <pre class="code">typedef struct Node {
+  int key;
+  struct Node *left, *right;
+} Node;
+
+Node* search(Node* root, int x) {
+  while (root != NULL &amp;&amp; root->key != x)
+    root = (x &lt; root->key) ? root->left : root->right;
+  return root;                       /* NULL 表示找不到 */
+}
+
+Node* insert(Node* root, int x) {
+  if (root == NULL) return newNode(x);
+  if (x &lt; root->key)      root->left  = insert(root->left, x);
+  else if (x &gt; root->key) root->right = insert(root->right, x);
+  return root;                       /* 重複的 key 不插入 */
+}
+
+Node* delete(Node* root, int x) {
+  if (root == NULL) return NULL;
+  if (x &lt; root->key)      root->left  = delete(root->left, x);
+  else if (x &gt; root->key) root->right = delete(root->right, x);
+  else {
+    if (root->left == NULL)  { Node* r = root->right; free(root); return r; }
+    if (root->right == NULL) { Node* l = root->left;  free(root); return l; }
+    Node* s = root->right;           /* 中序後繼：右子樹最小 */
+    while (s->left) s = s->left;
+    root->key = s->key;
+    root->right = delete(root->right, s->key);
+  }
+  return root;
+}</pre>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點</h2>
+        <div class="exam-q">
+          <p><span class="qtype">追蹤</span>給一串插入順序，畫出 BST，再依序刪除某些節點，畫出每一步的樹。</p>
+          <p>解題方向：插入就是一路比較往下走。刪除前先確認題目要用<b>後繼</b>還是<b>前驅</b>，答案會不同；題目沒說時要註明你用哪一種。</p>
+        </div>
+        <div class="exam-q">
+          <p><span class="qtype">計算</span>n 個不同的 key 可以組成幾種不同形狀的 BST？</p>
+          <p>解題方向：答案是 Catalan number <code>C(n) = (2n)! / ((n+1)! n!)</code>：n=3 有 5 種、n=4 有 14 種。和 Stack 合法輸出序列的個數是同一個數列。</p>
+        </div>
+        <div class="exam-q">
+          <p><span class="qtype">實作</span>給 BST 的 preorder（或 postorder）序列，重建這棵樹。</p>
+          <p>解題方向：BST 的 inorder 就是 key 排序後的結果，所以「preorder + 排序」等於「preorder + inorder」，可以唯一重建。也可以直接把 preorder 依序 insert 進空樹。</p>
+        </div>
+        <div class="exam-q">
+          <p><span class="qtype">比較</span>BST 的最差情況是什麼？要怎麼避免？</p>
+          <p>解題方向：輸入已經排序時樹會變成一條鏈，h = n，所有操作退化成 <code>O(n)</code>。用自平衡樹（AVL Tree、Red-Black Tree）把高度維持在 <code>O(log n)</code>。</p>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel">
+          <ul class="pitfalls">
+            <li><span class="bad">❌ 只要每個節點「左子 &lt; 自己 &lt; 右子」就是 BST</span> → <span class="ok">✅ 必須是左「整棵子樹」都比較小。例如 10 的左子 5 底下若有右子 15，就不是 BST</span></li>
+            <li><span class="bad">❌ BST 的操作都是 O(log n)</span> → <span class="ok">✅ 是 O(h)。沒有平衡機制時，最差是 O(n)</span></li>
+            <li><span class="bad">❌ 中序後繼一定是葉節點</span> → <span class="ok">✅ 它沒有左子節點，但可能有右子節點，刪掉後要把右子節點接上去</span></li>
+            <li><span class="bad">❌ 刪除兩個子節點的節點只有一種正確答案</span> → <span class="ok">✅ 用後繼或前驅都正確，但結果的樹不同，要照題目指定的方式</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="quiz">
+        <h2>自我測驗</h2>
+        <div class="quiz-tools"><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button></div>
+        <details class="quiz"><summary>依序插入 50, 30, 70, 20, 40, 60, 80，樹高（以層數計）是多少？</summary><p>3 層。50 是 root，30、70 在第 2 層，20、40、60、80 在第 3 層，是一棵完全平衡的樹。</p></details>
+        <details class="quiz"><summary>依序插入 10, 20, 30, 40, 50，搜尋 50 要比較幾次？</summary><p>5 次。排序好的輸入讓樹退化成往右延伸的一條鏈，搜尋就變成線性搜尋。</p></details>
+        <details class="quiz"><summary>上面動畫的初始樹刪除 50（用中序後繼）後，新的 root 是誰？</summary><p>60。50 右子樹（70 那棵）中最小的是 60，用 60 取代 root；60 原本有右子節點 65，刪掉 60 後 65 接到 70 的左邊。</p></details>
+        <details class="quiz"><summary>3 個不同的 key 可以組成幾種不同的 BST？</summary><p>5 種，C(3) = 6! / (4!·3!) = 5。</p></details>
+        <details class="quiz"><summary>只看一棵二元樹的 inorder 結果，怎麼判斷它是不是 BST？</summary><p>檢查 inorder 是否嚴格遞增。是就是 BST，否則就不是。這是最簡單也最不容易出錯的判斷方法。</p></details>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz-core.js"></script>
+  <script src="../../assets/js/viz/binary-search-tree.js"></script>
+</body>
+</html>

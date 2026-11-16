@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--
+  主題頁模板：複製到 topics/<chapter-id>/<topic-id>.html 後填寫。
+  規則見 CLAUDE.md 第 4 節。7 個 section 的 id 與順序不可更改。
+  所有 {{...}} 都要被取代（scripts/check.py 會檢查）。
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{English}}（{{中文}}） · {{章節中文}} | DS 考研互動學習站</title>
+  <meta name="description" content="{{一句話說明這個主題，≤ 70 字}}">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body data-chapter="{{chapter-id}}" data-topic="{{chapter-id}}/{{topic-id}}" data-root="../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../index.html"><span class="logo">DS</span>考研互動學習站<small>Data Structures</small></a>
+      <nav class="nav-links"><a href="../../index.html#chapters">所有章節</a></nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../index.html">首頁</a> › {{章節 English（中文）}} › {{English}}（{{中文}}）</nav>
+      <div class="topic-head">
+        <h1>{{English}}（{{中文}}）<small>{{一句話副標}}</small></h1>
+        <div class="meta">
+          <span class="chip accent">{{章節 English}}</span>
+          <span class="chip">難度 {{★★☆}}</span>
+          <span class="chip">{{tag}}</span>
+        </div>
+      </div>
+
+      <section id="intro">
+        <h2>核心概念</h2>
+        <div class="panel">
+          <p>{{用 2～4 段說明概念。專有名詞第一次出現用 <span class="term">English<small>（中文）</small></span>}}</p>
+          <div class="callout"><p>{{一句話記憶法}}</p></div>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>互動動畫</h2>
+        <div class="viz" data-viz="{{viz-name}}"></div>
+      </section>
+
+      <section id="ops">
+        <h2>操作與複雜度</h2>
+        <div class="panel table-scroll">
+          <table>
+            <thead><tr><th>操作 Operation</th><th>做法</th><th>時間複雜度</th></tr></thead>
+            <tbody><tr><td>{{op}}</td><td>{{說明}}</td><td><code>O(1)</code></td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="code">
+        <h2>程式碼</h2>
+        <pre class="code">{{C 語言實作，與動畫右側程式碼一致}}</pre>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點</h2>
+        <div class="exam-q">
+          <p><span class="qtype">{{計算/追蹤/比較/證明/實作}}</span>{{題型描述}}</p>
+          <p>{{解題方向}}</p>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel">
+          <ul class="pitfalls">
+            <li><span class="bad">❌ {{錯誤想法}}</span> → <span class="ok">✅ {{正確觀念}}</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="quiz">
+        <h2>自我測驗</h2>
+        <div class="quiz-tools"><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button></div>
+        <details class="quiz"><summary>{{題目}}</summary><p>{{答案與理由}}</p></details>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：{{YYYY-MM-DD}} · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz-core.js"></script>
+  <script src="../../assets/js/viz/{{topic-id}}.js"></script>
+</body>
+</html>
