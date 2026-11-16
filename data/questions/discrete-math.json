@@ -1,0 +1,120 @@
+{
+  "subject": "discrete-math",
+  "levels": {
+    "basic": "基礎",
+    "advanced": "進階",
+    "exam": "考研級"
+  },
+  "questions": [
+    {
+      "id": "dm-0001",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "下列哪一個圖有 Euler 迴路？",
+      "choices": [
+        "(A) K<sub>4</sub>",
+        "(B) K<sub>5</sub>",
+        "(C) K<sub>3,4</sub>",
+        "(D) Q<sub>3</sub>（3 維超立方體）"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>這些圖都連通，只要看度數是不是全部偶數：</p><ul><li>K<sub>4</sub>：每點 3 度，4 個奇點，沒有。</li><li>K<sub>5</sub>：每點 4 度，全部偶數，<b>有</b>。</li><li>K<sub>3,4</sub>：3 個點的那一邊每點 4 度、4 個點的那一邊每點 3 度，有 4 個奇點，沒有。</li><li>Q<sub>3</sub>：每點 3 度，沒有。</li></ul><p>常見錯誤是以為 K<sub>n</sub> 都有，其實只有 n 為奇數時才有。（已用程式驗證）</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "dm-0002",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "關於 Euler 迴路與 Hamilton 迴路，下列敘述何者正確？",
+      "choices": [
+        "(A) 有 Euler 迴路的連通圖一定也有 Hamilton 迴路",
+        "(B) 若某個頂點的度數小於 n / 2，這個圖就沒有 Hamilton 迴路",
+        "(C) Euler 迴路可以重複經過同一個頂點，但每條邊只能用一次",
+        "(D) Hamilton 迴路必須用到圖中所有的邊"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>Euler 管邊、Hamilton 管點。(C) 正確：Euler 迴路只要求邊不重複，頂點可以經過很多次，例如七橋問題中的島。</p><ul><li>(A) 錯：蝴蝶結（兩個三角形共用一點）有 Euler 迴路，但共用點是割點，沒有 Hamilton 迴路。</li><li>(B) 錯：Dirac 定理是<b>充分</b>條件，不是必要條件。環 C<sub>n</sub> 每點只有 2 度，仍然有 Hamilton 迴路。</li><li>(D) 錯：Hamilton 迴路只用 n 條邊，其他邊都可以不走。</li></ul>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "dm-0003",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "question": "圖 G 的頂點為 A～F，邊為 AB、BC、CD、DE、EF、FA、AC、CE、EA。(1) G 有沒有 Euler 迴路？ (2) 從 A 出發，用 Hierholzer 演算法（每次走向字母最小、且邊還沒用過的鄰居；卡住就把頂點放進答案並退回），寫出得到的 Euler 迴路。",
+      "answer": "(1) 有　(2) A → B → C → A → E → C → D → E → F → A",
+      "explanation": "<p>(1) 度數：A、C、E 各 4 度，B、D、F 各 2 度，全部偶數且連通，所以有 Euler 迴路。</p><p>(2) 逐步追蹤（stack 由底到頂）：A → B（AB）→ C（ABC）→ C 的鄰居 A、B、D、E 中，AC 還沒用且 A 最小，走到 A（ABCA）→ A 剩下 AE、AF，走到 E → E 的鄰居中 C 最小，走到 C → C 剩下 CD，走到 D → E → F → A。此時 9 條邊全部用完，接著依序 pop，答案倒過來就是 <b>A B C A E C D E F A</b>。</p><p>這一題剛好不會在中途卡住，所以 stack 裡的順序直接就是答案。（已用程式驗證）</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "dm-0004",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "question": "「房子圖」有 5 個頂點：屋頂 A、屋簷 B、C、地面 D、E，邊為 AB、AC、BC、BD、CE、DE，另加兩條對角線 BE、CD。(1) 能不能一筆畫完所有的邊（不必回到起點）？若能，必須從哪些頂點出發？ (2) 若希望畫完後回到起點，最少要再加幾條邊？加在哪裡？",
+      "answer": "(1) 可以，必須從 D 或 E 出發（在另一個結束）　(2) 加 1 條邊 DE",
+      "explanation": "<p>度數：A = 2、B = 4、C = 4、D = 3、E = 3。圖連通，奇數度頂點只有 D、E 兩個。</p><p>(1) 恰好 2 個奇點 → 有 Euler 路徑，必須從一個奇點出發、在另一個奇點結束，所以起點只能是 <b>D 或 E</b>。例如 D → B → A → C → B → E → C → D → E（已用程式驗證）。從 A、B、C 出發都會失敗。</p><p>(2) 要變成 Euler 迴路，所有頂點都要偶數度。加一條 D–E（和原本的 DE 成為重邊）後，D、E 都變成 4 度，全部偶數，所以最少加 <b>1</b> 條。一般來說，2k 個奇點最少要加 k 條邊。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "dm-0005",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "question": "對完全二分圖 K<sub>m,n</sub>（1 ≤ m ≤ n），分別寫出下列情況成立的充要條件並說明理由：(1) 有 Euler 迴路 (2) 有 Euler 路徑但沒有 Euler 迴路 (3) 有 Hamilton 迴路。",
+      "answer": "(1) m、n 都是偶數　(2) m = 2 且 n 為奇數，或 (m, n) = (1, 1)、(1, 2)　(3) m = n ≥ 2",
+      "explanation": "<p>K<sub>m,n</sub> 連通，大小為 m 的那一邊每點 n 度，大小為 n 的那一邊每點 m 度。</p><p>(1) 全部偶數度 ⇔ m、n 都是偶數。</p><p>(2) 需要恰好 2 個奇點。奇點只會整邊出現：若 n 是奇數，大小 m 的那一邊全部是奇點，要恰好 2 個就需要 m = 2，且另一邊每點 m = 2 度是偶數，符合；若 m 是奇數，大小 n 的那一邊全是奇點，需要 n = 2，配合 m ≤ n 只剩 m = 1，也就是 K<sub>1,2</sub>；兩邊都是奇點時總共 m + n 個，要等於 2 只有 K<sub>1,1</sub>。所以答案是 <b>K<sub>2,n</sub>（n 奇數）、K<sub>1,1</sub>、K<sub>1,2</sub></b>。</p><p>(3) 二分圖的迴路一定左右交替，經過的左邊點數 = 右邊點數，要經過全部頂點就需要 m = n；又迴路至少要 4 個頂點，所以 m = n ≥ 2，此時交替排列即可構造出來。</p><p>（已用程式對 1 ≤ m ≤ n ≤ 4 全部驗證）</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "dm-0006",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "question": "考慮完全圖 K<sub>7</sub>。(1) 不同的 Hamilton 迴路有幾個？（起點不同或方向相反視為同一個） (2) 最多能找出幾個<b>兩兩沒有共用邊</b>的 Hamilton 迴路？請說明為什麼不能更多。",
+      "answer": "(1) 360　(2) 3",
+      "explanation": "<p>(1) 把 7 個頂點排成一圈：固定起點後其餘 6 個有 6! = 720 種順序，順時針和逆時針是同一個圈，所以 720 / 2 = <b>360</b>。一般公式 (n − 1)! / 2。常見錯誤是寫 7! = 5040，忘了扣掉起點和方向。</p><p>(2) K<sub>7</sub> 共有 7 × 6 / 2 = 21 條邊，每個 Hamilton 迴路用掉 7 條，所以最多 21 / 7 = <b>3</b> 個。而且真的做得到，例如（頂點編號 0～6）：0-1-2-6-3-5-4-0、0-2-3-1-4-6-5-0、0-3-4-2-5-1-6-0，三個迴路的 21 條邊剛好不重複。一般 n 為奇數時，K<sub>n</sub> 可以分解成 (n − 1) / 2 個邊不重複的 Hamilton 迴路。</p><p>（已用程式列舉驗證 360，並檢查上面三個迴路兩兩沒有共用邊）</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "dm-0007",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "question": "(1) 證明：任何圖中，奇數度頂點的個數一定是偶數。(2) 證明：若連通圖 G 有 Euler 迴路，則 G 的每個頂點都是偶數度。",
+      "answer": "(1) 度數總和 = 2|E| 為偶數，偶數度頂點的度數和為偶數，故奇數度頂點的度數和為偶數，奇數個奇數之和為奇數，所以奇點個數為偶數。(2) 沿迴路每次經過頂點都是進一條、出一條，邊成對使用。",
+      "explanation": "<p><b>(1)</b> 每條邊有兩個端點，替度數總和貢獻 2，所以 Σ deg(v) = 2|E|，是偶數。把頂點分成偶數度集合 V<sub>e</sub> 與奇數度集合 V<sub>o</sub>：Σ<sub>V<sub>e</sub></sub> deg(v) 是偶數的和，為偶數；所以 Σ<sub>V<sub>o</sub></sub> deg(v) = 2|E| − 偶數，也是偶數。若 |V<sub>o</sub>| 是奇數，奇數個奇數相加會是奇數，矛盾。故 |V<sub>o</sub>| 為偶數。∎</p><p><b>(2)</b> 設 Euler 迴路為 v<sub>0</sub>, e<sub>1</sub>, v<sub>1</sub>, …, e<sub>m</sub>, v<sub>m</sub> = v<sub>0</sub>，每條邊恰好出現一次。對任一頂點 v，每當迴路在中途經過 v（v = v<sub>i</sub>，0 &lt; i &lt; m），都用到一條進來的邊 e<sub>i</sub> 和一條出去的邊 e<sub>i+1</sub>，貢獻 2 度；起點 v<sub>0</sub> 在開頭用掉 e<sub>1</sub>、在結尾用掉 e<sub>m</sub>，也是成對。因為每條邊恰好被用一次，v 的所有邊都以這種成對方式出現，所以 deg(v) 是偶數。∎</p><p>反方向（連通且全偶 ⇒ 有 Euler 迴路）可以用「先走出一個圈，再把剩下的邊用圈接進來」的構造來證明，也就是 Hierholzer 演算法的想法。</p>",
+      "source": {
+        "kind": "original"
+      }
+    }
+  ]
+}

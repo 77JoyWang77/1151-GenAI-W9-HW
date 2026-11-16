@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Euler and Hamilton Paths（Euler 與 Hamilton 路徑） · 離散數學 | 資工考研互動學習站</title>
+  <meta name="description" content="每條邊走一次與每個頂點走一次；考研必考奇點判別、特殊圖條件與 Hamilton 計數。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=92b643ac">
+  <script src="../../../assets/js/theme.js?v=92b643ac"></script>
+</head>
+<body data-subject="discrete-math" data-chapter="graphs" data-chno="7" data-topic="discrete-math/graphs/euler-hamilton" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Discrete Mathematics（離散數學）</a> › Ch7 Graphs（圖論） › Euler and Hamilton Paths（Euler 與 Hamilton 路徑）</nav>
+      <div class="topic-head">
+        <h1>Euler and Hamilton Paths（Euler 與 Hamilton 路徑）<small>Euler 管邊、Hamilton 管點</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch7 Graphs</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">Euler circuit</span>
+          <span class="chip">Hamilton circuit</span>
+          <span class="chip">degree</span>
+          <span class="chip">Hierholzer</span>
+        </div>
+      </div>
+
+      <section id="motivation">
+        <h2>從七橋問題開始</h2>
+        <div class="panel prose">
+          <p>十八世紀的 Königsberg 有一條河穿過市區，河中有兩座島，島和兩岸之間共有 7 座橋。當地人想知道：能不能從某個地方出發，<b>每座橋剛好走過一次</b>，最後回到原點？大家試了很久都做不到，但「試不出來」不等於「不可能」。Euler 把問題抽象化：陸地變成<b>頂點</b>、橋變成<b>邊</b>，問題就變成「能不能沿著圖走一圈，每條邊剛好用一次」。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="euler-konigsberg"></div>
+            <figcaption><b>圖 1</b>：七橋問題的圖。A 是中間的島（5 座橋）、B、C 是兩岸、D 是另一座島（各 3 座橋）。兩組平行的橋畫成一直一彎的兩條邊。四個頂點都是奇數度，所以不可能。</figcaption>
+          </figure>
+          <p>Euler 的關鍵觀察只看<b>度數</b>（degree，連到這個頂點的邊數）：路線每經過一個中間的頂點，都是「走進來一次、走出去一次」，用掉兩條邊。所以除了起點和終點，每個頂點的邊都必須成對使用，度數一定是偶數。七橋的四個頂點全是奇數度，答案就是不可能，完全不用試。</p>
+          <p>這類「每條邊走一次」的問題在生活中很常見：郵差要走過每條街送信、掃街車要掃過每條路、畫圖時想「一筆畫完」。另一類看起來很像、其實完全不同的問題是「每個<b>頂點</b>剛好經過一次」，例如業務員要拜訪每個城市一次再回公司。前者叫 Euler，後者叫 Hamilton，這一頁會把兩者講清楚並比較。</p>
+        </div>
+      </section>
+
+      <section id="definitions">
+        <h2>定義：走邊還是走點</h2>
+        <div class="panel prose">
+          <p>先釐清幾個名詞。在圖上從一個頂點沿著邊移動到另一個頂點，經過的序列叫 <span class="term">Walk<small>（走法）</small></span>；如果<b>邊不重複</b>叫 <span class="term">Trail<small>（行跡）</small></span>，<b>頂點也不重複</b>叫 <span class="term">Path<small>（路徑）</small></span>；起點等於終點的稱為「迴路」或「環」。不同教材對 path、circuit 的用詞略有差異，考試時以題目的定義為準，但下面四個名詞的意思是固定的：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>名詞</th><th>要求</th><th>回到起點？</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Euler Circuit<small>（Euler 迴路）</small></span></td><td>每條<b>邊</b>剛好經過一次</td><td>是</td></tr>
+                <tr><td><span class="term">Euler Path<small>（Euler 路徑）</small></span></td><td>每條<b>邊</b>剛好經過一次</td><td>不一定（通常指不回到起點）</td></tr>
+                <tr><td><span class="term">Hamilton Circuit<small>（Hamilton 迴路）</small></span></td><td>每個<b>頂點</b>剛好經過一次</td><td>是</td></tr>
+                <tr><td><span class="term">Hamilton Path<small>（Hamilton 路徑）</small></span></td><td>每個<b>頂點</b>剛好經過一次</td><td>不一定</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 記法：<b>Euler 管邊、Hamilton 管點</b>。Euler 可以重複經過頂點（只要邊不重複），Hamilton 可以有很多邊沒用到（只要每個點剛好一次）。</p></div>
+          <p>注意 Euler 允許重複經過頂點：七橋問題裡島 A 有 5 座橋，一定會被經過好幾次。反過來，Hamilton 迴路在 n 個頂點的圖上剛好用 n 條邊，其他邊都不用走。這兩個問題長得像，難度卻天差地遠：Euler 有一行就能判斷的定理，Hamilton 至今沒有有效率的判斷方法。</p>
+        </div>
+      </section>
+
+      <section id="euler-theorem">
+        <h2>Euler 定理：數奇點就知道</h2>
+        <div class="panel prose">
+          <p>對<b>連通</b>的無向圖（允許重邊；孤立點不影響，可以忽略）：</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>有 Euler 迴路</b> ⇔ 每個頂點的度數都是<b>偶數</b>。<br><b>有 Euler 路徑（但沒有迴路）</b> ⇔ <b>恰好 2 個</b>頂點是奇數度，而且路徑一定從其中一個奇點出發、在另一個奇點結束。<br>奇數度頂點有 4 個以上 ⇒ 都沒有。</p></div>
+          <p><b>為什麼「必要」？</b>沿著 Euler 迴路走，每次經過一個頂點都是進來一條、出去一條，邊兩兩成對；起點也一樣，出發用掉一條、最後回來用掉一條。所以每個頂點的度數都是偶數。如果只是路徑，起點多出去一次、終點多進來一次，這兩點變成奇數度，其他點仍然是偶數。</p>
+          <p><b>為什麼「充分」？</b>從任一點出發隨便走，因為每個點都是偶數度，走進一個不是起點的點時，一定還有一條沒走過的邊可以出去，所以只會在起點卡住，得到一個小迴路。如果還有邊沒走到，因為圖是連通的，這些邊一定和已走的迴路共用某個頂點，從那個頂點再繞一個小圈接進去就好。不斷重複，所有的邊都會被接進同一條迴路，這也就是下一節 Hierholzer 演算法的做法。</p>
+          <p>另外有一個基本事實：<b>任何圖的奇數度頂點個數一定是偶數</b>。因為每條邊替兩個端點各貢獻 1 度，度數總和 = 2 × 邊數，一定是偶數；偶數度頂點的度數和是偶數，所以奇數度頂點的度數和也必須是偶數，奇數個奇數加起來是奇數，因此奇點個數只能是偶數。這叫 <span class="term">Handshaking Lemma<small>（握手定理）</small></span>，也說明了「恰好 1 個奇點」不可能出現。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="euler-conditions"></div>
+            <figcaption><b>圖 2</b>：頂點下方的數字是度數。(a) 全部偶數度，有 Euler 迴路；(b) 只有 A、C 是奇數度，有 Euler 路徑，必須從 A 走到 C（或反過來）；(c) K4 的四個頂點都是 3 度，一筆畫不完，至少要 4 / 2 = 2 筆。</figcaption>
+          </figure>
+          <p><b>一筆畫要幾筆？</b>如果連通圖有 2k 個奇點（k ≥ 1），最少要 k 筆才能把所有邊畫完：每一筆最多「消化」兩個奇點（當起點和終點）。七橋有 4 個奇點，至少要 2 筆，也就是至少要有一座橋走兩次，或在兩個奇點之間多蓋一座橋。</p>
+          <p><b>有向圖</b>的版本也很常考：有向圖有 Euler 迴路 ⇔ 連通（忽略方向後）且每個頂點的<b>入度 = 出度</b>；有 Euler 路徑 ⇔ 恰有一個頂點出度比入度多 1（起點）、一個頂點入度比出度多 1（終點），其餘入度 = 出度。</p>
+          <details class="code-fold">
+            <summary>看程式碼：判斷有沒有 Euler 迴路／路徑</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="eulerType">
+                <div class="code-head">eulerType()：數奇點</div>
+                <pre class="code">int eulerType(int *start) {
+  int odd = 0;
+  *start = 0;
+  if (!connected()) return 0;
+  for (int v = n - 1; v &gt;= 0; v--)             /* 倒著找，start 會是編號最小的奇點 */
+    if (degree(v) % 2 == 1) { odd++; *start = v; }
+  if (odd == 0) return 2;                      /* 全部偶點：Euler 迴路，從哪裡出發都行 */
+  if (odd == 2) return 1;                      /* 恰好兩個奇點：從其中一個奇點出發 */
+  return 0;                                    /* 奇點有 4 個以上：不存在 */
+}</pre>
+              </div>
+              <div class="code-block" data-tab="degree 與 connected">
+                <div class="code-head">degree() 與 connected()：度數與連通性</div>
+                <pre class="code">#define N 8
+int g[N][N];                                   /* g[u][v]：u、v 之間的邊數（允許重邊） */
+int n;                                         /* 頂點數，編號 0..n-1 */
+
+int degree(int v) {
+  int d = 0;
+  for (int u = 0; u &lt; n; u++) d += g[v][u];
+  return d;
+}
+
+int seen[N];
+void dfs(int v) {
+  seen[v] = 1;
+  for (int u = 0; u &lt; n; u++)
+    if (g[v][u] &amp;&amp; !seen[u]) dfs(u);
+}
+
+int connected(void) {
+  int s = -1;
+  memset(seen, 0, sizeof seen);
+  for (int v = 0; v &lt; n; v++) if (degree(v) &gt; 0) { s = v; break; }
+  if (s == -1) return 1;                       /* 沒有邊：當作連通 */
+  dfs(s);
+  for (int v = 0; v &lt; n; v++)
+    if (degree(v) &gt; 0 &amp;&amp; !seen[v]) return 0;   /* 有邊的頂點沒被走到 */
+  return 1;
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="hierholzer">
+        <h2>找出 Euler 迴路：Hierholzer 演算法</h2>
+        <div class="panel prose">
+          <p>知道「有」之後，怎麼把路線實際找出來？<span class="term">Hierholzer's Algorithm<small>（Hierholzer 演算法）</small></span>把上一節的證明直接變成程式，用一個 Stack 記住「走過來的路」：</p>
+          <ol>
+            <li>把起點放進 stack（有 2 個奇點時，起點一定要選奇點）。</li>
+            <li>看 stack 頂端的頂點 v：如果 v 還有沒走過的邊 v–u，就走過去，把這條邊標成已用，u 放進 stack。</li>
+            <li>如果 v 的邊都用完了（卡住了），就把 v 從 stack pop 出來，放進答案序列。</li>
+            <li>stack 空了就結束，答案序列<b>倒過來</b>就是 Euler 迴路（路徑）。</li>
+          </ol>
+          <p>卡住時退回上一個點，正是「從已走的迴路上找一個還有邊的頂點，繞一個小圈接進去」：退回到 v 之後，如果 v 還有邊，就會從 v 開始走出一個新的小圈，最後這個小圈會被接在答案裡 v 的位置。</p>
+          <h3>例子：蝴蝶結（兩個三角形共用 C）</h3>
+          <p>邊是 AB、AC、BC、CD、CE、DE，度數 A、B、D、E 都是 2，C 是 4，全部偶數，所以有 Euler 迴路。從 A 出發，每次挑字母最小的鄰居：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>動作</th><th>stack（底 → 頂）</th><th>答案（依放入順序）</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>A 走到 B</td><td>A B</td><td></td></tr>
+                <tr><td>2</td><td>B 走到 C</td><td>A B C</td><td></td></tr>
+                <tr><td>3</td><td>C 的鄰居中 A 最小，走到 A</td><td>A B C A</td><td></td></tr>
+                <tr><td>4</td><td>A 的兩條邊都用完，<b>卡住</b>，pop A</td><td>A B C</td><td>A</td></tr>
+                <tr><td>5</td><td>退回 C，C 還有 CD、CE，走到 D</td><td>A B C D</td><td>A</td></tr>
+                <tr><td>6</td><td>D 走到 E</td><td>A B C D E</td><td>A</td></tr>
+                <tr><td>7</td><td>E 走到 C</td><td>A B C D E C</td><td>A</td></tr>
+                <tr><td>8～13</td><td>所有邊都用完，依序 pop C、E、D、C、B、A</td><td>（空）</td><td>A C E D C B A</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>答案倒過來是 <b>A → B → C → D → E → C → A</b>，6 條邊各走一次。第 4 步就是關鍵：一開始的 A–B–C–A 只是一個小圈，退回 C 之後補上右邊的小圈 C–D–E–C，兩個圈在 C 接在一起。</p>
+          <p><b>效能</b>：每條邊只會被「走過去」一次，每個頂點被 push、pop 的次數和邊數同級，所以用相鄰串列實作時是 <code>O(|V| + |E|)</code>。下面的程式為了簡單用相鄰矩陣，每次找鄰居要掃 n 格，是 <code>O(n · |E|)</code>。另一個常見做法 <span class="term">Fleury's Algorithm<small>（Fleury 演算法）</small></span>是「能不走橋就不走橋」，每一步都要檢查某條邊是不是橋，比較慢，約 <code>O(|E|²)</code>，但手算時很直覺。</p>
+          <details class="code-fold">
+            <summary>看程式碼：hierholzer()：用 stack 找 Euler 路徑</summary>
+            <div class="code-block">
+              <div class="code-head">hierholzer()：用 stack 找 Euler 路徑</div>
+              <pre class="code">int adj[N][N];                                 /* 還沒走過的邊（g 的副本） */
+int stack[64], path[64];
+
+int hierholzer(int start) {                    /* 回傳 path 的頂點數 */
+  int top = 0, len = 0;
+  memcpy(adj, g, sizeof g);
+  stack[0] = start;
+  while (top &gt;= 0) {
+    int v = stack[top], u = 0;
+    while (u &lt; n &amp;&amp; adj[v][u] == 0) u++;       /* 找 v 的一條還沒走過的邊 */
+    if (u &lt; n) {                               /* 有：走過去，這條邊用掉 */
+      adj[v][u]--; adj[u][v]--;
+      stack[++top] = u;
+    } else {                                   /* 沒路了：v 放進答案，退回上一個點 */
+      path[len++] = stack[top--];
+    }
+  }
+  return len;                                  /* path 倒過來讀就是 Euler 路徑 */
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="hamilton">
+        <h2>Hamilton 迴路：沒有簡單的判別法</h2>
+        <div class="panel prose">
+          <p>把「每條邊一次」換成「每個頂點一次」，問題就從簡單變成困難。判斷一個圖有沒有 Hamilton 迴路是 <span class="term">NP-complete<small>（NP 完全）</small></span>問題：目前沒有已知的多項式時間演算法，一般只能用回溯法（backtracking）一個一個試，最差要試 (n − 1)! 種排列。所以考試不會要你「判斷任意圖」，而是考下面這些工具。</p>
+          <h3>用來證明「沒有」的必要條件</h3>
+          <ul>
+            <li>有度數為 1 的頂點 ⇒ 沒有 Hamilton 迴路（它只能進不能出）。</li>
+            <li>度數為 2 的頂點，兩條邊<b>都必須</b>出現在 Hamilton 迴路裡。如果某個頂點因此被迫用到 3 條邊，或提早形成一個沒包含全部頂點的小圈，就矛盾。</li>
+            <li>有 <span class="term">Cut Vertex<small>（割點）</small></span>，也就是拿掉它圖就斷開的頂點 ⇒ 沒有 Hamilton 迴路，因為迴路必須兩次經過它才能往返兩邊。</li>
+            <li>二分圖 K<sub>m,n</sub> 的迴路必須左右交替，所以 m ≠ n 時沒有 Hamilton 迴路。</li>
+          </ul>
+          <h3>用來證明「有」的充分條件（n ≥ 3）</h3>
+          <ul>
+            <li><span class="term">Dirac's Theorem<small>（Dirac 定理）</small></span>：每個頂點的度數都 ≥ n / 2，就一定有 Hamilton 迴路。</li>
+            <li><span class="term">Ore's Theorem<small>（Ore 定理）</small></span>：任兩個<b>不相鄰</b>的頂點 u、v 都滿足 deg(u) + deg(v) ≥ n，就一定有。Dirac 是 Ore 的特例。</li>
+          </ul>
+          <p>要特別注意這兩個定理是<b>充分但不必要</b>：不滿足條件不代表沒有。例如 n 個頂點的環 C<sub>n</sub> 每個點只有 2 度，遠小於 n / 2，卻明顯有 Hamilton 迴路。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="euler-vs-hamilton"></div>
+            <figcaption><b>圖 3</b>：兩者互不保證。(a) K4 沿外圈走（綠色）就是 Hamilton 迴路，但 4 個奇點，沒有 Euler 路徑；(b) 蝴蝶結有 Euler 迴路，但 C 是割點，要從左邊到右邊再回來必須經過 C 兩次，所以沒有 Hamilton 迴路。</figcaption>
+          </figure>
+          <details class="code-fold">
+            <summary>看程式碼：hamilton()：回溯法</summary>
+            <div class="code-block">
+              <div class="code-head">hamilton()：回溯法</div>
+              <pre class="code">int cyc[N], used[N];
+
+int hamilton(int k) {                          /* cyc[0..k-1] 已經排好，現在決定第 k 個 */
+  if (k == n) return g[cyc[n - 1]][cyc[0]] &gt; 0;   /* 全部排完，最後一點要能回到起點 */
+  for (int v = 1; v &lt; n; v++)
+    if (!used[v] &amp;&amp; g[cyc[k - 1]][v]) {        /* 沒用過、而且和上一個點相鄰 */
+      used[v] = 1; cyc[k] = v;
+      if (hamilton(k + 1)) return 1;
+      used[v] = 0;                             /* 這條路走不通：退回，試下一個 */
+    }
+  return 0;
+}
+
+int hasHamiltonCircuit(void) {
+  memset(used, 0, sizeof used);
+  cyc[0] = 0; used[0] = 1;                     /* 迴路會經過每個點，固定從 0 出發即可 */
+  return hamilton(1);
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>每個頂點下方會標出度數。按 <b>Euler</b> 會先數奇點判斷，再用 Hierholzer 演算法逐步找出路線，下方兩列是 stack 和答案序列；按 <b>Hamilton</b> 會用回溯法從 A 開始試，走不通的地方會變紅並退回。可以點範例圖（蝴蝶結、六邊形、房子、七橋、K5、K2,3），或自己輸入邊，例如 <code>AB BC CA</code>，同一組字母出現兩次代表兩條重邊。</p>
+        </div>
+        <div class="viz" data-viz="euler-hamilton"></div>
+      </section>
+
+      <section id="special-graphs">
+        <h2>常考的特殊圖</h2>
+        <div class="panel prose">
+          <p>考題最喜歡問「哪些 n 讓某種圖有 Euler／Hamilton 迴路」。用度數判斷 Euler、用結構判斷 Hamilton，整理如下：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>圖</th><th>度數</th><th>Euler 迴路</th><th>Hamilton 迴路</th></tr></thead>
+              <tbody>
+                <tr><td>完全圖 K<sub>n</sub>（n ≥ 3）</td><td>每點 n − 1</td><td>n 為<b>奇數</b></td><td>一定有</td></tr>
+                <tr><td>環 C<sub>n</sub>（n ≥ 3）</td><td>每點 2</td><td>一定有</td><td>一定有（它本身就是）</td></tr>
+                <tr><td>完全二分圖 K<sub>m,n</sub></td><td>左邊 n、右邊 m</td><td>m、n <b>都是偶數</b></td><td>m = n ≥ 2</td></tr>
+                <tr><td>超立方體 Q<sub>n</sub>（n ≥ 2）</td><td>每點 n</td><td>n 為偶數</td><td>一定有（Gray code）</td></tr>
+                <tr><td>輪圖 W<sub>n</sub>（n ≥ 3）</td><td>中心 n、外圈 3</td><td>沒有（外圈都是奇數度）</td><td>一定有</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>K<sub>m,n</sub> 的 Euler <b>路徑</b>（不是迴路）也常考：需要恰好 2 個奇點，只有在「其中一邊恰好 2 個頂點、另一邊是奇數個」（例如 K<sub>2,3</sub>：右邊 3 點都是 2 度、左邊 2 點都是 3 度），或 K<sub>1,1</sub>、K<sub>1,2</sub> 這兩個小圖時成立。</p>
+          <h3>Hamilton 迴路的計數</h3>
+          <p>在 K<sub>n</sub> 中，Hamilton 迴路就是把 n 個點排成一圈。固定起點後剩下 (n − 1)! 種順序，而同一個圈順時針、逆時針走被算了兩次，所以不同的 Hamilton 迴路共有：</p>
+          <pre class="formula">K_n 的 Hamilton 迴路數 = (n − 1)! / 2      例：K_5 有 4! / 2 = 12 個，K_7 有 6! / 2 = 360 個</pre>
+          <p>這也說明了暴力法的困難：只是 n = 15，(14)! / 2 就超過 435 億個。另一個經典結果：n 為奇數時，K<sub>n</sub> 的 n(n − 1) / 2 條邊可以剛好分成 (n − 1) / 2 個<b>邊不重複</b>的 Hamilton 迴路，每個迴路用 n 條邊。</p>
+        </div>
+      </section>
+
+      <section id="applications">
+        <h2>應用與比較</h2>
+        <div class="panel prose">
+          <ul>
+            <li><b>中國郵差問題</b>（Chinese Postman）：每條街至少走一次、總距離最短。有 Euler 迴路時答案就是總邊長；沒有時，要在奇點之間重複走一些邊，把奇點兩兩配成偶數度。</li>
+            <li><b>旅行推銷員問題</b>（TSP）：每個城市拜訪一次、總距離最短，就是在加權完全圖上找最短的 Hamilton 迴路，至今沒有有效率的精確解法。</li>
+            <li><b>Gray code</b>：n 位元的二進位碼排成一圈，相鄰兩個只差一個位元，就是超立方體 Q<sub>n</sub> 的 Hamilton 迴路，用在旋轉編碼器避免讀值跳動。</li>
+            <li><b>DNA 定序、de Bruijn 序列</b>：把短片段組成長序列，可以轉成有向圖上的 Euler 路徑問題，所以能有效率地解。</li>
+          </ul>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較</th><th>Euler</th><th>Hamilton</th></tr></thead>
+              <tbody>
+                <tr><td>要求</td><td>每條邊剛好一次</td><td>每個頂點剛好一次</td></tr>
+                <tr><td>判斷</td><td>連通 + 數奇點，<code>O(|V| + |E|)</code></td><td>NP-complete，只有充分條件與必要條件</td></tr>
+                <tr><td>找出路線</td><td>Hierholzer，<code>O(|V| + |E|)</code></td><td>回溯法，最差 <code>O(n!)</code></td></tr>
+                <tr><td>對應的最佳化問題</td><td>中國郵差問題（有多項式解）</td><td>旅行推銷員問題（NP-hard）</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>判斷有沒有 Euler 迴路／路徑</td><td>很常考</td><td>先確認連通，再數奇數度頂點：0 個 → 迴路、2 個 → 路徑、4 個以上 → 沒有</td><td><a class="q-link" href="#q-dm-0001">例題</a> <a class="q-link" href="#q-dm-0004">例題</a></td></tr>
+                <tr><td>特殊圖的條件</td><td>很常考</td><td>K<sub>n</sub>、K<sub>m,n</sub>、Q<sub>n</sub> 先寫出每個頂點的度數，再套定理；Hamilton 看結構</td><td><a class="q-link" href="#q-dm-0005">例題</a></td></tr>
+                <tr><td>Euler 與 Hamilton 的觀念比較</td><td>常考</td><td>Euler 管邊、Hamilton 管點；兩者互不保證，舉 K4 與蝴蝶結當反例</td><td><a class="q-link" href="#q-dm-0002">例題</a></td></tr>
+                <tr><td>追蹤演算法找出路線</td><td>常考</td><td>Hierholzer：卡住就退回、倒過來讀；Fleury：不走橋</td><td><a class="q-link" href="#q-dm-0003">例題</a></td></tr>
+                <tr><td>Hamilton 迴路計數</td><td>常考</td><td>K<sub>n</sub> 有 (n − 1)! / 2 個；邊不重複的最多 (n − 1) / 2 個（n 奇數）</td><td><a class="q-link" href="#q-dm-0006">例題</a></td></tr>
+                <tr><td>證明</td><td>偶爾</td><td>握手定理、進出成對的論證；Dirac／Ore 的套用</td><td><a class="q-link" href="#q-dm-0007">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 有 2 個奇點就有 Euler 迴路</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只有 Euler 路徑，而且必須從一個奇點出發、在另一個奇點結束；迴路要全部偶數度</span> <a class="q-link" href="#q-dm-0004">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> K<sub>n</sub> 都有 Euler 迴路</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> K<sub>n</sub> 每點 n − 1 度，只有 n 為奇數時才全是偶數度</span> <a class="q-link" href="#q-dm-0001">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 不滿足 Dirac 條件就沒有 Hamilton 迴路</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> Dirac、Ore 是充分條件，不是必要條件；C<sub>n</sub> 每點只有 2 度也有</span> <a class="q-link" href="#q-dm-0002">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 有 Euler 迴路的圖一定也有 Hamilton 迴路</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 兩者互不保證，蝴蝶結有 Euler 迴路但沒有 Hamilton 迴路</span> <a class="q-link" href="#q-dm-0002">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> K<sub>n</sub> 的 Hamilton 迴路有 n! 個</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 起點不同、方向相反都算同一個圈，要除以 n 再除以 2，得到 (n − 1)! / 2</span> <a class="q-link" href="#q-dm-0006">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> K<sub>m,n</sub> 只要 m = n 就有 Euler 迴路</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> m = n 是 Hamilton 的條件；Euler 要 m、n 都是偶數</span> <a class="q-link" href="#q-dm-0005">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="euler-hamilton"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=92b643ac"></script>
+  <script src="../../../assets/js/viz-core.js?v=92b643ac"></script>
+  <script src="../../../assets/js/viz/discrete-math/euler-hamilton.js?v=92b643ac"></script>
+</body>
+</html>

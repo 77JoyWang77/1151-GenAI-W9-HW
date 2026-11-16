@@ -20,7 +20,7 @@
 | Algorithms（演算法） | `algorithms` | 籌備中 |
 | Computer Organization（計算機組織） | `computer-organization` | 籌備中 |
 | Operating Systems（作業系統） | `operating-systems` | 籌備中 |
-| Discrete Mathematics（離散數學） | `discrete-math` | 籌備中 |
+| Discrete Mathematics（離散數學） | `discrete-math` | 進行中（參考書：Rosen《Discrete Mathematics and Its Applications》8th，僅供 AI 查閱；題號前綴 `dm-`） |
 | Linear Algebra（線性代數） | `linear-algebra` | 籌備中 |
 
 不要自行新增或刪除科目；使用者要求時才改。

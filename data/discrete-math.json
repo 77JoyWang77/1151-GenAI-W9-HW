@@ -1,0 +1,435 @@
+{
+  "subject": {
+    "id": "discrete-math",
+    "en": "Discrete Mathematics",
+    "zh": "離散數學"
+  },
+  "textbook": {
+    "title": "Discrete Mathematics and Its Applications",
+    "author": "Kenneth H. Rosen",
+    "edition": "8th, 2019"
+  },
+  "chapters": [
+    {
+      "id": "logic",
+      "no": 1,
+      "en": "Logic and Proofs",
+      "zh": "邏輯與證明",
+      "desc": "命題、述詞、推論規則與證明方法",
+      "topics": [
+        {
+          "id": "propositional-logic",
+          "en": "Propositional Logic",
+          "zh": "命題邏輯",
+          "book": "1.1–1.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "predicate-logic",
+          "en": "Predicates and Quantifiers",
+          "zh": "述詞與量詞",
+          "book": "1.4–1.5",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "rules-of-inference",
+          "en": "Rules of Inference",
+          "zh": "推論規則",
+          "book": "1.6",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "proof-methods",
+          "en": "Proof Methods",
+          "zh": "證明方法",
+          "book": "1.7–1.8",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "sets-functions",
+      "no": 2,
+      "en": "Sets and Functions",
+      "zh": "集合與函數",
+      "desc": "集合運算、函數性質與可數性",
+      "topics": [
+        {
+          "id": "sets",
+          "en": "Sets and Set Operations",
+          "zh": "集合與集合運算",
+          "book": "2.1–2.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "functions",
+          "en": "Functions",
+          "zh": "函數：一對一、映成",
+          "book": "2.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "cardinality",
+          "en": "Cardinality of Sets",
+          "zh": "集合的基數與可數性",
+          "book": "2.5",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "induction",
+      "no": 3,
+      "en": "Induction and Recursion",
+      "zh": "歸納法與遞迴",
+      "desc": "數學歸納法、強歸納法與遞迴定義",
+      "topics": [
+        {
+          "id": "mathematical-induction",
+          "en": "Mathematical Induction",
+          "zh": "數學歸納法",
+          "book": "5.1–5.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "recursive-definitions",
+          "en": "Recursive Definitions",
+          "zh": "遞迴定義與結構歸納法",
+          "book": "5.3",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "counting",
+      "no": 4,
+      "en": "Counting",
+      "zh": "計數",
+      "desc": "加法乘法原理、鴿籠原理、排列組合",
+      "topics": [
+        {
+          "id": "counting-basics",
+          "en": "Basic Counting Principles",
+          "zh": "計數基本原理",
+          "book": "6.1",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "pigeonhole-principle",
+          "en": "Pigeonhole Principle",
+          "zh": "鴿籠原理",
+          "book": "6.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "permutations-combinations",
+          "en": "Permutations and Combinations",
+          "zh": "排列與組合",
+          "book": "6.3, 6.5",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "binomial-coefficients",
+          "en": "Binomial Coefficients",
+          "zh": "二項式係數與恆等式",
+          "book": "6.4",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "advanced-counting",
+      "no": 5,
+      "en": "Advanced Counting",
+      "zh": "進階計數",
+      "desc": "遞迴關係、生成函數、排容原理",
+      "topics": [
+        {
+          "id": "recurrence-relations",
+          "en": "Linear Recurrence Relations",
+          "zh": "線性遞迴關係",
+          "book": "8.1–8.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "divide-and-conquer-recurrences",
+          "en": "Divide-and-Conquer Recurrences",
+          "zh": "分治遞迴式",
+          "book": "8.3",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "generating-functions",
+          "en": "Generating Functions",
+          "zh": "生成函數",
+          "book": "8.4",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "inclusion-exclusion",
+          "en": "Inclusion–Exclusion",
+          "zh": "排容原理",
+          "book": "8.5–8.6",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "relations",
+      "no": 6,
+      "en": "Relations",
+      "zh": "關係",
+      "desc": "關係的性質、閉包、等價關係與偏序",
+      "topics": [
+        {
+          "id": "relation-properties",
+          "en": "Relations and Their Properties",
+          "zh": "關係與其性質",
+          "book": "9.1, 9.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "closures",
+          "en": "Closures and Warshall's Algorithm",
+          "zh": "閉包與 Warshall 演算法",
+          "book": "9.4",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "equivalence-relations",
+          "en": "Equivalence Relations",
+          "zh": "等價關係與分割",
+          "book": "9.5",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "partial-orders",
+          "en": "Partial Orderings",
+          "zh": "偏序與 Hasse 圖",
+          "book": "9.6",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "graphs",
+      "no": 7,
+      "en": "Graphs",
+      "zh": "圖論",
+      "desc": "圖的基本性質、Euler 與 Hamilton、平面圖、著色",
+      "topics": [
+        {
+          "id": "graph-basics",
+          "en": "Graph Terminology",
+          "zh": "圖的基本術語與特殊圖",
+          "book": "10.1–10.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "graph-isomorphism",
+          "en": "Graph Isomorphism",
+          "zh": "圖的表示與同構",
+          "book": "10.3",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "connectivity",
+          "en": "Connectivity",
+          "zh": "連通性",
+          "book": "10.4",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "euler-hamilton",
+          "en": "Euler and Hamilton Paths",
+          "zh": "Euler 與 Hamilton 路徑",
+          "book": "10.5",
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "Euler circuit",
+            "Hamilton circuit",
+            "degree",
+            "Hierholzer"
+          ],
+          "updated": "2026-11-16"
+        },
+        {
+          "id": "planar-graphs",
+          "en": "Planar Graphs",
+          "zh": "平面圖",
+          "book": "10.7",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "graph-coloring",
+          "en": "Graph Coloring",
+          "zh": "圖的著色",
+          "book": "10.8",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "trees",
+      "no": 8,
+      "en": "Trees",
+      "zh": "樹",
+      "desc": "樹的性質與生成樹",
+      "topics": [
+        {
+          "id": "tree-properties",
+          "en": "Properties of Trees",
+          "zh": "樹的性質與 m 元樹",
+          "book": "11.1",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "spanning-trees",
+          "en": "Spanning Trees",
+          "zh": "生成樹",
+          "book": "11.4–11.5",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "number-theory",
+      "no": 9,
+      "en": "Number Theory",
+      "zh": "數論",
+      "desc": "整除、同餘、最大公因數與中國餘數定理",
+      "topics": [
+        {
+          "id": "modular-arithmetic",
+          "en": "Divisibility and Modular Arithmetic",
+          "zh": "整除與同餘",
+          "book": "4.1",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "gcd-euclid",
+          "en": "GCD and Euclidean Algorithm",
+          "zh": "最大公因數與輾轉相除法",
+          "book": "4.3",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "congruences",
+          "en": "Solving Congruences",
+          "zh": "解同餘方程與中國餘數定理",
+          "book": "4.4",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "boolean-algebra",
+      "no": 10,
+      "en": "Boolean Algebra",
+      "zh": "布林代數",
+      "desc": "布林函數、標準式與卡諾圖化簡",
+      "topics": [
+        {
+          "id": "boolean-functions",
+          "en": "Boolean Functions",
+          "zh": "布林函數與標準式",
+          "book": "12.1–12.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "circuit-minimization",
+          "en": "Minimization of Circuits",
+          "zh": "卡諾圖化簡",
+          "book": "12.4",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "probability",
+      "no": 11,
+      "en": "Discrete Probability",
+      "zh": "離散機率",
+      "desc": "機率、條件機率、期望值",
+      "topics": [
+        {
+          "id": "discrete-probability",
+          "en": "Discrete Probability",
+          "zh": "離散機率與 Bayes 定理",
+          "book": "7.1–7.3",
+          "status": "planned",
+          "priority": "low"
+        },
+        {
+          "id": "expected-value",
+          "en": "Expected Value and Variance",
+          "zh": "期望值與變異數",
+          "book": "7.4",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "modeling-computation",
+      "no": 12,
+      "en": "Modeling Computation",
+      "zh": "計算模型",
+      "desc": "文法與有限狀態機",
+      "topics": [
+        {
+          "id": "languages-grammars",
+          "en": "Languages and Grammars",
+          "zh": "語言與文法",
+          "book": "13.1",
+          "status": "planned",
+          "priority": "low"
+        },
+        {
+          "id": "finite-state-machines",
+          "en": "Finite-State Machines",
+          "zh": "有限狀態機",
+          "book": "13.2–13.4",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    }
+  ]
+}
