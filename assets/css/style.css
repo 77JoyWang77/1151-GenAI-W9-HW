@@ -25,16 +25,19 @@
   --s-visited: #14b8a6;  --s-visited-fill: #e3f6f4;
   --s-muted: #cbd2de;    --s-muted-fill: #f3f4f8;
 
-  /* 章節色（新增章節時在這裡加一行 --ch-<chapter-id>） */
-  --ch-analysis: #64748b;
-  --ch-array: #0ea5e9;
-  --ch-stack-queue: #f59e0b;
-  --ch-linked-list: #ec4899;
-  --ch-tree: #10b981;
-  --ch-advanced-tree: #14b8a6;
-  --ch-graph: #6366f1;
-  --ch-sorting: #ef4444;
-  --ch-search-hash: #8b5cf6;
+  /* 章節色：依章節編號 1～12 循環（data-chno），每個科目共用同一組色盤 */
+  --ch-1: #0969da;
+  --ch-2: #0ea5e9;
+  --ch-3: #f59e0b;
+  --ch-4: #ec4899;
+  --ch-5: #10b981;
+  --ch-6: #6366f1;
+  --ch-7: #ef4444;
+  --ch-8: #8b5cf6;
+  --ch-9: #d946ef;
+  --ch-10: #14b8a6;
+  --ch-11: #64748b;
+  --ch-12: #f97316;
 
   --radius: 14px;
   --shadow: 0 1px 2px rgba(20, 24, 40, .04), 0 6px 24px rgba(20, 24, 40, .06);
@@ -61,16 +64,19 @@
 .theme-toggle:hover { color: var(--brand); border-color: var(--brand); }
 .nav-links { align-items: center; }
 
-/* 章節色套用：<body data-chapter="..."> */
-body[data-chapter="analysis"]      { --accent: var(--ch-analysis); }
-body[data-chapter="array"]         { --accent: var(--ch-array); }
-body[data-chapter="stack-queue"]   { --accent: var(--ch-stack-queue); }
-body[data-chapter="linked-list"]   { --accent: var(--ch-linked-list); }
-body[data-chapter="tree"]          { --accent: var(--ch-tree); }
-body[data-chapter="advanced-tree"] { --accent: var(--ch-advanced-tree); }
-body[data-chapter="graph"]         { --accent: var(--ch-graph); }
-body[data-chapter="sorting"]       { --accent: var(--ch-sorting); }
-body[data-chapter="search-hash"]   { --accent: var(--ch-search-hash); }
+/* 章節色套用：<body data-chno="3">；超過 12 章時以 (編號-1) % 12 + 1 取色 */
+body[data-chno="1"] { --accent: var(--ch-1); }
+body[data-chno="2"] { --accent: var(--ch-2); }
+body[data-chno="3"] { --accent: var(--ch-3); }
+body[data-chno="4"] { --accent: var(--ch-4); }
+body[data-chno="5"] { --accent: var(--ch-5); }
+body[data-chno="6"] { --accent: var(--ch-6); }
+body[data-chno="7"] { --accent: var(--ch-7); }
+body[data-chno="8"] { --accent: var(--ch-8); }
+body[data-chno="9"] { --accent: var(--ch-9); }
+body[data-chno="10"] { --accent: var(--ch-10); }
+body[data-chno="11"] { --accent: var(--ch-11); }
+body[data-chno="12"] { --accent: var(--ch-12); }
 
 /* ---------- 基礎 ---------- */
 * { box-sizing: border-box; }
@@ -107,6 +113,18 @@ code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); pa
 .subject-title h2 { margin: 0; font-size: 1.35em; }
 .subject-title span { color: var(--ink-soft); font-size: .9em; }
 
+.subjects { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.subject { --accent: var(--brand); display: block; text-decoration: none; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; position: relative; overflow: hidden; transition: transform .15s, border-color .15s; }
+.subject::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--accent); }
+a.subject:hover { transform: translateY(-2px); border-color: var(--accent); }
+.subject .subj-icon { font-size: 28px; line-height: 1; margin-bottom: 10px; }
+.subject h3 { margin: 0; font-size: 1.15em; }
+.subject .zh { color: var(--accent); font-weight: 600; font-size: .92em; }
+.subject p { color: var(--ink-soft); font-size: .9em; margin: 8px 0 12px; }
+.subject.is-planned { opacity: .62; box-shadow: none; }
+.subject .progress { margin-top: 0; }
+.subject .progress .bar i { background: var(--accent); }
+
 .chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
 .chapter { --accent: var(--brand); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; position: relative; overflow: hidden; }
 .chapter::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--accent); }
@@ -118,6 +136,7 @@ code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); pa
 .chapter li a { text-decoration: none; color: var(--ink); font-weight: 500; }
 .chapter li a:hover { color: var(--accent); }
 .chapter li .planned { color: var(--ink-soft); }
+.chapter li .sec { font-family: var(--mono); font-size: .78em; color: var(--accent); margin-right: 8px; opacity: .8; }
 .badge { font-size: .72em; padding: 1px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid var(--line-strong); color: var(--ink-soft); }
 .badge.done { border-color: var(--s-found); color: var(--s-found); background: var(--s-found-fill); }
 .badge.viz { border-color: var(--accent); color: var(--accent); }

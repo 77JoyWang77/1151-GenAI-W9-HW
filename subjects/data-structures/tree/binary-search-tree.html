@@ -3,26 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Binary Search Tree（二元搜尋樹） · 樹 | DS 考研互動學習站</title>
+  <title>Binary Search Tree（二元搜尋樹） · 資料結構 | 資工考研互動學習站</title>
   <meta name="description" content="左小右大的二元樹，搜尋、插入、刪除都是 O(h)；考研必考刪除的三種情況與樹高退化。">
-  <link rel="stylesheet" href="../../assets/css/style.css">
-  <script src="../../assets/js/theme.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <script src="../../../assets/js/theme.js"></script>
 </head>
-<body data-chapter="tree" data-topic="tree/binary-search-tree" data-root="../../">
+<body data-subject="data-structures" data-chapter="tree" data-chno="5" data-topic="data-structures/tree/binary-search-tree" data-root="../../../">
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="../../index.html"><span class="logo">DS</span>考研互動學習站<small>Data Structures</small></a>
-      <nav class="nav-links"><a href="../../index.html#chapters">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button></nav>
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>Data Structures</small></a>
+      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button></nav>
     </div>
   </header>
 
   <div class="wrap topic-layout">
     <main class="topic">
-      <nav class="breadcrumb"><a href="../../index.html">首頁</a> › Tree（樹） › Binary Search Tree（二元搜尋樹）</nav>
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures（資料結構）</a> › Ch5 Trees（樹） › Binary Search Tree（二元搜尋樹）</nav>
       <div class="topic-head">
         <h1>Binary Search Tree（二元搜尋樹）<small>左子樹都比我小，右子樹都比我大</small></h1>
         <div class="meta">
-          <span class="chip accent">Tree</span>
+          <span class="chip accent">Ch5 Trees</span>
+          <span class="chip">課本 §5.7</span>
           <span class="chip">難度 ★★☆</span>
           <span class="chip">BST</span>
           <span class="chip">insert</span>
@@ -35,14 +36,15 @@
         <div class="panel">
           <p><span class="term">Binary Search Tree<small>（二元搜尋樹，BST）</small></span>是一棵二元樹，且每個節點都滿足：<b>左子樹所有 key &lt; 節點 key &lt; 右子樹所有 key</b>。注意是「整棵子樹」，不只是直接的左右子節點。</p>
           <p>這個性質讓搜尋像二分搜尋：每比較一次就可以丟掉一整棵子樹。所以搜尋、插入、刪除的時間都是 <code>O(h)</code>，h 是 <span class="term">height<small>（樹高）</small></span>。樹平衡時 h ≈ log₂n，但如果按照排序好的順序插入，樹會退化成一條鏈，h = n。</p>
-          <p>最重要的性質：BST 的 <span class="term">Inorder Traversal<small>（中序走訪）</small></span>結果一定是<b>遞增排序</b>的。刪除有兩個子節點的節點時，會用到中序走訪的下一個節點，也就是 <span class="term">Inorder Successor<small>（中序後繼）</small></span>。</p>
-          <div class="callout"><p>💡 刪除記三種情況：<b>沒有小孩</b>直接刪；<b>一個小孩</b>讓小孩頂上來；<b>兩個小孩</b>找右子樹最小值（或左子樹最大值）來替代。</p></div>
+          <p>最重要的性質：BST 的 <span class="term">Inorder Traversal<small>（中序走訪）</small></span>結果一定是<b>遞增排序</b>的。刪除有兩個子節點的節點時，要找一個值來「頂替」它：中序走訪的前一個節點 <span class="term">Inorder Predecessor<small>（中序前驅，左子樹最大）</small></span>，或後一個節點 <span class="term">Inorder Successor<small>（中序後繼，右子樹最小）</small></span>。</p>
+          <div class="callout"><p>💡 刪除記三種情況：<b>沒有小孩</b>直接刪；<b>一個小孩</b>讓小孩頂上來；<b>兩個小孩</b>找左子樹最大值（或右子樹最小值）來替代。</p></div>
+          <div class="callout"><p>📘 <b>課本對照（§5.7.4）</b>：課本說兩種替代者都可以，範例用的是<b>左子樹最大</b>，所以本站動畫和程式碼預設也用左子樹最大。動畫上方可以切換成右子樹最小來比較。</p></div>
         </div>
       </section>
 
       <section id="viz">
         <h2>互動動畫</h2>
-        <p>右側程式碼會依你選的操作切換。試試刪除 <code>30</code>（兩個子節點）、<code>20</code>（葉節點）、<code>60</code>（一個子節點），或按「中序走訪」看看結果是不是排序好的。</p>
+        <p>右側程式碼會依你選的操作切換。試試刪除 <code>30</code>（兩個子節點）、<code>20</code>（葉節點）、<code>60</code>（一個子節點），或按「中序走訪」看看結果是不是排序好的。按「刪除用：左子樹最大」可以切換替代者，比較兩種刪除結果。</p>
         <div class="viz" data-viz="bst"></div>
       </section>
 
@@ -67,7 +69,7 @@
             <tbody>
               <tr><td>Case 1：葉節點 leaf</td><td>直接移除，父節點對應的指標設為 NULL</td></tr>
               <tr><td>Case 2：一個子節點</td><td>讓唯一的子節點接到被刪節點的位置</td></tr>
-              <tr><td>Case 3：兩個子節點</td><td>用中序後繼（右子樹最小）或中序前驅（左子樹最大）的值取代，再刪掉那個節點；後繼最多只有右子節點，所以會變成 Case 1 或 2</td></tr>
+              <tr><td>Case 3：兩個子節點</td><td>用左子樹最大（前驅，課本範例）或右子樹最小（後繼）的值取代，再刪掉那個節點。子樹的最大、最小值所在的節點最多只有一個子節點，所以會變成 Case 1 或 2</td></tr>
             </tbody>
           </table>
         </div>
@@ -100,10 +102,11 @@ Node* delete(Node* root, int x) {
   else {
     if (root->left == NULL)  { Node* r = root->right; free(root); return r; }
     if (root->right == NULL) { Node* l = root->left;  free(root); return l; }
-    Node* s = root->right;           /* 中序後繼：右子樹最小 */
-    while (s->left) s = s->left;
+    Node* s = root->left;            /* 中序前驅：左子樹最大（課本範例） */
+    while (s->right) s = s->right;
     root->key = s->key;
-    root->right = delete(root->right, s->key);
+    root->left = delete(root->left, s->key);
+    /* 改用右子樹最小：s = root->right; 一路往左；最後刪 root->right */
   }
   return root;
 }</pre>
@@ -135,7 +138,7 @@ Node* delete(Node* root, int x) {
           <ul class="pitfalls">
             <li><span class="bad">❌ 只要每個節點「左子 &lt; 自己 &lt; 右子」就是 BST</span> → <span class="ok">✅ 必須是左「整棵子樹」都比較小。例如 10 的左子 5 底下若有右子 15，就不是 BST</span></li>
             <li><span class="bad">❌ BST 的操作都是 O(log n)</span> → <span class="ok">✅ 是 O(h)。沒有平衡機制時，最差是 O(n)</span></li>
-            <li><span class="bad">❌ 中序後繼一定是葉節點</span> → <span class="ok">✅ 它沒有左子節點，但可能有右子節點，刪掉後要把右子節點接上去</span></li>
+            <li><span class="bad">❌ 左子樹最大的節點一定是葉節點</span> → <span class="ok">✅ 它沒有右子節點，但可能有左子節點，刪掉後要把左子節點接上去（右子樹最小則可能有右子節點）</span></li>
             <li><span class="bad">❌ 刪除兩個子節點的節點只有一種正確答案</span> → <span class="ok">✅ 用後繼或前驅都正確，但結果的樹不同，要照題目指定的方式</span></li>
           </ul>
         </div>
@@ -146,7 +149,7 @@ Node* delete(Node* root, int x) {
         <div class="quiz-tools"><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button></div>
         <details class="quiz"><summary>依序插入 50, 30, 70, 20, 40, 60, 80，樹高（以層數計）是多少？</summary><p>3 層。50 是 root，30、70 在第 2 層，20、40、60、80 在第 3 層，是一棵完全平衡的樹。</p></details>
         <details class="quiz"><summary>依序插入 10, 20, 30, 40, 50，搜尋 50 要比較幾次？</summary><p>5 次。排序好的輸入讓樹退化成往右延伸的一條鏈，搜尋就變成線性搜尋。</p></details>
-        <details class="quiz"><summary>上面動畫的初始樹刪除 50（用中序後繼）後，新的 root 是誰？</summary><p>60。50 右子樹（70 那棵）中最小的是 60，用 60 取代 root；60 原本有右子節點 65，刪掉 60 後 65 接到 70 的左邊。</p></details>
+        <details class="quiz"><summary>上面動畫的初始樹刪除 50，用課本的「左子樹最大」，新的 root 是誰？改用右子樹最小呢？</summary><p>用左子樹最大：40。50 的左子樹中最大的是 40，用它取代 root；40 原本有左子節點 35，刪掉 40 後 35 接到 30 的右邊。改用右子樹最小：60，它的右子節點 65 接到 70 的左邊。兩個答案都對，但樹的形狀不同，所以考試要照題目指定的方式。</p></details>
         <details class="quiz"><summary>3 個不同的 key 可以組成幾種不同的 BST？</summary><p>5 種，C(3) = 6! / (4!·3!) = 5。</p></details>
         <details class="quiz"><summary>只看一棵二元樹的 inorder 結果，怎麼判斷它是不是 BST？</summary><p>檢查 inorder 是否嚴格遞增。是就是 BST，否則就不是。這是最簡單也最不容易出錯的判斷方法。</p></details>
       </section>
@@ -159,8 +162,8 @@ Node* delete(Node* root, int x) {
   <footer class="site-footer">
     <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../assets/js/site.js"></script>
-  <script src="../../assets/js/viz-core.js"></script>
-  <script src="../../assets/js/viz/binary-search-tree.js"></script>
+  <script src="../../../assets/js/site.js"></script>
+  <script src="../../../assets/js/viz-core.js"></script>
+  <script src="../../../assets/js/viz/data-structures/binary-search-tree.js"></script>
 </body>
 </html>

@@ -27,7 +27,8 @@
       "  return root;   /* NULL 表示找不到 */",
       "}",
     ],
-    delete: [
+    // 兩個子節點時的替代者：pred = 左子樹最大（課本 §5.7 範例），succ = 右子樹最小
+    deletePred: [
       "Node* delete(Node* root, int x) {",
       "  if (root == NULL) return NULL;   /* 找不到 */",
       "  if (x < root->key) root->left = delete(root->left, x);",
@@ -35,7 +36,23 @@
       "  else {                           /* 找到了 */",
       "    if (root->left == NULL)  return root->right; /* 0 或 1 個子 */",
       "    if (root->right == NULL) return root->left;  /* 1 個子 */",
-      "    Node* s = root->right;         /* 2 個子 */",
+      "    Node* s = root->left;          /* 2 個子：左子樹最大 */",
+      "    while (s->right) s = s->right; /* 中序前驅 */",
+      "    root->key = s->key;",
+      "    root->left = delete(root->left, s->key);",
+      "  }",
+      "  return root;",
+      "}",
+    ],
+    deleteSucc: [
+      "Node* delete(Node* root, int x) {",
+      "  if (root == NULL) return NULL;   /* 找不到 */",
+      "  if (x < root->key) root->left = delete(root->left, x);",
+      "  else if (x > root->key) root->right = delete(root->right, x);",
+      "  else {                           /* 找到了 */",
+      "    if (root->left == NULL)  return root->right; /* 0 或 1 個子 */",
+      "    if (root->right == NULL) return root->left;  /* 1 個子 */",
+      "    Node* s = root->right;         /* 2 個子：右子樹最小 */",
       "    while (s->left) s = s->left;   /* 中序後繼 */",
       "    root->key = s->key;",
       "    root->right = delete(root->right, s->key);",
@@ -58,7 +75,7 @@
     const player = new Player(root, {
       title: "Binary Search Tree（二元搜尋樹）",
       width: W, height: 400, code: CODE.insert,
-      legend: [["compare", "比較中"], ["found", "找到 / 已輸出"], ["new", "新節點"], ["removed", "被刪除"], ["active", "中序後繼"]],
+      legend: [["compare", "比較中"], ["found", "找到 / 已輸出"], ["new", "新節點"], ["removed", "被刪除"], ["active", "替代者（前驅 / 後繼）"]],
     });
 
     // ---------- 模型 ----------
@@ -187,7 +204,7 @@
     }
 
     function doDelete(v) {
-      player.setCode(CODE.delete);
+      player.setCode(usePred ? CODE.deletePred : CODE.deleteSucc);
       const r = new Recorder();
       return walk(v, r, "delete", (id, path, ok) => {
         if (!ok) return;
@@ -204,20 +221,26 @@
           replaceChild(par, id, child); delete T[id];
           r.push(frame(`子樹整個往上提一層，BST 性質不變。刪除 ${v} 完成。`, 13, { states: { [child]: "found" } }));
         } else {
-          r.push(frame(`<b>Case 3</b>：${v} 有兩個子節點，不能直接拿掉。要找<b>中序後繼（inorder successor）</b>：右子樹中最小的節點。`, 8, { states: { [id]: "compare" } }));
-          let s = T[node.r]; const trail = { [s.id]: "active" };
-          r.push(frame(`先往右走一步到 <b>${s.v}</b>。`, 8, { states: Object.assign({ [id]: "compare" }, trail), pointers: [{ id: "s", label: "s", target: s.id, state: "active", dir: "down" }] }));
-          while (s.l) {
-            trail[s.id] = "visited"; s = T[s.l]; trail[s.id] = "active";
-            r.push(frame(`還有左子節點，繼續往左走到 <b>${s.v}</b>。`, 9, { states: Object.assign({ [id]: "compare" }, trail), pointers: [{ id: "s", label: "s", target: s.id, state: "active", dir: "down" }] }));
+          // 課本 §5.7：用左子樹最大（前驅）或右子樹最小（後繼）取代都可以
+          const first = usePred ? "l" : "r", walkDir = usePred ? "r" : "l";
+          const name = usePred ? "中序前驅（inorder predecessor）：左子樹中最大的節點" : "中序後繼（inorder successor）：右子樹中最小的節點";
+          const short = usePred ? "前驅" : "後繼";
+          const sp_ = (sid, st) => [{ id: "s", label: "s", target: sid, state: st, dir: "down" }];
+          r.push(frame(`<b>Case 3</b>：${v} 有兩個子節點，不能直接拿掉。要找<b>${name}</b>。`, 8, { states: { [id]: "compare" } }));
+          let s = T[node[first]]; const trail = { [s.id]: "active" };
+          r.push(frame(`先往${usePred ? "左" : "右"}走一步到 <b>${s.v}</b>。`, 8, { states: Object.assign({ [id]: "compare" }, trail), pointers: sp_(s.id, "active") }));
+          while (s[walkDir]) {
+            trail[s.id] = "visited"; s = T[s[walkDir]]; trail[s.id] = "active";
+            r.push(frame(`還有${usePred ? "右" : "左"}子節點，繼續往${usePred ? "右" : "左"}走到 <b>${s.v}</b>。`, 9, { states: Object.assign({ [id]: "compare" }, trail), pointers: sp_(s.id, "active") }));
           }
-          r.push(frame(`<b>${s.v}</b> 沒有左子節點，它就是中序後繼，也就是比 ${v} 大的數中最小的那個。`, 9, { states: { [id]: "compare", [s.id]: "active" }, pointers: [{ id: "s", label: "s", target: s.id, state: "active", dir: "down" }] }));
+          r.push(frame(`<b>${s.v}</b> 沒有${usePred ? "右" : "左"}子節點，它就是中序${short}，也就是比 ${v} ${usePred ? "小的數中最大" : "大的數中最小"}的那個。`, 9, { states: { [id]: "compare", [s.id]: "active" }, pointers: sp_(s.id, "active") }));
           const sv = s.v;
           node.v = sv;
-          r.push(frame(`把後繼的值 <b>${sv}</b> 複製到原本 ${v} 的位置。現在樹裡暫時有兩個 ${sv}。`, 10, { states: { [id]: "found", [s.id]: "removed" }, pointers: [{ id: "s", label: "s", target: s.id, state: "removed", dir: "down" }] }));
+          r.push(frame(`把${short}的值 <b>${sv}</b> 複製到原本 ${v} 的位置。現在樹裡暫時有兩個 ${sv}。`, 10, { states: { [id]: "found", [s.id]: "removed" }, pointers: sp_(s.id, "removed") }));
           const sp = parentOf(s.id);
-          r.push(frame(`再到右子樹刪掉原本的 ${sv}。它最多只有右子節點，所以一定是 Case 1 或 Case 2。`, 11, { states: { [id]: "found", [s.id]: "removed" }, edgeStates: { [s.id]: "removed" } }));
-          replaceChild(sp, s.id, s.r); delete T[s.id];
+          const keep = s[usePred ? "l" : "r"];
+          r.push(frame(`再到${usePred ? "左" : "右"}子樹刪掉原本的 ${sv}。它最多只有${usePred ? "左" : "右"}子節點，所以一定是 Case 1 或 Case 2。`, 11, { states: { [id]: "found", [s.id]: "removed" }, edgeStates: { [s.id]: "removed" } }));
+          replaceChild(sp, s.id, keep); delete T[s.id];
           r.push(frame(`刪除 ${v} 完成，${sv} 取代了它的位置，中序走訪仍然是遞增的。`, 13, { states: { [id]: "found" } }));
         }
       });
@@ -247,6 +270,15 @@
     ui.button(player, "insert", () => { const v = val(); if (v !== null) player.load(doInsert(v)); });
     ui.button(player, "search", () => { const v = val(); if (v !== null) player.load(doSearch(v)); });
     ui.button(player, "delete", () => { const v = val(); if (v !== null) player.load(doDelete(v)); });
+    let usePred = true; // 預設照課本範例：左子樹最大
+    const modeBtn = ui.button(player, "", () => {
+      usePred = !usePred;
+      modeBtn.textContent = usePred ? "刪除用：左子樹最大" : "刪除用：右子樹最小";
+      player.setCode(usePred ? CODE.deletePred : CODE.deleteSucc);
+      player.load([frame(`兩個子節點的刪除改用<b>${usePred ? "左子樹最大（中序前驅，課本範例）" : "右子樹最小（中序後繼）"}</b>。試試刪除 30 或 50 比較兩種結果。`, null)], { autoplay: false });
+    }, "ghost");
+    modeBtn.textContent = "刪除用：左子樹最大";
+    modeBtn.title = "切換兩個子節點時的替代者：左子樹最大（課本範例）或右子樹最小";
     ui.button(player, "中序走訪", () => player.load(doInorder()), "ghost");
     ui.button(player, "隨機建樹", () => {
       const vals = new Set();

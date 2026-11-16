@@ -1,0 +1,478 @@
+{
+  "subject": {
+    "id": "data-structures",
+    "en": "Data Structures",
+    "zh": "資料結構"
+  },
+  "textbook": {
+    "title": "Fundamentals of Data Structures in C",
+    "author": "Horowitz, Sahni, Anderson-Freed",
+    "edition": "1993"
+  },
+  "chapters": [
+    {
+      "id": "basic-concepts",
+      "en": "Basic Concepts",
+      "zh": "基本概念",
+      "desc": "演算法規格與效能分析",
+      "topics": [
+        {
+          "id": "asymptotic-notation",
+          "en": "Asymptotic Notation",
+          "zh": "漸進符號",
+          "book": "1.4",
+          "status": "planned",
+          "viz": false
+        },
+        {
+          "id": "performance-analysis",
+          "en": "Performance Analysis",
+          "zh": "效能分析",
+          "book": "1.4",
+          "status": "planned",
+          "viz": false
+        }
+      ],
+      "no": 1
+    },
+    {
+      "id": "arrays",
+      "en": "Arrays and Structures",
+      "zh": "陣列與結構",
+      "desc": "多項式、稀疏矩陣、字串",
+      "topics": [
+        {
+          "id": "polynomial",
+          "en": "Polynomial",
+          "zh": "多項式",
+          "book": "2.3",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "sparse-matrix",
+          "en": "Sparse Matrix",
+          "zh": "稀疏矩陣",
+          "book": "2.4",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "array-address",
+          "en": "Multidimensional Array Address",
+          "zh": "多維陣列位址計算",
+          "book": "2.5",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "kmp",
+          "en": "String Pattern Matching (KMP)",
+          "zh": "字串比對",
+          "book": "2.6",
+          "status": "planned",
+          "viz": true
+        }
+      ],
+      "no": 2
+    },
+    {
+      "id": "stack-queue",
+      "en": "Stacks and Queues",
+      "zh": "堆疊與佇列",
+      "desc": "LIFO / FIFO 與運算式求值",
+      "topics": [
+        {
+          "id": "stack",
+          "en": "Stack",
+          "zh": "堆疊",
+          "status": "done",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "LIFO",
+            "infix",
+            "postfix"
+          ],
+          "updated": "2026-11-16",
+          "book": "3.1, 3.4"
+        },
+        {
+          "id": "circular-queue",
+          "en": "Circular Queue",
+          "zh": "環狀佇列",
+          "book": "3.2",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "maze",
+          "en": "A Mazing Problem",
+          "zh": "迷宮問題",
+          "book": "3.3",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "expression-evaluation",
+          "en": "Evaluation of Expressions",
+          "zh": "運算式求值",
+          "book": "3.4",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "multiple-stacks",
+          "en": "Multiple Stacks and Queues",
+          "zh": "多重堆疊與佇列",
+          "book": "3.5",
+          "status": "planned",
+          "viz": true
+        }
+      ],
+      "no": 3
+    },
+    {
+      "id": "lists",
+      "en": "Lists",
+      "zh": "鏈結串列",
+      "desc": "指標操作與各種變形",
+      "topics": [
+        {
+          "id": "singly-linked-list",
+          "en": "Singly Linked List",
+          "zh": "單向鏈結串列",
+          "book": "4.2",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "linked-stack-queue",
+          "en": "Linked Stacks and Queues",
+          "zh": "鏈結堆疊與佇列",
+          "book": "4.3",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "doubly-linked-list",
+          "en": "Doubly Linked List",
+          "zh": "雙向鏈結串列",
+          "book": "4.8",
+          "status": "planned",
+          "viz": true
+        }
+      ],
+      "no": 4
+    },
+    {
+      "id": "tree",
+      "en": "Trees",
+      "zh": "樹",
+      "desc": "二元樹、堆積、搜尋樹、集合",
+      "topics": [
+        {
+          "id": "binary-tree-traversal",
+          "en": "Binary Tree Traversal",
+          "zh": "二元樹走訪",
+          "book": "5.3",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "threaded-binary-tree",
+          "en": "Threaded Binary Tree",
+          "zh": "引線二元樹",
+          "book": "5.5",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "heap",
+          "en": "Heap",
+          "zh": "堆積",
+          "book": "5.6",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "binary-search-tree",
+          "en": "Binary Search Tree",
+          "zh": "二元搜尋樹",
+          "status": "done",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "BST",
+            "insert",
+            "delete"
+          ],
+          "updated": "2026-11-16",
+          "book": "5.7"
+        },
+        {
+          "id": "selection-tree",
+          "en": "Selection Tree",
+          "zh": "選擇樹",
+          "book": "5.8",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "union-find",
+          "en": "Set Representation (Union-Find)",
+          "zh": "集合表示法",
+          "book": "5.10",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "counting-binary-trees",
+          "en": "Counting Binary Trees",
+          "zh": "二元樹計數",
+          "book": "5.11",
+          "status": "planned",
+          "viz": false
+        }
+      ],
+      "no": 5
+    },
+    {
+      "id": "graph",
+      "en": "Graphs",
+      "zh": "圖",
+      "desc": "走訪、生成樹、最短路徑、活動網路",
+      "topics": [
+        {
+          "id": "bfs-dfs",
+          "en": "BFS & DFS",
+          "zh": "廣度與深度優先搜尋",
+          "book": "6.2",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "minimum-spanning-tree",
+          "en": "Minimum Cost Spanning Tree",
+          "zh": "最小成本生成樹",
+          "book": "6.3",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "shortest-path",
+          "en": "Shortest Path",
+          "zh": "最短路徑",
+          "book": "6.4",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "activity-network",
+          "en": "Activity Networks (AOV / AOE)",
+          "zh": "活動網路",
+          "book": "6.5",
+          "status": "planned",
+          "viz": true
+        }
+      ],
+      "no": 6
+    },
+    {
+      "id": "sorting",
+      "en": "Sorting",
+      "zh": "排序",
+      "desc": "內部排序與外部排序",
+      "topics": [
+        {
+          "id": "insertion-sort",
+          "en": "Insertion Sort",
+          "zh": "插入排序",
+          "book": "7.3",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "quick-sort",
+          "en": "Quick Sort",
+          "zh": "快速排序",
+          "book": "7.4",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "merge-sort",
+          "en": "Merge Sort",
+          "zh": "合併排序",
+          "book": "7.6",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "heap-sort",
+          "en": "Heap Sort",
+          "zh": "堆積排序",
+          "book": "7.7",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "radix-sort",
+          "en": "Radix Sort",
+          "zh": "基數排序",
+          "book": "7.8",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "external-sorting",
+          "en": "External Sorting",
+          "zh": "外部排序",
+          "book": "7.11",
+          "status": "planned",
+          "viz": true
+        }
+      ],
+      "no": 7
+    },
+    {
+      "id": "hashing",
+      "en": "Hashing",
+      "zh": "雜湊",
+      "desc": "雜湊函數與碰撞處理",
+      "topics": [
+        {
+          "id": "static-hashing",
+          "en": "Static Hashing",
+          "zh": "靜態雜湊",
+          "book": "8.2",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "dynamic-hashing",
+          "en": "Dynamic Hashing",
+          "zh": "動態雜湊",
+          "book": "8.3",
+          "status": "planned",
+          "viz": true
+        }
+      ],
+      "no": 8
+    },
+    {
+      "id": "heap-structures",
+      "en": "Heap Structures",
+      "zh": "進階堆積",
+      "desc": "雙端與可合併的優先佇列",
+      "topics": [
+        {
+          "id": "min-max-heap",
+          "en": "Min-Max Heap",
+          "zh": "最小最大堆積",
+          "book": "9.1",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "deap",
+          "en": "Deap",
+          "zh": "雙端堆積",
+          "book": "9.2",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "leftist-tree",
+          "en": "Leftist Tree",
+          "zh": "左傾樹",
+          "book": "9.3",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "binomial-heap",
+          "en": "Binomial Heap",
+          "zh": "二項式堆積",
+          "book": "9.4",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "fibonacci-heap",
+          "en": "Fibonacci Heap",
+          "zh": "費氏堆積",
+          "book": "9.5",
+          "status": "planned",
+          "viz": true
+        }
+      ],
+      "no": 9
+    },
+    {
+      "id": "search-structures",
+      "en": "Search Structures",
+      "zh": "搜尋結構",
+      "desc": "平衡樹與多路搜尋樹",
+      "topics": [
+        {
+          "id": "avl-tree",
+          "en": "AVL Tree",
+          "zh": "AVL 樹",
+          "book": "10.2",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "2-3-tree",
+          "en": "2-3 Tree",
+          "zh": "2-3 樹",
+          "book": "10.3",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "2-3-4-tree",
+          "en": "2-3-4 Tree",
+          "zh": "2-3-4 樹",
+          "book": "10.4",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "red-black-tree",
+          "en": "Red-Black Tree",
+          "zh": "紅黑樹",
+          "book": "10.5",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "b-tree",
+          "en": "B-Tree",
+          "zh": "B 樹",
+          "book": "10.6",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "splay-tree",
+          "en": "Splay Tree",
+          "zh": "伸展樹",
+          "book": "10.7",
+          "status": "planned",
+          "viz": true
+        },
+        {
+          "id": "trie",
+          "en": "Trie",
+          "zh": "字典樹",
+          "book": "10.9",
+          "status": "planned",
+          "viz": true
+        }
+      ],
+      "no": 10
+    }
+  ]
+}

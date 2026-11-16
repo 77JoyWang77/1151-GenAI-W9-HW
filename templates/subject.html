@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+  科目首頁模板：複製到 subjects/<subject-id>/index.html，只需取代 {{...}}。
+  章節地圖、進度、課本資訊都由 site.js 讀 data/<subject-id>.json 自動產生。
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{English}}（{{中文}}） | 資工考研互動學習站</title>
+  <meta name="description" content="{{一句話說明這個科目，≤ 70 字}}">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script src="../../assets/js/theme.js"></script>
+</head>
+<body data-subject="{{subject-id}}" data-root="../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>{{English}}</small></a>
+      <nav class="nav-links">
+        <a href="../../index.html#subjects">所有科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav class="breadcrumb"><a href="../../index.html">首頁</a> › {{English}}（{{中文}}）</nav>
+    <section class="hero">
+      <span class="eyebrow">{{中文}} · {{English}}</span>
+      <h1>{{English}}（{{中文}}）</h1>
+      <p id="textbook">{{一句話介紹}}</p>
+      <div id="progress"></div>
+    </section>
+    <div class="chapters" id="chapters"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">所有頁面由 AI 依照 CLAUDE.md 的規則產生與維護</div>
+  </footer>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

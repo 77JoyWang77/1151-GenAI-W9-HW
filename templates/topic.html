@@ -1,33 +1,34 @@
 <!DOCTYPE html>
 <!--
-  主題頁模板：複製到 topics/<chapter-id>/<topic-id>.html 後填寫。
-  規則見 CLAUDE.md 第 4 節。7 個 section 的 id 與順序不可更改。
+  主題頁模板：複製到 subjects/<subject-id>/<chapter-id>/<topic-id>.html 後填寫。
+  規則見 CLAUDE.md 第 5 節。7 個 section 的 id 與順序不可更改。
   所有 {{...}} 都要被取代（scripts/check.py 會檢查）。
 -->
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{English}}（{{中文}}） · {{章節中文}} | DS 考研互動學習站</title>
+  <title>{{English}}（{{中文}}） · {{科目中文}} | 資工考研互動學習站</title>
   <meta name="description" content="{{一句話說明這個主題，≤ 70 字}}">
-  <link rel="stylesheet" href="../../assets/css/style.css">
-  <script src="../../assets/js/theme.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <script src="../../../assets/js/theme.js"></script>
 </head>
-<body data-chapter="{{chapter-id}}" data-topic="{{chapter-id}}/{{topic-id}}" data-root="../../">
+<body data-subject="{{subject-id}}" data-chapter="{{chapter-id}}" data-chno="{{章節編號}}" data-topic="{{subject-id}}/{{chapter-id}}/{{topic-id}}" data-root="../../../">
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="../../index.html"><span class="logo">DS</span>考研互動學習站<small>Data Structures</small></a>
-      <nav class="nav-links"><a href="../../index.html#chapters">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button></nav>
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>{{科目 English}}</small></a>
+      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button></nav>
     </div>
   </header>
 
   <div class="wrap topic-layout">
     <main class="topic">
-      <nav class="breadcrumb"><a href="../../index.html">首頁</a> › {{章節 English（中文）}} › {{English}}（{{中文}}）</nav>
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">{{科目 English（中文）}}</a> › Ch{{章節編號}} {{章節 English（中文）}} › {{English}}（{{中文}}）</nav>
       <div class="topic-head">
         <h1>{{English}}（{{中文}}）<small>{{一句話副標}}</small></h1>
         <div class="meta">
-          <span class="chip accent">{{章節 English}}</span>
+          <span class="chip accent">Ch{{章節編號}} {{章節 English}}</span>
+          <span class="chip">課本 §{{節}}</span>
           <span class="chip">難度 {{★★☆}}</span>
           <span class="chip">{{tag}}</span>
         </div>
@@ -92,8 +93,8 @@
   <footer class="site-footer">
     <div class="wrap">最後更新：{{YYYY-MM-DD}} · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../assets/js/site.js"></script>
-  <script src="../../assets/js/viz-core.js"></script>
-  <script src="../../assets/js/viz/{{topic-id}}.js"></script>
+  <script src="../../../assets/js/site.js"></script>
+  <script src="../../../assets/js/viz-core.js"></script>
+  <script src="../../../assets/js/viz/{{subject-id}}/{{topic-id}}.js"></script>
 </body>
 </html>

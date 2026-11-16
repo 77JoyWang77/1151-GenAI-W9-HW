@@ -1,7 +1,7 @@
 /* =====================================================================
    Stack（堆疊）主題的視覺化
    - stack-ops     : 陣列實作的 push / pop / peek
-   - infix-postfix : 中序轉後序（Infix → Postfix）逐步動畫
+   - infix-postfix : 中序轉後序（Infix → Postfix），採課本 §3.4 的 isp / icp 寫法
    ===================================================================== */
 (function () {
   "use strict";
@@ -129,32 +129,37 @@
   });
 
   // ===================================================================
-  // 2) infix-postfix
+  // 2) infix-postfix — 課本 §3.4：in-stack precedence (isp) / incoming precedence (icp)
   // ===================================================================
   register("infix-postfix", function (root) {
-    const PREC = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2, "^": 3 };
-    const RIGHT = { "^": true };
+    // 課本的表：( ) + - * / % eos；^ 是本站延伸（右結合：isp < icp）
+    const ISP = { "(": 0, "+": 12, "-": 12, "*": 13, "/": 13, "%": 13, "^": 14, eos: 0 };
+    const ICP = { "(": 20, "+": 12, "-": 12, "*": 13, "/": 13, "%": 13, "^": 15, eos: 0 };
+    const ROWS = [["(", "(", "0", "20"], ["+-", "+  -", "12", "12"], ["*/%", "*  /  %", "13", "13"], ["^", "^（延伸）", "14", "15"], ["eos", "eos", "0", "0"]];
+    const rowOf = (t) => (t === "(" ? 0 : "+-".includes(t) ? 1 : "*/%".includes(t) ? 2 : t === "^" ? 3 : 4);
+
     const code = [
-      "for (每個 token t，由左到右) {",
-      "  if (t 是運算元)      輸出 t;",
-      "  else if (t == '(')   push(t);",
-      "  else if (t == ')') {",
-      "    while (top != '(') 輸出 pop();",
-      "    pop();             // 丟掉 '('",
-      "  } else {             // t 是運算子",
-      "    while (!empty && top != '(' &&",
-      "           prec(top) >= prec(t))",
-      "      輸出 pop();      // ^ 右結合時用 >",
-      "    push(t);",
+      "void postfix(void) {",
+      "  stack[0] = eos; top = 0;        /* 堆疊底放 eos */",
+      "  for (token = getToken(); token != eos; token = getToken()) {",
+      "    if (token == operand) printf(\"%c\", symbol);",
+      "    else if (token == rparen) {",
+      "      while (stack[top] != lparen) printToken(pop());",
+      "      pop();                        /* 丟掉 '(' */",
+      "    } else {",
+      "      while (isp[stack[top]] >= icp[token])",
+      "        printToken(pop());",
+      "      push(token);",
+      "    }",
       "  }",
+      "  while ((token = pop()) != eos) printToken(token);",
       "}",
-      "while (!empty) 輸出 pop();",
     ];
 
     const player = new Player(root, {
-      title: "Infix → Postfix（中序轉後序）",
-      width: 680, height: 330, code,
-      legend: [["active", "目前讀入的 token"], ["compare", "比較優先權"], ["new", "剛輸出"], ["removed", "括號被丟棄"]],
+      title: "Infix → Postfix（中序轉後序，isp / icp 版）",
+      width: 680, height: 340, code,
+      legend: [["active", "目前讀入的 token"], ["compare", "比較 isp / icp"], ["new", "剛輸出"], ["removed", "括號被丟棄"], ["muted", "eos（堆疊底）"]],
     });
 
     function tokenize(s) {
@@ -173,97 +178,105 @@
       let depth = 0;
       for (const t of out) { if (t === "(") depth++; if (t === ")") depth--; if (depth < 0) return { error: "括號不對稱" }; }
       if (depth) return { error: "括號不對稱" };
-      if (out.length > 15) return { error: "為了畫得下，請限制在 15 個 token 以內" };
+      if (out.length > 13) return { error: "為了畫得下，請限制在 13 個 token 以內" };
       if (!out.length) return { error: "請輸入運算式" };
       return { tokens: out };
     }
 
     function run(expr) {
       const tk = tokenize(expr);
-      if (tk.error) return [{ caption: `<b>⚠ ${tk.error}</b>`, labels: [{ id: "err", x: 340, y: 160, text: tk.error, cls: "warn" }] }];
+      if (tk.error) return [{ caption: `<b>⚠ ${tk.error}</b>`, labels: [{ id: "err", x: 340, y: 170, text: tk.error, cls: "warn" }] }];
       const toks = tk.tokens.map((t, i) => ({ id: "t" + i, t }));
       const n = toks.length;
-      const inStep = Math.min(42, 600 / n);
+      const inStep = Math.min(40, 440 / n);
       const outLen = toks.filter((x) => x.t !== "(" && x.t !== ")").length;
-      const outStep = Math.min(42, 400 / Math.max(outLen, 1));
+      const outStep = Math.min(40, 420 / Math.max(outLen, 1));
+      const EOS = { id: "eos", t: "eos" };
 
-      const where = {};        // id -> "in" | "stack" | "out" | "gone"
+      const where = {};
       toks.forEach((x) => (where[x.id] = "in"));
-      const stack = [], output = [];
+      const stack = [EOS], output = [];
       const r = new Recorder();
+      const top = () => stack[stack.length - 1];
 
       function frame(caption, line, opt = {}) {
-        const nodes = [];
         const st = opt.states || {};
+        const nodes = [];
         toks.forEach((x, i) => {
-          if (where[x.id] === "in") nodes.push({ id: x.id, label: x.t, shape: "box", x: 40 + i * inStep, y: 62, w: inStep - 6, h: 34, state: st[x.id] || "default" });
+          if (where[x.id] === "in") nodes.push({ id: x.id, label: x.t, shape: "box", x: 30 + i * inStep, y: 62, w: inStep - 6, h: 34, state: st[x.id] || "default" });
         });
-        const sStep = stack.length > 4 ? Math.min(40, 160 / stack.length) : 40;
-        stack.forEach((x, i) => nodes.push({ id: x.id, label: x.t, shape: "box", x: 100, y: 290 - i * sStep, w: 54, h: Math.min(34, sStep - 4), state: st[x.id] || "default" }));
-        output.forEach((x, i) => nodes.push({ id: x.id, label: x.t, shape: "box", x: 240 + i * outStep, y: 290, w: outStep - 6, h: 34, state: st[x.id] || "default" }));
-        (opt.extra || []).forEach((e) => nodes.push(e));
+        const sStep = stack.length > 5 ? 150 / stack.length : 34;
+        stack.forEach((x, i) => nodes.push({ id: x.id, label: x.t, shape: "box", x: 100, y: 296 - i * sStep, w: 56, h: Math.min(30, sStep - 4), state: st[x.id] || (x === EOS ? "muted" : "default") }));
+        output.forEach((x, i) => nodes.push({ id: x.id, label: x.t, shape: "box", x: 230 + i * outStep, y: 296, w: outStep - 6, h: 34, state: st[x.id] || "default" }));
 
+        const hl = new Set(opt.rows || []);
         const labels = [
-          { id: "lin", x: 22, y: 26, text: "INPUT（中序 Infix）", cls: "title", anchor: "start" },
-          { id: "lst", x: 100, y: 130, text: "OPERATOR STACK", cls: "title" },
-          { id: "lout", x: 222, y: 240, text: "OUTPUT（後序 Postfix）", cls: "title", anchor: "start" },
-          { id: "base", x: 100, y: 318, text: "▔▔▔▔▔", cls: "" },
+          { id: "lin", x: 12, y: 26, text: "INPUT（中序 Infix）", cls: "title", anchor: "start" },
+          { id: "lst", x: 100, y: 120, text: "STACK", cls: "title" },
+          { id: "lout", x: 210, y: 252, text: "OUTPUT（後序 Postfix）", cls: "title", anchor: "start" },
+          { id: "th0", x: 540, y: 26, text: "token", cls: "title" },
+          { id: "th1", x: 600, y: 26, text: "isp", cls: "title" },
+          { id: "th2", x: 650, y: 26, text: "icp", cls: "title" },
+          { id: "tnote", x: 595, y: 182, text: "')'：pop 到 '(' 為止", anchor: "middle" },
         ];
-        if (opt.result) labels.push({ id: "res", x: 222, y: 190, text: "結果：" + opt.result, cls: "strong", anchor: "start" });
+        ROWS.forEach((row, k) => {
+          const c = hl.has(k) ? "strong" : "";
+          labels.push({ id: "tr" + k + "a", x: 540, y: 52 + k * 24, text: row[1], cls: c });
+          labels.push({ id: "tr" + k + "b", x: 600, y: 52 + k * 24, text: row[2], cls: c });
+          labels.push({ id: "tr" + k + "c", x: 650, y: 52 + k * 24, text: row[3], cls: c });
+        });
+        if (opt.result) labels.push({ id: "res", x: 210, y: 214, text: "結果：" + opt.result, cls: "strong", anchor: "start" });
         const pointers = [];
-        if (opt.cur) pointers.push({ id: "cur", label: "讀入", target: opt.cur, dir: "up", state: "active" });
-        if (stack.length) pointers.push({ id: "top", label: "top", target: stack[stack.length - 1].id, dir: "right" });
+        if (opt.cur) pointers.push({ id: "cur", label: "token", target: opt.cur, dir: "up", state: "active" });
+        pointers.push({ id: "top", label: "top", target: top().id, dir: "right" });
         r.push({ nodes, labels, pointers, caption, line });
       }
 
-      frame(`把中序式 <code>${esc(tk.tokens.join(" "))}</code> 由左到右逐一讀入。運算元直接輸出，運算子先放進堆疊等待。`, null);
+      frame(`把中序式 <code>${esc(tk.tokens.join(" "))}</code> 由左到右讀入。堆疊底先放 <b>eos</b>（isp = 0），之後就不用特別判斷「堆疊是否為空」。`, 2);
 
       for (const x of toks) {
         const t = x.t;
         if (/^[A-Za-z0-9_]+$/.test(t)) {
-          frame(`讀到運算元 <b>${esc(t)}</b>。`, 1, { cur: x.id, states: { [x.id]: "active" } });
+          frame(`讀到運算元 <b>${esc(t)}</b>。`, 3, { cur: x.id, states: { [x.id]: "active" } });
           where[x.id] = "out"; output.push(x);
-          frame(`運算元 <b>${esc(t)}</b> 直接輸出。`, 2, { states: { [x.id]: "new" } });
-        } else if (t === "(") {
-          frame("讀到 <b>(</b>。", 3, { cur: x.id, states: { [x.id]: "active" } });
-          where[x.id] = "stack"; stack.push(x);
-          frame("左括號直接 push：它像一道牆，括號內的運算子不會越過它被比較。", 3, { states: { [x.id]: "new" } });
+          frame(`運算元直接輸出，順序和原式相同。`, 4, { states: { [x.id]: "new" } });
         } else if (t === ")") {
-          frame("讀到 <b>)</b>：要把堆疊一路 pop 到遇見 <b>(</b> 為止。", 4, { cur: x.id, states: { [x.id]: "active" } });
-          while (stack[stack.length - 1].t !== "(") {
+          frame("讀到 <b>)</b>：把堆疊一路 pop 到遇見 <b>(</b> 為止。", 5, { cur: x.id, states: { [x.id]: "active" } });
+          while (top().t !== "(") {
             const y = stack.pop(); where[y.id] = "out"; output.push(y);
-            frame(`top 是 <b>${esc(y.t)}</b>，不是 (，pop 出來輸出。`, 5, { states: { [y.id]: "new", [x.id]: "active" } });
+            frame(`top 是 <b>${esc(y.t)}</b>，不是 (，pop 出來輸出。`, 6, { states: { [y.id]: "new", [x.id]: "active" } });
           }
-          const lp = stack[stack.length - 1];
-          frame("遇到 <b>(</b>，把它和 ) 一起丟掉——括號不會出現在後序式中。", 6, { states: { [lp.id]: "removed", [x.id]: "removed" } });
+          const lp = top();
+          frame("遇到 <b>(</b>，把它和 ) 一起丟掉——括號不會出現在後序式中。", 7, { states: { [lp.id]: "removed", [x.id]: "removed" } });
           stack.pop(); where[lp.id] = "gone"; where[x.id] = "gone";
-          frame("括號處理完畢。", 6);
+          frame("括號處理完畢。", 7);
         } else {
-          frame(`讀到運算子 <b>${esc(t)}</b>（優先權 ${PREC[t]}）。`, 7, { cur: x.id, states: { [x.id]: "active" } });
-          while (stack.length) {
-            const y = stack[stack.length - 1];
-            if (y.t === "(") {
-              frame(`top 是 <b>(</b>，停止比較。`, [8, 9], { cur: x.id, states: { [x.id]: "active", [y.id]: "compare" } });
+          frame(`讀到 <b>${esc(t)}</b>，icp[${esc(t)}] = ${ICP[t]}。和堆疊頂端的 isp 比較。`, 8, { cur: x.id, states: { [x.id]: "active" }, rows: [rowOf(t)] });
+          for (;;) {
+            const y = top();
+            const a = ISP[y.t], b = ICP[t];
+            const rows = [rowOf(y.t), rowOf(t)];
+            const st = { [x.id]: "active", [y.id]: "compare" };
+            if (a >= b) {
+              frame(`isp[${esc(y.t)}] = ${a} ≥ icp[${esc(t)}] = ${b}：top 的運算子要先算，pop 出來輸出。`, 9, { cur: x.id, states: st, rows });
+              stack.pop(); where[y.id] = "out"; output.push(y);
+              frame(`輸出 <b>${esc(y.t)}</b>。`, 10, { cur: x.id, states: { [x.id]: "active", [y.id]: "new" }, rows });
+            } else {
+              let why = "";
+              if (t === "(") why = "（icp[(] = 20 比誰都大，所以 ( 一定直接 push）";
+              else if (y.t === "(") why = "（isp[(] = 0 比誰都小，所以 ( 在堆疊裡像一道牆）";
+              else if (y.t === "eos") why = "（碰到堆疊底 eos）";
+              else if (t === "^" && y.t === "^") why = "（^ 右結合：isp 14 < icp 15，同級不 pop）";
+              frame(`isp[${esc(y.t)}] = ${a} < icp[${esc(t)}] = ${b}，停止 pop ${why}。`, 9, { cur: x.id, states: st, rows });
               break;
             }
-            const popIt = PREC[y.t] > PREC[t] || (PREC[y.t] === PREC[t] && !RIGHT[t]);
-            const rel = PREC[y.t] > PREC[t] ? "高於" : PREC[y.t] === PREC[t] ? "等於" : "低於";
-            if (!popIt) {
-              const why = PREC[y.t] === PREC[t] ? `（^ 是右結合，同級不 pop）` : "";
-              frame(`top 的 <b>${esc(y.t)}</b> 優先權${rel} <b>${esc(t)}</b>${why}，停止 pop。`, [8, 9], { cur: x.id, states: { [x.id]: "active", [y.id]: "compare" } });
-              break;
-            }
-            frame(`top 的 <b>${esc(y.t)}</b> 優先權${rel} <b>${esc(t)}</b>，要先輸出它。`, [8, 9], { cur: x.id, states: { [x.id]: "active", [y.id]: "compare" } });
-            stack.pop(); where[y.id] = "out"; output.push(y);
-            frame(`pop 出 <b>${esc(y.t)}</b> 並輸出。`, 10, { cur: x.id, states: { [x.id]: "active", [y.id]: "new" } });
           }
-          if (!stack.length) frame("堆疊是空的，不用比較。", [8, 9], { cur: x.id, states: { [x.id]: "active" } });
           where[x.id] = "stack"; stack.push(x);
           frame(`把 <b>${esc(t)}</b> push 進堆疊。`, 11, { states: { [x.id]: "new" } });
         }
       }
-      if (stack.length) frame("輸入讀完了，把堆疊裡剩下的運算子依序 pop 出來。", 14);
-      while (stack.length) {
+      if (stack.length > 1) frame("輸入讀完（token = eos），把堆疊 pop 到 eos 為止。", 14);
+      while (stack.length > 1) {
         const y = stack.pop(); where[y.id] = "out"; output.push(y);
         frame(`pop 出 <b>${esc(y.t)}</b> 並輸出。`, 14, { states: { [y.id]: "new" } });
       }
@@ -273,10 +286,10 @@
       return r.frames;
     }
 
-    const input = ui.input(player, { value: "a+b*(c-d)/e", width: 170, placeholder: "例如 a+b*c" });
+    const input = ui.input(player, { value: "a*(b+c)*d", width: 160, placeholder: "例如 a+b*c" });
     const go = () => player.load(run(input.value));
     ui.button(player, "開始轉換", go);
-    ["A*(B+C)/D", "a-b-c", "2^3^2"].forEach((ex) => ui.button(player, ex, () => { input.value = ex; go(); }, "ghost"));
+    ["a+b*c", "a/b-c+d*e-a*c", "2^3^2"].forEach((ex) => ui.button(player, ex, () => { input.value = ex; go(); }, "ghost"));
     input.addEventListener("keydown", (e) => e.key === "Enter" && go());
     player.load(run(input.value), { autoplay: false });
   });

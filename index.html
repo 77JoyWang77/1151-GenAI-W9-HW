@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DS 考研互動學習站 | Data Structures</title>
-  <meta name="description" content="資工所考研的資料結構互動學習網站：每個主題都有可操作的逐步動畫、複雜度表、考研重點與自我測驗。">
+  <title>資工考研互動學習站 | CS Grad Exam Review</title>
+  <meta name="description" content="資工所考研複習網站：資料結構、演算法、計算機組織、作業系統……每個主題都有可操作的逐步動畫、考研重點與自我測驗。">
   <link rel="stylesheet" href="assets/css/style.css">
   <script src="assets/js/theme.js"></script>
 </head>
-<body>
+<body data-root="">
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="index.html"><span class="logo">DS</span>考研互動學習站<small>Data Structures</small></a>
+      <a class="brand" href="index.html"><span class="logo">CS</span>資工考研互動學習站<small>CS Grad Exam Review</small></a>
       <nav class="nav-links">
-        <a href="#chapters">章節</a>
+        <a href="#subjects">科目</a>
         <a href="https://github.com/77JoyWang77/1151-GenAI-W9-HW">GitHub</a>
         <button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button>
       </nav>
@@ -22,20 +22,16 @@
 
   <main class="wrap">
     <section class="hero">
-      <span class="eyebrow">資工所考研 · 資料結構</span>
-      <h1>用看的、用玩的，<br>把資料結構真正搞懂</h1>
-      <p>每個主題都有可以自己輸入資料的逐步動畫，程式碼會跟著亮起正在執行的那一行。看完動畫，再用考研重點、易錯點和自我測驗把觀念鎖住。</p>
-      <div class="progress">
-        <div class="bar"><i id="progress-bar"></i></div>
-        <div class="txt" id="progress-txt">載入中…</div>
-      </div>
+      <span class="eyebrow">資工所考研 · 一科一科慢慢補齊</span>
+      <h1>用看的、用玩的，<br>把考研科目真正搞懂</h1>
+      <p>每個主題都有可以自己輸入資料的逐步動畫，程式碼會跟著亮起正在執行的那一行。看完動畫，再用考研重點、易錯點和自我測驗把觀念鎖住。章節依照各科指定的課本排列。</p>
     </section>
 
     <div class="subject-title">
-      <h2>Data Structures（資料結構）</h2>
-      <span>依章節排列，持續更新中</span>
+      <h2>科目 Subjects</h2>
+      <span>目前從 Data Structures（資料結構）開始</span>
     </div>
-    <div class="chapters" id="chapters"></div>
+    <div class="subjects" id="subjects"></div>
   </main>
 
   <footer class="site-footer">

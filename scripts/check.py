@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""檢查所有主題頁是否符合 CLAUDE.md 的規則。只用標準函式庫。
+"""檢查所有科目與主題頁是否符合 CLAUDE.md 的規則。只用標準函式庫。
 
 用法：python scripts/check.py
 """
@@ -10,7 +10,6 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-TOPICS = ROOT / "topics"
 SECTIONS = ["intro", "viz", "ops", "code", "exam", "pitfalls", "quiz"]
 SLUG = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
@@ -19,11 +18,11 @@ class Page(HTMLParser):
     def __init__(self):
         super().__init__()
         self.sections, self.body, self.desc, self.scripts = [], {}, None, []
-        self.style_tag = self.inline_style = False
+        self.style_tag = self.inline_style = self.toggle = False
         self.viz = self.exam = self.quiz = self.pitfalls = self.callout = self.terms = 0
 
-    def handle_starttag(self, tag, attrs):
-        a = dict(attrs)
+    def handle_starttag(self, tag, a):
+        a = dict(a)
         cls = (a.get("class") or "").split()
         if "style" in a:
             self.inline_style = True
@@ -35,103 +34,137 @@ class Page(HTMLParser):
             self.desc = a.get("content")
         if tag == "script" and a.get("src"):
             self.scripts.append(a["src"])
+        if "data-theme-toggle" in a:
+            self.toggle = True
         if tag == "section" and a.get("id"):
             self.sections.append(a["id"])
         if tag == "div" and "viz" in cls and a.get("data-viz"):
             self.viz += 1
-        if "exam-q" in cls:
-            self.exam += 1
-        if "callout" in cls:
-            self.callout += 1
-        if "term" in cls:
-            self.terms += 1
+        self.exam += "exam-q" in cls
+        self.callout += "callout" in cls
+        self.terms += "term" in cls
         if tag == "details" and "quiz" in cls:
             self.quiz += 1
         if tag == "li" and self.sections and self.sections[-1] == "pitfalls":
             self.pitfalls += 1
 
 
+def load(path):
+    return json.loads((ROOT / path).read_text(encoding="utf-8"))
+
+
+def check_topic(path, subj, ch, t, errors):
+    key = f"{subj['id']}/{ch['id']}/{t['id']}"
+    err = lambda m: errors.append(f"[{key}] {m}")
+    html = path.read_text(encoding="utf-8")
+    p = Page()
+    p.feed(html)
+    if "{{" in html:
+        err("還有模板佔位符 {{...}} 沒有取代")
+    if p.sections != SECTIONS:
+        err(f"section 應依序為 {SECTIONS}，實際為 {p.sections}")
+    want = {"data-subject": subj["id"], "data-chapter": ch["id"], "data-chno": str(ch["no"]), "data-topic": key, "data-root": "../../../"}
+    for k, v in want.items():
+        if p.body.get(k) != v:
+            err(f'<body {k}> 應為 "{v}"，實際為 "{p.body.get(k)}"')
+    if p.style_tag or p.inline_style:
+        err("主題頁不可使用 <style> 或 inline style")
+    if not p.toggle:
+        err("頁首缺少 data-theme-toggle 切換按鈕")
+    if p.viz < 1:
+        err('至少要有一個 <div class="viz" data-viz=...>')
+    if p.callout < 1:
+        err("核心概念至少要有一個 .callout")
+    if p.terms < 2:
+        err('專有名詞應使用 <span class="term">English<small>（中文）</small></span>')
+    if not 2 <= p.exam <= 4:
+        err(f"考研重點應為 2～4 題，實際 {p.exam}")
+    if not 3 <= p.pitfalls <= 5:
+        err(f"易錯點應為 3～5 點，實際 {p.pitfalls}")
+    if not 3 <= p.quiz <= 6:
+        err(f"自我測驗應為 3～6 題，實際 {p.quiz}")
+    if not p.desc or len(p.desc) > 70:
+        err("<meta description> 必須存在且 ≤ 70 字")
+    js = "../../../assets/js/"
+    expected = [js + "theme.js", js + "site.js", js + "viz-core.js", f"{js}viz/{subj['id']}/{t['id']}.js"]
+    if p.scripts != expected:
+        err(f"script 應依序為 {expected}")
+    if not (ROOT / "assets" / "js" / "viz" / subj["id"] / f"{t['id']}.js").exists():
+        err(f"找不到動畫腳本 assets/js/viz/{subj['id']}/{t['id']}.js")
+    if re.search(r'(href|src)="/', html):
+        err("不可使用 / 開頭的絕對路徑")
+    if f"最後更新：{t.get('updated')}" not in html:
+        err("頁尾「最後更新」與 JSON 的 updated 不一致")
+    if subj_has_textbook(subj) and t.get("book") and f"§{t['book'].split(',')[0].strip()}" not in html:
+        err(f"有指定課本時，頁面要標出課本章節 §{t['book']}")
+    if t.get("difficulty") not in (1, 2, 3):
+        err("difficulty 必須是 1、2、3")
+    if not 2 <= len(t.get("tags", [])) <= 5:
+        err("tags 應為 2～5 個")
+
+
+def subj_has_textbook(subj):
+    return bool(subj.get("textbook"))
+
+
 def main():
     errors = []
-    syl = json.loads((ROOT / "data" / "syllabus.json").read_text(encoding="utf-8"))
     css = (ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
-    topics, ids = {}, set()
-    for ch in syl["chapters"]:
-        if not SLUG.match(ch["id"]):
-            errors.append(f"[syllabus] 章節 id「{ch['id']}」不是 kebab-case")
-        if f"--ch-{ch['id']}:" not in css or f'body[data-chapter="{ch["id"]}"]' not in css:
-            errors.append(f"[css] 章節 {ch['id']} 缺少 --ch-{ch['id']} 或 body[data-chapter] 對應")
-        for t in ch["topics"]:
-            if t["id"] in ids:
-                errors.append(f"[syllabus] topic-id「{t['id']}」重複（必須全站唯一）")
-            ids.add(t["id"])
-            if not SLUG.match(t["id"]):
-                errors.append(f"[syllabus] 主題 id「{t['id']}」不是 kebab-case")
-            topics[f"{ch['id']}/{t['id']}"] = t
-
-    files = sorted(p for p in TOPICS.rglob("*.html") if not p.name.startswith("_"))
-    seen = set()
-    for path in files:
-        tid = path.relative_to(TOPICS).with_suffix("").as_posix()
-        seen.add(tid)
-        err = lambda m: errors.append(f"[{tid}] {m}")
-        meta = topics.get(tid)
-        if not meta:
-            err("沒有登錄在 data/syllabus.json")
+    reg = load("data/subjects.json")
+    total_done = total = 0
+    for s in reg["subjects"]:
+        if not SLUG.match(s["id"]):
+            errors.append(f"[subjects] 科目 id「{s['id']}」不是 kebab-case")
+        if s["status"] != "active":
             continue
-        chapter, topic = tid.split("/")
-        html = path.read_text(encoding="utf-8")
-        p = Page()
-        p.feed(html)
+        if not (ROOT / "data" / f"{s['id']}.json").exists():
+            errors.append(f"[{s['id']}] active 的科目要有 data/{s['id']}.json")
+            continue
+        if not (ROOT / "subjects" / s["id"] / "index.html").exists():
+            errors.append(f"[{s['id']}] 缺少科目首頁 subjects/{s['id']}/index.html")
+        subj = load(f"data/{s['id']}.json")
+        subj["id"] = s["id"]
+        if subj.get("subject", {}).get("id") != s["id"]:
+            errors.append(f"[{s['id']}] JSON 內的 subject.id 不一致")
+        ids = set()
+        for ch in subj["chapters"]:
+            if not SLUG.match(ch["id"]):
+                errors.append(f"[{s['id']}] 章節 id「{ch['id']}」不是 kebab-case")
+            if not isinstance(ch.get("no"), int):
+                errors.append(f"[{s['id']}/{ch['id']}] 章節要有整數 no（決定章節色與順序）")
+            for t in ch["topics"]:
+                total += 1
+                if t["id"] in ids:
+                    errors.append(f"[{s['id']}] topic-id「{t['id']}」在科目內重複")
+                ids.add(t["id"])
+                if not SLUG.match(t["id"]):
+                    errors.append(f"[{s['id']}] 主題 id「{t['id']}」不是 kebab-case")
+                if subj.get("textbook") and not t.get("book"):
+                    errors.append(f"[{s['id']}/{t['id']}] 科目有指定課本，主題要填 book（課本節次）")
+                page = ROOT / "subjects" / s["id"] / ch["id"] / f"{t['id']}.html"
+                if t["status"] == "done":
+                    total_done += 1
+                    if not page.exists():
+                        errors.append(f"[{s['id']}/{ch['id']}/{t['id']}] 標為 done 但找不到頁面")
+                    else:
+                        check_topic(page, subj, ch, t, errors)
+                elif page.exists():
+                    errors.append(f"[{s['id']}/{ch['id']}/{t['id']}] 頁面存在但 status 不是 done")
+        # 沒登錄的頁面
+        for page in (ROOT / "subjects" / s["id"]).glob("*/*.html"):
+            chid, tid = page.parent.name, page.stem
+            if not any(c["id"] == chid and any(t["id"] == tid for t in c["topics"]) for c in subj["chapters"]):
+                errors.append(f"[{s['id']}/{chid}/{tid}] 頁面沒有登錄在 data/{s['id']}.json")
 
-        if "{{" in html:
-            err("還有模板佔位符 {{...}} 沒有取代")
-        if meta.get("status") != "done":
-            err("頁面已存在，但 syllabus.json 的 status 不是 done")
-        if p.sections != SECTIONS:
-            err(f"section 應依序為 {SECTIONS}，實際為 {p.sections}")
-        if p.body.get("data-chapter") != chapter or p.body.get("data-topic") != tid or p.body.get("data-root") != "../../":
-            err("<body> 的 data-chapter / data-topic / data-root 不正確")
-        if p.style_tag or p.inline_style:
-            err("主題頁不可使用 <style> 或 inline style")
-        if p.viz < 1:
-            err("至少要有一個 <div class=\"viz\" data-viz=...>")
-        if p.callout < 1:
-            err("核心概念至少要有一個 .callout")
-        if p.terms < 2:
-            err("專有名詞應使用 <span class=\"term\">English<small>（中文）</small></span> 標示")
-        if not 2 <= p.exam <= 4:
-            err(f"考研重點應為 2～4 題，實際 {p.exam}")
-        if not 3 <= p.pitfalls <= 5:
-            err(f"易錯點應為 3～5 點，實際 {p.pitfalls}")
-        if not 3 <= p.quiz <= 6:
-            err(f"自我測驗應為 3～6 題，實際 {p.quiz}")
-        if not p.desc or len(p.desc) > 70:
-            err("<meta description> 必須存在且 ≤ 70 字")
-        expected = ["../../assets/js/theme.js", "../../assets/js/site.js", "../../assets/js/viz-core.js", f"../../assets/js/viz/{topic}.js"]
-        if p.scripts != expected:
-            err(f"script 載入順序應為 {expected}")
-        if not (ROOT / "assets" / "js" / "viz" / f"{topic}.js").exists():
-            err(f"找不到動畫腳本 assets/js/viz/{topic}.js")
-        if re.search(r'(href|src)="/', html):
-            err("不可使用 / 開頭的絕對路徑")
-        if f"最後更新：{meta.get('updated')}" not in html:
-            err("頁尾「最後更新」與 syllabus.json 的 updated 不一致")
-        if meta.get("difficulty") not in (1, 2, 3):
-            err("difficulty 必須是 1、2、3")
-        if not 2 <= len(meta.get("tags", [])) <= 5:
-            err("tags 應為 2～5 個")
-
-    for tid, t in topics.items():
-        if t.get("status") == "done" and tid not in seen:
-            errors.append(f"[syllabus] {tid} 標為 done 但找不到 topics/{tid}.html")
+    for i in range(1, 13):
+        if f"--ch-{i}:" not in css or f'body[data-chno="{i}"]' not in css:
+            errors.append(f"[css] 缺少章節色 --ch-{i} 或 body[data-chno=\"{i}\"]")
 
     if errors:
         print("\n".join(errors))
         print(f"\n✗ {len(errors)} 個問題")
         sys.exit(1)
-    done = sum(1 for t in topics.values() if t.get("status") == "done")
-    print(f"✓ All checks passed（{done} 個主題完成 / 共規劃 {len(topics)} 個主題、{len(syl['chapters'])} 章）")
+    print(f"✓ All checks passed（{len(reg['subjects'])} 個科目；已完成 {total_done} / 共規劃 {total} 個主題）")
 
 
 if __name__ == "__main__":

@@ -1,36 +1,44 @@
-# DS 考研互動學習站（Data Structures）
+# 資工考研互動學習站（CS Grad Exam Review）
 
-資工所考研的資料結構學習網站。每個主題都有**可以自己輸入資料、逐步播放的動畫**，程式碼會跟著高亮目前執行的那一行。另外搭配複雜度表、考研重點、易錯點和自我測驗。
+資工所考研複習網站，一科一科慢慢補齊，目前從 **Data Structures（資料結構）** 開始。每個主題都有**可以自己輸入資料、逐步播放的動畫**，程式碼會跟著高亮正在執行的那一行；另外搭配複雜度表、考研重點、易錯點和自我測驗。章節依照各科指定的課本排列。
 
 🔗 網站：https://77joywang77.github.io/1151-GenAI-W9-HW/
 
-## 目前內容
+## 科目
 
-| 章節 | 主題 | 互動動畫 |
+| 科目 | 狀態 | 課本 |
 |---|---|---|
-| Stack & Queue（堆疊與佇列） | Stack（堆疊） | push / pop / peek、Infix → Postfix 逐步轉換 |
-| Tree（樹） | Binary Search Tree（二元搜尋樹） | insert / search / delete（三種情況）、中序走訪 |
+| Data Structures（資料結構） | 進行中：10 章、45 個主題，已完成 2 個 | Horowitz《Fundamentals of Data Structures in C》 |
+| Algorithms（演算法） | 籌備中 | |
+| Computer Organization（計算機組織） | 籌備中 | |
+| Operating Systems（作業系統） | 籌備中 | |
+| Discrete Mathematics（離散數學） | 籌備中 | |
+| Linear Algebra（線性代數） | 籌備中 | |
 
-其餘 9 章、十多個主題已規劃在 `data/syllabus.json`，首頁會顯示為「籌備中」。
+### 資料結構已完成的主題
+
+| 主題 | 課本 | 互動動畫 |
+|---|---|---|
+| Stack（堆疊） | §3.1、§3.4 | push / pop / peek；中序轉後序（課本的 isp / icp 寫法） |
+| Binary Search Tree（二元搜尋樹） | §5.7 | insert / search / delete（三種情況，可切換左子樹最大 / 右子樹最小）、中序走訪 |
 
 ## 這個專案的重點：CLAUDE.md
 
 整個網站是 AI 依照 [`CLAUDE.md`](./CLAUDE.md) 的規則做出來的。這份文件規定了：
 
-- 專案目的、讀者、語言格式（專有名詞寫成「English（中文）」）
-- 技術限制：純靜態網頁、不用框架，可以直接部署到 GitHub Pages
-- 資料夾結構與命名、`syllabus.json` 登錄格式
+- 科目 → 章節 → 主題的結構、資料夾與命名、JSON 登錄格式
+- **課本優先**：章節、命名、演算法細節照課本，差異一律用「📘 課本對照」標出
 - 主題頁固定的 7 個段落與各段的內容規則
 - **共用動畫播放器的使用方式**：Frame 格式、狀態色的意義、動畫規則
-- 新增主題的 SOP、使用者提供 PPT 時怎麼處理、禁止事項、完成的定義
+- 新增主題、開始新科目的 SOP，以及禁止事項、完成的定義
 
 新增主題只要對 AI 說：
 
-> 請先讀 CLAUDE.md。幫我完成 Stack & Queue 章的「Circular Queue（環狀佇列）」。
+> 請先讀 CLAUDE.md。幫我完成資料結構 §3.2 的「Circular Queue（環狀佇列）」。
 
 ## 本機預覽
 
 ```bash
 python -m http.server 8000      # 開啟 http://localhost:8000
-python scripts/check.py         # 檢查所有主題是否符合 CLAUDE.md
+python scripts/check.py         # 檢查所有科目與主題是否符合 CLAUDE.md
 ```
