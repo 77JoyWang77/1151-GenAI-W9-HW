@@ -411,7 +411,7 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 }
 
 /* ---------- 首頁 banner ---------- */
-.banner { position: relative; overflow: hidden; margin-top: 28px; border-radius: 18px; padding: 34px 36px; color: var(--banner-ink); border: 1px solid color-mix(in srgb, var(--banner-accent) 18%, transparent);
+.banner { position: relative; overflow: hidden; margin-top: 28px; border-radius: 18px; padding: 34px 36px; color: var(--banner-ink); border: 0;
   background:
     radial-gradient(520px 260px at 92% -10%, color-mix(in srgb, var(--banner-glow) 55%, transparent), transparent 70%),
     radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--banner-ink) 8%, transparent) 1px, transparent 1.5px) 0 0 / 18px 18px,
