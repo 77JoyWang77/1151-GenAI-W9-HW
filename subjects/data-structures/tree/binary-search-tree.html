@@ -295,7 +295,6 @@ Node *newNode(int x) {
       <section id="exam">
         <h2>考研重點：題型地圖</h2>
         <div class="panel prose">
-        <p>這個主題常見的考法、解題步驟，以及可以馬上練習的例題（點「例題」會跳到下方對應的題目）。</p>
           <div class="table-scroll">
           <table class="exam-map">
             <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
@@ -315,7 +314,6 @@ Node *newNode(int x) {
       <section id="pitfalls">
         <h2>易錯點</h2>
         <div class="panel prose">
-        <p>每一點都附了一題專門考這個觀念的例題，可以馬上驗證自己有沒有搞懂。</p>
           <ul class="pitfalls">
             <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 只要每個節點「左子 &lt; 自己 &lt; 右子」就是 BST</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 必須是左「整棵子樹」都比較小。例如 10 的左子 5 底下若有右子 15，就不是 BST</span> <a class="q-link" href="#q-ds-0019">例題</a></li>
             <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> BST 的操作都是 O(log n)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 是 O(h)。沒有平衡機制時，最差是 O(n)</span> <a class="q-link" href="#q-ds-0015">例題</a></li>
@@ -328,7 +326,6 @@ Node *newNode(int x) {
       <section id="practice">
         <h2>練習題與考古題</h2>
         <div class="practice-tools">
-          <p>題目分成基礎、進階、考研級三個難度，最後是考古題。先自己作答，再點開答案與詳解。</p>
           <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
         </div>
         <div class="qbank" data-questions="binary-search-tree"></div>

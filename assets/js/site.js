@@ -135,22 +135,21 @@
       });
       head.appendChild(btn);
     });
-    // 「看程式碼」收合：展開後 summary 直接變成程式碼框的標題列（點一下就收起），
+    // 程式碼收合：summary 本身就是程式碼框的標題列，點它往下展開、再點一次收起；
     // 單一程式碼時把複製按鈕移到這一列，並隱藏重複的 .code-head
     document.querySelectorAll("details.code-fold").forEach((fold) => {
       const sm = fold.querySelector(":scope > summary");
       const raw = sm.textContent.trim();
       const cut = raw.indexOf("：");
       const title = cut >= 0 ? raw.slice(cut + 1) : raw;
-      const verb = h("span", { class: "fold-verb", text: "看程式碼" });
-      sm.replaceChildren(icon("chevron-right", "fold-arrow"), h("span", { class: "fold-label" }, [verb, "：" + title]));
+      sm.replaceChildren(icon("chevron-right", "fold-arrow"), h("span", { class: "fold-label", text: title }));
+      sm.title = "點一下展開／收起程式碼";
       const blocks = fold.querySelectorAll(".code-block");
       if (blocks.length === 1 && !fold.querySelector(".code-tabs")) {
         fold.classList.add("is-single");
         const copy = blocks[0].querySelector(".code-copy");
         if (copy) sm.appendChild(copy);   // 複製按鈕自己會 preventDefault，不會觸發收合
       }
-      fold.addEventListener("toggle", () => (verb.textContent = fold.open ? "收起程式碼" : "看程式碼"));
     });
     document.querySelectorAll(".code-tabs").forEach((tabs) => {
       const blocks = Array.from(tabs.querySelectorAll(":scope > .code-block[data-tab]"));

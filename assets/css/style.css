@@ -361,21 +361,20 @@ figure.fig figcaption b { color: var(--ink); }
 .vptr.s-removed text { fill: var(--s-removed); } .vptr.s-removed path { stroke: var(--s-removed); }
 .vptr.s-compare text { fill: var(--s-compare); } .vptr.s-compare path { stroke: var(--s-compare); }
 
-/* 程式碼預設收合：<details class="code-fold"><summary>看程式碼：…</summary>…</details> */
+/* 程式碼預設收合：summary 就是程式碼框的標題列，點它往下展開 */
 details.code-fold { margin: 10px 0 16px; }
-details.code-fold > summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; font-size: .9em; font-weight: 600; color: var(--accent); padding: 5px 12px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 999px; background: var(--paper); }
+details.code-fold > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; font-size: .88em; font-weight: 600; color: var(--ink-soft); padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--code-bg) 60%, var(--paper)); transition: border-color .15s, color .15s; }
 details.code-fold > summary::-webkit-details-marker { display: none; }
-details.code-fold > summary .fold-arrow { transition: transform .15s; }
+details.code-fold > summary:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); color: var(--ink); }
+details.code-fold > summary .fold-arrow { color: var(--accent); flex-shrink: 0; transition: transform .15s; }
 details.code-fold[open] > summary .fold-arrow { transform: rotate(90deg); }
-details.code-fold > summary:hover { border-color: var(--accent); }
-/* 展開後：summary 變成程式碼框的標題列，點一下收起 */
-details.code-fold[open] > summary { display: flex; width: 100%; border-radius: 10px 10px 0 0; border: 1px solid var(--line); border-bottom: 0; background: color-mix(in srgb, var(--code-bg) 60%, var(--paper)); padding: 7px 12px; margin: 0; }
-details.code-fold[open] > summary .code-copy { margin-left: auto; font-weight: 500; white-space: nowrap; flex-shrink: 0; align-self: flex-start; }
 details.code-fold > summary .fold-label { min-width: 0; }
-details.code-fold[open] > .code-block, details.code-fold[open] > .code-tabs { margin-top: 0; }
-details.code-fold[open] > .code-block { border-radius: 0 0 10px 10px; }
-details.code-fold.is-single .code-head { display: none; }
+details.code-fold[open] > summary { border-radius: 10px 10px 0 0; border-bottom-color: transparent; }
+details.code-fold > summary .code-copy { margin-left: auto; font-weight: 500; white-space: nowrap; flex-shrink: 0; align-self: flex-start; }
 details.code-fold:not([open]) > summary .code-copy { display: none; }
+details.code-fold[open] > .code-block, details.code-fold[open] > .code-tabs { margin-top: 0; }
+details.code-fold[open] > .code-block { border-top-left-radius: 0; border-top-right-radius: 0; }
+details.code-fold.is-single .code-head { display: none; }
 details.code-fold[open] > .code-tabs .tab-bar { padding: 6px 8px 0; border: 1px solid var(--line); border-top: 0; border-bottom: 0; background: color-mix(in srgb, var(--code-bg) 60%, var(--paper)); }
 details.code-fold[open] > .code-tabs .code-block { border-radius: 0 0 10px 10px; }
 a.vop { display: inline-block; text-decoration: none; }
@@ -405,7 +404,7 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 .qempty { color: var(--ink-soft); font-size: .92em; }
 .qfilters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 16px; }
 .qcount { font-size: .85em; color: var(--ink-soft); margin-left: auto; }
-.practice-tools { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.practice-tools { display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap; }
 .q-link { font-size: .85em; margin-left: 6px; white-space: nowrap; }
 .exam-map td:first-child { white-space: nowrap; font-weight: 600; }
 
