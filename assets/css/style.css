@@ -44,18 +44,22 @@
   --accent: var(--brand);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0e1117; --paper: #161a23; --ink: #e8ebf2; --ink-soft: #9aa3b5;
-    --line: #262c3a; --line-strong: #39415a; --code-bg: #1c212c;
-    --brand: #8b85ff; --brand-soft: #1f2040;
-    --s-default: #6b7590; --s-default-fill: #1b202b;
-    --s-active-fill: #3a2c10; --s-compare-fill: #142542; --s-found-fill: #0f3329;
-    --s-new-fill: #2a1f4a; --s-removed-fill: #3d1717; --s-visited-fill: #10332f;
-    --s-muted: #3a4255; --s-muted-fill: #1a1f29;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 24px rgba(0,0,0,.25);
-  }
+/* 深色模式：由 assets/js/theme.js 在 <html> 設定 data-theme="dark"（預設淺色） */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1117; --paper: #161a23; --ink: #e8ebf2; --ink-soft: #9aa3b5;
+  --line: #262c3a; --line-strong: #39415a; --code-bg: #1c212c;
+  --brand: #8b85ff; --brand-soft: #1f2040;
+  --s-default: #6b7590; --s-default-fill: #1b202b;
+  --s-active-fill: #3a2c10; --s-compare-fill: #142542; --s-found-fill: #0f3329;
+  --s-new-fill: #2a1f4a; --s-removed-fill: #3d1717; --s-visited-fill: #10332f;
+  --s-muted: #3a4255; --s-muted-fill: #1a1f29;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 24px rgba(0,0,0,.25);
 }
+
+.theme-toggle { font: inherit; font-size: .85em; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft); cursor: pointer; }
+.theme-toggle:hover { color: var(--brand); border-color: var(--brand); }
+.nav-links { align-items: center; }
 
 /* 章節色套用：<body data-chapter="..."> */
 body[data-chapter="analysis"]      { --accent: var(--ch-analysis); }

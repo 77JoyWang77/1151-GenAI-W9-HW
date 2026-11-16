@@ -58,6 +58,7 @@
 ├── assets/
 │   ├── css/style.css
 │   └── js/
+│       ├── theme.js         ← 亮 / 暗模式切換（放在 <head>，預設淺色）
 │       ├── site.js          ← 首頁渲染、目錄 TOC、上下篇、測驗展開
 │       ├── viz-core.js      ← 共用動畫播放器（不要為了單一主題改它）
 │       └── viz/<topic-id>.js   ← 每個主題自己的動畫腳本
@@ -94,6 +95,7 @@
 - `<meta name="description">`：一句話說明，≤ 70 字。
 - 麵包屑：`首頁 › 章節 English（中文） › 主題 English（中文）`
 - 頁尾「最後更新：YYYY-MM-DD」與 `syllabus.json` 的 `updated` 一致。
+- `<head>` 載入 `theme.js`；頁首右側要有 `<button class="theme-toggle" data-theme-toggle>` 切換按鈕。
 - 結尾依序載入：`site.js` → `viz-core.js` → `viz/<topic-id>.js`。
 
 ---
@@ -205,7 +207,8 @@
 
 - 調性：**乾淨、現代、有質感的教材**。白色卡片、柔和陰影、圓角，每個章節有一個主題色。
 - 顏色**只能**使用 `style.css` 最上方 `:root` 的變數，不在其他地方寫死色碼。
-- 支援深色模式（`prefers-color-scheme: dark`）與手機寬度（≥ 360px），新元件也要用變數，才會自動適用。
+- **預設淺色**，使用者可用頁首按鈕切換深色。做法是 `theme.js` 在 `<html>` 設定 `data-theme="dark"`，深色配色寫在 `:root[data-theme="dark"]`，選擇會存在 localStorage。
+- 新元件一律用 CSS 變數上色，才會自動適用兩種模式；也要支援手機寬度（≥ 360px）。
 - 動畫要平滑、不炫技：顏色代表狀態（第 6.4 節），位置移動代表資料移動。
 
 ---
@@ -253,7 +256,7 @@
 - [ ] 動畫可以自己輸入資料、能逐步播放，程式碼高亮正確
 - [ ] `syllabus.json` 已更新，首頁看得到「完成」與「▶ 互動」標籤
 - [ ] `python scripts/check.py` 通過
-- [ ] 手機寬度與深色模式下都能正常閱讀
+- [ ] 手機寬度，以及淺色、深色兩種模式下都能正常閱讀
 
 ---
 

@@ -108,7 +108,7 @@ def main():
             err(f"自我測驗應為 3～6 題，實際 {p.quiz}")
         if not p.desc or len(p.desc) > 70:
             err("<meta description> 必須存在且 ≤ 70 字")
-        expected = ["../../assets/js/site.js", "../../assets/js/viz-core.js", f"../../assets/js/viz/{topic}.js"]
+        expected = ["../../assets/js/theme.js", "../../assets/js/site.js", "../../assets/js/viz-core.js", f"../../assets/js/viz/{topic}.js"]
         if p.scripts != expected:
             err(f"script 載入順序應為 {expected}")
         if not (ROOT / "assets" / "js" / "viz" / f"{topic}.js").exists():
