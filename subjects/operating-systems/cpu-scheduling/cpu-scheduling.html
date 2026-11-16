@@ -37,7 +37,7 @@
       <section id="why-scheduling">
         <h2>為什麼需要 CPU 排程</h2>
         <div class="panel prose">
-          <p>一個程式執行時，通常是「算一下 → 等 I/O → 再算一下 → 再等 I/O」交替進行，前者叫 <span class="term">CPU Burst<small>（CPU 爆發期）</span>，後者叫 I/O burst。如果 CPU 只服務一個程式，它在等硬碟、等網路、等使用者輸入的時候，CPU 就只能空轉。<span class="term">Multiprogramming<small>（多工）</small></span>的做法是讓記憶體裡同時放好幾個行程，一個去等 I/O，就把 CPU 交給另一個，讓 CPU 盡量一直有事做。</p>
+          <p>一個程式執行時，通常是「算一下 → 等 I/O → 再算一下 → 再等 I/O」交替進行，前者叫 <span class="term">CPU Burst<small>（CPU 爆發期）</small></span>，後者叫 I/O burst。如果 CPU 只服務一個程式，它在等硬碟、等網路、等使用者輸入的時候，CPU 就只能空轉。<span class="term">Multiprogramming<small>（多工）</small></span>的做法是讓記憶體裡同時放好幾個行程，一個去等 I/O，就把 CPU 交給另一個，讓 CPU 盡量一直有事做。</p>
           <p>這時就需要決定：好幾個行程都準備好了，<b>下一個要給誰用 CPU</b>？這就是 <span class="term">CPU Scheduler<small>（CPU 排程器）</small></span>的工作。排程器從 ready queue 中挑一個行程，再由 <span class="term">Dispatcher<small>（分派器）</small></span>負責切換：存下舊行程的狀態、載入新行程的狀態、跳到使用者模式開始執行。切換所花的時間叫 dispatch latency，這段時間 CPU 沒在做有用的工作，所以切換太頻繁也不好。</p>
           <figure class="fig">
             <div class="fig-draw" data-fig="sched-states"></div>

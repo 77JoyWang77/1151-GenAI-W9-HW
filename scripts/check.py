@@ -165,6 +165,10 @@ def check_topic(path, subj, ch, t, errors):
     p.feed(html)
     if "{{" in html:
         err("還有模板佔位符 {{...}} 沒有取代")
+    for tag in ("small", "b", "span", "code", "a", "p", "div", "section", "table", "details", "figure", "ul", "li"):
+        o = len(re.findall(rf"<{tag}[\s>]", html)); c = html.count(f"</{tag}>")
+        if o != c:
+            err(f"<{tag}> 沒有成對：開 {o} 個、關 {c} 個（沒關的標籤會讓後面整段字變小或跑版）")
     want = {"data-subject": subj["id"], "data-chapter": ch["id"], "data-chno": str(ch["no"]), "data-topic": key, "data-root": "../../../"}
     for k, v in want.items():
         if p.body.get(k) != v:

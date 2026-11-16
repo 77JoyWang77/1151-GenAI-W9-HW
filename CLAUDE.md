@@ -206,6 +206,7 @@
 - 頁尾「最後更新：YYYY-MM-DD」與 JSON 的 `updated` 一致。
 - 難度寫成 `<span class="chip" data-difficulty="1～3">難度</span>`，星星由 `site.js` 畫。
 - **全站頁首統一**：每一頁的 `<header class="site-header">` 都**一模一樣**（只有相對路徑不同）。頁首只放每一頁都適用的東西：logo＋站名、「科目」、亮暗切換。屬於某個科目的連結（科目首頁、題庫）不放頁首，改由頁面內的麵包屑、題庫卡片、「到題庫篩選」提供。頁首也不標示目前所在頁，外觀在每一頁都完全相同。頁首由 `scripts/header.py` 產生，不要手改；要調整時改 `header.py` 再執行 `python scripts/header.py` 更新全部頁面（`check.py` 會比對）。
+- HTML 標籤要成對，特別是專有名詞的 `<small>`：少寫一個 `</small>`，後面整段字都會變小（`check.py` 會檢查）。
 - `<head>` 載入 `theme.js`。
 - 結尾載入 `site.js`，再依序載入 `viz-core.js` → `viz/<subject-id>/<topic-id>.js`（圖和動畫都寫在這個腳本裡）。
 
