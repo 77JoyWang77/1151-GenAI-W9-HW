@@ -11,12 +11,12 @@
 
 - **讀者**：準備研究所考試的資工系學生（包含作者本人）。
 - **核心理念**：抽象的東西要「看得到」才好懂。每個主題都要有**可以自己輸入資料、逐步播放的動畫**，再搭配考研重點與自我測驗。
-- **組織方式**：科目（subject）→ 章節（chapter）→ 主題（topic）。章節依照該科指定的**課本**排列。
+- **組織方式**：科目（subject）→ 章節（chapter）→ 主題（topic）。每個主題頁的內容獨立完整，不依賴任何課本。
 - **科目清單**（`data/subjects.json`）：
 
 | 科目 | subject-id | 狀態 |
 |---|---|---|
-| Data Structures（資料結構） | `data-structures` | 進行中，課本：Horowitz《Fundamentals of Data Structures in C》 |
+| Data Structures（資料結構） | `data-structures` | 進行中（參考書：Horowitz《Fundamentals of Data Structures in C》，僅供 AI 查閱） |
 | Algorithms（演算法） | `algorithms` | 籌備中 |
 | Computer Organization（計算機組織） | `computer-organization` | 籌備中 |
 | Operating Systems（作業系統） | `operating-systems` | 籌備中 |
@@ -27,14 +27,13 @@
 
 ---
 
-## 2. 教材依據（課本優先）
+## 2. 參考書（只給 AI 查閱）
 
-- 每個科目可以在 `data/<subject-id>.json` 的 `textbook` 指定課本；**有課本時，章節順序、名詞、演算法細節都以課本為準**。
-- 每個主題都要填 `book`（課本節次，例如 `"5.7"`），主題頁的 meta 列要顯示「課本 §5.7」。
-- 課本有多種做法時，**預設照課本範例**，動畫可提供切換（例如 BST 刪除：課本範例用左子樹最大，可切換右子樹最小）。
-- 本站寫法和課本不同時（例如函式命名、延伸內容），用 `.callout` 開頭寫「📘 課本對照（§x.y）」說明差異；課本沒有的延伸內容要標「本站延伸」。
-- **不可大段照抄課本原文、圖或習題**，一律用自己的話重新整理；程式碼可以照課本的演算法結構重寫。
-- 使用者給上課 PPT 或其他教材時，以使用者指定的為準，並同步更新 JSON 的 `textbook` 與相關 callout。
+- 每個科目可以在 `data/<subject-id>.json` 的 `textbook` 記錄參考書，主題的 `book` 記錄對應節次（例如 `"5.7"`）。**這些資訊只給 AI 撰寫時查閱，不顯示在網站上。**
+- **頁面內容要能獨立閱讀**：網站上不寫「照課本」「課本 §」「課本對照」「課本範例」「參考書」這類字眼（`check.py` 會檢查）。
+- 章節順序可以參考參考書；演算法有多種做法時，選**考研最常見的做法**當預設，動畫提供切換（例如 BST 刪除預設用左子樹最大，可切換右子樹最小）。
+- **不可照抄參考書原文、圖或習題**，一律用自己的話重新整理；程式碼自己寫。
+- 使用者給上課 PPT 或其他教材時，一樣當作參考，用來調整內容的正確性與重點。
 
 ---
 
@@ -74,7 +73,7 @@
 ├── index.html                    ← 全站首頁：讀 data/subjects.json 畫出科目卡片與進度
 ├── data/
 │   ├── subjects.json             ← 科目登錄表
-│   └── <subject-id>.json         ← 該科的課本、章節、主題登錄表
+│   └── <subject-id>.json         ← 該科的參考書、章節、主題登錄表
 ├── subjects/
 │   └── <subject-id>/
 │       ├── index.html            ← 科目首頁（從 templates/subject.html 複製）
@@ -106,10 +105,10 @@
 
 | # | section id | 標題 | 內容規則 |
 |---|---|---|---|
-| 1 | `intro` | 核心概念 | 2～4 段說明，至少一個 `.callout` 放「一句話記憶法」；有課本差異時再加「📘 課本對照」callout。 |
+| 1 | `intro` | 核心概念 | 2～4 段說明，至少一個 `.callout` 放「一句話記憶法」。 |
 | 2 | `viz` | 互動動畫 | 至少一個 `<div class="viz" data-viz="...">`。使用者必須能**自己輸入資料**操作。 |
 | 3 | `ops` | 操作與複雜度 | 表格：操作 / 做法 / 時間複雜度（需要時分平均與最差）。 |
-| 4 | `code` | 程式碼 | `<pre class="code">` 放 C 實作，**要和動畫右側的程式碼、課本預設做法一致**。`< > &` 要跳脫。 |
+| 4 | `code` | 程式碼 | `<pre class="code">` 放 C 實作，**要和動畫右側的程式碼（預設做法）一致**。`< > &` 要跳脫。 |
 | 5 | `exam` | 考研重點 | 2～4 題 `.exam-q`，用 `<span class="qtype">` 標題型（追蹤／計算／判斷／比較／證明／實作），並寫「解題方向」。 |
 | 6 | `pitfalls` | 易錯點 | 3～5 點，格式：`❌ 錯誤想法 → ✅ 正確觀念`。 |
 | 7 | `quiz` | 自我測驗 | 3～6 題 `<details class="quiz">`，答案要附**理由**。 |
@@ -120,7 +119,7 @@
 - `<title>`：`English（中文） · 科目中文 | 資工考研互動學習站`
 - `<meta name="description">`：一句話說明，≤ 70 字。
 - 麵包屑：`首頁 › 科目 English（中文） › Ch<編號> 章節 English（中文） › 主題 English（中文）`
-- meta 列：`Ch<編號> 章節 English`、`課本 §x.y`、難度、tags。
+- meta 列：`Ch<編號> 章節 English`、難度、tags。
 - 頁尾「最後更新：YYYY-MM-DD」與 JSON 的 `updated` 一致。
 - `<head>` 載入 `theme.js`；頁首要有 `<button class="theme-toggle" data-theme-toggle>`。
 - 結尾依序載入：`site.js` → `viz-core.js` → `viz/<subject-id>/<topic-id>.js`。
@@ -160,9 +159,9 @@
 }
 ```
 
-- `no`：章節編號（有課本時 = 課本章號），也決定章節色：`--ch-<(no-1) % 12 + 1>`。
+- `no`：章節編號（可對應參考書章號），也決定章節色：`--ch-<(no-1) % 12 + 1>`。
 - `status`：`"done"`（有頁面）或 `"planned"`（籌備中，灰色顯示）。
-- `done` 的主題必須有 `difficulty`（1～3）、`tags`（2～5 個）、`updated`；有課本時必須有 `book`。
+- `done` 的主題必須有 `difficulty`（1～3）、`tags`（2～5 個）、`updated`；有參考書時要填 `book`（只給 AI 查閱，不顯示）。
 - 章節與主題的順序 = 學習順序，也決定頁面底部「上一個／下一個主題」。
 
 ---
@@ -237,13 +236,13 @@
 
 ### 8.5 動畫規則
 
-1. **使用者可以自己輸入**資料，並提供課本經典例子的快捷按鈕；輸入要驗證，錯誤時給中文提示。
+1. **使用者可以自己輸入**資料，並提供經典例子的快捷按鈕；輸入要驗證，錯誤時給中文提示。
 2. 每個 frame 的 `caption` 都要說明「**為什麼**」，例：✅「isp[*] = 13 ≥ icp[+] = 12，先 pop」 ❌「pop」。
 3. 每個 frame 都要標 `line`，讓程式碼和動畫同步（初始或總結畫面可以是 `null`）。
 4. 一次操作約 3～40 步；畫面放不下時要提前擋住並說明（例如限制樹高、token 數）。
 5. 使用者輸入的文字放進 caption 前要用 `esc()` 跳脫。
 6. 初始畫面要先載入**一段示範操作**，用 `{ autoplay: false }`，讓使用者一按 ▶ 就能播放；只有 1 步時按 ▶ 會出現提示（Player 內建）。
-7. 演算法有多種做法時，**預設照課本**，用 `ui.button` 做切換（見 BST 的「刪除用：左子樹最大」）。
+7. 演算法有多種做法時，**預設用考研最常見的做法**，用 `ui.button` 做切換（見 BST 的「刪除用：左子樹最大」）。
 8. 需要新的視覺元素時，**優先用既有的 nodes / edges / pointers / labels 組合**；真的不夠時，先向使用者說明要怎麼擴充 `viz-core.js`，同意後再改，並確認其他主題的動畫都還正常。
 
 ---
@@ -263,19 +262,19 @@
 
 ### 新增一個主題（最常見）
 
-1. 在 `data/<subject-id>.json` 找到主題（通常已是 `planned`），**先翻課本對應節次**確認做法與命名。
+1. 在 `data/<subject-id>.json` 找到主題（通常已是 `planned`），可以先查參考書對應節次確認觀念，但頁面內容要自己寫、獨立完整。
 2. 複製 `templates/topic.html` → `subjects/<subject-id>/<chapter-id>/<topic-id>.html`。
 3. 寫 `assets/js/viz/<subject-id>/<topic-id>.js`（第 8 節），先讓動畫能跑。
-4. 填 7 個 section（第 6 節），程式碼和動畫一致，課本差異寫進「📘 課本對照」。
+4. 填 7 個 section（第 6 節），程式碼和動畫一致，不提到參考書。
 5. JSON 中把 `status` 改成 `"done"`，補上 `difficulty`、`tags`、`updated`。
 6. 執行 `python scripts/check.py`，必須顯示 `All checks passed`。
 7. 本機預覽：`python -m http.server 8000` → `http://localhost:8000`（直接雙擊 html 會讀不到 json）。
-8. 實際操作動畫：正常輸入、課本範例、邊界情況（空、滿、重複、找不到）、非法輸入；亮暗兩種模式都看一次。
-9. 回報：新增或修改了哪些檔案、動畫支援哪些操作、和課本的差異、哪些地方標了「（待確認）」。
+8. 實際操作動畫：正常輸入、經典例子、邊界情況（空、滿、重複、找不到）、非法輸入；亮暗兩種模式都看一次。
+9. 回報：新增或修改了哪些檔案、動畫支援哪些操作、預設採用哪種做法、哪些地方標了「（待確認）」。
 
 ### 開始一個新科目
 
-1. 先和使用者確認課本（或教材），再在 `data/<subject-id>.json` 依課本列出章節與主題（全部 `planned`）。
+1. 先問使用者有沒有參考書或教材，再在 `data/<subject-id>.json` 規劃章節與主題（全部 `planned`）。
 2. `data/subjects.json` 中把該科 `status` 改成 `"active"`。
 3. 複製 `templates/subject.html` → `subjects/<subject-id>/index.html`，取代 `{{...}}`。
 4. 完成第一個主題後再 push。
@@ -292,15 +291,16 @@
 - ❌ 引入任何外部套件、框架、CDN。
 - ❌ 在 HTML 頁面寫 `<style>` 或 inline style。
 - ❌ 只有說明文字、沒有互動動畫的主題，不可標成 `done`。
-- ❌ 照抄課本原文或圖；編造考古題出處、年份或學校。
+- ❌ 在頁面上提到課本、參考書或 § 節次。
+- ❌ 照抄參考書原文或圖；編造考古題出處、年份或學校。
 
 ---
 
 ## 11. 完成的定義（Definition of Done）
 
 - [ ] 檔案位置與命名符合第 5 節
-- [ ] 7 個 section 齊全、順序正確，有課本時標出 §節次
-- [ ] 動畫可以自己輸入資料、有示範、能逐步播放，程式碼高亮正確，預設做法與課本一致
+- [ ] 7 個 section 齊全、順序正確，內容獨立、不提到參考書
+- [ ] 動畫可以自己輸入資料、有示範、能逐步播放，程式碼高亮正確
 - [ ] JSON 已更新，科目首頁看得到「完成」與「▶ 互動」標籤，全站首頁進度有變化
 - [ ] `python scripts/check.py` 通過
 - [ ] 手機寬度，以及淺色、深色兩種模式下都能正常閱讀
@@ -309,8 +309,8 @@
 
 ## 12. 給使用者的指令範例
 
-> 請先讀 CLAUDE.md。幫我完成資料結構 §3.2 的「Circular Queue（環狀佇列）」，動畫要畫成一個環，看得到 front 和 rear 怎麼移動。
+> 請先讀 CLAUDE.md。幫我完成資料結構的「Circular Queue（環狀佇列）」，動畫要畫成一個環，看得到 front 和 rear 怎麼移動。
 
-> 請先讀 CLAUDE.md。照課本 §5.6 做「Heap（堆積）」，動畫要有 insert 和 delete-max。
+> 請先讀 CLAUDE.md。幫我做 Trees 章的「Heap（堆積）」，動畫要有 insert 和 delete-max。
 
-> 請先讀 CLAUDE.md。開始「Operating Systems（作業系統）」這科，課本是恐龍書，先依課本規劃章節，再完成 CPU Scheduling。
+> 請先讀 CLAUDE.md。開始「Operating Systems（作業系統）」這科，參考書是恐龍書，先規劃章節，再完成 CPU Scheduling。

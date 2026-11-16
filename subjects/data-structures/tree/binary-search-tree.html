@@ -23,7 +23,6 @@
         <h1>Binary Search Tree（二元搜尋樹）<small>左子樹都比我小，右子樹都比我大</small></h1>
         <div class="meta">
           <span class="chip accent">Ch5 Trees</span>
-          <span class="chip">課本 §5.7</span>
           <span class="chip">難度 ★★☆</span>
           <span class="chip">BST</span>
           <span class="chip">insert</span>
@@ -38,7 +37,6 @@
           <p>這個性質讓搜尋像二分搜尋：每比較一次就可以丟掉一整棵子樹。所以搜尋、插入、刪除的時間都是 <code>O(h)</code>，h 是 <span class="term">height<small>（樹高）</small></span>。樹平衡時 h ≈ log₂n，但如果按照排序好的順序插入，樹會退化成一條鏈，h = n。</p>
           <p>最重要的性質：BST 的 <span class="term">Inorder Traversal<small>（中序走訪）</small></span>結果一定是<b>遞增排序</b>的。刪除有兩個子節點的節點時，要找一個值來「頂替」它：中序走訪的前一個節點 <span class="term">Inorder Predecessor<small>（中序前驅，左子樹最大）</small></span>，或後一個節點 <span class="term">Inorder Successor<small>（中序後繼，右子樹最小）</small></span>。</p>
           <div class="callout"><p>💡 刪除記三種情況：<b>沒有小孩</b>直接刪；<b>一個小孩</b>讓小孩頂上來；<b>兩個小孩</b>找左子樹最大值（或右子樹最小值）來替代。</p></div>
-          <div class="callout"><p>📘 <b>課本對照（§5.7.4）</b>：課本說兩種替代者都可以，範例用的是<b>左子樹最大</b>，所以本站動畫和程式碼預設也用左子樹最大。動畫上方可以切換成右子樹最小來比較。</p></div>
         </div>
       </section>
 
@@ -69,7 +67,7 @@
             <tbody>
               <tr><td>Case 1：葉節點 leaf</td><td>直接移除，父節點對應的指標設為 NULL</td></tr>
               <tr><td>Case 2：一個子節點</td><td>讓唯一的子節點接到被刪節點的位置</td></tr>
-              <tr><td>Case 3：兩個子節點</td><td>用左子樹最大（前驅，課本範例）或右子樹最小（後繼）的值取代，再刪掉那個節點。子樹的最大、最小值所在的節點最多只有一個子節點，所以會變成 Case 1 或 2</td></tr>
+              <tr><td>Case 3：兩個子節點</td><td>用左子樹最大（前驅）或右子樹最小（後繼）的值取代，再刪掉那個節點。子樹的最大、最小值所在的節點最多只有一個子節點，所以會變成 Case 1 或 2</td></tr>
             </tbody>
           </table>
         </div>
@@ -102,7 +100,7 @@ Node* delete(Node* root, int x) {
   else {
     if (root->left == NULL)  { Node* r = root->right; free(root); return r; }
     if (root->right == NULL) { Node* l = root->left;  free(root); return l; }
-    Node* s = root->left;            /* 中序前驅：左子樹最大（課本範例） */
+    Node* s = root->left;            /* 中序前驅：左子樹最大 */
     while (s->right) s = s->right;
     root->key = s->key;
     root->left = delete(root->left, s->key);
@@ -149,7 +147,7 @@ Node* delete(Node* root, int x) {
         <div class="quiz-tools"><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button></div>
         <details class="quiz"><summary>依序插入 50, 30, 70, 20, 40, 60, 80，樹高（以層數計）是多少？</summary><p>3 層。50 是 root，30、70 在第 2 層，20、40、60、80 在第 3 層，是一棵完全平衡的樹。</p></details>
         <details class="quiz"><summary>依序插入 10, 20, 30, 40, 50，搜尋 50 要比較幾次？</summary><p>5 次。排序好的輸入讓樹退化成往右延伸的一條鏈，搜尋就變成線性搜尋。</p></details>
-        <details class="quiz"><summary>上面動畫的初始樹刪除 50，用課本的「左子樹最大」，新的 root 是誰？改用右子樹最小呢？</summary><p>用左子樹最大：40。50 的左子樹中最大的是 40，用它取代 root；40 原本有左子節點 35，刪掉 40 後 35 接到 30 的右邊。改用右子樹最小：60，它的右子節點 65 接到 70 的左邊。兩個答案都對，但樹的形狀不同，所以考試要照題目指定的方式。</p></details>
+        <details class="quiz"><summary>上面動畫的初始樹刪除 50，用「左子樹最大」，新的 root 是誰？改用右子樹最小呢？</summary><p>用左子樹最大：40。50 的左子樹中最大的是 40，用它取代 root；40 原本有左子節點 35，刪掉 40 後 35 接到 30 的右邊。改用右子樹最小：60，它的右子節點 65 接到 70 的左邊。兩個答案都對，但樹的形狀不同，所以考試要照題目指定的方式。</p></details>
         <details class="quiz"><summary>3 個不同的 key 可以組成幾種不同的 BST？</summary><p>5 種，C(3) = 6! / (4!·3!) = 5。</p></details>
         <details class="quiz"><summary>只看一棵二元樹的 inorder 結果，怎麼判斷它是不是 BST？</summary><p>檢查 inorder 是否嚴格遞增。是就是 BST，否則就不是。這是最簡單也最不容易出錯的判斷方法。</p></details>
       </section>

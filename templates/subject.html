@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   科目首頁模板：複製到 subjects/<subject-id>/index.html，只需取代 {{...}}。
-  章節地圖、進度、課本資訊都由 site.js 讀 data/<subject-id>.json 自動產生。
+  章節地圖、進度都由 site.js 讀 data/<subject-id>.json 自動產生。
 -->
 <html lang="zh-Hant">
 <head>
@@ -28,7 +28,7 @@
     <section class="hero">
       <span class="eyebrow">{{中文}} · {{English}}</span>
       <h1>{{English}}（{{中文}}）</h1>
-      <p id="textbook">{{一句話介紹}}</p>
+      <p>{{一句話介紹}}</p>
       <div id="progress"></div>
     </section>
     <div class="chapters" id="chapters"></div>

@@ -55,8 +55,6 @@
   // ---------- 科目首頁：章節地圖 ----------
   async function renderSubject(box, subjectId) {
     const data = await getJSON(`data/${subjectId}.json`);
-    const tb = $("#textbook");
-    if (tb && data.textbook) tb.textContent = `章節依照課本：${data.textbook.title}（${data.textbook.author}，${data.textbook.edition}）`;
     const pg = $("#progress");
     if (pg) pg.replaceChildren(progress(doneCount(data), allTopics(data).length));
 

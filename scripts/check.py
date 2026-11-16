@@ -95,16 +95,12 @@ def check_topic(path, subj, ch, t, errors):
         err("不可使用 / 開頭的絕對路徑")
     if f"最後更新：{t.get('updated')}" not in html:
         err("頁尾「最後更新」與 JSON 的 updated 不一致")
-    if subj_has_textbook(subj) and t.get("book") and f"§{t['book'].split(',')[0].strip()}" not in html:
-        err(f"有指定課本時，頁面要標出課本章節 §{t['book']}")
+    if re.search(r"課本|參考書|§", html):
+        err("頁面內容要獨立，不可提到課本 / 參考書或 § 節次（參考書只給 AI 查閱）")
     if t.get("difficulty") not in (1, 2, 3):
         err("difficulty 必須是 1、2、3")
     if not 2 <= len(t.get("tags", [])) <= 5:
         err("tags 應為 2～5 個")
-
-
-def subj_has_textbook(subj):
-    return bool(subj.get("textbook"))
 
 
 def main():
@@ -140,7 +136,7 @@ def main():
                 if not SLUG.match(t["id"]):
                     errors.append(f"[{s['id']}] 主題 id「{t['id']}」不是 kebab-case")
                 if subj.get("textbook") and not t.get("book"):
-                    errors.append(f"[{s['id']}/{t['id']}] 科目有指定課本，主題要填 book（課本節次）")
+                    errors.append(f"[{s['id']}/{t['id']}] 科目有參考書，主題要填 book（參考書節次，只給 AI 查閱）")
                 page = ROOT / "subjects" / s["id"] / ch["id"] / f"{t['id']}.html"
                 if t["status"] == "done":
                     total_done += 1

@@ -27,7 +27,7 @@
       "  return root;   /* NULL 表示找不到 */",
       "}",
     ],
-    // 兩個子節點時的替代者：pred = 左子樹最大（課本 §5.7 範例），succ = 右子樹最小
+    // 兩個子節點時的替代者：pred = 左子樹最大（預設），succ = 右子樹最小
     deletePred: [
       "Node* delete(Node* root, int x) {",
       "  if (root == NULL) return NULL;   /* 找不到 */",
@@ -221,7 +221,7 @@
           replaceChild(par, id, child); delete T[id];
           r.push(frame(`子樹整個往上提一層，BST 性質不變。刪除 ${v} 完成。`, 13, { states: { [child]: "found" } }));
         } else {
-          // 課本 §5.7：用左子樹最大（前驅）或右子樹最小（後繼）取代都可以
+          // 用左子樹最大（前驅）或右子樹最小（後繼）取代都可以
           const first = usePred ? "l" : "r", walkDir = usePred ? "r" : "l";
           const name = usePred ? "中序前驅（inorder predecessor）：左子樹中最大的節點" : "中序後繼（inorder successor）：右子樹中最小的節點";
           const short = usePred ? "前驅" : "後繼";
@@ -270,15 +270,15 @@
     ui.button(player, "insert", () => { const v = val(); if (v !== null) player.load(doInsert(v)); });
     ui.button(player, "search", () => { const v = val(); if (v !== null) player.load(doSearch(v)); });
     ui.button(player, "delete", () => { const v = val(); if (v !== null) player.load(doDelete(v)); });
-    let usePred = true; // 預設照課本範例：左子樹最大
+    let usePred = true; // 預設：左子樹最大
     const modeBtn = ui.button(player, "", () => {
       usePred = !usePred;
       modeBtn.textContent = usePred ? "刪除用：左子樹最大" : "刪除用：右子樹最小";
       player.setCode(usePred ? CODE.deletePred : CODE.deleteSucc);
-      player.load([frame(`兩個子節點的刪除改用<b>${usePred ? "左子樹最大（中序前驅，課本範例）" : "右子樹最小（中序後繼）"}</b>。試試刪除 30 或 50 比較兩種結果。`, null)], { autoplay: false });
+      player.load([frame(`兩個子節點的刪除改用<b>${usePred ? "左子樹最大（中序前驅）" : "右子樹最小（中序後繼）"}</b>。試試刪除 30 或 50 比較兩種結果。`, null)], { autoplay: false });
     }, "ghost");
     modeBtn.textContent = "刪除用：左子樹最大";
-    modeBtn.title = "切換兩個子節點時的替代者：左子樹最大（課本範例）或右子樹最小";
+    modeBtn.title = "切換兩個子節點時的替代者：左子樹最大或右子樹最小";
     ui.button(player, "中序走訪", () => player.load(doInorder()), "ghost");
     ui.button(player, "隨機建樹", () => {
       const vals = new Set();
