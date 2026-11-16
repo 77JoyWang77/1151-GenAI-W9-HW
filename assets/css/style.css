@@ -417,6 +417,26 @@ details.qans .qa > :last-child { margin-bottom: 0; }
   .site-header, .toc, .viz-controls, .viz-toolbar, .pager { display: none; }
 }
 
+/* ---------- 首頁概況 ---------- */
+.home-head { padding: 36px 0 8px; }
+.home-head h1 { font-size: clamp(1.5em, 4vw, 2em); margin: 0; letter-spacing: -.01em; }
+.home-head p { color: var(--ink-soft); margin: 6px 0 0; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 22px; max-width: 640px; }
+.stat { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.stat-icon { flex: none; width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; color: var(--brand); background: var(--brand-soft); }
+.stat-icon .icon { width: 20px; height: 20px; }
+.stat b { font-size: 1.5em; line-height: 1.1; }
+.stat small { color: var(--ink-soft); font-size: .85em; }
+.stat-label { color: var(--ink-soft); font-size: .82em; }
+.home-block h2 { font-size: 1.2em; margin: 32px 0 12px; }
+.done-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.done-topic { --accent: var(--brand); display: flex; flex-direction: column; gap: 4px; padding: 12px 16px 12px 18px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
+.done-topic:hover { transform: translateY(-1px); border-color: var(--accent); }
+.dt-meta { font-size: .78em; color: var(--ink-soft); }
+.dt-name { font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.dt-name .icon { flex: none; }
+.dt-name .is-hot { color: var(--s-removed); }
+
 /* ---------- 窄螢幕（手機）：放在檔案最後，才能蓋過上面的基本樣式 ---------- */
 @media (max-width: 600px) {
   .site-header .wrap { height: 52px; gap: 8px; }
@@ -425,6 +445,10 @@ details.qans .qa > :last-child { margin-bottom: 0; }
   .theme-toggle span { display: none; }
   .theme-toggle { padding: 6px 8px; }
   .page-title { margin-top: 22px; }
+  .home-head { padding-top: 22px; }
+  .stats { gap: 8px; }
+  .stat { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 12px; }
+  .stat-icon { width: 30px; height: 30px; }
   .page-head { padding-top: 18px; }
   .entry-card { padding: 12px 14px; }
   .panel { padding: 14px 14px; }
