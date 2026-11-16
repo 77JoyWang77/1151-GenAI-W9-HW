@@ -206,16 +206,13 @@ def check_topic(path, subj, ch, t, errors):
     for qid in p.qlinks:
         if qid not in ids:
             err(f"「例題」連結指向不存在的題目 {qid}")
-    if p.code_blocks and not p.full_code:
-        err('有程式碼的主題要在最後附 <details class="code-full"> 完整可編譯程式')
+    if p.full_code:
+        err('頁面上不放完整程式（details.code-full），完整程式只存在 code/ 裡供編譯驗證')
     src = ROOT / "code" / subj["id"] / f"{t['id']}.c"
     if p.code_blocks:
         if not src.exists():
-            err(f"有程式碼的主題要把完整程式存成 code/{subj['id']}/{t['id']}.c")
+            err(f"有程式碼的主題要把完整程式存成 code/{subj['id']}/{t['id']}.c（編譯驗證用）")
         else:
-            m = re.search(r'<details class="code-full">.*?<pre class="code">(.*?)</pre>', html, re.S)
-            if not m or unescape(m.group(1)).strip() != src.read_text(encoding="utf-8").strip():
-                err(f"頁面上的完整程式和 code/{subj['id']}/{t['id']}.c 不一致")
             # 每段片段的每一行都要能在完整程式中找到（片段要從完整程式取出）
             src_lines = set(src.read_text(encoding="utf-8").split("\n"))
             for snip in re.findall(r'<pre class="code">(.*?)</pre>', html, re.S):
