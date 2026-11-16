@@ -15,10 +15,11 @@
   --brand: #4f46e5;
   --brand-soft: #eef0ff;
   --on-brand: #ffffff;
-  --banner-bg: #1c2233;
-  --banner-glow: #6366f1;
-  --banner-accent: #a5b4fc;
-  --banner-line: .95;
+  --banner-bg: #eef0ff;
+  --banner-glow: #c7d2fe;
+  --banner-accent: #6366f1;
+  --banner-ink: #1b1f2a;
+  --banner-line: .75;
 
   /* 動畫節點狀態色（CLAUDE.md 第 6 節的 state 對照） */
   --s-default: #94a3b8;  --s-default-fill: #ffffff;
@@ -58,7 +59,7 @@
   --bg: #0e1117; --paper: #161a23; --ink: #e8ebf2; --ink-soft: #9aa3b5;
   --line: #262c3a; --line-strong: #39415a; --code-bg: #1c212c;
   --brand: #8b85ff; --brand-soft: #1f2040;
-  --banner-bg: #181d2b; --banner-glow: #6366f1; --banner-accent: #a5b4fc; --banner-line: .55;
+  --banner-bg: #181d2b; --banner-glow: #6366f1; --banner-accent: #a5b4fc; --banner-ink: #ffffff; --banner-line: .55;
   --s-default: #6b7590; --s-default-fill: #1b202b;
   --s-active-fill: #3a2c10; --s-compare-fill: #142542; --s-found-fill: #0f3329;
   --s-new-fill: #2a1f4a; --s-removed-fill: #3d1717; --s-visited-fill: #10332f;
@@ -71,18 +72,6 @@
 .nav-links { align-items: center; }
 
 /* 章節色套用：<body data-chno="3">；超過 12 章時以 (編號-1) % 12 + 1 取色 */
-body[data-chno="1"] { --accent: var(--ch-1); }
-body[data-chno="2"] { --accent: var(--ch-2); }
-body[data-chno="3"] { --accent: var(--ch-3); }
-body[data-chno="4"] { --accent: var(--ch-4); }
-body[data-chno="5"] { --accent: var(--ch-5); }
-body[data-chno="6"] { --accent: var(--ch-6); }
-body[data-chno="7"] { --accent: var(--ch-7); }
-body[data-chno="8"] { --accent: var(--ch-8); }
-body[data-chno="9"] { --accent: var(--ch-9); }
-body[data-chno="10"] { --accent: var(--ch-10); }
-body[data-chno="11"] { --accent: var(--ch-11); }
-body[data-chno="12"] { --accent: var(--ch-12); }
 
 /* ---------- 基礎 ---------- */
 * { box-sizing: border-box; }
@@ -422,10 +411,10 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 }
 
 /* ---------- 首頁 banner ---------- */
-.banner { position: relative; overflow: hidden; margin-top: 28px; border-radius: 18px; padding: 34px 36px; color: var(--on-brand); border: 1px solid color-mix(in srgb, var(--on-brand) 8%, transparent);
+.banner { position: relative; overflow: hidden; margin-top: 28px; border-radius: 18px; padding: 34px 36px; color: var(--banner-ink); border: 1px solid color-mix(in srgb, var(--banner-accent) 18%, transparent);
   background:
-    radial-gradient(520px 260px at 92% -10%, color-mix(in srgb, var(--banner-glow) 38%, transparent), transparent 70%),
-    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--on-brand) 9%, transparent) 1px, transparent 1.5px) 0 0 / 18px 18px,
+    radial-gradient(520px 260px at 92% -10%, color-mix(in srgb, var(--banner-glow) 55%, transparent), transparent 70%),
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--banner-ink) 8%, transparent) 1px, transparent 1.5px) 0 0 / 18px 18px,
     var(--banner-bg);
   box-shadow: var(--shadow); }
 .banner-art { position: absolute; right: 36px; top: 50%; transform: translateY(-50%); width: 230px; opacity: var(--banner-line); pointer-events: none; }
@@ -433,14 +422,14 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 .banner-art .art-nodes circle { fill: color-mix(in srgb, var(--banner-bg) 70%, transparent); stroke: color-mix(in srgb, var(--banner-accent) 85%, transparent); stroke-width: 2.5; }
 .banner-body { position: relative; }
 .banner h1 { font-size: clamp(1.5em, 4vw, 2em); margin: 0; letter-spacing: -.01em; }
-.banner p { margin: 8px 0 0; color: color-mix(in srgb, var(--on-brand) 62%, transparent); font-size: .95em; }
+.banner p { margin: 8px 0 0; color: color-mix(in srgb, var(--banner-ink) 62%, transparent); font-size: .95em; }
 .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 22px; max-width: 560px; }
-.stat { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, var(--on-brand) 5%, transparent); border: 1px solid color-mix(in srgb, var(--on-brand) 10%, transparent); }
-.stat-icon { flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; color: var(--banner-accent); background: color-mix(in srgb, var(--banner-glow) 22%, transparent); }
+.stat { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, var(--banner-ink) 5%, transparent); border: 1px solid color-mix(in srgb, var(--banner-ink) 10%, transparent); }
+.stat-icon { flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; color: var(--banner-accent); background: color-mix(in srgb, var(--banner-accent) 14%, transparent); }
 .stat-icon .icon { width: 20px; height: 20px; }
 .stat b { font-size: 1.5em; line-height: 1.1; }
-.stat small { color: color-mix(in srgb, var(--on-brand) 55%, transparent); font-size: .85em; }
-.stat-label { color: color-mix(in srgb, var(--on-brand) 62%, transparent); font-size: .82em; white-space: nowrap; }
+.stat small { color: color-mix(in srgb, var(--banner-ink) 55%, transparent); font-size: .85em; }
+.stat-label { color: color-mix(in srgb, var(--banner-ink) 62%, transparent); font-size: .82em; white-space: nowrap; }
 .home-block h2 { font-size: 1.2em; margin: 32px 0 12px; }
 .done-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .done-topic { display: flex; flex-direction: column; gap: 4px; padding: 14px 18px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }

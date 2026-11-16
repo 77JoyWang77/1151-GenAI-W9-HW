@@ -349,9 +349,9 @@ def main():
             if not any(c["id"] == chid and any(t["id"] == tid for t in c["topics"]) for c in subj["chapters"]):
                 errors.append(f"[{s['id']}/{chid}/{tid}] 頁面沒有登錄在 data/{s['id']}.json")
 
-    for i in range(1, 13):
-        if f"--ch-{i}:" not in css or f'body[data-chno="{i}"]' not in css:
-            errors.append(f"[css] 缺少章節色 --ch-{i} 或 body[data-chno=\"{i}\"]")
+    # 全站用色統一（CLAUDE.md 10）：不可依章節換 --accent
+    if "body[data-chno=" in css:
+        errors.append("[css] 不要依章節（data-chno）設定不同的 --accent，全站統一用品牌色")
 
     if errors:
         print("\n".join(errors))

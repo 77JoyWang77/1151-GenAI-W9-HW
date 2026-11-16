@@ -31,7 +31,6 @@
     return svg;
   }
   const getJSON = (path) => fetch(ROOT + path, { cache: "no-cache" }).then((r) => r.json());
-  const chColor = (no) => `var(--ch-${((no - 1) % 12) + 1})`;
   const allTopics = (subj) => subj.chapters.flatMap((c) => c.topics);
   const doneCount = (subj) => allTopics(subj).filter((t) => t.status === "done").length;
 
@@ -128,7 +127,7 @@
         if (t.status !== "done") return h("li", {}, [h("span", { class: "topic-name planned" }, [mark, name]), h("span", { class: "badge", text: "籌備中" })]);
         return h("li", {}, [h("a", { class: "topic-name", href: `${ch.id}/${t.id}.html` }, [mark, name])]);
       }));
-      box.appendChild(h("article", { class: "chapter", style: `--accent: ${chColor(ch.no)}` }, [
+      box.appendChild(h("article", { class: "chapter" }, [   // 全站統一用品牌色，不依章節上色
         h("div", { class: "no", text: "CHAPTER " + ch.no }),
         h("h3", { text: ch.en }),
         h("div", { class: "zh", text: ch.zh + " · " + ch.desc }),
