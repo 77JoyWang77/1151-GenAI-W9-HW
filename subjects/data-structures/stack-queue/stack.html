@@ -30,27 +30,204 @@
         </div>
       </div>
 
-      <section id="intro">
-        <h2>核心概念</h2>
-        <div class="panel">
-          <p><span class="term">Stack<small>（堆疊）</small></span>是一種只能從同一端進出的線性結構，那一端叫做 <span class="term">top<small>（頂端）</small></span>。它的存取規則是 <span class="term">LIFO<small>（Last In, First Out，後進先出）</small></span>：最後放進去的元素最先被拿出來，就像一疊盤子。</p>
-          <p>只有三個核心操作：<span class="term">push<small>（推入）</small></span>把元素放到最上面、<span class="term">pop<small>（彈出）</small></span>拿走最上面的元素、<span class="term">peek<small>（查看頂端）</small></span>看最上面是誰但不拿走。三個操作都只碰 top，所以都是 <code>O(1)</code>。</p>
-          <p>用陣列實作時，以變數 <code>top</code> 記錄最上面元素的索引，空堆疊時 <code>top = -1</code>。陣列滿了還 push 叫 <span class="term">Stack Overflow<small>（堆疊溢位）</small></span>，空的還 pop 叫 <span class="term">Stack Underflow<small>（堆疊下溢）</small></span>。</p>
+      <section id="what-is-stack">
+        <h2>什麼是 Stack</h2>
+        <div class="panel prose">
+          <p>想像餐廳裡疊在一起的盤子：洗好的盤子一個一個疊上去，要用的時候也只能從最上面拿。你不會、也拿不到壓在最底下的那一個。<span class="term">Stack<small>（堆疊）</small></span>就是把這個規則搬到資料上的結構：資料只能從同一端放進去、從同一端拿出來，那一端叫做 <span class="term">top<small>（頂端）</small></span>，另一端叫做 <span class="term">bottom<small>（底端）</small></span>。</p>
+          <p>因為只能從頂端進出，所以「最後放進去的，一定最先被拿出來」。這個性質叫做 <span class="term">LIFO<small>（Last In, First Out，後進先出）</small></span>。反過來說，最早放進去的元素會一直被壓在下面，要等上面的全部拿走才輪得到它。</p>
+          <p>為什麼需要這種「限制很多」的結構？因為很多問題天生就是後進先出的：函式 A 呼叫 B、B 再呼叫 C，一定是 C 先結束、再回到 B、最後回到 A；寫程式時最後打開的括號，一定要最先被關掉；編輯器按「復原」時，最後做的動作最先被撤銷。把資料放進 Stack，程式自然就會照這個順序處理，不需要額外記錄「現在該處理誰」。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="stack-concept"></div>
+            <figcaption><b>圖 1</b>：Stack 只能從 top 進出。依序 push A、B、C 之後，第一個被 pop 的是 C。</figcaption>
+          </figure>
           <div class="callout"><p>💡 只要題目出現「<b>反轉順序</b>」「<b>配對</b>」「<b>回到上一步</b>」，例如括號配對、函式呼叫、遞迴、undo，第一個想到的就是 Stack。</p></div>
         </div>
       </section>
 
-      <section id="viz">
-        <h2>互動動畫</h2>
-        <h3>① push / pop / peek</h3>
+      <section id="adt">
+        <h2>Stack 的基本操作（ADT）</h2>
+        <div class="panel prose">
+          <p>描述一個資料結構時，我們先不管它用什麼實作，只定義「它能做哪些事、每件事的效果是什麼」，這叫做 <span class="term">Abstract Data Type<small>（ADT，抽象資料型態）</small></span>。Stack 的 ADT 很精簡：</p>
+          <ul>
+            <li><code>push(x)</code>（推入）：把 x 放到最上面，x 成為新的 top。</li>
+            <li><code>pop()</code>（彈出）：把最上面的元素拿走並回傳，原本第二個元素變成新的 top。</li>
+            <li><code>peek()</code> / <code>top()</code>（查看頂端）：回傳最上面的元素，但<b>不拿走</b>，Stack 內容不變。</li>
+            <li><code>isEmpty()</code>：是否為空。對空的 Stack 做 pop 或 peek 是錯誤，稱為 <span class="term">Stack Underflow<small>（堆疊下溢）</small></span>。</li>
+            <li><code>isFull()</code>：是否已滿。只有用固定大小的陣列實作時才有意義，滿了還 push 稱為 <span class="term">Stack Overflow<small>（堆疊溢位）</small></span>。</li>
+          </ul>
+          <p>注意這些操作<b>全部只碰 top</b>，完全不需要走訪其他元素。所以不管 Stack 裡有 10 個還是 100 萬個元素，每個操作都是 <code>O(1)</code>。這是 Stack 好用的根本原因。</p>
+        </div>
+      </section>
+
+      <section id="array-impl">
+        <h2>用陣列實作</h2>
+        <div class="panel prose">
+          <p>最常見的實作是一個大小為 <code>MAX</code> 的陣列，加上一個整數 <code>top</code> 記錄「最上面那個元素的索引」。陣列的第 0 格是 bottom，往索引大的方向長高。</p>
+          <ol>
+            <li><b>初始化</b>：<code>top = -1</code>。−1 表示「連第 0 格都還沒有東西」，也就是空堆疊。</li>
+            <li><b>push(x)</b>：先檢查 <code>top == MAX - 1</code>（最後一格已經用掉了）就是滿的；沒滿就先把 top 加 1，再把 x 放進 <code>stack[top]</code>。合在一起寫成 <code>stack[++top] = x</code>，<code>++</code> 寫在前面表示「先加再用」。</li>
+            <li><b>pop()</b>：先檢查 <code>top == -1</code> 就是空的；不空就回傳 <code>stack[top]</code>，再把 top 減 1，寫成 <code>return stack[top--]</code>，<code>--</code> 寫在後面表示「先用再減」。</li>
+          </ol>
+          <p>pop 之後，陣列裡那一格的值其實還在，只是 top 已經往下移，它就被視為「不存在」，下次 push 會直接覆蓋過去。所以 pop 不需要真的去清除資料。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="stack-array-states"></div>
+            <figcaption><b>圖 2</b>：MAX = 5 的陣列堆疊三種狀態。空的時候 top = −1；滿的時候 top = MAX − 1 = 4。</figcaption>
+          </figure>
+          <p>陣列實作的缺點是大小固定：開太小會溢位，開太大會浪費空間。下面的動畫可以自己 push、pop，觀察 top 怎麼移動，也可以故意塞滿或清空，看看 overflow、underflow 怎麼發生。</p>
+        </div>
         <div class="viz" data-viz="stack-ops"></div>
-        <h3>② Infix → Postfix（中序轉後序）</h3>
-        <p>運算式轉換是 Stack 最經典的應用。這裡用考研最常見的做法，給每個符號兩種優先權：<span class="term">in-stack precedence<small>（isp，在堆疊裡的優先權）</small></span>和 <span class="term">incoming precedence<small>（icp，剛讀入時的優先權）</small></span>，只要 <code>isp[top] &gt;= icp[token]</code> 就 pop。可以輸入自己的運算式（字母、數字或變數名稱，支援 <code>+ - * / % ^ ( )</code>）。</p>
+      </section>
+
+      <section id="linked-impl">
+        <h2>用鏈結串列實作</h2>
+        <div class="panel prose">
+          <p>如果事先不知道要放多少資料，可以改用 <span class="term">Linked List<small>（鏈結串列）</small></span>：每個節點存一筆資料和一個指向「下一個（也就是下面那個）節點」的指標，<code>top</code> 指標永遠指向最上面的節點。</p>
+          <ul>
+            <li><b>push(x)</b>：配置一個新節點，讓它的 next 指向目前的 top，再把 top 改成指向新節點。</li>
+            <li><b>pop()</b>：記下 top 節點的資料，把 top 移到 <code>top-&gt;next</code>，再釋放原本的節點。</li>
+            <li><b>空堆疊</b>：<code>top == NULL</code>。只要記憶體還夠就能一直 push，不會有「陣列滿了」的問題。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="stack-linked"></div>
+            <figcaption><b>圖 3</b>：鏈結串列實作的 Stack。top 指向最後 push 的 C，新節點永遠接在最前面。</figcaption>
+          </figure>
+        </div>
+        <div class="panel table-scroll">
+          <table>
+            <thead><tr><th>比較</th><th>陣列實作</th><th>鏈結串列實作</th></tr></thead>
+            <tbody>
+              <tr><td>push / pop 時間</td><td><code>O(1)</code></td><td><code>O(1)</code></td></tr>
+              <tr><td>大小</td><td>固定，可能 overflow</td><td>動態，只受記憶體限制</td></tr>
+              <tr><td>額外空間</td><td>沒用到的格子會浪費</td><td>每個節點多一個指標</td></tr>
+              <tr><td>適合</td><td>大小可預估、要求簡單快速</td><td>大小變動大、無法預估</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="applications">
+        <h2>Stack 的應用</h2>
+        <div class="panel prose">
+          <h3>① 括號配對</h3>
+          <p>檢查 <code>{ [ ( ) ] }</code> 這類括號是否正確配對：由左往右掃，遇到左括號就 push；遇到右括號就 pop 一個出來，看看是不是同一種。如果種類不同、或想 pop 時 Stack 已經空了，就是錯誤；掃完之後 Stack 還有剩，也是錯誤（有左括號沒被關掉）。例如 <code>( [ ) ]</code>：讀到 <code>)</code> 時 pop 出來的是 <code>[</code>，種類不符，所以不合法。Stack 能做這件事，正是因為「最後打開的括號要最先關」是 LIFO。</p>
+          <h3>② 函式呼叫與遞迴</h3>
+          <p>程式執行時，系統用一個 <span class="term">call stack<small>（呼叫堆疊）</small></span>記錄每一層函式的區域變數和返回位置。每呼叫一次函式就 push 一層，函式結束就 pop 掉那一層、回到下面那層繼續執行。遞迴太深導致的「stack overflow」錯誤，指的就是這個 call stack 被塞爆。也因為如此，任何遞迴都能改寫成「自己用一個 Stack 模擬」的迴圈版本。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="call-stack"></div>
+            <figcaption><b>圖 4</b>：計算 fact(3) 時的 call stack。fact(1) 最晚被呼叫，卻最先回傳。</figcaption>
+          </figure>
+          <h3>③ 其他常見應用</h3>
+          <ul>
+            <li><b>運算式轉換與求值</b>：中序轉後序、後序求值（下面兩節詳細說明）。</li>
+            <li><b>Depth-First Search（深度優先搜尋）</b>：走到底再回頭，回頭的順序就是 LIFO。</li>
+            <li><b>Undo（復原）、瀏覽器的上一頁</b>：最近的動作最先被撤銷。</li>
+            <li><b>迷宮問題、回溯法（backtracking）</b>：走錯路時退回上一個岔路口。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="stack-permutation">
+        <h2>合法的輸出序列</h2>
+        <div class="panel prose">
+          <p>考研很愛考這一題：把 1, 2, …, n <b>依序</b> push 進 Stack，過程中可以在任何時候 pop，問「哪些輸出順序是可能的」。關鍵在於：一旦某個數被 pop 出來，所有比它小、但還留在 Stack 裡的數，<b>一定是由大到小</b>排在裡面，之後也只能由大到小地被 pop。</p>
+          <p>以 n = 3 為例，6 種排列中只有 5 種做得到：</p>
+          <ul>
+            <li><code>1 2 3</code>：每 push 一個就馬上 pop。</li>
+            <li><code>1 3 2</code>：push 1、pop；push 2、push 3、pop、pop。</li>
+            <li><code>2 1 3</code>：push 1、push 2、pop、pop；push 3、pop。</li>
+            <li><code>2 3 1</code>：push 1、push 2、pop；push 3、pop；pop。</li>
+            <li><code>3 2 1</code>：全部 push 完再全部 pop。</li>
+            <li><code>3 1 2</code> ✗：要先輸出 3，表示 1、2 都已經在 Stack 裡，而且 2 壓在 1 上面。下一個只能 pop 出 2，不可能先輸出 1。</li>
+          </ul>
+          <p>一般化的判斷法：輸出序列中只要出現「某個大數 k 先出來，後面跟著兩個比它小的 i、j，且 i &lt; j、i 又排在 j 前面」（也就是 <code>…k…i…j…</code> 且 i &lt; j &lt; k），這個序列就不可能。所有合法序列的數量是 <span class="term">Catalan number<small>（卡塔蘭數）</small></span>：</p>
+          <pre class="formula">C(n) = (2n)! / ((n+1)! · n!)      C(1)=1, C(2)=2, C(3)=5, C(4)=14, C(5)=42</pre>
+          <p>也就是 n = 4 時，24 種排列裡只有 14 種是 Stack 做得出來的，超過四成的排列都不可能。Catalan number 之後在「n 個節點能組成幾種二元樹」也會再出現。</p>
+        </div>
+      </section>
+
+      <section id="infix-postfix">
+        <h2>運算式轉換：中序轉後序</h2>
+        <div class="panel prose">
+          <p>我們平常寫的 <code>a + b * c</code> 叫做 <span class="term">infix<small>（中序式）</small></span>：運算子夾在兩個運算元中間。中序式對人很直覺，但電腦處理起來很麻煩：必須知道 <code>*</code> 比 <code>+</code> 優先，遇到括號還要特別處理。</p>
+          <p>如果把運算子放到兩個運算元<b>後面</b>，就變成 <span class="term">postfix<small>（後序式，又稱逆波蘭表示法）</small></span>：<code>a b c * +</code>。後序式有兩個大優點：<b>不需要括號</b>，而且<b>不需要考慮優先權</b>，從左到右掃一遍、用一個 Stack 就能算出結果。所以編譯器常先把中序式轉成後序式，再拿去求值。</p>
+        </div>
+        <div class="panel table-scroll">
+          <table>
+            <thead><tr><th>中序 infix</th><th>前序 prefix</th><th>後序 postfix</th></tr></thead>
+            <tbody>
+              <tr><td><code>a + b * c</code></td><td><code>+ a * b c</code></td><td><code>a b c * +</code></td></tr>
+              <tr><td><code>(a + b) * c</code></td><td><code>* + a b c</code></td><td><code>a b + c *</code></td></tr>
+              <tr><td><code>a * (b + c) * d</code></td><td><code>* * a + b c d</code></td><td><code>a b c + * d *</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel prose">
+          <h3>轉換的想法</h3>
+          <p>從左到右讀中序式：<b>運算元</b>出現的順序在中序和後序裡完全一樣，所以讀到就直接輸出；<b>運算子</b>則要「等一下」，因為它後面可能還有優先權更高、應該先算的運算子。等待中的運算子就放在 Stack 裡。</p>
+          <p>讀到一個新的運算子時，要先看 Stack 頂端的運算子：如果頂端那個應該<b>先算</b>（優先權較高，或同級且左結合），就把它 pop 出來輸出，一直重複到不用再 pop 為止，再把新運算子 push 進去。輸入讀完後，把 Stack 剩下的全部 pop 出來。</p>
+          <h3>為什麼要分 isp 和 icp</h3>
+          <p>麻煩的是左括號 <code>(</code>：它剛讀進來時要「無條件 push」（優先權要最高），可是一旦進了 Stack，又要擋住外面的運算子、不能被 pop 掉（優先權要最低）。同一個符號需要兩種優先權，所以給每個符號兩個數字：<span class="term">in-stack precedence<small>（isp，在堆疊裡的優先權）</small></span>和 <span class="term">incoming precedence<small>（icp，剛讀入時的優先權）</small></span>。規則只剩一條：<b>只要 isp[top] ≥ icp[token]，就 pop</b>。右括號 <code>)</code> 則是特例：一路 pop 到遇見 <code>(</code> 為止，兩個括號都丟掉。</p>
+        </div>
+        <div class="panel table-scroll">
+          <table>
+            <thead><tr><th>token</th><th>isp（在堆疊裡）</th><th>icp（剛讀入）</th><th>為什麼這樣設</th></tr></thead>
+            <tbody>
+              <tr><td><code>(</code></td><td>0</td><td>20</td><td>讀入時比誰都大 → 一定直接 push；進了堆疊後比誰都小 → 只有 <code>)</code> 能把它拿出來</td></tr>
+              <tr><td><code>^</code></td><td>14</td><td>15</td><td>isp &lt; icp：同級時不 pop → 右結合，<code>2^3^2 = 2^(3^2)</code></td></tr>
+              <tr><td><code>* / %</code></td><td>13</td><td>13</td><td>isp = icp：同級時 pop → 左結合</td></tr>
+              <tr><td><code>+ -</code></td><td>12</td><td>12</td><td>同上，左結合：<code>a-b-c = (a-b)-c</code></td></tr>
+              <tr><td><code>eos</code></td><td>0</td><td>0</td><td>放在堆疊底，不用另外判斷「堆疊是否為空」</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel prose">
+          <h3>完整走一遍：<code>a * (b + c) * d</code></h3>
+        </div>
+        <div class="panel table-scroll">
+          <table>
+            <thead><tr><th>讀入</th><th>判斷</th><th>Stack（底 → 頂）</th><th>輸出</th></tr></thead>
+            <tbody>
+              <tr><td><code>a</code></td><td>運算元，直接輸出</td><td>eos</td><td>a</td></tr>
+              <tr><td><code>*</code></td><td>isp[eos]=0 &lt; icp[*]=13，push</td><td>eos *</td><td>a</td></tr>
+              <tr><td><code>(</code></td><td>isp[*]=13 &lt; icp[(]=20，push</td><td>eos * (</td><td>a</td></tr>
+              <tr><td><code>b</code></td><td>運算元</td><td>eos * (</td><td>a b</td></tr>
+              <tr><td><code>+</code></td><td>isp[(]=0 &lt; icp[+]=12，push</td><td>eos * ( +</td><td>a b</td></tr>
+              <tr><td><code>c</code></td><td>運算元</td><td>eos * ( +</td><td>a b c</td></tr>
+              <tr><td><code>)</code></td><td>pop 到 ( 為止：輸出 +，丟掉 (</td><td>eos *</td><td>a b c +</td></tr>
+              <tr><td><code>*</code></td><td>isp[*]=13 ≥ icp[*]=13，pop *；isp[eos]=0 &lt; 13，push</td><td>eos *</td><td>a b c + *</td></tr>
+              <tr><td><code>d</code></td><td>運算元</td><td>eos *</td><td>a b c + * d</td></tr>
+              <tr><td>結束</td><td>pop 到 eos 為止</td><td>eos</td><td><b>a b c + * d *</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>自己試試看：輸入任何運算式（字母、數字或變數名稱，支援 <code>+ - * / % ^ ( )</code>），每一步都會寫出 isp 和 icp 的比較。</p>
         <div class="viz" data-viz="infix-postfix"></div>
       </section>
 
+      <section id="postfix-eval">
+        <h2>後序式求值</h2>
+        <div class="panel prose">
+          <p>有了後序式，求值就非常單純：從左到右掃，遇到<b>運算元</b>就 push；遇到<b>運算子</b>就 pop 兩個數出來計算，再把結果 push 回去。全部掃完時，Stack 裡唯一剩下的數就是答案。</p>
+          <p>唯一要小心的是順序：<b>先 pop 出來的是右運算元</b>，後 pop 的才是左運算元。加法、乘法順序錯了沒差，但減法和除法就會算錯。</p>
+        </div>
+        <div class="panel table-scroll">
+          <table>
+            <thead><tr><th>讀入</th><th>動作</th><th>Stack（底 → 頂）</th></tr></thead>
+            <tbody>
+              <tr><td><code>6 2 3</code></td><td>依序 push</td><td>6 2 3</td></tr>
+              <tr><td><code>+</code></td><td>pop 3、pop 2，算 2 + 3 = 5，push</td><td>6 5</td></tr>
+              <tr><td><code>-</code></td><td>pop 5、pop 6，算 6 − 5 = 1，push</td><td>1</td></tr>
+              <tr><td><code>3 8 2</code></td><td>依序 push</td><td>1 3 8 2</td></tr>
+              <tr><td><code>/</code></td><td>pop 2、pop 8，算 8 / 2 = 4，push</td><td>1 3 4</td></tr>
+              <tr><td><code>+</code></td><td>pop 4、pop 3，算 3 + 4 = 7，push</td><td>1 7</td></tr>
+              <tr><td><code>*</code></td><td>pop 7、pop 1，算 1 × 7 = 7，push</td><td><b>7</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <section id="ops">
-        <h2>操作與複雜度</h2>
+        <h2>操作與複雜度整理</h2>
         <div class="panel table-scroll">
           <table>
             <thead><tr><th>操作 Operation</th><th>做法</th><th>時間複雜度</th></tr></thead>
@@ -64,20 +241,6 @@
             </tbody>
           </table>
         </div>
-        <h3>isp / icp 優先權表</h3>
-        <div class="panel table-scroll">
-          <table>
-            <thead><tr><th>token</th><th>isp（在堆疊裡）</th><th>icp（剛讀入）</th><th>為什麼這樣設</th></tr></thead>
-            <tbody>
-              <tr><td><code>(</code></td><td>0</td><td>20</td><td>讀入時比誰都大 → 一定直接 push；進了堆疊後比誰都小 → 只有 <code>)</code> 能把它拿出來</td></tr>
-              <tr><td><code>* / %</code></td><td>13</td><td>13</td><td>isp = icp：同級時 pop → 左結合</td></tr>
-              <tr><td><code>+ -</code></td><td>12</td><td>12</td><td>同上，左結合：<code>a-b-c = (a-b)-c</code></td></tr>
-              <tr><td><code>eos</code></td><td>0</td><td>0</td><td>放在堆疊底，不用另外判斷「堆疊是否為空」</td></tr>
-              <tr><td><code>^</code></td><td>14</td><td>15</td><td>設成 isp &lt; icp，同級就不會 pop → 右結合：<code>2^3^2 = 2^(3^2)</code></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="callout"><p>💡 規則只有一條：<b>isp[top] ≥ icp[token] 就 pop</b>。想讓運算子左結合就設 isp = icp，想右結合就設 isp &lt; icp。</p></div>
       </section>
 
       <section id="code">

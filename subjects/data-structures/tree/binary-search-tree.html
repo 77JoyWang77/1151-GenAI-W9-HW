@@ -30,24 +30,108 @@
         </div>
       </div>
 
-      <section id="intro">
-        <h2>核心概念</h2>
-        <div class="panel">
-          <p><span class="term">Binary Search Tree<small>（二元搜尋樹，BST）</small></span>是一棵二元樹，且每個節點都滿足：<b>左子樹所有 key &lt; 節點 key &lt; 右子樹所有 key</b>。注意是「整棵子樹」，不只是直接的左右子節點。</p>
-          <p>這個性質讓搜尋像二分搜尋：每比較一次就可以丟掉一整棵子樹。所以搜尋、插入、刪除的時間都是 <code>O(h)</code>，h 是 <span class="term">height<small>（樹高）</small></span>。樹平衡時 h ≈ log₂n，但如果按照排序好的順序插入，樹會退化成一條鏈，h = n。</p>
-          <p>最重要的性質：BST 的 <span class="term">Inorder Traversal<small>（中序走訪）</small></span>結果一定是<b>遞增排序</b>的。刪除有兩個子節點的節點時，要找一個值來「頂替」它：中序走訪的前一個節點 <span class="term">Inorder Predecessor<small>（中序前驅，左子樹最大）</small></span>，或後一個節點 <span class="term">Inorder Successor<small>（中序後繼，右子樹最小）</small></span>。</p>
-          <div class="callout"><p>💡 刪除記三種情況：<b>沒有小孩</b>直接刪；<b>一個小孩</b>讓小孩頂上來；<b>兩個小孩</b>找左子樹最大值（或右子樹最小值）來替代。</p></div>
+      <section id="what-is-bst">
+        <h2>什麼是 Binary Search Tree</h2>
+        <div class="panel prose">
+          <p>假設要維護一群會不斷新增、刪除的資料，又要能很快地找到某個值。排序好的陣列可以用二分搜尋，在 <code>O(log n)</code> 找到資料，但插入或刪除時要搬動一大堆元素，要 <code>O(n)</code>；鏈結串列插入、刪除很方便，搜尋卻只能從頭一個一個找，也是 <code>O(n)</code>。有沒有辦法同時擁有兩者的優點？</p>
+          <p><span class="term">Binary Search Tree<small>（二元搜尋樹，BST）</small></span>就是答案。它是一棵二元樹，每個節點存一個 <span class="term">key<small>（鍵值）</small></span>，並且所有節點都滿足：</p>
+          <div class="callout"><p>📌 <b>BST 性質</b>：節點的<b>左子樹中所有 key 都比它小</b>，<b>右子樹中所有 key 都比它大</b>；而且左、右子樹本身也都是 BST。</p></div>
+          <p>注意是「<b>整棵</b>左子樹」，不是只看直接相連的左子節點。圖 1 (b) 中，每個節點和自己的子節點比都沒問題，但 12 落在 10 的左子樹裡，卻比 10 大，所以整棵樹就不是 BST。這是考題最常設的陷阱。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bst-valid-invalid"></div>
+            <figcaption><b>圖 1</b>：(a) 合法的 BST；(b) 只看父子關係都正確，但 12 在 10 的左子樹中卻大於 10，所以不是 BST。</figcaption>
+          </figure>
+          <p>一般的 BST 定義中 key 不重複。如果真的要存重複值，常見做法是在節點加一個計數器，或約定相同的 key 一律放右邊。考試沒特別說明時，就當作不允許重複。</p>
+        </div>
+      </section>
+
+      <section id="search">
+        <h2>搜尋：每一步丟掉一半</h2>
+        <div class="panel prose">
+          <p>要找 key = x，從 root 開始比較：</p>
+          <ol>
+            <li>x 等於目前節點的 key → 找到了。</li>
+            <li>x 比較小 → 答案只可能在左子樹，往左走。</li>
+            <li>x 比較大 → 答案只可能在右子樹，往右走。</li>
+            <li>走到 NULL 還沒找到 → 樹裡沒有 x。</li>
+          </ol>
+          <p>每比較一次就排除了整棵另一側的子樹，這和二分搜尋把範圍砍半是同一個想法。比較的次數最多等於樹高 h，所以搜尋是 <code>O(h)</code>。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bst-search-path"></div>
+            <figcaption><b>圖 2</b>：搜尋 35 的路徑：35 &lt; 50 往左、35 &gt; 30 往右、35 &lt; 40 往左，第 4 次比較找到。右半邊整棵子樹完全不用看。</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="insert">
+        <h2>插入：新節點一定是葉子</h2>
+        <div class="panel prose">
+          <p>插入 x 的過程就是「搜尋 x，直到走到 NULL」：照搜尋的規則一路往下比較，走到哪個空位，就把新節點接在那裡。所以<b>新插入的節點一定是葉節點</b>，不需要調整任何既有節點。如果途中遇到相同的 key，就代表已經存在，不插入。</p>
+          <p>插入的花費和搜尋一樣是 <code>O(h)</code>。但要特別注意：<b>同一組資料，插入順序不同，長出來的樹形狀就不同</b>，高度也可能差很多。如果資料剛好是排序好的才依序插入，每個新節點都會接在最右邊，整棵樹退化成一條鏈，搜尋就變回 <code>O(n)</code>。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bst-shapes"></div>
+            <figcaption><b>圖 3</b>：同樣是 1～5。依 3, 1, 4, 2, 5 插入時高 3 層；依 1, 2, 3, 4, 5 插入時退化成 5 層的鏈。</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="delete">
+        <h2>刪除：三種情況</h2>
+        <div class="panel prose">
+          <p>刪除比插入麻煩，因為被刪的節點可能在樹的中間，拿掉之後要確保樹還連得起來、而且仍然符合 BST 性質。先用搜尋找到要刪的節點，再依它有幾個子節點分成三種情況：</p>
+          <h3>Case 1：葉節點（沒有子節點）</h3>
+          <p>直接移除，把父節點指向它的指標設成 NULL。例如在動畫的初始樹刪除 20，30 的左指標變成 NULL 即可。</p>
+          <h3>Case 2：只有一個子節點</h3>
+          <p>讓它唯一的子節點（連同整棵子樹）直接接到它原本的位置。因為那棵子樹原本就在被刪節點的同一側，所以 BST 性質不會被破壞。例如刪除 60（只有右子節點 65），65 直接接到 70 的左邊。</p>
+          <h3>Case 3：有兩個子節點</h3>
+          <p>這時不能直接拿掉，否則兩棵子樹沒地方接。做法是找一個「最適合頂替它」的值：要比左子樹所有值都大、比右子樹所有值都小。符合的只有兩個候選：</p>
+          <ul>
+            <li><span class="term">Inorder Predecessor<small>（中序前驅）</small></span>：<b>左子樹中最大的節點</b>，從左子節點出發一路往右走到底。</li>
+            <li><span class="term">Inorder Successor<small>（中序後繼）</small></span>：<b>右子樹中最小的節點</b>，從右子節點出發一路往左走到底。</li>
+          </ul>
+          <p>把候選者的值複製到要刪的節點上，再去它原本所在的子樹把候選者刪掉。關鍵觀察：左子樹最大的節點<b>一定沒有右子節點</b>（不然右邊還有更大的），所以刪它時只會是 Case 1 或 Case 2，不會無限遞迴下去。右子樹最小的節點同理，一定沒有左子節點。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bst-delete-case3"></div>
+            <figcaption><b>圖 4</b>：刪除 root 50（兩個子節點）。取左子樹最大的 40 頂替；40 原本的左子節點 35 接到 30 的右邊。</figcaption>
+          </figure>
+          <p>用前驅或後繼都正確，但刪完的樹形狀不同。考試題目通常會指定用哪一種，沒有指定時，要在答案中寫清楚自己用的是哪一種。本頁的動畫預設用左子樹最大，可以切換成右子樹最小來比較。</p>
         </div>
       </section>
 
       <section id="viz">
-        <h2>互動動畫</h2>
-        <p>右側程式碼會依你選的操作切換。試試刪除 <code>30</code>（兩個子節點）、<code>20</code>（葉節點）、<code>60</code>（一個子節點），或按「中序走訪」看看結果是不是排序好的。按「刪除用：左子樹最大」可以切換替代者，比較兩種刪除結果。</p>
+        <h2>動手操作</h2>
+        <p>上面講的搜尋、插入、刪除都可以在這裡自己試，右側程式碼會跟著操作切換、並亮起正在執行的那一行。建議依序刪除 <code>20</code>（葉節點）、<code>60</code>（一個子節點）、<code>30</code>（兩個子節點），比較三種情況；也可以按「中序走訪」驗證結果是不是排序好的。</p>
         <div class="viz" data-viz="bst"></div>
       </section>
 
+      <section id="inorder">
+        <h2>中序走訪一定是排序好的</h2>
+        <div class="panel prose">
+          <p><span class="term">Inorder Traversal<small>（中序走訪）</small></span>的順序是「左子樹 → 自己 → 右子樹」。對 BST 來說，左子樹的值都比自己小、右子樹的值都比自己大，所以先輸出整棵左子樹、再輸出自己、最後輸出整棵右子樹，得到的序列自然是遞增的。對每棵子樹套用同樣的理由（數學歸納法），就能證明整棵樹的中序結果一定是排序好的。</p>
+          <p>這個性質很好用：</p>
+          <ul>
+            <li><b>判斷一棵二元樹是不是 BST</b>：做一次中序走訪，看結果是否嚴格遞增。這比逐一檢查「整棵子樹」簡單很多。</li>
+            <li><b>Tree Sort</b>：把 n 個數依序插入 BST，再做中序走訪，就完成排序。平均 <code>O(n log n)</code>，最差（輸入已排序）<code>O(n²)</code>。</li>
+            <li><b>由 preorder 重建 BST</b>：BST 的中序就是排序後的結果，所以「preorder + 排序」等於「preorder + inorder」，可以唯一決定一棵樹。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="height">
+        <h2>樹高決定一切</h2>
+        <div class="panel prose">
+          <p>BST 的搜尋、插入、刪除全都是 <code>O(h)</code>，所以效能完全取決於樹高 h：</p>
+          <ul>
+            <li><b>最好</b>：樹很平衡，n 個節點的高度約為 ⌊log₂n⌋ + 1 層。例如 n = 1,000,000 時只有 20 層，最多比較 20 次。</li>
+            <li><b>最差</b>：退化成一條鏈，h = n。同樣 100 萬筆資料，最多要比較 100 萬次，和線性搜尋一樣慢。</li>
+            <li><b>平均</b>：如果資料以隨機順序插入，節點的平均深度約為 2 ln n ≈ 1.39 log₂n，仍然是 <code>O(log n)</code>，只比完全平衡多約 39%。</li>
+          </ul>
+          <p>問題在於實務上資料常常是有順序的，最差情況並不罕見。所以後面會學到 <span class="term">AVL Tree</span>、<span class="term">Red-Black Tree<small>（紅黑樹）</small></span>這類<b>自我平衡</b>的 BST：在插入和刪除時做旋轉調整，保證樹高一直維持在 <code>O(log n)</code>。</p>
+        </div>
+      </section>
+
       <section id="ops">
-        <h2>操作與複雜度</h2>
+        <h2>操作與複雜度整理</h2>
         <div class="panel table-scroll">
           <table>
             <thead><tr><th>操作 Operation</th><th>做法</th><th>平均</th><th>最差（退化成鏈）</th></tr></thead>

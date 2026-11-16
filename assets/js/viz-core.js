@@ -90,6 +90,14 @@
         ptr: svg("g", { class: "layer-pointers" }, this.svg),
       };
 
+      // 靜態圖解：只要畫面，不要控制列、說明列、程式碼
+      if (this.opts.static) {
+        root.classList.remove("viz-card");
+        root.removeAttribute("tabindex");
+        root.appendChild(h("div", { class: "viz-stage" }, [this.svg]));
+        return;
+      }
+
       const stage = h("div", { class: "viz-stage" }, [this.svg]);
       const body = h("div", { class: "viz-body" + (this.opts.code.length ? "" : " no-code") }, [stage]);
 
@@ -149,6 +157,7 @@
 
     /** 載入一組新的 frames。autoplay = true 時從頭播放 */
     load(frames, { autoplay = true, start = 0 } = {}) {
+      if (this.opts.static) { this.frames = frames; return this.show(0, true); }
       this.pause();
       this.frames = frames.length ? frames : [{ caption: "（沒有可顯示的步驟）" }];
       this.slider.max = String(this.frames.length - 1);
@@ -192,6 +201,7 @@
       i = Math.max(0, Math.min(this.frames.length - 1, i));
       this.index = i;
       const f = this.frames[i];
+      if (this.opts.static) return this._render(f, true);
       this.slider.value = String(i);
       this.controls.classList.toggle("is-single", this.frames.length <= 1);
       this.counter.textContent = `${i + 1} / ${this.frames.length}`;
@@ -450,9 +460,23 @@
   };
 
   // ---------- 掛載：頁面上每個 .viz[data-viz] 呼叫對應的註冊函式 ----------
+  // 靜態圖解：<figure class="fig"><div class="fig-draw" data-fig="名稱"></div><figcaption>…</figcaption></figure>
+  //           figure("名稱", () => ({ width, height, nodes, edges, pointers, labels }))
   const registry = {};
+  const figures = {};
   function register(name, init) { registry[name] = init; }
+  function figure(name, draw) { figures[name] = draw; }
   function mountAll() {
+    document.querySelectorAll(".fig-draw[data-fig]").forEach((el) => {
+      const draw = figures[el.dataset.fig];
+      if (!draw) {
+        el.textContent = `⚠ 找不到名為「${el.dataset.fig}」的圖，請確認已載入對應的 js 檔。`;
+        return;
+      }
+      const f = draw();
+      const p = new Player(el, { static: true, width: f.width || 640, height: f.height || 240, title: el.closest("figure")?.querySelector("figcaption")?.textContent || "" });
+      p.load([f], { autoplay: false });
+    });
     document.querySelectorAll(".viz[data-viz]").forEach((el) => {
       const init = registry[el.dataset.viz];
       if (!init) {
@@ -464,5 +488,5 @@
   }
   document.addEventListener("DOMContentLoaded", mountAll);
 
-  window.DSViz = { Player, Recorder, ui, register, esc, clone };
+  window.DSViz = { Player, Recorder, ui, register, figure, esc, clone };
 })();

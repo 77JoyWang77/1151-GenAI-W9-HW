@@ -293,4 +293,80 @@
     input.addEventListener("keydown", (e) => e.key === "Enter" && go());
     player.load(run(input.value), { autoplay: false });
   });
+  // ===================================================================
+  // 3) 靜態圖解（DSViz.figure）
+  // ===================================================================
+  const { figure } = window.DSViz;
+  const box = (id, label, x, y, extra) => Object.assign({ id, label, shape: "box", x, y, w: 70, h: 34 }, extra || {});
+
+  // 圖：Stack 只能從 top 進出
+  figure("stack-concept", () => ({
+    width: 560, height: 244,
+    nodes: [box("a", "A", 280, 196), box("b", "B", 280, 158), box("c", "C", 280, 120, { state: "active" })],
+    labels: [
+      { id: "bt", x: 280, y: 226, text: "bottom", cls: "title" },
+      { id: "order", x: 455, y: 150, text: "push 順序：A → B → C", anchor: "middle" },
+      { id: "order2", x: 455, y: 176, text: "pop 順序：C → B → A", anchor: "middle" },
+    ],
+    pointers: [
+      { id: "top", label: "top", target: "c", dir: "left", state: "default" },
+      { id: "io", label: "push 從這裡放入 / pop 從這裡取出", target: "c", dir: "up", state: "active" },
+    ],
+  }));
+
+  // 圖：陣列實作的三種狀態
+  figure("stack-array-states", () => {
+    const nodes = [], labels = [], pointers = [];
+    const cols = [
+      { x: 120, items: [], title: "(a) 空堆疊", topText: "top = -1" },
+      { x: 320, items: ["3", "8", "5"], title: "(b) 放了 3 個", topText: "top = 2" },
+      { x: 520, items: ["3", "8", "5", "1", "9"], title: "(c) 已滿", topText: "top = 4" },
+    ];
+    cols.forEach((c, k) => {
+      for (let i = 0; i < 5; i++) {
+        nodes.push({ id: `s${k}-${i}`, shape: "box", x: c.x, y: 210 - i * 38, w: 66, h: 32, state: "ghost" });
+        labels.push({ id: `ix${k}-${i}`, x: c.x + 46, y: 210 - i * 38, text: `[${i}]`, anchor: "start" });
+      }
+      c.items.forEach((v, i) => nodes.push(box(`v${k}-${i}`, v, c.x, 210 - i * 38, { w: 58, h: 26, state: k === 2 ? "removed" : "default" })));
+      labels.push({ id: `t${k}`, x: c.x, y: 246, text: c.title, cls: "strong" });
+      if (c.items.length) pointers.push({ id: `p${k}`, label: c.topText, target: `v${k}-${c.items.length - 1}`, dir: "left" });
+      else labels.push({ id: `e${k}`, x: c.x, y: 20, text: c.topText, cls: "title" });
+    });
+    labels.push({ id: "full", x: 520, y: 20, text: "再 push → Overflow", cls: "warn" });
+    return { width: 640, height: 262, nodes, labels, pointers };
+  });
+
+  // 圖：鏈結串列實作
+  figure("stack-linked", () => ({
+    width: 640, height: 150,
+    nodes: [
+      box("c", "C", 170, 75, { state: "active" }), box("b", "B", 300, 75), box("a", "A", 430, 75),
+      { id: "nil", label: "NULL", shape: "box", x: 560, y: 75, w: 70, h: 34, state: "muted" },
+    ],
+    edges: [{ from: "c", to: "b", directed: true }, { from: "b", to: "a", directed: true }, { from: "a", to: "nil", directed: true }],
+    pointers: [{ id: "top", label: "top", target: "c", dir: "left" }],
+    labels: [
+      { id: "n1", x: 170, y: 125, text: "最後 push", anchor: "middle" },
+      { id: "n2", x: 430, y: 125, text: "最早 push", anchor: "middle" },
+    ],
+  }));
+
+  // 圖：遞迴的 call stack
+  figure("call-stack", () => ({
+    width: 640, height: 230,
+    nodes: [
+      box("m", "main()", 190, 196, { w: 230 }),
+      box("f3", "fact(3)：3 × fact(2)", 190, 156, { w: 230 }),
+      box("f2", "fact(2)：2 × fact(1)", 190, 116, { w: 230 }),
+      box("f1", "fact(1)：回傳 1", 190, 76, { w: 230, state: "active" }),
+    ],
+    pointers: [{ id: "top", label: "top", target: "f1", dir: "left" }],
+    labels: [
+      { id: "c1", x: 322, y: 76, text: "← 最後呼叫，最先回傳 1", anchor: "start" },
+      { id: "c2", x: 322, y: 116, text: "← 拿到 1，回傳 2 × 1 = 2", anchor: "start" },
+      { id: "c3", x: 322, y: 156, text: "← 拿到 2，回傳 3 × 2 = 6", anchor: "start" },
+      { id: "c4", x: 322, y: 196, text: "← 得到 fact(3) = 6", anchor: "start" },
+      { id: "ttl", x: 190, y: 30, text: "CALL STACK", cls: "title" },
+    ],
+  }));
 })();

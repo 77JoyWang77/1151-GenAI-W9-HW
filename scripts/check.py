@@ -10,6 +10,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+MIN_TEXT = 2500   # 主題頁正文最少字數（不含程式碼），確保講解完整
 SLUG = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
 
@@ -20,7 +21,11 @@ class Page(HTMLParser):
         self.style_tag = self.inline_style = self.toggle = False
         self.sections = []          # [section id, 是否有 h2]
         self.viz = 0
+        self.figs = self.figcaps = 0
         self._depth = 0             # 目前在第幾層 section 裡
+        self._skip = 0              # 在 <pre>/<script>/<style> 裡時不計入文字量
+        self._in_main = False
+        self.text = []
 
     def handle_starttag(self, tag, a):
         a = dict(a)
@@ -45,10 +50,26 @@ class Page(HTMLParser):
             self.sections[-1][1] = True
         if tag == "div" and "viz" in cls and a.get("data-viz"):
             self.viz += 1
+        if tag == "div" and "fig-draw" in cls and a.get("data-fig"):
+            self.figs += 1
+        if tag == "figcaption":
+            self.figcaps += 1
+        if tag in ("pre", "script", "style"):
+            self._skip += 1
+        if tag == "main":
+            self._in_main = True
 
     def handle_endtag(self, tag):
         if tag == "section":
             self._depth -= 1
+        if tag in ("pre", "script", "style"):
+            self._skip -= 1
+        if tag == "main":
+            self._in_main = False
+
+    def handle_data(self, data):
+        if self._in_main and not self._skip:
+            self.text.append(data)
 
 
 def load(path):
@@ -81,14 +102,20 @@ def check_topic(path, subj, ch, t, errors):
             err(f"<section id=\"{sid}\"> 缺少 <h2> 標題")
     if not p.desc or len(p.desc) > 70:
         err("<meta description> 必須存在且 ≤ 70 字")
+    # 完整的文字講解（不含程式碼）＋至少一張有圖說的靜態圖
+    chars = len(re.sub(r"\s+", "", "".join(p.text)))
+    if chars < MIN_TEXT:
+        err(f"文字講解太少：正文約 {chars} 字（不含程式碼），至少要 {MIN_TEXT} 字")
+    if p.figs < 1:
+        err('至少要有一張靜態圖 <figure class="fig"><div class="fig-draw" data-fig=...>')
+    if p.figcaps < p.figs:
+        err("每張圖都要有 <figcaption> 圖說")
     js = "../../../assets/js/"
-    expected = [js + "theme.js", js + "site.js"]
-    if p.viz:
-        expected += [js + "viz-core.js", f"{js}viz/{subj['id']}/{t['id']}.js"]
-        if not (ROOT / "assets" / "js" / "viz" / subj["id"] / f"{t['id']}.js").exists():
-            err(f"找不到動畫腳本 assets/js/viz/{subj['id']}/{t['id']}.js")
+    expected = [js + "theme.js", js + "site.js", js + "viz-core.js", f"{js}viz/{subj['id']}/{t['id']}.js"]
+    if not (ROOT / "assets" / "js" / "viz" / subj["id"] / f"{t['id']}.js").exists():
+        err(f"找不到圖與動畫腳本 assets/js/viz/{subj['id']}/{t['id']}.js")
     if p.scripts != expected:
-        err(f"script 應依序為 {expected}（有互動元件時才載入 viz-core 和動畫腳本）")
+        err(f"script 應依序為 {expected}")
     if bool(t.get("viz")) != bool(p.viz):
         err(f"JSON 的 viz = {t.get('viz')}，但頁面{'有' if p.viz else '沒有'}互動元件")
     if re.search(r'(href|src)="/', html):

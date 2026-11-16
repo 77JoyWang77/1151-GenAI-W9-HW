@@ -297,4 +297,82 @@
     demo[0].caption = "▶ 按播放看 <b>search(35)</b> 的示範。之後輸入 key 試試 <b>insert</b>、<b>search</b>、<b>delete</b>，建議刪除 30（兩個子節點）、20（葉節點）、60（一個子節點）比較三種情況。";
     player.load(demo, { autoplay: false });
   });
+  // ===================================================================
+  // 靜態圖解（DSViz.figure）
+  // ===================================================================
+  const { figure } = window.DSViz;
+  // 小工具：n(id, label, x, y, state)、e(from, to, state)
+  const n = (id, label, x, y, state) => ({ id, label, x, y, state: state || "default", r: 19 });
+  const e = (from, to, state) => ({ from, to, state: state || "default" });
+
+  // 圖 1：合法 vs 不合法的 BST
+  figure("bst-valid-invalid", () => ({
+    width: 640, height: 250,
+    nodes: [
+      n("a10", 10, 160, 40), n("a5", 5, 100, 100), n("a15", 15, 220, 100), n("a3", 3, 70, 160), n("a8", 8, 130, 160),
+      n("b10", 10, 480, 40, "compare"), n("b5", 5, 420, 100), n("b15", 15, 540, 100), n("b3", 3, 390, 160), n("b12", 12, 450, 160, "removed"),
+    ],
+    edges: [e("a10", "a5"), e("a10", "a15"), e("a5", "a3"), e("a5", "a8"),
+            e("b10", "b5"), e("b10", "b15"), e("b5", "b3"), e("b5", "b12", "removed")],
+    labels: [
+      { id: "la", x: 160, y: 210, text: "(a) 合法的 BST", cls: "strong" },
+      { id: "lb", x: 480, y: 210, text: "(b) 不是 BST", cls: "strong" },
+      { id: "lb2", x: 480, y: 236, text: "12 > 10，卻在 10 的左子樹", anchor: "middle", cls: "warn" },
+    ],
+  }));
+
+  // 圖 2：搜尋 35 的路徑
+  figure("bst-search-path", () => {
+    const keys = [20, 30, 35, 40, 50, 60, 65, 70, 80];
+    const depth = { 50: 0, 30: 1, 70: 1, 20: 2, 40: 2, 60: 2, 80: 2, 35: 3, 65: 3 };
+    const path = { 50: "visited", 30: "visited", 40: "visited", 35: "found" };
+    const nodes = keys.map((k, i) => n("k" + k, k, 60 + i * 65, 40 + depth[k] * 60, path[k] || (k > 50 ? "muted" : "default")));
+    const pairs = [[50, 30], [50, 70], [30, 20], [30, 40], [40, 35], [70, 60], [70, 80], [60, 65]];
+    const edges = pairs.map(([a, b]) => e("k" + a, "k" + b, path[a] && path[b] ? "visited" : (a > 50 || b > 50 ? "muted" : "default")));
+    return {
+      width: 640, height: 250, nodes, edges,
+      labels: [
+        { id: "s1", x: 150, y: 30, text: "① 35 < 50 → 左", anchor: "middle" },
+        { id: "s2", x: 205, y: 95, text: "② 35 > 30 → 右", anchor: "start" },
+        { id: "s3", x: 214, y: 180, text: "③ 35 < 40 → 左", anchor: "end" },
+        { id: "s4", x: 220, y: 220, text: "④ 找到", anchor: "start", cls: "strong" },
+        { id: "skip", x: 560, y: 40, text: "右子樹整棵不用看", anchor: "middle" },
+      ],
+    };
+  });
+
+  // 圖 3：插入順序決定形狀
+  figure("bst-shapes", () => ({
+    width: 640, height: 290,
+    nodes: [
+      n("a3", 3, 160, 50), n("a1", 1, 100, 110), n("a4", 4, 220, 110), n("a2", 2, 130, 170), n("a5", 5, 250, 170),
+      n("b1", 1, 380, 40, "removed"), n("b2", 2, 425, 85, "removed"), n("b3", 3, 470, 130, "removed"), n("b4", 4, 515, 175, "removed"), n("b5", 5, 560, 220, "removed"),
+    ],
+    edges: [e("a3", "a1"), e("a3", "a4"), e("a1", "a2"), e("a4", "a5"),
+            e("b1", "b2", "removed"), e("b2", "b3", "removed"), e("b3", "b4", "removed"), e("b4", "b5", "removed")],
+    labels: [
+      { id: "la", x: 160, y: 230, text: "插入 3, 1, 4, 2, 5", cls: "strong" },
+      { id: "la2", x: 160, y: 254, text: "高 3 層，搜尋最多比 3 次", anchor: "middle" },
+      { id: "lb", x: 400, y: 254, text: "插入 1, 2, 3, 4, 5：退化成鏈，高 5 層", cls: "warn", anchor: "middle" },
+    ],
+  }));
+
+  // 圖 4：刪除兩個子節點的節點（用左子樹最大）
+  figure("bst-delete-case3", () => ({
+    width: 660, height: 280,
+    nodes: [
+      n("x50", 50, 160, 50, "removed"), n("x30", 30, 100, 110), n("x70", 70, 230, 110), n("x20", 20, 65, 170), n("x40", 40, 135, 170, "active"),
+      n("x35", 35, 110, 230), n("x60", 60, 200, 170), n("x80", 80, 260, 170),
+      n("y40", 40, 500, 50, "found"), n("y30", 30, 440, 110), n("y70", 70, 570, 110), n("y20", 20, 405, 170), n("y35", 35, 475, 170, "compare"),
+      n("y60", 60, 540, 170), n("y80", 80, 600, 170),
+    ],
+    edges: [e("x50", "x30"), e("x50", "x70"), e("x30", "x20"), e("x30", "x40"), e("x40", "x35"), e("x70", "x60"), e("x70", "x80"),
+            e("y40", "y30"), e("y40", "y70"), e("y30", "y20"), e("y30", "y35", "compare"), e("y70", "y60"), e("y70", "y80")],
+    labels: [
+      { id: "l1", x: 160, y: 270, text: "刪除前：40 是左子樹最大", cls: "strong" },
+      { id: "l2", x: 500, y: 270, text: "刪除後：40 頂替 50", cls: "strong" },
+      { id: "arrow", x: 330, y: 120, text: "⟹", cls: "strong" },
+      { id: "note", x: 520, y: 220, text: "35 接到 30 的右邊", anchor: "middle" },
+    ],
+  }));
 })();

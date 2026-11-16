@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!--
   主題頁模板：複製到 subjects/<subject-id>/<chapter-id>/<topic-id>.html 後填寫。
-  規則見 CLAUDE.md 第 6 節。段落不固定：依主題挑選、增刪、改名、調整順序，
-  不需要的段落直接刪掉。每個頂層 <section> 要有 kebab-case 的 id 和 <h2>（目錄靠它）。
-  沒有互動元件時，刪掉 .viz 段落和結尾的 viz-core.js、動畫腳本。
+  規則見 CLAUDE.md 第 6 節。內容要是完整的教材：文字講解是主體（動機、定義、運作原理、
+  例子、效能、應用），搭配靜態圖與互動動畫。段落名稱和順序依主題安排，可增刪。
+  每個頂層 <section> 要有 kebab-case 的 id 和 <h2>（目錄靠它）。
   所有 {{...}} 都要被取代（scripts/check.py 會檢查）。
 -->
 <html lang="zh-Hant">
@@ -35,21 +35,32 @@
         </div>
       </div>
 
-      <!-- ===== 以下是常用的段落元件，依主題挑選 ===== -->
+      <!-- ===== 文字講解是主體：每個觀念一個 section，用 .panel.prose 寫清楚 ===== -->
 
-      <section id="intro">
-        <h2>{{核心概念}}</h2>
-        <div class="panel">
-          <p>{{專有名詞第一次出現用 <span class="term">English<small>（中文）</small></span>}}</p>
-          <div class="callout"><p>{{一句話記憶法（選用）}}</p></div>
+      <section id="{{what-is-xxx}}">
+        <h2>{{什麼是 xxx}}</h2>
+        <div class="panel prose">
+          <p>{{動機：為什麼需要它。專有名詞第一次出現用 <span class="term">English<small>（中文）</small></span>}}</p>
+          <p>{{定義與性質}}</p>
+          <div class="callout"><p>{{重要定義或一句話記憶法}}</p></div>
+          <!-- 靜態圖：每頁至少一張，放在對應文字旁 -->
+          <figure class="fig">
+            <div class="fig-draw" data-fig="{{fig-name}}"></div>
+            <figcaption><b>圖 1</b>：{{這張圖要看什麼}}</figcaption>
+          </figure>
         </div>
       </section>
 
-      <!-- 互動元件（選用，能幫助理解時才做）：動畫、計算器、可切換的比較表… -->
-      <section id="viz">
-        <h2>{{互動動畫}}</h2>
+      <section id="{{operation}}">
+        <h2>{{某個操作怎麼做}}</h2>
+        <div class="panel prose">
+          <p>{{一步一步說明，並用具體例子走一遍}}</p>
+        </div>
+        <!-- 互動動畫：資料會移動、結構會變化時，放在對應講解之後 -->
         <div class="viz" data-viz="{{viz-name}}"></div>
       </section>
+
+      <!-- ===== 以下為常用的輔助段落，依主題挑選 ===== -->
 
       <!-- 表格類：操作與複雜度、做法比較、公式整理… -->
       <section id="{{section-id}}">
@@ -103,7 +114,6 @@
     <div class="wrap">最後更新：{{YYYY-MM-DD}} · 依 CLAUDE.md 規則產生</div>
   </footer>
   <script src="../../../assets/js/site.js"></script>
-  <!-- 有互動元件時才需要下面兩行 -->
   <script src="../../../assets/js/viz-core.js"></script>
   <script src="../../../assets/js/viz/{{subject-id}}/{{topic-id}}.js"></script>
 </body>
