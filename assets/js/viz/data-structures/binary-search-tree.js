@@ -74,7 +74,7 @@
     const W = 680, MAX_DEPTH = 5;
     const player = new Player(root, {
       title: "Binary Search Tree（二元搜尋樹）",
-      width: W, height: 400, code: CODE.insert,
+      width: W, height: 430, code: CODE.insert,
       legend: [["compare", "比較中"], ["found", "找到 / 已輸出"], ["new", "新節點"], ["removed", "被刪除"], ["active", "替代者（前驅 / 後繼）"]],
     });
 
@@ -108,7 +108,7 @@
         walk(T[id].l, d + 1); order.push([id, d]); walk(T[id].r, d + 1);
       })(rootId, 0);
       const n = order.length, step = Math.min(58, (W - 60) / Math.max(n, 1));
-      order.forEach(([id, d], i) => (pos[id] = { x: W / 2 + (i - (n - 1) / 2) * step, y: 46 + d * 62 }));
+      order.forEach(([id, d], i) => (pos[id] = { x: W / 2 + (i - (n - 1) / 2) * step, y: 78 + d * 62 }));
       return pos;
     }
 
@@ -124,7 +124,7 @@
       if (rootId !== null && !pointers.some((p) => p.target === rootId)) pointers.push({ id: "root", label: "root", target: rootId, dir: "left", state: "default" });
       const labels = [];
       if (rootId === null && !(opt.extra || []).length) labels.push({ id: "empty", x: W / 2, y: 160, text: "（空樹 root = NULL）" });
-      if (opt.output) labels.push({ id: "out", x: 24, y: 384, text: "輸出：" + opt.output.join("  "), cls: "strong", anchor: "start" });
+      if (opt.output) labels.push({ id: "out", x: 24, y: 418, text: "輸出：" + opt.output.join("  "), cls: "strong", anchor: "start" });
       return { nodes, edges, pointers, labels, caption, line };
     }
 

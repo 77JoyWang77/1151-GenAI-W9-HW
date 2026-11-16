@@ -203,7 +203,7 @@
         const st = opt.states || {};
         const nodes = [];
         toks.forEach((x, i) => {
-          if (where[x.id] === "in") nodes.push({ id: x.id, label: x.t, shape: "box", x: 30 + i * inStep, y: 62, w: inStep - 6, h: 34, state: st[x.id] || "default" });
+          if (where[x.id] === "in") nodes.push({ id: x.id, label: x.t, shape: "box", x: 30 + i * inStep, y: 92, w: inStep - 6, h: 34, state: st[x.id] || "default" });
         });
         const sStep = stack.length > 5 ? 150 / stack.length : 34;
         stack.forEach((x, i) => nodes.push({ id: x.id, label: x.t, shape: "box", x: 100, y: 296 - i * sStep, w: 56, h: Math.min(30, sStep - 4), state: st[x.id] || (x === EOS ? "muted" : "default") }));
@@ -211,8 +211,8 @@
 
         const hl = new Set(opt.rows || []);
         const labels = [
-          { id: "lin", x: 12, y: 26, text: "INPUT（中序 Infix）", cls: "title", anchor: "start" },
-          { id: "lst", x: 100, y: 120, text: "STACK", cls: "title" },
+          { id: "lin", x: 12, y: 16, text: "INPUT（中序 Infix）", cls: "title", anchor: "start" },
+          { id: "lst", x: 100, y: 330, text: "STACK", cls: "title" },
           { id: "lout", x: 210, y: 252, text: "OUTPUT（後序 Postfix）", cls: "title", anchor: "start" },
           { id: "th0", x: 540, y: 26, text: "token", cls: "title" },
           { id: "th1", x: 600, y: 26, text: "isp", cls: "title" },
