@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Circular Queue（環狀佇列） · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="用取餘數讓陣列頭尾相接的佇列；考研必考空與滿的判斷、元素個數公式與操作追蹤。">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <script src="../../../assets/js/theme.js"></script>
+</head>
+<body data-subject="data-structures" data-chapter="stack-queue" data-chno="3" data-topic="data-structures/stack-queue/circular-queue" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>Data Structures</small></a>
+      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>深色</button></nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures（資料結構）</a> › Ch3 Stacks and Queues（堆疊與佇列） › Circular Queue（環狀佇列）</nav>
+      <div class="topic-head">
+        <h1>Circular Queue（環狀佇列）<small>把陣列頭尾接起來，空位就能一直重複使用</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch3 Stacks and Queues</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">FIFO</span>
+          <span class="chip">front / rear</span>
+          <span class="chip">modulo</span>
+        </div>
+      </div>
+
+      <section id="why-circular">
+        <h2>為什麼需要環狀佇列</h2>
+        <div class="panel prose">
+          <p><span class="term">Queue<small>（佇列）</small></span>就像排隊買飲料：先來的人先買到、新來的人排在最後面，叫做 <span class="term">FIFO<small>（First In, First Out，先進先出）</small></span>。它只有兩個主要操作：<span class="term">enqueue<small>（加入佇列）</small></span>把資料放到隊尾，<span class="term">dequeue<small>（移出佇列）</small></span>從隊頭拿出最早進來的資料。我們用兩個索引記錄隊伍的兩端：<b>front</b> 管出口、<b>rear</b> 管入口。</p>
+          <p>和 Stack 只動同一端不一樣，Queue 的兩端都會動：enqueue 讓 rear 往後走，dequeue 讓 front 也往後走。用一般陣列實作時，問題就出現了：兩個索引都只會往後、不會回頭，整條隊伍會慢慢往陣列尾巴「漂移」。</p>
+          <p>圖 1 是一個大小 8 的陣列，已經放進 8 個元素、又取出了 4 個。前面 4 格明明空著，但 rear 已經到最後一格，程式判斷 <code>rear == MAX - 1</code> 就說「滿了」，再也放不進去。這種「還有空間卻放不下」的情況叫做<b>假性溢位</b>（false overflow）。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cq-linear-problem"></div>
+            <figcaption><b>圖 1</b>：線性佇列取出 4 個元素後，front = 3、rear = 7。前面 [0]～[3] 已經空出來，卻因為 rear 到底而無法再放。</figcaption>
+          </figure>
+          <p>最直覺的補救是每次 dequeue 後把所有元素往前搬一格，但這樣 dequeue 會從 <code>O(1)</code> 變成 <code>O(n)</code>，每取一個都要搬一整排，非常浪費。<span class="term">Circular Queue<small>（環狀佇列）</small></span>的想法是：<b>不要搬資料，讓索引繞回來</b>。rear 走到最後一格後，下一格就是 [0]，前面空出來的位置可以一直重複使用。</p>
+          <details class="code-fold">
+            <summary>看程式碼：線性佇列（對照用）</summary>
+            <div class="code-block">
+              <div class="code-head">線性佇列（對照用）</div>
+              <pre class="code">#define LMAX 8
+int lq[LMAX];
+int lfront = -1, lrear = -1;                   /* front 指向第一個元素的前一格 */
+
+void lenqueue(int x) {
+  if (lrear == LMAX - 1) { printf("Queue Full\n"); exit(1); }   /* 前面有空位也算滿 */
+  lq[++lrear] = x;
+}
+
+int ldequeue(void) {
+  if (lfront == lrear) { printf("Queue Empty\n"); exit(1); }
+  return lq[++lfront];
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="ring">
+        <h2>用取餘數把陣列接成一個環</h2>
+        <div class="panel prose">
+          <p>電腦的記憶體並沒有「環」，環狀佇列底層仍然是一般的陣列，只是我們規定：<b>最後一格的下一格是第 0 格</b>。實作上只要在索引加 1 之後取餘數：</p>
+          <pre class="formula">下一格 = (i + 1) % MAX        例：MAX = 8 時，(7 + 1) % 8 = 0，從最後一格繞回開頭</pre>
+          <p>i 從 0 到 MAX − 2 時，加 1 不會超過 MAX − 1，取餘數不影響結果；只有 i = MAX − 1 時，(MAX − 1 + 1) % MAX = 0，剛好繞回開頭。所以這一行公式同時處理了「一般往後走」和「到底繞回」兩種情況，不需要寫 if。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cq-ring-unroll"></div>
+            <figcaption><b>圖 2</b>：左邊是邏輯上的環，右邊是實際的陣列。佇列內容 10、20、30、40 從 [6] 開始，經過 [7] 後繞回 [0]、[1]，在陣列裡被「切成兩段」，但依照環的順序讀就是正確的 FIFO 順序。</figcaption>
+          </figure>
+          <p>從圖 2 可以看到，環狀佇列裡 rear 的索引可能比 front 還小（rear = 1、front = 5），這是正常現象，代表佇列已經繞過陣列尾端。計算元素個數時也要考慮這點：直接算 rear − front 會得到負數，要先加 MAX 再取餘數。</p>
+          <pre class="formula">元素個數 = (rear − front + MAX) % MAX      例：front = 5、rear = 1，(1 − 5 + 8) % 8 = 4 個</pre>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 環狀佇列裡所有「往前一格」都寫成 <code>(i + 1) % MAX</code>，所有「兩個索引相減」都寫成 <code>(a − b + MAX) % MAX</code>，先加 MAX 才不會出現負數。</p></div>
+        </div>
+      </section>
+
+      <section id="empty-full">
+        <h2>空與滿：front == rear 的兩難</h2>
+        <div class="panel prose">
+          <p>先約定 front 和 rear 的意義。最常見的做法是：</p>
+          <ul>
+            <li><b>rear</b>：指向<b>最後一個元素</b>。</li>
+            <li><b>front</b>：指向<b>第一個元素的前一格</b>。一開始 front = rear = 0，代表空的。</li>
+          </ul>
+          <p>這樣 enqueue 時 rear 先前進一格再放；dequeue 時 front 先前進一格，就剛好指到第一個元素，把它取出來。問題在判斷空和滿：</p>
+          <ul>
+            <li>佇列<b>空</b>的時候，front 和 rear 指在同一格（圖 3 (a)）。</li>
+            <li>如果把 8 格全部放滿，rear 會一路繞一圈，<b>又追上 front</b>，同樣是 front == rear（圖 3 (b)）。</li>
+          </ul>
+          <p>只看 front 和 rear 兩個數字，空和滿長得一模一樣，程式分不出來。這不是寫法不夠聰明，而是資訊量真的不夠：front 和 rear 只有 MAX × MAX 種組合，但佇列可以有 0、1、……、MAX 共 MAX + 1 種個數，對同一個 front 來說，rear 只有 MAX 種值，卻要表示 MAX + 1 種狀態，一定有兩種狀態撞在一起（鴿籠原理）。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cq-empty-full"></div>
+            <figcaption><b>圖 3</b>：(a) 空的時候 front = rear；(b) 8 格全滿時 rear 繞一圈追上 front，也是 front = rear，分不出來；(c) 犧牲 front 那一格：放到 7 個就算滿，判斷條件變成 (rear + 1) % MAX == front。</figcaption>
+          </figure>
+          <h3>解法一：犧牲一格（最常考）</h3>
+          <p>規定 <b>front 指的那一格永遠不放資料</b>。當 rear 再往前一格就會撞到 front 時，就宣告已滿。於是：</p>
+          <pre class="formula">空：front == rear
+滿：(rear + 1) % MAX == front      容量 = MAX − 1</pre>
+          <p>代價是浪費一格空間，MAX = 8 時只能放 7 個。好處是程式最簡單，只靠 front、rear 兩個變數就能判斷，所以考試沒有特別說明時，通常就是這種做法。</p>
+          <h3>解法二：多記一個變數</h3>
+          <p>另一種想法是補足缺少的資訊：多記一個 <code>count</code>（目前個數），或一個 <code>tag</code> 旗標記錄「最後一次操作是 enqueue 還是 dequeue」。front == rear 時，如果最後一次是 enqueue 就是滿、是 dequeue 就是空。這樣 MAX 格全部用得到，但每次操作都要多更新一個變數。後面「其他做法」一節會詳細比較。</p>
+        </div>
+      </section>
+
+      <section id="operations">
+        <h2>enqueue 與 dequeue 怎麼做</h2>
+        <div class="panel prose">
+          <p>以下都採用「犧牲一格」的做法，兩個操作都是先檢查、再移動索引、最後存取資料：</p>
+          <ol>
+            <li><b>enqueue(x)</b>：檢查 <code>(rear + 1) % MAX == front</code>，成立就是滿了；否則 <code>rear = (rear + 1) % MAX</code>，再把 x 放進 <code>queue[rear]</code>。</li>
+            <li><b>dequeue()</b>：檢查 <code>front == rear</code>，成立就是空的；否則 <code>front = (front + 1) % MAX</code>，回傳 <code>queue[front]</code>。</li>
+          </ol>
+          <p>注意 dequeue 並不需要把資料「清掉」，front 往前走之後，那一格就變成新的犧牲格，裡面的舊資料之後會被覆蓋。兩個操作都只做固定幾個步驟，與佇列裡有多少元素無關，所以都是 <code>O(1)</code>。</p>
+          <h3>完整走一遍（MAX = 6）</h3>
+          <p>從空佇列 front = rear = 0 開始，依序執行下列操作。注意第 8 步 rear 從 5 繞回 0：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>操作</th><th>front</th><th>rear</th><th>佇列內容（從頭到尾）</th><th>說明</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>enqueue(1)</td><td>0</td><td>1</td><td>1</td><td>rear 前進到 1，放入</td></tr>
+                <tr><td>2</td><td>enqueue(2)</td><td>0</td><td>2</td><td>1 2</td><td></td></tr>
+                <tr><td>3</td><td>enqueue(3)</td><td>0</td><td>3</td><td>1 2 3</td><td></td></tr>
+                <tr><td>4</td><td>dequeue()</td><td>1</td><td>3</td><td>2 3</td><td>front 前進到 1，回傳 queue[1] = 1</td></tr>
+                <tr><td>5</td><td>dequeue()</td><td>2</td><td>3</td><td>3</td><td>回傳 2</td></tr>
+                <tr><td>6</td><td>enqueue(4)</td><td>2</td><td>4</td><td>3 4</td><td></td></tr>
+                <tr><td>7</td><td>enqueue(5)</td><td>2</td><td>5</td><td>3 4 5</td><td>rear 到了最後一格</td></tr>
+                <tr><td>8</td><td>enqueue(6)</td><td>2</td><td>0</td><td>3 4 5 6</td><td>(5 + 1) % 6 = 0，繞回開頭</td></tr>
+                <tr><td>9</td><td>enqueue(7)</td><td>2</td><td>1</td><td>3 4 5 6 7</td><td>(1 + 1) % 6 = 2 == front，<b>已滿</b>，共 5 = MAX − 1 個</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>第 9 步之後再 enqueue 就會失敗，雖然陣列在 front = 2 的位置還有一格，但那是犧牲格。用個數公式驗算：(1 − 2 + 6) % 6 = 5，和表格一致。</p>
+          <details class="code-fold">
+            <summary>看程式碼：enqueue / dequeue（犧牲一格）</summary>
+            <div class="code-block">
+              <div class="code-head">enqueue / dequeue（犧牲一格）</div>
+              <pre class="code">#define MAX 8                                  /* 陣列大小；最多只能放 MAX - 1 個 */
+int queue[MAX];
+int front = 0, rear = 0;                       /* front 指向第一個元素的前一格 */
+
+int isEmpty(void) { return front == rear; }
+int isFull(void)  { return (rear + 1) % MAX == front; }
+
+void enqueue(int x) {
+  if (isFull()) { printf("Queue Full\n"); exit(1); }
+  rear = (rear + 1) % MAX;                     /* rear 先往前一格 */
+  queue[rear] = x;
+}
+
+int dequeue(void) {
+  if (isEmpty()) { printf("Queue Empty\n"); exit(1); }
+  front = (front + 1) % MAX;                   /* front 先往前一格 */
+  return queue[front];
+}
+
+int size(void) { return (rear - front + MAX) % MAX; }</pre>
+            </div>
+          </details>
+          <p>下面的動畫把 MAX = 8 的陣列畫成一個環，灰色那一格就是 front 指的犧牲格。可以自己輸入數值 enqueue、dequeue，按「放到滿」觀察第幾個會滿；也可以切換成「多記 count」的做法比較。</p>
+        </div>
+        <div class="viz" data-viz="cq-ring"></div>
+      </section>
+
+      <section id="other-methods">
+        <h2>其他做法：count 與 tag</h2>
+        <div class="panel prose">
+          <p>如果不想浪費那一格，就要多記一些資訊。最清楚的做法是用 <code>head</code> 直接指向第一個元素，再用 <code>count</code> 記錄目前有幾個：</p>
+          <ul>
+            <li>空：<code>count == 0</code>；滿：<code>count == MAX</code>，MAX 格全部用得到。</li>
+            <li>新元素放在最後一個元素的下一格：<code>(head + count) % MAX</code>，所以連 rear 都不用記。</li>
+            <li>dequeue 先取 <code>cq[head]</code>，再讓 <code>head = (head + 1) % MAX</code>，count 減 1。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：enqueue / dequeue（多記 count）</summary>
+            <div class="code-block">
+              <div class="code-head">enqueueCount / dequeueCount（多記 count）</div>
+              <pre class="code">int cq[MAX];
+int head = 0, count = 0;                       /* head：第一個元素；count：目前個數 */
+
+void enqueueCount(int x) {
+  if (count == MAX) { printf("Queue Full\n"); exit(1); }
+  cq[(head + count) % MAX] = x;                /* 最後一個元素的下一格 */
+  count++;
+}
+
+int dequeueCount(void) {
+  if (count == 0) { printf("Queue Empty\n"); exit(1); }
+  int x = cq[head];
+  head = (head + 1) % MAX;
+  count--;
+  return x;
+}</pre>
+            </div>
+          </details>
+          <p><b>tag 做法</b>則保留 front、rear 原本的意義，另外用一個布林值記錄最後一次操作：enqueue 後設 tag = 1、dequeue 後設 tag = 0。front == rear 時，tag = 1 代表剛放滿、tag = 0 代表剛取空。它也能用滿 MAX 格，但多了一次判斷與賦值。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>做法</th><th>額外變數</th><th>容量</th><th>空的條件</th><th>滿的條件</th></tr></thead>
+              <tbody>
+                <tr><td>犧牲一格</td><td>無</td><td>MAX − 1</td><td><code>front == rear</code></td><td><code>(rear + 1) % MAX == front</code></td></tr>
+                <tr><td>count</td><td>count</td><td>MAX</td><td><code>count == 0</code></td><td><code>count == MAX</code></td></tr>
+                <tr><td>tag</td><td>tag（1 bit）</td><td>MAX</td><td><code>front == rear &amp;&amp; tag == 0</code></td><td><code>front == rear &amp;&amp; tag == 1</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>三種做法的操作都是 <code>O(1)</code>，差別只在「省一格空間」和「多維護一個變數」之間的取捨。考題常問「如果不想浪費空間要怎麼改」，答案就是 count 或 tag。另外要特別小心：不同題目對 front、rear 的定義可能不同（例如 front 指向第一個元素、rear 指向最後一個元素的下一格），作答前一定要先看清楚題目的定義，公式要跟著調整。</p>
+        </div>
+      </section>
+
+      <section id="applications">
+        <h2>效能與應用</h2>
+        <div class="panel prose">
+          <p>環狀佇列的 enqueue、dequeue、判斷空滿、計算個數全部是 <code>O(1)</code>，空間固定是 MAX 格，不需要動態配置記憶體，也不會有假性溢位。缺點是容量在一開始就固定，放滿了就不能再放；如果事先不知道最多會有多少資料，可以改用鏈結串列實作的佇列，代價是每個節點多一個指標、而且每次都要 malloc。</p>
+          <p>它的應用幾乎都和「先來先處理、空間固定」有關：</p>
+          <ul>
+            <li><b>CPU 排程</b>：Round-Robin 排程把等待的行程排成一個環，輪流分配時間片段。</li>
+            <li><b>緩衝區</b>：鍵盤輸入、網路封包、音訊串流常用 <span class="term">Ring Buffer<small>（環狀緩衝區）</small></span>，生產者從 rear 寫、消費者從 front 讀，兩邊速度不同也能順利交接。</li>
+            <li><b>圖的 BFS</b>：廣度優先搜尋用佇列記錄「下一批要拜訪的點」，節點數量已知時常直接用環狀佇列。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="ops">
+        <h2>操作與複雜度整理</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>操作 Operation</th><th>做法（犧牲一格）</th><th>時間</th></tr></thead>
+              <tbody>
+                <tr><td><code>enqueue(x)</code></td><td>不滿時 <code>rear = (rear + 1) % MAX</code>，放入 <code>queue[rear]</code></td><td><code>O(1)</code></td></tr>
+                <tr><td><code>dequeue()</code></td><td>不空時 <code>front = (front + 1) % MAX</code>，回傳 <code>queue[front]</code></td><td><code>O(1)</code></td></tr>
+                <tr><td><code>isEmpty()</code></td><td><code>front == rear</code></td><td><code>O(1)</code></td></tr>
+                <tr><td><code>isFull()</code></td><td><code>(rear + 1) % MAX == front</code></td><td><code>O(1)</code></td></tr>
+                <tr><td><code>size()</code></td><td><code>(rear − front + MAX) % MAX</code></td><td><code>O(1)</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>計算元素個數、位置</td><td>很常考</td><td>先確認 front、rear 的定義，再用 (rear − front + MAX) % MAX；位置用 (起點 + k) % MAX</td><td><a class="q-link" href="#q-ds-0021">例題</a> <a class="q-link" href="#q-ds-0025">例題</a></td></tr>
+                <tr><td>追蹤一串操作</td><td>很常考</td><td>畫表格記錄每一步的 front、rear，每次移動都取餘數，最後用個數公式驗算</td><td><a class="q-link" href="#q-ds-0023">例題</a></td></tr>
+                <tr><td>空與滿的判斷、容量</td><td>很常考</td><td>犧牲一格：滿是 (rear + 1) % MAX == front，容量 MAX − 1</td><td><a class="q-link" href="#q-ds-0022">例題</a></td></tr>
+                <tr><td>count／tag 等其他做法</td><td>常考</td><td>寫出各自的空、滿條件與存放位置 (head + count) % MAX</td><td><a class="q-link" href="#q-ds-0024">例題</a></td></tr>
+                <tr><td>證明與說明</td><td>偶爾</td><td>用鴿籠原理說明只靠 front、rear 無法區分 MAX + 1 種狀態</td><td><a class="q-link" href="#q-ds-0026">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 元素個數 = rear − front</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> rear 可能比 front 小（已經繞回），要寫 (rear − front + MAX) % MAX</span> <a class="q-link" href="#q-ds-0021">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 大小 MAX 的環狀佇列可以放 MAX 個</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 犧牲一格的做法只能放 MAX − 1 個；要放滿 MAX 個得多記 count 或 tag</span> <a class="q-link" href="#q-ds-0022">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> front == rear 就代表空</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 不犧牲一格時，全滿也是 front == rear，兩種狀態分不出來</span> <a class="q-link" href="#q-ds-0026">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> rear 到了 MAX − 1 就不能再放</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是線性佇列；環狀佇列會用 (rear + 1) % MAX 繞回 [0]</span> <a class="q-link" href="#q-ds-0023">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 公式背一套就好</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> front 指「第一個元素」或「前一格」、rear 指「最後一個」或「下一個空位」，公式都不同，先看題目定義</span> <a class="q-link" href="#q-ds-0025">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="circular-queue"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js"></script>
+  <script src="../../../assets/js/viz-core.js"></script>
+  <script src="../../../assets/js/viz/data-structures/circular-queue.js"></script>
+</body>
+</html>

@@ -110,9 +110,16 @@
           "en": "Circular Queue",
           "zh": "環狀佇列",
           "book": "3.2",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": true
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "FIFO",
+            "front / rear",
+            "modulo"
+          ],
+          "updated": "2026-11-16"
         },
         {
           "id": "expression-evaluation",

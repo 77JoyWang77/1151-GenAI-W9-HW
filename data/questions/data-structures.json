@@ -315,6 +315,108 @@
       ],
       "answer": "(B) 最多 1 個，而且只可能是左子節點",
       "explanation": "<p>左子樹中最大的節點是從左子節點一路往右走到底的位置，所以它一定沒有右子節點（否則右邊還有更大的值），但可能有左子節點。因此刪除它時只會是 Case 1 或 Case 2。</p>"
+    },
+    {
+      "id": "ds-0021",
+      "topics": [
+        "circular-queue"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "一個大小 MAX = 8 的環狀佇列採用「犧牲一格」的做法（front 指向第一個元素的前一格，rear 指向最後一個元素）。目前 front = 5、rear = 2，佇列中有幾個元素？",
+      "choices": [
+        "(A) 3",
+        "(B) −3",
+        "(C) 5",
+        "(D) 6"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>rear 比 front 小，代表佇列已經繞過陣列尾端，不能直接算 rear − front = −3。要用 (rear − front + MAX) % MAX = (2 − 5 + 8) % 8 = <b>5</b>。</p><p>驗證：元素放在 front 的下一格到 rear，也就是 [6]、[7]、[0]、[1]、[2]，正好 5 個。選 (A) 的人是把 |2 − 5| 當答案，選 (B) 是忘了繞回。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "ds-0022",
+      "topics": [
+        "circular-queue"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "大小 MAX = 10 的陣列實作環狀佇列，只用 front、rear 兩個變數並採用「犧牲一格」的做法。下列敘述何者正確？",
+      "choices": [
+        "(A) 最多放 10 個，滿的條件是 front == rear",
+        "(B) 最多放 9 個，滿的條件是 (rear + 1) % 10 == front",
+        "(C) 最多放 9 個，滿的條件是 rear == 9",
+        "(D) 最多放 10 個，滿的條件是 (rear + 1) % 10 == front"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>front 指的那一格永遠空著，所以容量是 MAX − 1 = <b>9</b>。rear 再前進一格就會撞到 front 時算滿：<code>(rear + 1) % 10 == front</code>。</p><p>(A) 的 front == rear 是「空」的條件；(C) 的 rear == 9 是線性佇列的寫法，在環狀佇列中 rear 到 9 之後還能繞回 0。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "ds-0023",
+      "topics": [
+        "circular-queue"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "question": "大小 MAX = 6 的環狀佇列（犧牲一格，front 指向第一個元素的前一格），一開始 front = rear = 0。依序執行：<br><code>enqueue(1), enqueue(2), enqueue(3), dequeue(), dequeue(), enqueue(4), enqueue(5), enqueue(6)</code><br>(1) 最後 front、rear 各是多少？ (2) 佇列中有幾個元素？ (3) 還能再 enqueue 幾次才會滿？",
+      "answer": "(1) front = 2、rear = 0　(2) 4 個　(3) 1 次",
+      "explanation": "<p>逐步追蹤（每次移動都取 % 6）：</p><ul><li>enqueue 1、2、3：rear 依序變成 1、2、3。</li><li>dequeue 兩次：front 變成 1、2，取出 1、2。</li><li>enqueue 4、5：rear 變成 4、5。</li><li>enqueue 6：rear = (5 + 1) % 6 = <b>0</b>，繞回開頭。</li></ul><p>(2) 個數 = (0 − 2 + 6) % 6 = <b>4</b>（3、4、5、6）。</p><p>(3) 容量是 MAX − 1 = 5，所以只能再放 <b>1</b> 個：放 7 後 rear = 1，此時 (1 + 1) % 6 = 2 == front，已滿。很多人以為陣列有 6 格、還能放 2 個，忘了犧牲格。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "ds-0024",
+      "topics": [
+        "circular-queue"
+      ],
+      "level": "advanced",
+      "type": "填空",
+      "question": "環狀佇列改用 head（指向第一個元素）與 count（元素個數）實作，MAX = 5。目前 head = 3、count = 4。執行 <code>enqueue(9)</code> 後再執行兩次 <code>dequeue()</code>。<br>(1) 9 被放在哪個索引？ (2) 兩次 dequeue 分別取出哪兩個索引的元素？ (3) 最後 head、count 各是多少？",
+      "answer": "(1) 2　(2) [3] 與 [4]　(3) head = 0、count = 3",
+      "explanation": "<p>(1) 新元素放在最後一個元素的下一格：(head + count) % MAX = (3 + 4) % 5 = <b>2</b>。放入後 count = 5，剛好全滿，這就是 count 做法可以用滿 MAX 格的地方。</p><p>(2) dequeue 先取 cq[head] 再移動 head：第一次取 [3]，head 變 4；第二次取 [4]，head = (4 + 1) % 5 = 0。</p><p>(3) head = <b>0</b>，count = 5 − 2 = <b>3</b>。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "ds-0025",
+      "topics": [
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "question": "某題目對環狀佇列的定義為：front 指向<b>第一個元素</b>，rear 指向<b>最後一個元素的下一個空位</b>，陣列大小 MAX = 10，並犧牲一格以區分空與滿。若目前 front = 7、rear = 3，下列何者正確？",
+      "choices": [
+        "(A) 共有 4 個元素，第 4 個元素（從隊頭數起）在索引 0",
+        "(B) 共有 6 個元素，第 4 個元素在索引 0",
+        "(C) 共有 6 個元素，第 4 個元素在索引 1",
+        "(D) 共有 5 個元素，第 4 個元素在索引 0"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>在這個定義下，元素占用的是 [front, rear) 這段（環狀），個數仍然是 (rear − front + MAX) % MAX = (3 − 7 + 10) % 10 = <b>6</b>：索引 7、8、9、0、1、2。</p><p>第 1 個元素在 front = 7，第 k 個在 (front + k − 1) % MAX，所以第 4 個在 (7 + 3) % 10 = <b>0</b>。</p><p>這題的重點是：定義改了，個數公式剛好不變，但「第一個元素在哪裡」變了（本頁的寫法是 front + 1）。作答前一定要先確認題目對 front、rear 的定義。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "ds-0026",
+      "topics": [
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "question": "用大小為 MAX 的陣列實作環狀佇列，若只使用 front、rear 兩個介於 0～MAX − 1 的整數記錄狀態，且希望 MAX 格都能存放資料。請證明：這樣一定無法正確區分所有狀態，並說明兩種常見的解決方法。",
+      "answer": "固定 front 時，rear 只有 MAX 種值，佇列個數卻有 0～MAX 共 MAX + 1 種，由鴿籠原理必有兩種個數對應同一組 (front, rear)；解法為犧牲一格或多記 count／tag。",
+      "explanation": "<p><b>證明</b>：佇列的元素個數可以是 0、1、……、MAX，共 <b>MAX + 1</b> 種。對固定的 front，個數完全由 rear 決定（個數 = (rear − front) mod MAX 這類函數），而 rear 只有 MAX 種可能值。把 MAX + 1 種個數放進 MAX 個 rear 值裡，由鴿籠原理，至少有兩種不同的個數對應到同一組 (front, rear)。實際上撞在一起的就是個數 0（空）與個數 MAX（滿），兩者都是 front == rear。</p><p><b>解法</b>：</p><ul><li><b>犧牲一格</b>：規定最多只放 MAX − 1 個，狀態數降為 MAX 種，就能一一對應；滿的條件改為 (rear + 1) % MAX == front。</li><li><b>多記資訊</b>：加一個 count（記個數）或 tag（記最後一次操作是 enqueue 還是 dequeue），front == rear 時再用它區分空與滿，MAX 格都能使用。</li></ul>",
+      "source": {
+        "kind": "original"
+      }
     }
   ]
 }
