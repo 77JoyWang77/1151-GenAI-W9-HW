@@ -356,23 +356,18 @@
     renderQuizToggle();
     renderCodeBlocks();
     renderDifficulty();
-    try {
-      const subjects = $("#subjects");
-      if ($("#home-stats")) await renderHome();
-      if (subjects) await renderSubjects(subjects);
-      const chapters = $("#chapters");
-      if (chapters) await renderSubject(chapters, document.body.dataset.subject);
-      const entry = $("[data-qcount]");
-      if (entry) await renderBankEntry(entry, document.body.dataset.subject);
-      const qbox = $(".qbank[data-questions]");
-      if (qbox) await renderTopicQuestions(qbox, document.body.dataset.subject, qbox.dataset.questions);
-      const bank = $("#qbank-all");
-      if (bank) await renderQuestionBank(bank, document.body.dataset.subject);
-      const pager = $(".pager");
-      if (pager && document.body.dataset.topic) await renderPager(pager, document.body.dataset.topic);
-    } catch (e) {
-      const box = $("#subjects") || $("#chapters");
-      if (box) box.textContent = "讀不到 data/ 裡的 JSON。本機預覽請用 python -m http.server 開啟。";
-    }
+    // 每個區塊各自載入：一個失敗不會拖累其他區塊
+    const fail = (box) => box && (box.textContent = "讀不到 data/ 裡的 JSON。本機預覽請用 python -m http.server 開啟；線上請重新整理（Ctrl + F5）。");
+    const run = async (sel, fn) => { const el = $(sel); if (!el) return; try { await fn(el); } catch (e) { console.error(e); fail(el); } };
+    const subjectId = document.body.dataset.subject;
+    await Promise.all([
+      run("#home-stats", () => renderHome()),
+      run("#subjects", (el) => renderSubjects(el)),
+      run("#chapters", (el) => renderSubject(el, subjectId)),
+      run("[data-qcount]", (el) => renderBankEntry(el, subjectId)),
+      run(".qbank[data-questions]", (el) => renderTopicQuestions(el, subjectId, el.dataset.questions)),
+      run("#qbank-all", (el) => renderQuestionBank(el, subjectId)),
+      run(".pager", (el) => document.body.dataset.topic && renderPager(el, document.body.dataset.topic)),
+    ]);
   });
 })();
