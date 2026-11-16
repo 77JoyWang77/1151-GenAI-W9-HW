@@ -74,7 +74,6 @@
             <figcaption><b>圖 2</b>：MAX = 5 的陣列堆疊三種狀態。空的時候 top = −1；滿的時候 top = MAX − 1 = 4。</figcaption>
           </figure>
           <p>陣列實作的缺點是大小固定：開太小會溢位，開太大會浪費空間。下面的動畫可以自己 push、pop，觀察 top 怎麼移動，也可以故意塞滿或清空，看看 overflow、underflow 怎麼發生。</p>
-        </div>
         <details class="code-fold">
           <summary>看程式碼：push / pop / peek（陣列實作）</summary>
         <div class="code-block">
@@ -102,6 +101,7 @@ int peek(void) {
 }</pre>
         </div>
         </details>
+        </div>
         <div class="viz" data-viz="stack-ops"></div>
       </section>
 
@@ -118,7 +118,6 @@ int peek(void) {
             <div class="fig-draw" data-fig="stack-linked"></div>
             <figcaption><b>圖 3</b>：鏈結串列實作的 Stack。top 指向最後 push 的 C，新節點永遠接在最前面。</figcaption>
           </figure>
-        </div>
         <details class="code-fold">
           <summary>看程式碼：push / pop（鏈結串列實作）</summary>
         <div class="code-block">
@@ -147,7 +146,7 @@ int lpop(void) {
 }</pre>
         </div>
         </details>
-        <div class="panel table-scroll">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>比較</th><th>陣列實作</th><th>鏈結串列實作</th></tr></thead>
             <tbody>
@@ -157,6 +156,7 @@ int lpop(void) {
               <tr><td>適合</td><td>大小可預估、要求簡單快速</td><td>大小變動大、無法預估</td></tr>
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 
@@ -205,8 +205,7 @@ int lpop(void) {
         <div class="panel prose">
           <p>我們平常寫的 <code>a + b * c</code> 叫做 <span class="term">infix<small>（中序式）</small></span>：運算子夾在兩個運算元中間。中序式對人很直覺，但電腦處理起來很麻煩：必須知道 <code>*</code> 比 <code>+</code> 優先，遇到括號還要特別處理。</p>
           <p>如果把運算子放到兩個運算元<b>後面</b>，就變成 <span class="term">postfix<small>（後序式，又稱逆波蘭表示法）</small></span>：<code>a b c * +</code>。後序式有兩個大優點：<b>不需要括號</b>，而且<b>不需要考慮優先權</b>，從左到右掃一遍、用一個 Stack 就能算出結果。所以編譯器常先把中序式轉成後序式，再拿去求值。</p>
-        </div>
-        <div class="panel table-scroll">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>中序 infix</th><th>前序 prefix</th><th>後序 postfix</th></tr></thead>
             <tbody>
@@ -215,15 +214,13 @@ int lpop(void) {
               <tr><td><code>a * (b + c) * d</code></td><td><code>* * a + b c d</code></td><td><code>a b c + * d *</code></td></tr>
             </tbody>
           </table>
-        </div>
-        <div class="panel prose">
+          </div>
           <h3>轉換的想法</h3>
           <p>從左到右讀中序式：<b>運算元</b>出現的順序在中序和後序裡完全一樣，所以讀到就直接輸出；<b>運算子</b>則要「等一下」，因為它後面可能還有優先權更高、應該先算的運算子。等待中的運算子就放在 Stack 裡。</p>
           <p>讀到一個新的運算子時，要先看 Stack 頂端的運算子：如果頂端那個應該<b>先算</b>（優先權較高，或同級且左結合），就把它 pop 出來輸出，一直重複到不用再 pop 為止，再把新運算子 push 進去。輸入讀完後，把 Stack 剩下的全部 pop 出來。</p>
           <h3>為什麼要分 isp 和 icp</h3>
           <p>麻煩的是左括號 <code>(</code>：它剛讀進來時要「無條件 push」（優先權要最高），可是一旦進了 Stack，又要擋住外面的運算子、不能被 pop 掉（優先權要最低）。同一個符號需要兩種優先權，所以給每個符號兩個數字：<span class="term">in-stack precedence<small>（isp，在堆疊裡的優先權）</small></span>和 <span class="term">incoming precedence<small>（icp，剛讀入時的優先權）</small></span>。規則只剩一條：<b>只要 isp[top] ≥ icp[token]，就 pop</b>。右括號 <code>)</code> 則是特例：一路 pop 到遇見 <code>(</code> 為止，兩個括號都丟掉。</p>
-        </div>
-        <div class="panel table-scroll">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>token</th><th>isp（在堆疊裡）</th><th>icp（剛讀入）</th><th>為什麼這樣設</th></tr></thead>
             <tbody>
@@ -234,11 +231,9 @@ int lpop(void) {
               <tr><td><code>eos</code></td><td>0</td><td>0</td><td>放在堆疊底，不用另外判斷「堆疊是否為空」</td></tr>
             </tbody>
           </table>
-        </div>
-        <div class="panel prose">
+          </div>
           <h3>完整走一遍：<code>a * (b + c) * d</code></h3>
-        </div>
-        <div class="panel table-scroll">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>讀入</th><th>判斷</th><th>Stack（底 → 頂）</th><th>輸出</th></tr></thead>
             <tbody>
@@ -254,7 +249,7 @@ int lpop(void) {
               <tr><td>結束</td><td>pop 到 eos 為止</td><td>eos</td><td><b>a b c + * d *</b></td></tr>
             </tbody>
           </table>
-        </div>
+          </div>
         <details class="code-fold">
           <summary>看程式碼：中序轉後序：isp()、icp() 與 infixToPostfix()</summary>
         <div class="code-block">
@@ -302,6 +297,7 @@ void infixToPostfix(const char *in, char *out) {
         </details>
         <p>為了讓程式簡潔，這裡的運算元限定為單一字母或數字，<code>#</code> 代表放在堆疊底的 eos。下面的動畫則可以輸入多個字元的變數名稱，右側程式碼和這段完全相同。</p>
         <p>自己試試看：輸入任何運算式（字母、數字或變數名稱，支援 <code>+ - * / % ^ ( )</code>），每一步都會寫出 isp 和 icp 的比較。</p>
+        </div>
         <div class="viz" data-viz="infix-postfix"></div>
       </section>
 
@@ -310,8 +306,7 @@ void infixToPostfix(const char *in, char *out) {
         <div class="panel prose">
           <p>有了後序式，求值就非常單純：從左到右掃，遇到<b>運算元</b>就 push；遇到<b>運算子</b>就 pop 兩個數出來計算，再把結果 push 回去。全部掃完時，Stack 裡唯一剩下的數就是答案。</p>
           <p>唯一要小心的是順序：<b>先 pop 出來的是右運算元</b>，後 pop 的才是左運算元。加法、乘法順序錯了沒差，但減法和除法就會算錯。</p>
-        </div>
-        <div class="panel table-scroll">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>讀入</th><th>動作</th><th>Stack（底 → 頂）</th></tr></thead>
             <tbody>
@@ -324,7 +319,7 @@ void infixToPostfix(const char *in, char *out) {
               <tr><td><code>*</code></td><td>pop 7、pop 1，算 1 × 7 = 7，push</td><td><b>7</b></td></tr>
             </tbody>
           </table>
-        </div>
+          </div>
         <details class="code-fold">
           <summary>看程式碼：後序式求值 evalPostfix()</summary>
         <div class="code-block">
@@ -351,11 +346,13 @@ void infixToPostfix(const char *in, char *out) {
 }</pre>
         </div>
         </details>
+        </div>
       </section>
 
       <section id="ops">
         <h2>操作與複雜度整理</h2>
-        <div class="panel table-scroll">
+        <div class="panel prose">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>操作 Operation</th><th>做法</th><th>時間複雜度</th></tr></thead>
             <tbody>
@@ -367,13 +364,15 @@ void infixToPostfix(const char *in, char *out) {
               <tr><td>Postfix 求值</td><td>運算元 push；遇運算子 pop 兩個計算後 push 結果</td><td><code>O(n)</code></td></tr>
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 
       <section id="exam">
         <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
         <p>這個主題常見的考法、解題步驟，以及可以馬上練習的例題（點「例題」會跳到下方對應的題目）。</p>
-        <div class="panel table-scroll">
+          <div class="table-scroll">
           <table class="exam-map">
             <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
             <tbody>
@@ -384,13 +383,14 @@ void infixToPostfix(const char *in, char *out) {
               <tr><td>用 Stack 實作其他結構</td><td>偶爾</td><td>兩個 Stack 做 Queue（攤銷分析）、一個陣列放兩個 Stack</td><td><a class="q-link" href="#q-ds-0009">例題</a> <a class="q-link" href="#q-ds-0010">例題</a></td></tr>
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 
       <section id="pitfalls">
         <h2>易錯點</h2>
+        <div class="panel prose">
         <p>每一點都附了一題專門考這個觀念的例題，可以馬上驗證自己有沒有搞懂。</p>
-        <div class="panel">
           <ul class="pitfalls">
             <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 後序求值時 <code>a = pop(), b = pop()</code> 再算 a − b</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 先 pop 的是右運算元 b，要算 <code>a − b</code>，減法與除法順序錯就全錯</span> <a class="q-link" href="#q-ds-0005">例題</a></li>
             <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> <code>(</code> 只有一個優先權</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> <code>(</code> 的 icp = 20（讀入時最大，一定 push），isp = 0（在堆疊裡最小，誰都不會把它 pop 掉）。這就是要分成 isp / icp 兩張表的原因</span> <a class="q-link" href="#q-ds-0008">例題</a></li>

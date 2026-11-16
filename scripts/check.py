@@ -33,6 +33,8 @@ class Page(HTMLParser):
         self.code_blocks = self.untitled = self.full_code = 0
         self.bad_tabs = 0
         self.unfolded = 0           # 沒有收合在 details.code-fold 裡的程式碼
+        self.split_cards = []       # 被拆成好幾張卡片的 section
+        self.loose_parts = []       # 放在卡片外面的表格、圖、程式碼
         self.qbank = None           # 練習題容器的 data-questions
         self.qlinks = []            # 「例題」連結指向的題目 id
 
@@ -55,6 +57,16 @@ class Page(HTMLParser):
             self._depth += 1
             if self._depth == 1:
                 self.sections.append([a.get("id"), False])
+                self._sec_level = len(self._open) + 1   # section 的直接子元素所在層數
+                self._last = None
+        elif self._depth == 1 and len(self._open) == getattr(self, "_sec_level", -1):
+            kind = "panel" if "panel" in cls else "viz" if "viz" in cls else tag
+            if kind == "panel" and self._last == "panel":
+                self.split_cards.append(self.sections[-1][0])
+            if kind in ("panel", "viz"):
+                self._last = kind
+            if tag == "table" or "table-scroll" in cls or (tag == "figure") or "code-fold" in cls:
+                self.loose_parts.append(self.sections[-1][0])
         if tag == "h2" and self._depth == 1 and self.sections:
             self.sections[-1][1] = True
         if tag == "div" and "viz" in cls and a.get("data-viz"):
@@ -192,6 +204,10 @@ def check_topic(path, subj, ch, t, errors):
         err("每個 .code-block 都要有 .code-head 標題")
     if p.bad_tabs:
         err(".code-tabs 裡的每個 .code-block 都要有 data-tab（頁籤名稱）")
+    for sid in sorted(set(p.split_cards)):
+        err(f'section「{sid}」被拆成好幾張卡片：同一節的內容要放在同一個 .panel.prose 裡（只有互動動畫可以把卡片隔開）')
+    for sid in sorted(set(p.loose_parts)):
+        err(f'section「{sid}」有表格、圖或程式碼放在卡片外，要移進 .panel.prose 裡')
     if p.unfolded:
         err(f'有 {p.unfolded} 段程式碼沒有收合：要放在 <details class="code-fold"><summary>看程式碼：…</summary> 裡')
     # 練習題：要有 .qbank 容器，題庫中這個主題每個難度至少 2 題

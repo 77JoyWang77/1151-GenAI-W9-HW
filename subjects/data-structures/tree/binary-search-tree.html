@@ -42,7 +42,6 @@
             <figcaption><b>圖 1</b>：(a) 合法的 BST；(b) 只看父子關係都正確，但 12 在 10 的左子樹中卻大於 10，所以不是 BST。</figcaption>
           </figure>
           <p>一般的 BST 定義中 key 不重複。如果真的要存重複值，常見做法是在節點加一個計數器，或約定相同的 key 一律放右邊。考試沒特別說明時，就當作不允許重複。</p>
-        </div>
         <details class="code-fold">
           <summary>看程式碼：節點結構</summary>
         <div class="code-block">
@@ -67,6 +66,7 @@ Node *newNode(int x) {
 }</pre>
         </div>
         </details>
+        </div>
       </section>
 
       <section id="search">
@@ -84,7 +84,6 @@ Node *newNode(int x) {
             <div class="fig-draw" data-fig="bst-search-path"></div>
             <figcaption><b>圖 2</b>：搜尋 35 的路徑：35 &lt; 50 往左、35 &gt; 30 往右、35 &lt; 40 往左，第 4 次比較找到。右半邊整棵子樹完全不用看。</figcaption>
           </figure>
-        </div>
         <details class="code-fold">
           <summary>看程式碼：搜尋（迴圈版／遞迴版）</summary>
         <div class="code-tabs">
@@ -108,6 +107,7 @@ Node *newNode(int x) {
           </div>
         </div>
         </details>
+        </div>
       </section>
 
       <section id="insert">
@@ -119,7 +119,6 @@ Node *newNode(int x) {
             <div class="fig-draw" data-fig="bst-shapes"></div>
             <figcaption><b>圖 3</b>：同樣是 1～5。依 3, 1, 4, 2, 5 插入時高 3 層；依 1, 2, 3, 4, 5 插入時退化成 5 層的鏈。</figcaption>
           </figure>
-        </div>
         <details class="code-fold">
           <summary>看程式碼：插入（遞迴版／迴圈版）</summary>
         <div class="code-tabs">
@@ -153,6 +152,7 @@ Node *newNode(int x) {
           </div>
         </div>
         </details>
+        </div>
       </section>
 
       <section id="delete">
@@ -175,7 +175,6 @@ Node *newNode(int x) {
             <figcaption><b>圖 4</b>：刪除 root 50（兩個子節點）。取左子樹最大的 40 頂替；40 原本的左子節點 35 接到 30 的右邊。</figcaption>
           </figure>
           <p>用前驅或後繼都正確，但刪完的樹形狀不同。考試題目通常會指定用哪一種，沒有指定時，要在答案中寫清楚自己用的是哪一種。本頁的動畫預設用左子樹最大，可以切換成右子樹最小來比較。</p>
-        </div>
         <details class="code-fold">
           <summary>看程式碼：刪除（左子樹最大／右子樹最小）</summary>
         <div class="code-tabs">
@@ -215,11 +214,14 @@ Node *newNode(int x) {
           </div>
         </div>
         </details>
+        </div>
       </section>
 
       <section id="viz">
         <h2>動手操作</h2>
+        <div class="panel prose">
         <p>上面講的搜尋、插入、刪除都可以在這裡自己試，右側程式碼會跟著操作切換、並亮起正在執行的那一行。建議依序刪除 <code>20</code>（葉節點）、<code>60</code>（一個子節點）、<code>30</code>（兩個子節點），比較三種情況；也可以按「中序走訪」驗證結果是不是排序好的。</p>
+        </div>
         <div class="viz" data-viz="bst"></div>
       </section>
 
@@ -233,7 +235,6 @@ Node *newNode(int x) {
             <li><b>Tree Sort</b>：把 n 個數依序插入 BST，再做中序走訪，就完成排序。平均 <code>O(n log n)</code>，最差（輸入已排序）<code>O(n²)</code>。</li>
             <li><b>由 preorder 重建 BST</b>：BST 的中序就是排序後的結果，所以「preorder + 排序」等於「preorder + inorder」，可以唯一決定一棵樹。</li>
           </ul>
-        </div>
         <details class="code-fold">
           <summary>看程式碼：inorder()：中序走訪</summary>
         <div class="code-block">
@@ -246,6 +247,7 @@ Node *newNode(int x) {
 }</pre>
         </div>
         </details>
+        </div>
       </section>
 
       <section id="height">
@@ -263,7 +265,8 @@ Node *newNode(int x) {
 
       <section id="ops">
         <h2>操作與複雜度整理</h2>
-        <div class="panel table-scroll">
+        <div class="panel prose">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>操作 Operation</th><th>做法</th><th>平均</th><th>最差（退化成鏈）</th></tr></thead>
             <tbody>
@@ -274,9 +277,9 @@ Node *newNode(int x) {
               <tr><td>Inorder 走訪</td><td>左 → 根 → 右，每個節點拜訪一次</td><td colspan="2"><code>O(n)</code></td></tr>
             </tbody>
           </table>
-        </div>
+          </div>
         <h3>刪除的三種情況</h3>
-        <div class="panel table-scroll">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>情況 Case</th><th>處理方式</th></tr></thead>
             <tbody>
@@ -285,13 +288,15 @@ Node *newNode(int x) {
               <tr><td>Case 3：兩個子節點</td><td>用左子樹最大（前驅）或右子樹最小（後繼）的值取代，再刪掉那個節點。子樹的最大、最小值所在的節點最多只有一個子節點，所以會變成 Case 1 或 2</td></tr>
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 
       <section id="exam">
         <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
         <p>這個主題常見的考法、解題步驟，以及可以馬上練習的例題（點「例題」會跳到下方對應的題目）。</p>
-        <div class="panel table-scroll">
+          <div class="table-scroll">
           <table class="exam-map">
             <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
             <tbody>
@@ -303,13 +308,14 @@ Node *newNode(int x) {
               <tr><td>證明與實作</td><td>偶爾</td><td>中序遞增用數學歸納法；判斷 BST 用遞迴傳遞上下界</td><td><a class="q-link" href="#q-ds-0017">例題</a> <a class="q-link" href="#q-ds-0019">例題</a></td></tr>
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 
       <section id="pitfalls">
         <h2>易錯點</h2>
+        <div class="panel prose">
         <p>每一點都附了一題專門考這個觀念的例題，可以馬上驗證自己有沒有搞懂。</p>
-        <div class="panel">
           <ul class="pitfalls">
             <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 只要每個節點「左子 &lt; 自己 &lt; 右子」就是 BST</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 必須是左「整棵子樹」都比較小。例如 10 的左子 5 底下若有右子 15，就不是 BST</span> <a class="q-link" href="#q-ds-0019">例題</a></li>
             <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> BST 的操作都是 O(log n)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 是 O(h)。沒有平衡機制時，最差是 O(n)</span> <a class="q-link" href="#q-ds-0015">例題</a></li>

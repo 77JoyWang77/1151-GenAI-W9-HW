@@ -53,17 +53,24 @@
 
       <section id="{{operation}}">
         <h2>{{某個操作怎麼做}}</h2>
+        <!-- 一個 section 一張卡片：文字、表格、圖、callout、看程式碼都放在同一個 .panel.prose 裡 -->
         <div class="panel prose">
-          <p>{{一步一步說明，並用具體例子走一遍}}</p>
-        </div>
-        <!-- 程式碼：放在對應講解之後、預設收合，每段要有標題；多種寫法在 details 裡改用 .code-tabs 頁籤 -->
-        <details class="code-fold">
-          <summary>看程式碼：{{函式名稱與用途}}</summary>
-          <div class="code-block">
-            <div class="code-head">{{函式名稱與用途}}</div>
-            <pre class="code">{{從 code/<subject-id>/<topic-id>.c 原封不動取出的片段}}</pre>
+          <p>{{一步一步說明}}</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>{{步驟}}</th><th>{{狀態}}</th></tr></thead>
+              <tbody><tr><td>{{用具體例子逐步列出}}</td><td>{{…}}</td></tr></tbody>
+            </table>
           </div>
-        </details>
+          <!-- 程式碼：預設收合，每段要有標題；多種寫法在 details 裡改用 .code-tabs 頁籤 -->
+          <details class="code-fold">
+            <summary>看程式碼：{{函式名稱與用途}}</summary>
+            <div class="code-block">
+              <div class="code-head">{{函式名稱與用途}}</div>
+              <pre class="code">{{從 code/<subject-id>/<topic-id>.c 原封不動取出的片段}}</pre>
+            </div>
+          </details>
+        </div>
         <!-- 互動動畫：資料會移動、結構會變化時，放在對應講解之後 -->
         <div class="viz" data-viz="{{viz-name}}"></div>
       </section>
@@ -73,11 +80,13 @@
       <!-- 表格類：操作與複雜度、做法比較、公式整理… -->
       <section id="{{section-id}}">
         <h2>{{表格標題}}</h2>
-        <div class="panel table-scroll">
-          <table>
-            <thead><tr><th>{{欄}}</th><th>{{欄}}</th></tr></thead>
-            <tbody><tr><td>{{內容}}</td><td>{{內容}}</td></tr></tbody>
-          </table>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>{{欄}}</th><th>{{欄}}</th></tr></thead>
+              <tbody><tr><td>{{內容}}</td><td>{{內容}}</td></tr></tbody>
+            </table>
+          </div>
         </div>
       </section>
 

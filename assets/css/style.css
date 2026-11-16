@@ -316,6 +316,11 @@ figure.fig figcaption b { color: var(--ink); }
 .prose ol, .prose ul { padding-left: 1.4em; margin: 0 0 12px; }
 .prose li { margin: 4px 0; }
 .prose h3:first-child { margin-top: 0; }
+.prose .table-scroll { margin: 14px 0 18px; }
+.prose > :last-child { margin-bottom: 0; }
+.prose ul.pitfalls { padding-left: 0; }
+.prose details.code-fold:last-child { margin-bottom: 0; }
+.prose figure.fig:last-child { margin-bottom: 0; }
 
 /* SVG 元素 */
 .vnode circle, .vnode rect { stroke-width: 2.5; transition: fill .3s, stroke .3s; }
