@@ -28,7 +28,7 @@
       "zh": "計算機組織",
       "icon": "cpu",
       "color": 2,
-      "status": "planned",
+      "status": "active",
       "desc": "指令集、管線、快取、記憶體階層"
     },
     {

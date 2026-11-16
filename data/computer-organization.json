@@ -1,0 +1,294 @@
+{
+  "subject": {
+    "id": "computer-organization",
+    "en": "Computer Organization",
+    "zh": "計算機組織"
+  },
+  "textbook": {
+    "title": "Computer Organization and Design: The Hardware/Software Interface",
+    "author": "Patterson, Hennessy",
+    "edition": "5th"
+  },
+  "chapters": [
+    {
+      "id": "performance",
+      "no": 1,
+      "en": "Computer Abstractions and Performance",
+      "zh": "計算機概論與效能",
+      "desc": "CPU 時間、CPI、Amdahl 定律與功耗",
+      "topics": [
+        {
+          "id": "cpu-performance",
+          "en": "CPU Time and CPI",
+          "zh": "CPU 時間與 CPI",
+          "book": "1.6",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "amdahls-law",
+          "en": "Amdahl's Law",
+          "zh": "Amdahl 定律",
+          "book": "1.10, 6.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "power-wall",
+          "en": "Power Wall and Multicore",
+          "zh": "功耗牆與多核心",
+          "book": "1.5, 1.7–1.8",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "instructions",
+      "no": 2,
+      "en": "Instructions",
+      "zh": "指令集",
+      "desc": "MIPS 指令格式、定址模式與程序呼叫",
+      "topics": [
+        {
+          "id": "mips-instruction-formats",
+          "en": "MIPS Instruction Formats",
+          "zh": "MIPS 指令格式",
+          "book": "2.2–2.7",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "addressing-modes",
+          "en": "Addressing Modes",
+          "zh": "定址模式",
+          "book": "2.10",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "procedure-calls",
+          "en": "Procedure Calls and the Stack",
+          "zh": "程序呼叫與堆疊",
+          "book": "2.8",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "translating-programs",
+          "en": "Compiling, Assembling, and Linking",
+          "zh": "編譯、組譯與連結",
+          "book": "2.12",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "arithmetic",
+      "no": 3,
+      "en": "Arithmetic for Computers",
+      "zh": "計算機算術",
+      "desc": "補數、乘除法、浮點數與加法器",
+      "topics": [
+        {
+          "id": "twos-complement-overflow",
+          "en": "Two's Complement and Overflow",
+          "zh": "二補數與溢位",
+          "book": "2.4, 3.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "booth-multiplication",
+          "en": "Multiplication and Booth's Algorithm",
+          "zh": "乘法與 Booth 演算法",
+          "book": "3.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "division",
+          "en": "Division Hardware",
+          "zh": "除法硬體",
+          "book": "3.4",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "ieee-754",
+          "en": "IEEE 754 Floating Point",
+          "zh": "IEEE 754 浮點數",
+          "book": "3.5",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "carry-lookahead-adder",
+          "en": "Carry-Lookahead Adder",
+          "zh": "前瞻進位加法器",
+          "book": "B.6",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "processor",
+      "no": 4,
+      "en": "The Processor",
+      "zh": "處理器",
+      "desc": "資料路徑、控制單元與管線化",
+      "topics": [
+        {
+          "id": "single-cycle-datapath",
+          "en": "Single-Cycle Datapath",
+          "zh": "單一週期資料路徑",
+          "book": "4.3–4.4",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "control-unit",
+          "en": "Control Unit and ALU Control",
+          "zh": "控制單元與 ALU 控制",
+          "book": "4.4",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "pipelining",
+          "en": "Pipelining",
+          "zh": "管線化",
+          "book": "4.5–4.6",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "data-hazards",
+          "en": "Data Hazards and Forwarding",
+          "zh": "資料危障與轉送",
+          "book": "4.7",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "control-hazards",
+          "en": "Control Hazards and Branch Prediction",
+          "zh": "控制危障與分支預測",
+          "book": "4.8",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "exceptions",
+          "en": "Exceptions",
+          "zh": "例外處理",
+          "book": "4.9",
+          "status": "planned",
+          "priority": "low"
+        },
+        {
+          "id": "instruction-level-parallelism",
+          "en": "Instruction-Level Parallelism",
+          "zh": "指令層級平行",
+          "book": "4.10",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "memory-hierarchy",
+      "no": 5,
+      "en": "Memory Hierarchy",
+      "zh": "記憶體階層",
+      "desc": "快取、虛擬記憶體與一致性",
+      "topics": [
+        {
+          "id": "cache-mapping",
+          "en": "Cache Organization and Mapping",
+          "zh": "快取組織與映射",
+          "book": "5.3–5.4",
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "cache",
+            "direct-mapped",
+            "set-associative",
+            "LRU",
+            "3C"
+          ],
+          "updated": "2026-11-16"
+        },
+        {
+          "id": "cache-performance",
+          "en": "Cache Performance",
+          "zh": "快取效能",
+          "book": "5.4",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "virtual-memory",
+          "en": "Virtual Memory and TLB",
+          "zh": "虛擬記憶體與 TLB",
+          "book": "5.7",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "error-correction",
+          "en": "Hamming Code",
+          "zh": "漢明碼",
+          "book": "5.5",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "cache-coherence",
+          "en": "Cache Coherence",
+          "zh": "快取一致性",
+          "book": "5.10",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "raid",
+          "en": "RAID",
+          "zh": "RAID 磁碟陣列",
+          "book": "5.11",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "parallel",
+      "no": 6,
+      "en": "Parallel Processors",
+      "zh": "平行處理器",
+      "desc": "Flynn 分類、多執行緒與多處理器",
+      "topics": [
+        {
+          "id": "flynn-taxonomy",
+          "en": "Flynn's Taxonomy and Multithreading",
+          "zh": "Flynn 分類與硬體多執行緒",
+          "book": "6.3–6.4",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "multiprocessors",
+          "en": "Multiprocessors and GPUs",
+          "zh": "多處理器與 GPU",
+          "book": "6.5–6.7",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    }
+  ]
+}

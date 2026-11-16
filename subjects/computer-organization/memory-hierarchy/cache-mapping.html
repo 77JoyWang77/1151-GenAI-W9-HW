@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cache Organization and Mapping 快取組織與映射 · 計算機組織 | 資工考研互動學習站</title>
+  <meta name="description" content="直接映射、集合關聯、全關聯快取，位址切法、總位元數、LRU 替換與 3C 失誤分析。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=9de9f590">
+  <script src="../../../assets/js/theme.js?v=9de9f590"></script>
+</head>
+<body data-subject="computer-organization" data-chapter="memory-hierarchy" data-chno="5" data-topic="computer-organization/memory-hierarchy/cache-mapping" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Computer Organization 計算機組織</a> › Ch5 Memory Hierarchy 記憶體階層 › Cache Organization and Mapping 快取組織與映射</nav>
+      <div class="topic-head">
+        <h1>Cache Organization and Mapping 快取組織與映射<small>區塊放哪裡、怎麼找、滿了換誰</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch5 Memory Hierarchy</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">cache</span>
+          <span class="chip">direct-mapped</span>
+          <span class="chip">set-associative</span>
+          <span class="chip">LRU</span>
+          <span class="chip">3C</span>
+        </div>
+      </div>
+
+      <section id="why-cache">
+        <h2>為什麼需要快取</h2>
+        <div class="panel prose">
+          <p>處理器每個時脈都可能要讀指令、讀寫資料，但主記憶體（DRAM）存取一次要幾十到上百奈秒，CPU 一個時脈不到 1 奈秒，等一次記憶體就是上百個時脈白白浪費。又快又大的記憶體做不出來（快的 SRAM 貴又佔面積），於是做成<span class="term">Memory Hierarchy<small>（記憶體階層）</small></span>：靠近 CPU 放小而快的 <span class="term">Cache<small>（快取）</small></span>，後面是大而慢的主記憶體、再後面是更大更慢的磁碟。</p>
+          <p>小小的快取之所以有用，靠的是程式的 <span class="term">Locality<small>（區域性）</small></span>：</p>
+          <ul>
+            <li><b>Temporal locality（時間區域性）</b>：剛用過的資料，很快會再用。例如迴圈的計數器、迴圈本身的指令。</li>
+            <li><b>Spatial locality（空間區域性）</b>：用了某個位址，很快會用到附近的位址。例如依序走過陣列、循序執行的指令。</li>
+          </ul>
+          <p>所以快取把「最近用過的資料，連同它附近的資料」一起留在身邊。快取和記憶體之間搬資料的單位叫 <span class="term">Block<small>（區塊，又叫 line）</small></span>，一次搬一整塊，順便利用空間區域性。</p>
+          <p>幾個名詞：要的資料在快取裡叫 <span class="term">Hit<small>（命中）</small></span>，不在叫 <span class="term">Miss<small>（失誤）</small></span>；命中次數 ÷ 存取次數是 hit rate，1 − hit rate 是 miss rate；失誤時到下一層拿資料多花的時間叫 miss penalty。</p>
+          <p>這一頁要回答的問題是：<b>一個記憶體區塊可以放在快取的哪裡？放進來之後怎麼找到它？滿了要換掉誰？</b></p>
+        </div>
+      </section>
+
+      <section id="direct-mapped">
+        <h2>直接映射：每個區塊只有一個位置</h2>
+        <div class="panel prose">
+          <p>最簡單的規則是 <span class="term">Direct-Mapped Cache<small>（直接映射快取）</small></span>：快取有 N 個區塊，記憶體區塊 b 只能放在第 <b>b mod N</b> 格。N 取 2 的次方，mod 就是取區塊編號的<b>最低幾個位元</b>，硬體上不用做除法。</p>
+          <p>可是很多記憶體區塊會對到同一格（例如 N = 8 時，區塊 3、11、19 都在第 3 格），所以每格要另外記下「現在放的是哪一個」：</p>
+          <ul>
+            <li><b>Tag</b>：區塊編號除以 N 的商，也就是去掉 index 之後剩下的<b>高位元</b>。index 已經由位置決定，只要存 tag 就能還原完整的區塊編號。</li>
+            <li><b>Valid bit</b>：這一格有沒有放資料。開機時全部是 0，否則會把垃圾值誤認成命中。</li>
+          </ul>
+          <h3>把位址切成三段</h3>
+          <p>CPU 送出的是 <b>byte 位址</b>，要依序切成三段：</p>
+          <ul>
+            <li><b>offset</b>（最低位）：區塊內的第幾個 byte，位元數 = log<sub>2</sub>(區塊大小，單位 byte)。</li>
+            <li><b>index</b>（中間）：哪一個 set，位元數 = log<sub>2</sub>(set 數)。直接映射時 set 數 = 區塊數。</li>
+            <li><b>tag</b>（最高位）：剩下的位元，位元數 = 位址長度 − index − offset。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cache-address-fields"></div>
+            <figcaption><b>圖 1</b>：32 位元位址的切法。同樣 16 KiB、區塊 16 B，直接映射有 1024 個 set，index 10 位元、tag 18 位元；改成 4-way 只剩 256 個 set，index 少 2 位元，tag 多 2 位元。offset 只和區塊大小有關，不會變。</figcaption>
+          </figure>
+          <h3>例子：快取總共要幾個位元</h3>
+          <p>32 位元位址、16 KiB 資料、區塊 16 B、直接映射：</p>
+          <ul>
+            <li>offset：16 = 2<sup>4</sup>，4 位元。</li>
+            <li>區塊數：16 KiB ÷ 16 B = 1024 = 2<sup>10</sup>，index 10 位元。</li>
+            <li>tag：32 − 10 − 4 = 18 位元。</li>
+            <li>每一格：資料 16 × 8 = 128 位元，加上 tag 18 位元、valid 1 位元，共 147 位元。</li>
+            <li>總共 1024 × 147 = 150,528 位元。資料本身只有 131,072 位元，額外約 14.8% 是 tag 和 valid 的成本。</li>
+          </ul>
+          <p>區塊越大，這個額外比例越小：同樣 4 KiB 但區塊只有 4 B 時，額外要 65.6%；32 KiB、區塊 64 B、2-way 只要 3.7%。</p>
+          <details class="code-fold">
+            <summary>看程式碼：addressFields() 切位址、算總位元數</summary>
+            <div class="code-block"><div class="code-head">addressFields()：tag / index / offset 與總位元數</div><pre class="code">void addressFields(long cacheBytes, long blockBytes, int assoc, int addrBits) {
+  long numBlocks = cacheBytes / blockBytes;
+  long numSets = numBlocks / assoc;
+  int offset = log2i(blockBytes);
+  int index = log2i(numSets);
+  int tag = addrBits - index - offset;
+  long total = numBlocks * (blockBytes * 8 + tag + 1);   /* 每格：資料 + tag + valid */
+  printf("快取 %ld B、區塊 %ld B、%d-way：%ld 個 set\n", cacheBytes, blockBytes, assoc, numSets);
+  printf("  tag %d 位元、index %d 位元、offset %d 位元；總共 %ld 位元（資料 %ld 位元，額外 %.1f%%）\n",
+         tag, index, offset, total, cacheBytes * 8, 100.0 * (total - cacheBytes * 8) / (cacheBytes * 8));
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="associativity">
+        <h2>集合關聯與全關聯</h2>
+        <div class="panel prose">
+          <p>直接映射的缺點很明顯：兩個常用的區塊剛好對到同一格，就會一直互相擠掉，即使快取其他格都空著也一樣。解法是讓一個區塊有<b>不只一個</b>位置可以放：</p>
+          <ul>
+            <li><span class="term">Set-Associative Cache<small>（集合關聯快取）</small></span>：把快取分成若干個 set，每個 set 有 n 格（n-way）。區塊 b 放進第 <b>b mod (set 數)</b> 個 set，set 裡哪一格都可以。</li>
+            <li><span class="term">Fully Associative Cache<small>（全關聯快取）</small></span>：整個快取只有一個 set，區塊放哪一格都行，沒有 index 欄位。</li>
+          </ul>
+          <p>直接映射其實就是 1-way 集合關聯，全關聯就是 N-way（N 是區塊數），三者是同一個規則的兩端。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cache-mapping-compare"></div>
+            <figcaption><b>圖 2</b>：同樣 8 個區塊的三種組織方式，記憶體區塊 12 可以放的位置。關聯度越高，可以放的格子越多、越不容易被擠掉，但找資料時要同時比對的 tag 也越多。</figcaption>
+          </figure>
+          <p>代價在找資料的時候：區塊可能在 set 裡的任何一格，所以 n 格的 tag 要<b>同時</b>比對，需要 n 個比較器，再用多工器選出命中的那一格。關聯度越高，硬體越多，命中時間也稍長。全關聯要比對全部的 tag，所以只用在很小的快取（例如 TLB）。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>直接映射</th><th>n-way 集合關聯</th><th>全關聯</th></tr></thead>
+              <tbody>
+                <tr><td>區塊可以放的位置</td><td>1 格</td><td>set 裡 n 格</td><td>任何一格</td></tr>
+                <tr><td>index 位元數</td><td>log<sub>2</sub>(區塊數)</td><td>log<sub>2</sub>(區塊數 / n)</td><td>0</td></tr>
+                <tr><td>每次比對幾個 tag</td><td>1</td><td>n</td><td>全部</td></tr>
+                <tr><td>需要替換策略</td><td>不用（只有一格）</td><td>要</td><td>要</td></tr>
+                <tr><td>conflict miss</td><td>最多</td><td>較少</td><td>沒有</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>同樣 16 KiB、區塊 16 B 改成 4-way：set 數 1024 ÷ 4 = 256，index 8 位元，tag 20 位元，總共 1024 × (128 + 20 + 1) = 152,576 位元，比直接映射多 2048 位元（每格多 2 位元 tag）。</p>
+        </div>
+      </section>
+
+      <section id="replacement">
+        <h2>滿了要換掉誰</h2>
+        <div class="panel prose">
+          <p>失誤時要把新區塊放進它的 set。直接映射只有一格，沒得選；集合關聯和全關聯則要先找有沒有空格（valid = 0），都滿了才需要 <span class="term">Replacement Policy<small>（替換策略）</small></span>決定換掉哪一個：</p>
+          <ul>
+            <li><b>LRU（Least Recently Used，最近最少使用）</b>：換掉最久沒被用到的。根據時間區域性，最久沒用的最可能以後也用不到。考題沒特別說明時，預設用 LRU。</li>
+            <li><b>Random（隨機）</b>：硬體簡單；關聯度高時，效果和 LRU 差不多。</li>
+            <li><b>FIFO</b>：換掉最早放進來的，不管它最近有沒有被用到。</li>
+          </ul>
+          <p>LRU 要記住每一格的使用順序：2-way 時每個 set 只要 1 個位元（記哪一格比較舊）就夠；關聯度越高，要記的資訊越多，所以 4-way 以上常用近似的 LRU。</p>
+          <p>下面的 access() 用 lastUsed 記錄最後使用時間：先在 set 裡比對 tag，命中就更新時間；失誤時先找空格，沒有空格就挑 lastUsed 最小的換掉。</p>
+          <details class="code-fold">
+            <summary>看程式碼：access() 一次存取</summary>
+            <div class="code-block"><div class="code-head">access()：找 set、比對 tag、LRU 替換</div><pre class="code">int access(int addr) {
+  int block = addr / blockWords;   /* 屬於第幾個記憶體區塊 */
+  int set = block % sets;          /* 只能放進這一個 set */
+  int tag = block / sets;          /* 剩下的高位元當 tag */
+  now++;
+  for (int w = 0; w &lt; ways; w++)   /* 同一個 set 裡的每一格都要比對 tag */
+    if (cache[set][w].valid &amp;&amp; cache[set][w].tag == tag) {
+      cache[set][w].lastUsed = now;
+      return 1;                    /* 命中 */
+    }
+  int victim = 0;                  /* 失誤：先找空格，沒有空格就換掉最久沒用的 */
+  for (int w = 0; w &lt; ways; w++) {
+    if (!cache[set][w].valid) { victim = w; break; }
+    if (cache[set][w].lastUsed &lt; cache[set][victim].lastUsed) victim = w;
+  }
+  cache[set][victim].valid = 1;
+  cache[set][victim].tag = tag;
+  cache[set][victim].lastUsed = now;
+  return 0;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>輸入一串 word 位址、快取的區塊數和每個區塊的 word 數，選一種映射方式，看每個位址落在哪個 set、是命中還是失誤、換掉了誰。預設的例子用同一串位址比較三種方式：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>位址</th><th>3</th><th>11</th><th>3</th><th>19</th><th>4</th><th>11</th><th>20</th><th>3</th><th>命中</th></tr></thead>
+              <tbody>
+                <tr><td>直接映射（8 set × 1）</td><td>M</td><td>M</td><td>M</td><td>M</td><td>M</td><td>M</td><td>M</td><td>M</td><td>0 / 8</td></tr>
+                <tr><td>2-way（4 set × 2）</td><td>M</td><td>M</td><td>H</td><td>M</td><td>M</td><td>M</td><td>M</td><td>M</td><td>1 / 8</td></tr>
+                <tr><td>全關聯（1 set × 8）</td><td>M</td><td>M</td><td>H</td><td>M</td><td>M</td><td>H</td><td>M</td><td>H</td><td>3 / 8</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>直接映射時 3、11、19 都對到 set 3（除以 8 餘 3），三個區塊搶一格，每次都把前一個擠掉；4 和 20 也同樣搶 set 4。快取明明還有 6 格空著，命中卻是 0。2-way 時 3、11、19 仍然擠在 set 3，三個區塊搶兩格，只有第二次存取 3 命中；全關聯不分 set，8 個位址只用到 5 個不同區塊，全放得下，重複存取的 3 次全部命中。</p>
+        </div>
+        <div class="viz" data-viz="cache-sim"></div>
+      </section>
+
+      <section id="block-size">
+        <h2>區塊大小與三種失誤</h2>
+        <div class="panel prose">
+          <h3>區塊大一點，好還是不好？</h3>
+          <p>區塊越大，一次搬進越多相鄰的資料，越能利用空間區域性。例如依序存取位址 0～7 再存取 0、1，快取都只有 4 個 word：</p>
+          <ul>
+            <li>4 個區塊、每塊 1 word：每次都是新區塊，10 次全部失誤。</li>
+            <li>2 個區塊、每塊 2 word：存取 0 時把 0、1 一起搬進來，下一次存取 1 就命中，10 次命中 5 次。</li>
+          </ul>
+          <p>但在快取總容量固定時，區塊越大，<b>區塊的數量越少</b>，衝突就越多；而且每次失誤要搬的資料越多，miss penalty 也越大。所以 miss rate 隨區塊大小先下降、再上升，存在一個適中的大小。</p>
+          <h3>3C：失誤的三種原因</h3>
+          <ul>
+            <li><b>Compulsory miss（強制失誤，又叫 cold miss）</b>：第一次存取某個區塊，快取裡不可能有。只能靠加大區塊（一次搬多一點）來減少。</li>
+            <li><b>Capacity miss（容量失誤）</b>：程式同時要用的區塊比快取能放的還多，就算是全關聯也放不下。只能加大快取。</li>
+            <li><b>Conflict miss（衝突失誤）</b>：快取還有空間，卻因為幾個區塊對到同一個 set 而互相擠掉。提高關聯度可以減少，全關聯時完全沒有。</li>
+          </ul>
+          <p>判斷方法：第一次存取是 compulsory；換成同樣大小的<b>全關聯 LRU</b> 快取也會失誤的是 capacity；全關聯會命中、實際快取卻失誤的是 conflict。上面的例子在直接映射下有 5 次 compulsory 和 3 次 conflict（第二次的 3、11 和第三次的 3），全關聯剛好把那 3 次 conflict 都變成命中。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 一句話記：compulsory 靠大區塊、capacity 靠大快取、conflict 靠高關聯度。</p></div>
+        </div>
+      </section>
+
+      <section id="writes">
+        <h2>寫入的處理</h2>
+        <div class="panel prose">
+          <p>讀取只要把資料搬進快取；寫入則多了一個問題：快取和記憶體的內容會不一樣。兩種做法：</p>
+          <ul>
+            <li><span class="term">Write-Through<small>（寫穿）</small></span>：每次寫入都同時寫快取和記憶體，兩者永遠一致。缺點是每次寫入都要等記憶體，通常搭配 <b>write buffer</b>：先把資料放進緩衝區，CPU 繼續執行，緩衝區自己慢慢寫回記憶體。</li>
+            <li><span class="term">Write-Back<small>（寫回）</small></span>：只寫快取，並把這一格的 <b>dirty bit</b> 設成 1；等到這一格要被換掉時，才把它寫回記憶體。同一個區塊被寫很多次時，只需要寫回一次，省下大量記憶體流量。代價是每格多 1 個 dirty 位元，換掉時也可能多花一次寫回的時間。</li>
+          </ul>
+          <p>寫入失誤時，要不要先把區塊搬進快取？<b>write allocate</b> 會搬進來再寫（通常搭配 write-back），<b>no-write allocate</b> 直接寫到記憶體、不搬進快取（通常搭配 write-through）。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>切 tag / index / offset、算總位元數</td><td>很常考</td><td>offset = log<sub>2</sub>(區塊 byte 數)；set 數 = 區塊數 ÷ n；index = log<sub>2</sub>(set 數)；tag = 剩下的；每格 = 資料 + tag + valid（write-back 再加 dirty）</td><td><a class="q-link" href="#q-co-0003">例題</a></td></tr>
+                <tr><td>位址落在哪一格</td><td>很常考</td><td>區塊編號 = 位址 ÷ 區塊大小；set = 區塊編號 mod set 數；tag = 區塊編號 ÷ set 數</td><td><a class="q-link" href="#q-co-0001">例題</a></td></tr>
+                <tr><td>給位址序列，判斷 hit / miss</td><td>很常考</td><td>逐一算 set 和 tag，畫出每個 set 的內容；集合關聯用 LRU 換掉最久沒用的</td><td><a class="q-link" href="#q-co-0004">例題</a> <a class="q-link" href="#q-co-0006">例題</a></td></tr>
+                <tr><td>3C 分類</td><td>常考</td><td>第一次 → compulsory；全關聯 LRU 也失誤 → capacity；否則 → conflict</td><td><a class="q-link" href="#q-co-0002">例題</a> <a class="q-link" href="#q-co-0005">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 直接拿 byte 位址 mod 區塊數當 index</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要先除以區塊大小得到區塊編號，再 mod set 數</span> <a class="q-link" href="#q-co-0001">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 算總位元數時只算資料</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每格還有 tag 和 valid（write-back 還有 dirty），題目問「總共」時都要算進去</span> <a class="q-link" href="#q-co-0003">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 關聯度提高，index 和 tag 都不變</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 關聯度加倍，set 數減半，index 少 1 位元、tag 多 1 位元</span> <a class="q-link" href="#q-co-0003">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 關聯度越高，命中率一定越高</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 一般會比較好，但某些存取序列下 LRU 的 2-way 反而比直接映射差</span> <a class="q-link" href="#q-co-0006">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 全關聯就沒有失誤了</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 全關聯只消除 conflict miss，compulsory 和 capacity miss 仍然存在</span> <a class="q-link" href="#q-co-0002">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="cache-mapping"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=9de9f590"></script>
+  <script src="../../../assets/js/viz-core.js?v=9de9f590"></script>
+  <script src="../../../assets/js/viz/computer-organization/cache-mapping.js?v=9de9f590"></script>
+</body>
+</html>

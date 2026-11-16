@@ -1,0 +1,106 @@
+{
+  "subject": "computer-organization",
+  "levels": {
+    "basic": "基礎",
+    "advanced": "進階",
+    "exam": "考研級"
+  },
+  "questions": [
+    {
+      "id": "co-0001",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "直接映射快取有 16 個區塊，每個區塊 4 bytes。byte 位址 148 會放在第幾格（index），tag 是多少？",
+      "choices": [
+        "(A) index 4、tag 9",
+        "(B) index 9、tag 4",
+        "(C) index 5、tag 2",
+        "(D) index 2、tag 5"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>先把 byte 位址換成區塊編號：148 ÷ 4 = 37（每 4 個 byte 是一個區塊）。</p><ul><li>index = 37 mod 16 = <b>5</b></li><li>tag = 37 ÷ 16 = <b>2</b>（取商）</li></ul><p>答案 (C)。常見錯誤是直接拿 byte 位址算：148 mod 16 = 4、148 ÷ 16 = 9，就是選項 (A)，忘了先除以區塊大小。也可以用位元看：148 = 1001 0100<sub>2</sub>，最低 2 位元是 offset，接著 4 位元 0101 = 5 是 index，剩下的 10 = 2 是 tag。</p>"
+    },
+    {
+      "id": "co-0002",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "把直接映射快取換成<b>同樣容量、同樣區塊大小</b>的全關聯快取（LRU），哪一種失誤一定會消失？",
+      "choices": [
+        "(A) Compulsory miss",
+        "(B) Capacity miss",
+        "(C) Conflict miss",
+        "(D) 三種都會消失"
+      ],
+      "answer": "(C)",
+      "explanation": "<ul><li>Compulsory miss：第一次存取一個區塊，不管怎麼放都不在快取裡，不會消失。</li><li>Capacity miss：要用的區塊比快取放得下的還多，全關聯也一樣放不下。</li><li><b>Conflict miss</b>：定義就是「全關聯不會失誤、但實際的快取失誤」的那些，換成全關聯後全部消失。答案 (C)。</li></ul><p>常見錯誤是以為全關聯就沒有失誤。全關聯只解決「位置不夠彈性」的問題，解決不了「第一次」和「容量不夠」。</p>"
+    },
+    {
+      "id": "co-0003",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "32 位元 byte 位址，快取資料容量 64 KiB，區塊 32 bytes，4-way 集合關聯，使用 write-through（不需要 dirty bit）。(1) tag、index、offset 各幾位元？(2) 整個快取共需要多少位元？(3) 改成 write-back 要多幾個位元？(4) 若改成直接映射，tag 和 index 變成幾位元？",
+      "answer": "(1) tag 18、index 9、offset 5；(2) 563,200 位元；(3) 多 2,048 位元；(4) tag 16、index 11",
+      "explanation": "<ol><li>offset：32 = 2<sup>5</sup>，<b>5</b> 位元。區塊數 = 64 KiB ÷ 32 B = 2048；set 數 = 2048 ÷ 4 = 512 = 2<sup>9</sup>，index <b>9</b> 位元；tag = 32 − 9 − 5 = <b>18</b> 位元。</li><li>每一格：資料 32 × 8 = 256 位元 + tag 18 + valid 1 = 275 位元。共 2048 × 275 = <b>563,200</b> 位元，其中資料 524,288 位元，額外約 7.4%。</li><li>write-back 每格多 1 個 dirty bit，共多 <b>2,048</b> 位元。</li><li>直接映射：set 數 = 區塊數 = 2048 = 2<sup>11</sup>，index <b>11</b> 位元，tag = 32 − 11 − 5 = <b>16</b> 位元。關聯度從 1 變 4（乘 4），index 少 2 位元、tag 多 2 位元。</li></ol><p>（已用程式計算驗證。）常見錯誤：把 set 數當成區塊數，或忘了加 valid bit。</p>"
+    },
+    {
+      "id": "co-0004",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "快取有 4 個區塊、每個區塊 1 word。依序存取 word 位址 2、10、2、6、10、14、2、18。分別用 (a) 直接映射、(b) 2-way 集合關聯（LRU）時，每次是 hit 還是 miss？各命中幾次？",
+      "answer": "(a) 全部 miss，命中 0 次；(b) 只有第 3 次存取（位址 2）命中，命中 1 次",
+      "explanation": "<p><b>(a) 直接映射</b>：set = 位址 mod 4。2、10、6、14、18 除以 4 都餘 2，全部擠在 set 2，每一次都把前一個擠掉：8 次全 miss，<b>命中 0 次</b>。另外 3 個 set 從頭到尾都是空的。</p><p><b>(b) 2-way</b>：2 個 set，set = 位址 mod 2。這些位址全是偶數，全部在 set 0，兩格輪流用：</p><div class=\"table-scroll\"><table><thead><tr><th>位址</th><th>結果</th><th>set 0（舊 → 新）</th></tr></thead><tbody><tr><td>2</td><td>M</td><td>2</td></tr><tr><td>10</td><td>M</td><td>2, 10</td></tr><tr><td>2</td><td>H</td><td>10, 2</td></tr><tr><td>6</td><td>M（換掉 10）</td><td>2, 6</td></tr><tr><td>10</td><td>M（換掉 2）</td><td>6, 10</td></tr><tr><td>14</td><td>M（換掉 6）</td><td>10, 14</td></tr><tr><td>2</td><td>M（換掉 10）</td><td>14, 2</td></tr><tr><td>18</td><td>M（換掉 14）</td><td>2, 18</td></tr></tbody></table></div><p><b>命中 1 次</b>。兩種都很差，原因是這串位址只會用到一個 set，快取容量根本沒用上。（已用程式模擬驗證。）</p>"
+    },
+    {
+      "id": "co-0005",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "直接映射快取有 8 個區塊，每個區塊 2 words。依序存取 word 位址 0、1、2、3、8、9、0、16、1、17。(1) 寫出每次是 hit 還是 miss，並把每次 miss 分類成 compulsory、capacity 或 conflict。(2) 換成同樣容量的全關聯 LRU 快取，命中幾次？",
+      "answer": "(1) 命中 4 次；miss 中 compulsory 4 次（0、2、8、16）、conflict 2 次（第二次的 1、17），沒有 capacity；(2) 全關聯命中 6 次",
+      "explanation": "<p>區塊編號 = 位址 ÷ 2，set = 區塊編號 mod 8：</p><div class=\"table-scroll\"><table><thead><tr><th>位址</th><th>區塊</th><th>set</th><th>結果</th><th>分類</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>M</td><td>compulsory</td></tr><tr><td>1</td><td>0</td><td>0</td><td>H</td><td>和 0 同一個區塊</td></tr><tr><td>2</td><td>1</td><td>1</td><td>M</td><td>compulsory</td></tr><tr><td>3</td><td>1</td><td>1</td><td>H</td><td></td></tr><tr><td>8</td><td>4</td><td>4</td><td>M</td><td>compulsory</td></tr><tr><td>9</td><td>4</td><td>4</td><td>H</td><td></td></tr><tr><td>0</td><td>0</td><td>0</td><td>H</td><td></td></tr><tr><td>16</td><td>8</td><td>0</td><td>M（換掉區塊 0）</td><td>compulsory</td></tr><tr><td>1</td><td>0</td><td>0</td><td>M（換掉區塊 8）</td><td>conflict</td></tr><tr><td>17</td><td>8</td><td>0</td><td>M（換掉區塊 0）</td><td>conflict</td></tr></tbody></table></div><p>(1) 命中 <b>4</b> 次。最後兩次 miss 不是第一次存取，而全關聯快取（8 格只用到 4 個區塊，放得下）會命中，所以是 <b>conflict</b>：區塊 0 和 8 都對到 set 0 而互相擠掉。快取從來沒滿，所以沒有 capacity miss。</p><p>(2) 全關聯時最後的 1、17 都命中，共 <b>6</b> 次，比直接映射多的 2 次正好是那 2 次 conflict miss。（已用程式模擬並分類驗證。）</p>"
+    },
+    {
+      "id": "co-0006",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "original"
+      },
+      "question": "快取有 4 個區塊、每個區塊 1 word，存取序列 0、2、4、0、2、4、0、2、4。比較直接映射和 2-way 集合關聯（LRU）的命中次數，並解釋為什麼「關聯度比較高」的反而比較差。",
+      "answer": "直接映射命中 2 次，2-way 命中 0 次",
+      "explanation": "<p><b>直接映射</b>（set = 位址 mod 4）：0、4 對到 set 0，2 對到 set 2。0 和 4 在 set 0 互相擠掉，每次都 miss；但 2 獨佔 set 2，除了第一次以外都命中：<b>命中 2 次</b>。</p><p><b>2-way</b>（set = 位址 mod 2）：0、2、4 都是偶數，三個區塊全擠在 set 0 的兩格裡。LRU 每次都換掉「最久沒用的」，而那正好是下一個要用的：0、2 進來 → 4 換掉 0 → 0 換掉 2 → 2 換掉 4 ……，<b>9 次全部 miss</b>。</p><p>原因：提高關聯度的同時 set 數變少（4 → 2），原本分散在兩個 set 的區塊被集中到同一個 set。當一個 set 裡循環使用的區塊數剛好比格數多一個時，LRU 每次都換掉下一個要用的，是 LRU 的最壞情況。所以「關聯度越高越好」只是一般趨勢，不是定理。（已用程式模擬驗證。）</p>"
+    }
+  ]
+}

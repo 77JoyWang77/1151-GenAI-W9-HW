@@ -10,7 +10,7 @@
 |---|---|---|
 | Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 5 個 | Horowitz《Fundamentals of Data Structures in C》 |
 | Algorithms（演算法） | 進行中：13 章、36 個主題（高頻 19 個），已完成 1 個 | Cormen 等《Introduction to Algorithms》 |
-| Computer Organization（計算機組織） | 籌備中 | |
+| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 1 個 | Patterson & Hennessy《Computer Organization and Design》 |
 | Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 1 個 | Silberschatz《Operating System Concepts》 |
 | Discrete Mathematics（離散數學） | 進行中：12 章、38 個主題（高頻 18 個），已完成 1 個 | Rosen《Discrete Mathematics and Its Applications》 |
 | Linear Algebra（線性代數） | 進行中：8 章、30 個主題（高頻 18 個），已完成 1 個 | Leon《Linear Algebra with Applications》 |
@@ -42,6 +42,12 @@
 | 主題 | 互動動畫 |
 |---|---|
 | Gaussian Elimination（高斯消去法與列梯形） | 自己輸入增廣矩陣（可用分數），逐步列運算化成 RREF，判斷唯一解／無限多解／無解並寫出通解 |
+
+### 計算機組織已完成的主題
+
+| 主題 | 互動動畫 |
+|---|---|
+| Cache Organization and Mapping（快取組織與映射） | 自己輸入位址序列、區塊數與區塊大小，切換直接映射／2-way／全關聯，逐步看每個位址落在哪個 set、命中或失誤、LRU 換掉誰 |
 
 ### 作業系統已完成的主題
 
