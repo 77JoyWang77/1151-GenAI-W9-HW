@@ -72,7 +72,7 @@
 
   register("gauss-jordan", function (root) {
     const player = new Player(root, {
-      title: "Gauss–Jordan Elimination（高斯–喬登消去法）",
+      title: "Gauss–Jordan Elimination 高斯–喬登消去法",
       width: 680, height: 340, code: CODE,
       legend: [["compare", "找 pivot 的那一行"], ["active", "pivot"], ["new", "剛改變的列"], ["found", "完成的 pivot"], ["removed", "矛盾的列"]],
     });

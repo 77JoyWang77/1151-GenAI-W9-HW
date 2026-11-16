@@ -77,7 +77,7 @@
 
   register("tree-traversal", function (root) {
     const player = new Player(root, {
-      title: "Binary Tree Traversal（二元樹走訪）",
+      title: "Binary Tree Traversal 二元樹走訪",
       width: W, height: H, code: CODE.pre,
       legend: [["compare", "目前所在"], ["visited", "走過、還沒輸出"], ["found", "已輸出"], ["active", "在 stack / queue 裡"]],
     });

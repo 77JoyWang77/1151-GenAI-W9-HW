@@ -19,6 +19,7 @@
   --banner-glow: #c7d2fe;
   --banner-accent: #6366f1;
   --banner-ink: #1b1f2a;
+  --banner-border: #dfe3fb;
 
   /* 動畫節點狀態色（CLAUDE.md 第 6 節的 state 對照） */
   --s-default: #94a3b8;  --s-default-fill: #ffffff;
@@ -58,7 +59,7 @@
   --bg: #0e1117; --paper: #161a23; --ink: #e8ebf2; --ink-soft: #9aa3b5;
   --line: #262c3a; --line-strong: #39415a; --code-bg: #1c212c;
   --brand: #8b85ff; --brand-soft: #1f2040;
-  --banner-bg: #181d2b; --banner-glow: #6366f1; --banner-accent: #a5b4fc; --banner-ink: #ffffff;
+  --banner-bg: #181d2b; --banner-glow: #6366f1; --banner-accent: #a5b4fc; --banner-ink: #ffffff; --banner-border: #262c3d;
   --s-default: #6b7590; --s-default-fill: #1b202b;
   --s-active-fill: #3a2c10; --s-compare-fill: #142542; --s-found-fill: #0f3329;
   --s-new-fill: #2a1f4a; --s-removed-fill: #3d1717; --s-visited-fill: #10332f;
@@ -409,8 +410,10 @@ details.qans .qa > :last-child { margin-bottom: 0; }
   .site-header, .toc, .viz-controls, .viz-toolbar, .pager { display: none; }
 }
 
+.zh-name { white-space: nowrap; }
+
 /* ---------- 首頁 banner ---------- */
-.banner { position: relative; overflow: hidden; margin-top: 28px; border-radius: 18px; padding: 34px 36px; color: var(--banner-ink); border: 0;
+.banner { position: relative; overflow: hidden; margin-top: 28px; border-radius: 18px; padding: 34px 36px; color: var(--banner-ink); border: 1px solid var(--banner-border);
   background:
     radial-gradient(520px 260px at 92% -10%, color-mix(in srgb, var(--banner-glow) 55%, transparent), transparent 70%),
     radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--banner-ink) 8%, transparent) 1px, transparent 1.5px) 0 0 / 18px 18px,
@@ -431,7 +434,8 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 .done-topic { display: flex; flex-direction: column; gap: 4px; padding: 14px 18px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
 .done-topic:hover { transform: translateY(-1px); border-color: var(--brand); }
 .dt-meta { font-size: .78em; color: var(--ink-soft); }
-.dt-name { font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.dt-name { font-weight: 600; display: flex; align-items: flex-start; gap: 4px; }
+.dt-name .icon { margin-top: .3em; }
 .dt-name .icon { flex: none; }
 .dt-name .is-hot { color: var(--s-removed); }
 

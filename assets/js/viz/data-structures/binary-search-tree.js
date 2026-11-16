@@ -73,7 +73,7 @@
   register("bst", function (root) {
     const W = 680, MAX_DEPTH = 5;
     const player = new Player(root, {
-      title: "Binary Search Tree（二元搜尋樹）",
+      title: "Binary Search Tree 二元搜尋樹",
       width: W, height: 430, code: CODE.insert,
       legend: [["compare", "比較中"], ["found", "找到 / 已輸出"], ["new", "新節點"], ["removed", "被刪除"], ["active", "替代者（前驅 / 後繼）"]],
     });

@@ -44,7 +44,7 @@
 | 正文使用 **繁體中文**，語氣口語、清楚，像學長姊在講解 | |
 | 專有名詞 **第一次出現** 寫成「English（中文）」，並包在 `<span class="term">` 裡 | `<span class="term">Stack<small>（堆疊）</small></span>` |
 | 之後再出現可以只寫英文 | push、pop、BST |
-| 頁面標題、章節名稱、卡片一律用「English（中文）」 | `Binary Search Tree（二元搜尋樹）` |
+| **標題類不加括號**：網頁標題、頁面大標、麵包屑、卡片與列表上的名稱、上一篇／下一篇、動畫標題，一律寫成「English 中文」，中間空一格；括號只用在**內文**第一次出現的專有名詞 | 標題 `Binary Search Tree 二元搜尋樹`；內文 `Binary Search Tree（二元搜尋樹）` |
 | 程式碼用 **C 語言**（台灣考研最常見），註解用中文；數學科可用虛擬碼 | `/* 中序前驅 */` |
 | **數字要有意義**：寫出數字時同時說明它代表什麼 | ✅「h = n，所有操作退化成 O(n)」 ❌「答案是 14」 |
 | 不確定的內容標「（待確認）」，**不可編造** 定理、公式或考古題出處 | |
@@ -200,8 +200,8 @@
 
 - 每個頂層 `<section>` 要有 kebab-case 的 `id` 和一個 `<h2>`（右側目錄 TOC 靠它），至少 2 個 section。
 - `<body data-subject="<subject-id>" data-chapter="<chapter-id>" data-chno="<章節編號>" data-topic="<subject-id>/<chapter-id>/<topic-id>" data-root="../../../">`
-- `<title>`：`English（中文） · 科目中文 | 資工考研互動學習站`，English、中文要和 JSON 的 `en`、`zh` 完全一致（`check.py` 會檢查）；`<meta name="description">` 一句話、≤ 70 字。
-- 麵包屑：`首頁 › 科目 English（中文） › Ch<編號> 章節 English（中文） › 主題 English（中文）`
+- `<title>`：`English 中文 · 科目中文 | 資工考研互動學習站`（標題不加括號，第 3 節），English、中文要和 JSON 的 `en`、`zh` 完全一致（`check.py` 會檢查）；`<meta name="description">` 一句話、≤ 70 字。
+- 麵包屑：`首頁 › 科目 English 中文 › Ch<編號> 章節 English 中文 › 主題 English 中文`
 - meta 列：`Ch<編號> 章節 English`、難度、tags。
 - 頁尾「最後更新：YYYY-MM-DD」與 JSON 的 `updated` 一致。
 - 難度寫成 `<span class="chip" data-difficulty="1～3">難度</span>`，星星由 `site.js` 畫。
@@ -311,7 +311,7 @@
 
   register("my-viz", function (root) {
     const player = new Player(root, {
-      title: "English（中文）",
+      title: "English 中文",
       width: 640, height: 320,          // SVG viewBox
       code: ["line 1", "line 2"],       // 右側程式碼；多種操作可用 player.setCode() 切換
       legend: [["compare", "比較中"], ["found", "找到"]],
@@ -405,7 +405,7 @@ figure("bst-valid-invalid", () => ({
 
 - 調性：**乾淨、現代、有質感的教材**。白色卡片、柔和陰影、圓角。
 - **全站用色統一**：所有卡片（首頁的科目與主題卡片、科目頁的章節卡片）、主題頁的標題色條、按鈕、callout 都只用品牌色 `--brand`（`--accent` 一律等於 `--brand`），**不依科目或章節換顏色**，否則不同層級的顏色會撞在一起、讀者也會以為顏色有意義。顏色只在動畫與靜態圖中代表狀態（第 9.4 節）。籌備中只用「籌備中」標籤和灰色 icon 區分，不改整張卡片的底色或透明度。
-- 首頁 banner 在淺色模式是淡品牌色底＋深色字，深色模式是深墨底＋白字（`--banner-*` 變數在兩種模式各有一組）；沒有外框、沒有裝飾圖。
+- 首頁 banner 在淺色模式是淡品牌色底＋深色字，深色模式是深墨底＋白字（`--banner-*` 變數在兩種模式各有一組）；外框只用很淡的 `--banner-border`（比底色深一點點），沒有裝飾圖。
 - 顏色**只能**使用 `style.css` 最上方 `:root` 的變數，不在其他地方寫死色碼。
 - **預設淺色**，頁首按鈕可切換深色：`theme.js` 在 `<html>` 設定 `data-theme="dark"`，深色配色寫在 `:root[data-theme="dark"]`，選擇存在 localStorage。
 - 新元件一律用 CSS 變數上色，才會自動適用兩種模式；也要支援手機寬度（≥ 360px）：窄螢幕的樣式統一寫在 `style.css` 最後的 `@media (max-width: 600px)` 區塊（放在最後才能蓋過基本樣式），改完要用 360px 寬度截圖確認沒有橫向捲動。

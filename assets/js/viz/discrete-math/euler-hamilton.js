@@ -102,7 +102,7 @@
 
   register("euler-hamilton", function (root) {
     const player = new Player(root, {
-      title: "Euler and Hamilton Paths（Euler 與 Hamilton 路徑）",
+      title: "Euler and Hamilton Paths 路徑判斷",
       width: 680, height: 420, code: CODE.euler,
       legend: [["compare", "目前所在"], ["active", "奇數度頂點 / 嘗試中"], ["visited", "已走過的邊"], ["found", "完成"], ["removed", "不行"]],
     });

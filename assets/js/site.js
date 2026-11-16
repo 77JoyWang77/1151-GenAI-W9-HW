@@ -30,6 +30,8 @@
     svg.appendChild(use);
     return svg;
   }
+  // 標題類名稱：「English 中文」不加括號；中文整段一起換行（CLAUDE.md 第 3 節）
+  const nameOf = (t) => h("span", { class: "en-zh" }, [t.en + " ", h("span", { class: "zh-name", text: t.zh })]);
   const getJSON = (path) => fetch(ROOT + path, { cache: "no-cache" }).then((r) => r.json());
   const allTopics = (subj) => subj.chapters.flatMap((c) => c.topics);
   const doneCount = (subj) => allTopics(subj).filter((t) => t.status === "done").length;
@@ -105,7 +107,7 @@
       for (let i = 1; i <= 3; i++) stars.appendChild(i <= (t.difficulty || 0) ? icon("star-fill", "on") : icon("star", "off"));
       box.appendChild(h("a", { class: "done-topic", href: `subjects/${s.id}/${c.id}/${t.id}.html` }, [
         h("span", { class: "dt-meta", text: `${s.zh} · Ch${c.no} ${c.en}` }),
-        h("span", { class: "dt-name" }, [t.priority === "high" ? icon("flame", "is-hot") : "", `${t.en}（${t.zh}）`]),
+        h("span", { class: "dt-name" }, [t.priority === "high" ? icon("flame", "is-hot") : "", nameOf(t)]),
         stars,
       ]));
     });
@@ -119,7 +121,7 @@
 
     data.chapters.forEach((ch) => {
       const list = h("ul", {}, ch.topics.map((t) => {
-        const name = `${t.en}（${t.zh}）`;
+        const name = nameOf(t);
         // 考研高頻的主題在名稱前加火焰 icon；沒有高頻的留同寬空位，讓名稱對齊
         const mark = t.priority === "high"
           ? h("span", { class: "hot-mark", title: "考研高頻" }, [icon("flame")])
@@ -284,7 +286,7 @@
   async function renderQuestionBank(box, subjectId) {
     const [data, subj] = await Promise.all([loadQuestions(subjectId), getJSON(`data/${subjectId}.json`)]);
     const topicNames = {};
-    subj.chapters.forEach((c) => c.topics.forEach((t) => (topicNames[t.id] = { name: `${t.en}（${t.zh}）`, href: t.status === "done" ? `${c.id}/${t.id}.html` : "#" , order: Object.keys(topicNames).length })));
+    subj.chapters.forEach((c) => c.topics.forEach((t) => (topicNames[t.id] = { name: `${t.en} ${t.zh}`, href: t.status === "done" ? `${c.id}/${t.id}.html` : "#" , order: Object.keys(topicNames).length })));
     const used = [...new Set(data.questions.flatMap((q) => q.topics))].sort((a, b) => (topicNames[a]?.order ?? 0) - (topicNames[b]?.order ?? 0));
     const schools = [...new Set(data.questions.filter((q) => q.source && q.source.kind === "exam").map((q) => q.source.school))];
     const types = [...new Set(data.questions.map((q) => q.type))];
@@ -328,7 +330,7 @@
     const data = await getJSON(`data/${subjectId}.json`);
     const flat = data.chapters.flatMap((c) => c.topics.filter((t) => t.status === "done").map((t) => ({ ...t, ch: c.id })));
     const i = flat.findIndex((t) => t.ch === chId && t.id === tId);
-    const link = (t, cls, hint) => h("a", { class: cls, href: `${ROOT}subjects/${subjectId}/${t.ch}/${t.id}.html` }, [h("small", {}, hint), `${t.en}（${t.zh}）`]);
+    const link = (t, cls, hint) => h("a", { class: cls, href: `${ROOT}subjects/${subjectId}/${t.ch}/${t.id}.html` }, [h("small", {}, hint), nameOf(t)]);
     if (i > 0) pager.appendChild(link(flat[i - 1], "prev", [icon("prev"), " 上一個主題"]));
     if (i >= 0 && i < flat.length - 1) pager.appendChild(link(flat[i + 1], "next", ["下一個主題 ", icon("next")]));
   }

@@ -58,7 +58,7 @@
 
   register("heap", function (root) {
     const player = new Player(root, {
-      title: "Max Heap（最大堆積）",
+      title: "Max Heap 最大堆積",
       width: W, height: H, code: CODE.insert,
       legend: [["new", "新加入"], ["compare", "比較中"], ["active", "正在移動的元素"], ["found", "位置確定"], ["removed", "被取走"]],
     });

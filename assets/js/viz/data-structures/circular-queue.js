@@ -63,7 +63,7 @@
 
   register("cq-ring", function (root) {
     const player = new Player(root, {
-      title: "Circular Queue（環狀佇列）",
+      title: "Circular Queue 環狀佇列",
       width: 720, height: 400, code: CODE.slot,
       legend: [["new", "剛放入"], ["removed", "被取出"], ["compare", "檢查中"], ["muted", "犧牲的那一格"]],
     });

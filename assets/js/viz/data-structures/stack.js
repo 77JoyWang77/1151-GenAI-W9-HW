@@ -40,7 +40,7 @@
     ];
 
     const player = new Player(root, {
-      title: "Array-based Stack（陣列實作堆疊）",
+      title: "Array-based Stack 陣列實作堆疊",
       width: 640, height: 320, code,
       legend: [["new", "新加入"], ["active", "正在處理"], ["removed", "被移除"], ["found", "查看 / 回傳"]],
     });
@@ -168,7 +168,7 @@
     ];
 
     const player = new Player(root, {
-      title: "Infix → Postfix（中序轉後序，isp / icp 版）",
+      title: "Infix → Postfix 中序轉後序",
       width: 680, height: 340, code,
       legend: [["active", "目前讀入的 token"], ["compare", "比較 isp / icp"], ["new", "剛輸出"], ["removed", "括號被丟棄"], ["muted", "eos（堆疊底）"]],
     });
