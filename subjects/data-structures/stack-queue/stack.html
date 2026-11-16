@@ -75,6 +75,8 @@
           </figure>
           <p>陣列實作的缺點是大小固定：開太小會溢位，開太大會浪費空間。下面的動畫可以自己 push、pop，觀察 top 怎麼移動，也可以故意塞滿或清空，看看 overflow、underflow 怎麼發生。</p>
         </div>
+        <details class="code-fold">
+          <summary>看程式碼：push / pop / peek（陣列實作）</summary>
         <div class="code-block">
           <div class="code-head">push / pop / peek（陣列實作）</div>
           <pre class="code">#define MAX 6                          /* 堆疊大小（示範用） */
@@ -99,6 +101,7 @@ int peek(void) {
   return stack[top];
 }</pre>
         </div>
+        </details>
         <div class="viz" data-viz="stack-ops"></div>
       </section>
 
@@ -116,6 +119,8 @@ int peek(void) {
             <figcaption><b>圖 3</b>：鏈結串列實作的 Stack。top 指向最後 push 的 C，新節點永遠接在最前面。</figcaption>
           </figure>
         </div>
+        <details class="code-fold">
+          <summary>看程式碼：push / pop（鏈結串列實作）</summary>
         <div class="code-block">
           <div class="code-head">push / pop（鏈結串列實作）</div>
           <pre class="code">typedef struct Node {
@@ -141,6 +146,7 @@ int lpop(void) {
   return x;
 }</pre>
         </div>
+        </details>
         <div class="panel table-scroll">
           <table>
             <thead><tr><th>比較</th><th>陣列實作</th><th>鏈結串列實作</th></tr></thead>
@@ -249,6 +255,8 @@ int lpop(void) {
             </tbody>
           </table>
         </div>
+        <details class="code-fold">
+          <summary>看程式碼：中序轉後序：isp()、icp() 與 infixToPostfix()</summary>
         <div class="code-block">
           <div class="code-head">中序轉後序：isp()、icp() 與 infixToPostfix()</div>
           <pre class="code">int isp(char c) {                     /* 在堆疊裡的優先權 */
@@ -291,6 +299,7 @@ void infixToPostfix(const char *in, char *out) {
   out[k] = &#x27;\0&#x27;;
 }</pre>
         </div>
+        </details>
         <p>為了讓程式簡潔，這裡的運算元限定為單一字母或數字，<code>#</code> 代表放在堆疊底的 eos。下面的動畫則可以輸入多個字元的變數名稱，右側程式碼和這段完全相同。</p>
         <p>自己試試看：輸入任何運算式（字母、數字或變數名稱，支援 <code>+ - * / % ^ ( )</code>），每一步都會寫出 isp 和 icp 的比較。</p>
         <div class="viz" data-viz="infix-postfix"></div>
@@ -316,6 +325,8 @@ void infixToPostfix(const char *in, char *out) {
             </tbody>
           </table>
         </div>
+        <details class="code-fold">
+          <summary>看程式碼：後序式求值 evalPostfix()</summary>
         <div class="code-block">
           <div class="code-head">後序式求值 evalPostfix()</div>
           <pre class="code">int evalPostfix(const char *post) {
@@ -339,6 +350,7 @@ void infixToPostfix(const char *in, char *out) {
   return pop();
 }</pre>
         </div>
+        </details>
       </section>
 
       <section id="ops">
@@ -356,6 +368,46 @@ void infixToPostfix(const char *in, char *out) {
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <p>這個主題常見的考法、解題步驟，以及可以馬上練習的例題（點「例題」會跳到下方對應的題目）。</p>
+        <div class="panel table-scroll">
+          <table class="exam-map">
+            <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+            <tbody>
+              <tr><td>中序轉後序／前序</td><td>很常考</td><td>照 isp / icp 逐 token 列出 token、stack、output 三欄；可用「加滿括號、移動運算子」驗算</td><td><a class="q-link" href="#q-ds-0003">例題</a> <a class="q-link" href="#q-ds-0004">例題</a></td></tr>
+              <tr><td>後序／前序求值</td><td>很常考</td><td>遇到運算子就 pop 兩個數，<b>先 pop 的是右運算元</b></td><td><a class="q-link" href="#q-ds-0005">例題</a></td></tr>
+              <tr><td>合法輸出序列</td><td>很常考</td><td>判斷：找有沒有 …k…i…j…（i &lt; j &lt; k）；計數：Catalan number</td><td><a class="q-link" href="#q-ds-0001">例題</a> <a class="q-link" href="#q-ds-0006">例題</a> <a class="q-link" href="#q-ds-0007">例題</a></td></tr>
+              <tr><td>push / pop 追蹤</td><td>常考</td><td>每一步寫出堆疊內容（由底到頂）和 top 值</td><td><a class="q-link" href="#q-ds-0002">例題</a> <a class="q-link" href="#q-ds-0008">例題</a></td></tr>
+              <tr><td>用 Stack 實作其他結構</td><td>偶爾</td><td>兩個 Stack 做 Queue（攤銷分析）、一個陣列放兩個 Stack</td><td><a class="q-link" href="#q-ds-0009">例題</a> <a class="q-link" href="#q-ds-0010">例題</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <p>每一點都附了一題專門考這個觀念的例題，可以馬上驗證自己有沒有搞懂。</p>
+        <div class="panel">
+          <ul class="pitfalls">
+            <li><span class="bad">❌ 後序求值時 <code>a = pop(), b = pop()</code> 再算 a − b</span> → <span class="ok">✅ 先 pop 的是右運算元 b，要算 <code>a − b</code>，減法與除法順序錯就全錯</span> <a class="q-link" href="#q-ds-0005">例題</a></li>
+            <li><span class="bad">❌ <code>(</code> 只有一個優先權</span> → <span class="ok">✅ <code>(</code> 的 icp = 20（讀入時最大，一定 push），isp = 0（在堆疊裡最小，誰都不會把它 pop 掉）。這就是要分成 isp / icp 兩張表的原因</span> <a class="q-link" href="#q-ds-0008">例題</a></li>
+            <li><span class="bad">❌ <code>^</code> 和 <code>+ -</code> 一樣，同優先權就 pop</span> → <span class="ok">✅ <code>^</code> 是右結合，同級時不 pop（isp 14 &lt; icp 15），<code>2^3^2</code> 轉成 <code>2 3 2 ^ ^</code></span> <a class="q-link" href="#q-ds-0003">例題</a></li>
+            <li><span class="bad">❌ 前序式 = 把後序式整個反過來</span> → <span class="ok">✅ 不對。<code>a-b</code> 後序是 <code>a b -</code>，反過來是 <code>- b a</code>，但前序應為 <code>- a b</code></span> <a class="q-link" href="#q-ds-0004">例題</a></li>
+            <li><span class="bad">❌ <code>top</code> 一定從 −1 開始</span> → <span class="ok">✅ 也有教科書讓 top 指向「下一個空位」、從 0 開始，這時 push 寫成 <code>stack[top++] = x</code>。作答前先看題目的定義</span> <a class="q-link" href="#q-ds-0002">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <p>題目分成基礎、進階、考研級三個難度，最後是考古題。先自己作答，再點開答案與詳解。</p>
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 →</a></span>
+        </div>
+        <div class="qbank" data-questions="stack"></div>
       </section>
 
       <section id="full-code">
@@ -518,49 +570,6 @@ a/b-c+d*e-a*c   -&gt; ab/c-de*+ac*-
 2^3^2           -&gt; 232^^
 623+-382/+* = 7</pre>
         </details>
-      </section>
-
-      <section id="exam">
-        <h2>考研重點</h2>
-        <div class="exam-q">
-          <p><span class="qtype">追蹤</span>把中序式轉成後序（或前序），並寫出每一步的 stack 內容。</p>
-          <p>解題方向：照 isp / icp 表逐 token 列表（token / stack / output 三欄），每次比較都寫出 isp 和 icp 的數字。也常考「請填出 isp、icp 表並說明為什麼 ( 的 isp 和 icp 不同」。快速驗算法：依優先權加滿括號，再把每個運算子移到它所屬的右括號位置（前序則移到左括號）。</p>
-        </div>
-        <div class="exam-q">
-          <p><span class="qtype">計算</span>給一個後序式求值，例如 <code>6 2 3 + - 3 8 2 / + *</code>。</p>
-          <p>解題方向：遇到運算子就 pop 兩個數，<b>後 pop 的在左邊</b>。這題：6−(2+3)=1，3+(8/2)=7，1×7=<b>7</b>。</p>
-        </div>
-        <div class="exam-q">
-          <p><span class="qtype">判斷</span>輸入序列 1, 2, …, n 依序 push（中間可任意 pop），哪些輸出序列不可能出現？共有幾種可能？</p>
-          <p>解題方向：不可能的樣式是「出現 <code>…k…i…j…</code> 且 i &lt; j &lt; k」，例如 1,2,3 無法輸出 3,1,2。合法序列數是 <span class="term">Catalan number<small>（卡塔蘭數）</small></span> <code>C(n) = (2n)! / ((n+1)! n!)</code>，n=3 時 5 種、n=4 時 14 種。</p>
-        </div>
-        <div class="exam-q">
-          <p><span class="qtype">實作</span>在一個大小為 n 的陣列中放兩個 stack，要求空間不浪費。</p>
-          <p>解題方向：一個從索引 0 往右長、一個從 n−1 往左長，兩個 top 相鄰（<code>top1 + 1 == top2</code>）時才算滿。</p>
-        </div>
-      </section>
-
-      <section id="pitfalls">
-        <h2>易錯點</h2>
-        <div class="panel">
-          <ul class="pitfalls">
-            <li><span class="bad">❌ 後序求值時 <code>a = pop(), b = pop()</code> 再算 a − b</span> → <span class="ok">✅ 先 pop 的是右運算元 b，要算 <code>a − b</code>，減法與除法順序錯就全錯</span></li>
-            <li><span class="bad">❌ <code>(</code> 只有一個優先權</span> → <span class="ok">✅ <code>(</code> 的 icp = 20（讀入時最大，一定 push），isp = 0（在堆疊裡最小，誰都不會把它 pop 掉）。這就是要分成 isp / icp 兩張表的原因</span></li>
-            <li><span class="bad">❌ <code>^</code> 和 <code>+ -</code> 一樣，同優先權就 pop</span> → <span class="ok">✅ <code>^</code> 是右結合，同級時不 pop（isp 14 &lt; icp 15），<code>2^3^2</code> 轉成 <code>2 3 2 ^ ^</code></span></li>
-            <li><span class="bad">❌ 前序式 = 把後序式整個反過來</span> → <span class="ok">✅ 不對。<code>a-b</code> 後序是 <code>a b -</code>，反過來是 <code>- b a</code>，但前序應為 <code>- a b</code></span></li>
-            <li><span class="bad">❌ <code>top</code> 一定從 −1 開始</span> → <span class="ok">✅ 也有教科書讓 top 指向「下一個空位」、從 0 開始，這時 push 寫成 <code>stack[top++] = x</code>。作答前先看題目的定義</span></li>
-          </ul>
-        </div>
-      </section>
-
-      <section id="quiz">
-        <h2>自我測驗</h2>
-        <div class="quiz-tools"><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button></div>
-        <details class="quiz"><summary><code>a + b * c - d</code> 的後序式是什麼？</summary><p><code>a b c * + d -</code>。讀到 <code>-</code> 時，堆疊中的 <code>*</code> 和 <code>+</code> 優先權都 ≥ <code>-</code>，所以先依序 pop 出來。</p></details>
-        <details class="quiz"><summary><code>(A + B) * (C - D)</code> 的後序式是什麼？</summary><p><code>A B + C D - *</code>。可以把它貼到上面的動畫驗證。</p></details>
-        <details class="quiz"><summary>1, 2, 3 依序 push（中間可 pop），能不能輸出 3, 1, 2？</summary><p>不能。要先輸出 3，必須 1、2 都已經在堆疊中，且 2 壓在 1 上面，所以下一個只能 pop 出 2，不可能是 1。</p></details>
-        <details class="quiz"><summary>1～4 依序進堆疊，共有幾種合法的輸出順序？</summary><p>14 種，也就是 Catalan number C(4) = 8! / (5!·4!) = 14。</p></details>
-        <details class="quiz"><summary>為什麼遞迴可以改寫成用 Stack 的迴圈？</summary><p>因為函式呼叫本身就是靠系統的 call stack 保存區域變數與返回位置。自己用 Stack 存同樣的資訊，就能模擬遞迴。</p></details>
       </section>
 
       <nav class="pager"></nav>

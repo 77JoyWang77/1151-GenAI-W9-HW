@@ -318,6 +318,44 @@ figure.fig figcaption b { color: var(--ink); }
 .vptr.s-removed text { fill: var(--s-removed); } .vptr.s-removed path { stroke: var(--s-removed); }
 .vptr.s-compare text { fill: var(--s-compare); } .vptr.s-compare path { stroke: var(--s-compare); }
 
+/* 程式碼預設收合：<details class="code-fold"><summary>看程式碼：…</summary>…</details> */
+details.code-fold { margin: 10px 0 16px; }
+details.code-fold > summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; font-size: .9em; font-weight: 600; color: var(--accent); padding: 5px 12px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 999px; background: var(--paper); }
+details.code-fold > summary::-webkit-details-marker { display: none; }
+details.code-fold > summary::before { content: "▸"; transition: transform .15s; }
+details.code-fold[open] > summary::before { transform: rotate(90deg); }
+details.code-fold[open] > summary { margin-bottom: 4px; }
+a.vop { display: inline-block; text-decoration: none; }
+a.linkbtn { text-decoration: none; display: inline-block; }
+
+/* ---------- 題庫 ---------- */
+.qgroup { margin: 22px 0 8px; font-size: 1em; color: var(--ink-soft); }
+.qcard { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin: 10px 0; scroll-margin-top: 90px; }
+.qcard.is-target { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.qmeta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; font-size: .78em; }
+.qmeta > * { padding: 1px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-soft); text-decoration: none; }
+.qmeta .qnum { font-family: var(--mono); font-weight: 700; color: var(--ink); border: 0; padding-left: 0; }
+.qmeta .qlevel.lv-basic { color: var(--s-found); border-color: var(--s-found); }
+.qmeta .qlevel.lv-advanced { color: var(--s-compare); border-color: var(--s-compare); }
+.qmeta .qlevel.lv-exam { color: var(--s-removed); border-color: var(--s-removed); }
+.qmeta .qsrc.is-exam { color: var(--s-active); border-color: var(--s-active); font-weight: 600; }
+.qmeta a.qtopic:hover { color: var(--accent); border-color: var(--accent); }
+.qtext p { margin: 0 0 8px; }
+.qchoices { list-style: none; padding: 0; margin: 6px 0 4px; display: grid; gap: 4px; }
+.qchoices li { padding: 4px 10px; border-radius: 8px; background: var(--code-bg); }
+details.qans { margin-top: 8px; }
+details.qans > summary { cursor: pointer; font-size: .9em; font-weight: 600; color: var(--accent); }
+details.qans .qa { margin-top: 8px; padding: 10px 14px; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--paper)); border-radius: 0 8px 8px 0; }
+details.qans .qa p { margin: 0 0 8px; }
+details.qans .qa > :last-child { margin-bottom: 0; }
+.qa-answer { font-weight: 500; }
+.qempty { color: var(--ink-soft); font-size: .92em; }
+.qfilters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 16px; }
+.qcount { font-size: .85em; color: var(--ink-soft); margin-left: auto; }
+.practice-tools { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.q-link { font-size: .85em; margin-left: 6px; white-space: nowrap; }
+.exam-map td:first-child { white-space: nowrap; font-weight: 600; }
+
 @media print {
   .site-header, .toc, .viz-controls, .viz-toolbar, .pager { display: none; }
 }

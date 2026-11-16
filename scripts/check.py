@@ -32,6 +32,9 @@ class Page(HTMLParser):
         self.loose_code = 0         # 沒有放在 .code-block 裡的 pre.code
         self.code_blocks = self.untitled = self.full_code = 0
         self.bad_tabs = 0
+        self.unfolded = 0           # 沒有收合在 details.code-fold 裡的程式碼
+        self.qbank = None           # 練習題容器的 data-questions
+        self.qlinks = []            # 「例題」連結指向的題目 id
 
     def handle_starttag(self, tag, a):
         a = dict(a)
@@ -66,6 +69,13 @@ class Page(HTMLParser):
             self._in_main = True
         if tag == "pre" and "code" in cls and not any("code-block" in c for c in self._open):
             self.loose_code += 1
+        inside = lambda name: any(name in c for c in self._open)
+        if ("code-tabs" in cls or ("code-block" in cls and not inside("code-tabs"))) and not inside("code-fold") and not inside("code-full"):
+            self.unfolded += 1
+        if "qbank" in cls:
+            self.qbank = a.get("data-questions")
+        if tag == "a" and (a.get("href") or "").startswith("#q-"):
+            self.qlinks.append(a["href"][3:])
         if "code-block" in cls:
             self.code_blocks += 1
             if any("code-tabs" in c for c in self._open[-1:]) and not a.get("data-tab"):
@@ -90,6 +100,45 @@ class Page(HTMLParser):
     def handle_data(self, data):
         if self._in_main and not self._skip:
             self.text.append(data)
+
+
+QUESTIONS = {}
+QTYPES = {"選擇", "填空", "計算", "追蹤", "證明", "實作", "簡答"}
+
+
+def check_questions(subject_id, topic_ids, errors):
+    path = ROOT / "data" / "questions" / f"{subject_id}.json"
+    if not path.exists():
+        errors.append(f"[{subject_id}] 缺少題庫 data/questions/{subject_id}.json")
+        return
+    data = json.loads(path.read_text(encoding="utf-8"))
+    levels = data.get("levels", {})
+    seen = set()
+    for q in data["questions"]:
+        e = lambda m: errors.append(f"[questions/{q.get('id')}] {m}")
+        if q.get("id") in seen:
+            e("id 重複")
+        seen.add(q.get("id"))
+        for k in ("topics", "level", "type", "source", "question", "answer", "explanation"):
+            if not q.get(k):
+                e(f"缺少欄位 {k}")
+        for t in q.get("topics", []):
+            if t not in topic_ids:
+                e(f"topics 裡的「{t}」不是這個科目的主題")
+        if q.get("level") not in levels:
+            e(f"level 必須是 {list(levels)}")
+        if q.get("type") not in QTYPES:
+            e(f"type 必須是 {sorted(QTYPES)}")
+        if q.get("type") == "選擇" and len(q.get("choices", [])) < 2:
+            e("選擇題要有 choices")
+        src = q.get("source", {})
+        if src.get("kind") not in ("original", "exam"):
+            e("source.kind 必須是 original 或 exam")
+        if src.get("kind") == "exam":
+            for k in ("school", "year", "dept", "no"):
+                if not src.get(k):
+                    e(f"考古題的 source 要有 {k}")
+    QUESTIONS[subject_id] = data["questions"]
 
 
 def load(path):
@@ -143,6 +192,20 @@ def check_topic(path, subj, ch, t, errors):
         err("每個 .code-block 都要有 .code-head 標題")
     if p.bad_tabs:
         err(".code-tabs 裡的每個 .code-block 都要有 data-tab（頁籤名稱）")
+    if p.unfolded:
+        err(f'有 {p.unfolded} 段程式碼沒有收合：要放在 <details class="code-fold"><summary>看程式碼：…</summary> 裡')
+    # 練習題：要有 .qbank 容器，題庫中這個主題每個難度至少 2 題
+    if p.qbank != t["id"]:
+        err(f'要有 <div class="qbank" data-questions="{t["id"]}"> 練習題區塊')
+    mine = [q for q in QUESTIONS.get(subj["id"], []) if t["id"] in q["topics"]]
+    for lv in ("basic", "advanced", "exam"):
+        k = sum(1 for q in mine if q["level"] == lv and q["source"]["kind"] == "original")
+        if k < 2:
+            err(f"題庫中這個主題的 {lv} 難度原創題只有 {k} 題，至少要 2 題")
+    ids = {q["id"] for q in QUESTIONS.get(subj["id"], [])}
+    for qid in p.qlinks:
+        if qid not in ids:
+            err(f"「例題」連結指向不存在的題目 {qid}")
     if p.code_blocks and not p.full_code:
         err('有程式碼的主題要在最後附 <details class="code-full"> 完整可編譯程式')
     src = ROOT / "code" / subj["id"] / f"{t['id']}.c"
@@ -193,6 +256,9 @@ def main():
         subj["id"] = s["id"]
         if subj.get("subject", {}).get("id") != s["id"]:
             errors.append(f"[{s['id']}] JSON 內的 subject.id 不一致")
+        if not (ROOT / "subjects" / s["id"] / "questions.html").exists():
+            errors.append(f"[{s['id']}] 缺少題庫頁 subjects/{s['id']}/questions.html")
+        check_questions(s["id"], {t["id"] for c in subj["chapters"] for t in c["topics"]}, errors)
         ids = set()
         for ch in subj["chapters"]:
             if not SLUG.match(ch["id"]):
@@ -218,7 +284,7 @@ def main():
                 elif page.exists():
                     errors.append(f"[{s['id']}/{ch['id']}/{t['id']}] 頁面存在但 status 不是 done")
         # 沒登錄的頁面
-        for page in (ROOT / "subjects" / s["id"]).glob("*/*.html"):
+        for page in (ROOT / "subjects" / s["id"]).glob("*/*.html"):  # 只看 <chapter>/<topic>.html
             chid, tid = page.parent.name, page.stem
             if not any(c["id"] == chid and any(t["id"] == tid for t in c["topics"]) for c in subj["chapters"]):
                 errors.append(f"[{s['id']}/{chid}/{tid}] 頁面沒有登錄在 data/{s['id']}.json")

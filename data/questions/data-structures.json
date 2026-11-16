@@ -1,0 +1,320 @@
+{
+  "subject": "data-structures",
+  "levels": {
+    "basic": "基礎",
+    "advanced": "進階",
+    "exam": "考研級"
+  },
+  "questions": [
+    {
+      "id": "ds-0001",
+      "topics": [
+        "stack"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "將 1, 2, 3, 4 依序 push 進 Stack，過程中可以隨時 pop。下列哪一個輸出序列<b>不可能</b>出現？",
+      "choices": [
+        "(A) 2 1 4 3",
+        "(B) 1 4 3 2",
+        "(C) 3 4 1 2",
+        "(D) 4 3 2 1"
+      ],
+      "answer": "(C) 3 4 1 2",
+      "explanation": "<p>(C)：先輸出 3，表示 1、2 已經在堆疊裡（2 在 1 上面）；接著 push 4、pop 4。此時堆疊頂端是 2，下一個只能輸出 2，不可能是 1。</p><p>其他選項都做得到，例如 (B) 1 4 3 2：push 1、pop；push 2、3、4，再連續 pop 三次。</p>"
+    },
+    {
+      "id": "ds-0002",
+      "topics": [
+        "stack"
+      ],
+      "level": "basic",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "陣列堆疊 <code>MAX = 5</code>、初始 <code>top = -1</code>，依序執行：<code>push(1), push(2), pop(), push(3), push(4), pop(), pop(), push(5)</code>。請寫出最後的 top 值、堆疊內容（由底到頂），以及 pop 出來的順序。",
+      "answer": "top = 1；堆疊內容 1, 5；pop 順序 2, 4, 3",
+      "explanation": "<p>逐步追蹤：[1] → [1,2] → pop 出 2 → [1] → [1,3] → [1,3,4] → pop 出 4 → pop 出 3 → [1] → [1,5]。</p><p>最後有 2 個元素，所以 top = 2 − 1 = 1。常見錯誤是忘了 top 從 −1 開始，誤答成 2。</p>"
+    },
+    {
+      "id": "ds-0003",
+      "topics": [
+        "stack"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "用 isp / icp 規則把中序式 <code>a + b * (c - d) / e ^ f ^ g</code> 轉成後序式（<code>^</code> 為右結合，優先權最高）。",
+      "answer": "<code>a b c d - * e f g ^ ^ / +</code>",
+      "explanation": "<p>重點有三：</p><ol><li>括號內的 <code>c - d</code> 先成為 <code>c d -</code>。</li><li><code>^</code> 右結合：讀到第二個 <code>^</code> 時，isp[^] = 14 &lt; icp[^] = 15，不 pop，所以得到 <code>e f g ^ ^</code>，代表 e^(f^g)。</li><li><code>*</code> 和 <code>/</code> 同級左結合：讀到 <code>/</code> 時 isp[*] = 13 ≥ icp[/] = 13，先 pop 出 <code>*</code>。</li></ol><p>最後 <code>+</code> 優先權最低，留到最後才輸出。</p>"
+    },
+    {
+      "id": "ds-0004",
+      "topics": [
+        "stack"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "將中序式 <code>(a + b) * c - d / e</code> 轉成<b>前序式</b>（prefix）。",
+      "answer": "<code>- * + a b c / d e</code>",
+      "explanation": "<p>先畫出運算樹：根是 <code>-</code>，左子樹是 <code>(a+b)*c</code>，右子樹是 <code>d/e</code>。前序就是「根 → 左 → 右」，得到 <code>- * + a b c / d e</code>。</p><p>注意：前序不等於把後序 <code>a b + c * d e / -</code> 整個倒過來（倒過來是 <code>- / e d * c + b a</code>，運算元順序錯了）。</p>"
+    },
+    {
+      "id": "ds-0005",
+      "topics": [
+        "stack"
+      ],
+      "level": "basic",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "求後序式 <code>5 3 2 * - 4 2 / +</code> 的值。",
+      "answer": "1",
+      "explanation": "<p>3 × 2 = 6 → 5 − 6 = −1 → 4 / 2 = 2 → −1 + 2 = <b>1</b>。</p><p>做減法時，先 pop 出來的 6 是右運算元，所以是 5 − 6，不是 6 − 5。</p>"
+    },
+    {
+      "id": "ds-0006",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "將 1, 2, 3, 4, 5 依序 push（中間可隨時 pop）。(1) 合法的輸出序列共有幾種？(2) 其中以 3 開頭的有幾種？",
+      "answer": "(1) 42 種　(2) 9 種",
+      "explanation": "<p>(1) Catalan number C(5) = 10! / (6!·5!) = 42，也就是 120 種排列中只有 35% 做得到。</p><p>(2) 先輸出 3 時，1、2 一定已在堆疊中（2 在上），之後 2 必定比 1 先出來；4、5 則還沒進堆疊。逐一列舉滿足條件的序列：3 2 1 4 5、3 2 1 5 4、3 2 4 1 5、3 2 4 5 1、3 2 5 4 1、3 4 2 1 5、3 4 2 5 1、3 4 5 2 1、3 5 4 2 1，共 9 種。</p>"
+    },
+    {
+      "id": "ds-0007",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "證明：1, 2, …, n 依序進出 Stack 時，輸出序列中不可能出現 <code>…k…i…j…</code> 且 i &lt; j &lt; k 的樣式。",
+      "answer": "（證明題，見詳解）",
+      "explanation": "<p>假設 k 先被輸出。因為元素依序 push，k 被 push 之前，比 k 小的 i、j 都已經 push 過了。i、j 在 k 之後才輸出，代表 k 出來時它們都還在堆疊裡；又因為 i 比 j 早 push，所以 i 在 j 的<b>下面</b>。</p><p>堆疊只能從頂端取，j 在 i 上面，所以 j 一定比 i 先被 pop，與「i 排在 j 前面」矛盾。因此這種樣式不可能出現。∎</p>"
+    },
+    {
+      "id": "ds-0008",
+      "topics": [
+        "stack"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "用 isp / icp 規則轉換 <code>a * (b + c) * d</code> 的過程中，運算子堆疊最多同時有幾個元素？（不含堆疊底的 eos）",
+      "answer": "3 個",
+      "explanation": "<p>讀到 <code>+</code> 之後，堆疊由底到頂是 eos、<code>*</code>、<code>(</code>、<code>+</code>。不算 eos 共 3 個，這是最多的時候；讀到 <code>)</code> 之後就會 pop 掉 <code>+</code> 和 <code>(</code>。</p><p>這類「最大深度」題，只要照轉換表逐步追蹤、每一步記下堆疊長度就不會錯。</p>"
+    },
+    {
+      "id": "ds-0009",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "original"
+      },
+      "question": "如何用兩個 Stack 實作一個 Queue？分析 enqueue 和 dequeue 的時間複雜度。",
+      "answer": "S1 負責 enqueue，S2 負責 dequeue；S2 空的時候才把 S1 全部倒進 S2。兩者攤銷複雜度都是 O(1)。",
+      "explanation": "<ul><li><b>enqueue(x)</b>：push 到 S1，O(1)。</li><li><b>dequeue()</b>：若 S2 非空，直接 pop S2；若 S2 為空，先把 S1 的元素全部 pop 出來、依序 push 進 S2（順序剛好倒過來，最早進來的變成 S2 頂端），再 pop S2。</li></ul><p>單次 dequeue 最差是 O(n)，但每個元素一生中最多只會被 push S1、pop S1、push S2、pop S2 各一次，共 4 次操作。所以 n 次操作總共 O(n)，<b>攤銷（amortized）每次 O(1)</b>。考試要寫出這個「每個元素最多搬一次」的論證。</p>"
+    },
+    {
+      "id": "ds-0010",
+      "topics": [
+        "stack"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個大小為 n 的陣列 <code>A[0..n-1]</code> 同時放兩個堆疊：S1 從索引 0 往右長，S2 從 n−1 往左長，初始 <code>top1 = -1</code>、<code>top2 = n</code>。何時才算「已滿」？",
+      "choices": [
+        "(A) top1 == top2",
+        "(B) top1 + 1 == top2",
+        "(C) top1 == n/2 或 top2 == n/2",
+        "(D) top1 + top2 == n"
+      ],
+      "answer": "(B) top1 + 1 == top2",
+      "explanation": "<p>兩個 top 相鄰時，中間已經沒有空格了：再 push 到 S1 會用到 top1+1，也就是 top2 的位置，會覆蓋 S2 的資料。</p><p>這種做法的好處是兩個堆疊共用剩餘空間，只要總數不超過 n 就不會溢位，比各分一半更省空間。</p>"
+    },
+    {
+      "id": "ds-0011",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列哪一個序列<b>可能</b>是某棵 BST 的中序走訪結果？",
+      "choices": [
+        "(A) 33 26 19 12 5",
+        "(B) 5 19 12 26 33",
+        "(C) 5 12 19 26 33",
+        "(D) 19 5 12 33 26"
+      ],
+      "answer": "(C) 5 12 19 26 33",
+      "explanation": "<p>BST 的中序走訪一定是嚴格遞增的，只有 (C) 符合。這也是判斷一棵二元樹是不是 BST 最快的方法。</p>"
+    },
+    {
+      "id": "ds-0012",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "basic",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "依序插入 <code>40, 20, 60, 10, 30, 50, 70, 25</code> 到空的 BST。請寫出前序走訪結果，以及樹共有幾層。",
+      "answer": "前序 <code>40 20 10 30 25 60 50 70</code>；共 4 層",
+      "explanation": "<p>40 是 root；20、60 分別在左右；10、30 是 20 的左右子；50、70 是 60 的左右子；最後 25 &lt; 40、&gt; 20、&lt; 30，接在 30 的左邊，形成第 4 層。</p>"
+    },
+    {
+      "id": "ds-0013",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "承上題的 BST，刪除 40。(1) 用「左子樹最大」頂替，(2) 用「右子樹最小」頂替，各寫出刪除後的前序走訪。",
+      "answer": "(1) <code>30 20 10 25 60 50 70</code>　(2) <code>50 20 10 30 25 60 70</code>",
+      "explanation": "<p>(1) 左子樹最大是 30（從 20 一路往右）。30 頂替 root 後，要刪掉原本的 30：它只有左子節點 25，所以 25 接到 20 的右邊。</p><p>(2) 右子樹最小是 50（從 60 一路往左），它是葉節點，直接移除。</p><p>兩種答案都對，題目沒指定時要寫清楚自己用哪一種。</p>"
+    },
+    {
+      "id": "ds-0014",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "在某棵 BST 中搜尋 key = 50，依序比較過的節點如下。哪一個序列<b>不可能</b>出現？",
+      "choices": [
+        "(A) 90, 20, 80, 30, 70, 40, 50",
+        "(B) 90, 20, 80, 30, 85, 50",
+        "(C) 10, 60, 30, 55, 40, 50",
+        "(D) 70, 65, 20, 60, 30, 50"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>每比較一次就會縮小可能範圍。(B) 走到 80 時往左（範圍變成 (20, 80)），接著 30 往右，範圍變成 (30, 80)；但下一個節點是 85，不在 (30, 80) 之內，矛盾。</p><p>其他三個序列每一步都落在當下的範圍內，都可能出現。解題技巧：逐步維護「下界、上界」。</p>"
+    },
+    {
+      "id": "ds-0015",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "4 個不同的 key 可以組成幾種不同形狀的 BST？其中有幾種高度是 4（退化成一條鏈）？",
+      "answer": "14 種；其中 8 種高度為 4",
+      "explanation": "<p>形狀數是 Catalan number C(4) = 14。</p><p>高度為 4 表示每一層只有一個節點；從 root 往下，每一層都可以選擇往左或往右，共 3 次選擇，所以有 2³ = 8 種。也就是說，14 種形狀中超過一半（57%）是完全退化的鏈。</p>"
+    },
+    {
+      "id": "ds-0016",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某 BST 的前序走訪為 <code>30 20 10 25 40 35 50</code>，請寫出它的後序走訪。",
+      "answer": "<code>10 25 20 35 50 40 30</code>",
+      "explanation": "<p>BST 的中序就是排序結果：10 20 25 30 35 40 50。有了前序和中序就能唯一重建：30 是 root，左子樹 {10, 20, 25} 以 20 為根，右子樹 {35, 40, 50} 以 40 為根。後序是「左 → 右 → 根」。</p><p>更快的做法：把前序依序插入空的 BST，得到的就是原本的樹。</p>"
+    },
+    {
+      "id": "ds-0017",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "證明：對任意 BST 做中序走訪，得到的序列一定是遞增的。",
+      "answer": "（證明題，見詳解）",
+      "explanation": "<p>對樹的節點數 n 做數學歸納。</p><p><b>基底</b>：n = 0 或 1 時，序列長度不超過 1，必定遞增。</p><p><b>歸納</b>：假設節點數少於 n 的 BST 都成立。對 n 個節點的 BST，中序輸出為「左子樹的中序 + root + 右子樹的中序」。由歸納假設，左右兩段各自遞增；由 BST 性質，左子樹所有 key &lt; root &lt; 右子樹所有 key。三段串接後仍然遞增。∎</p>"
+    },
+    {
+      "id": "ds-0018",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "對第 2 題（依序插入 40, 20, 60, 10, 30, 50, 70, 25）建出的 BST，假設 8 個 key 被搜尋的機率相同，成功搜尋的平均比較次數是多少？",
+      "answer": "21 / 8 = 2.625 次",
+      "explanation": "<p>每個節點的比較次數等於它所在的層數：第 1 層 40（1 次）、第 2 層 20、60（各 2 次）、第 3 層 10、30、50、70（各 3 次）、第 4 層 25（4 次）。</p><p>總和 = 1 + 2×2 + 3×4 + 4 = 21，平均 21 / 8 = 2.625 次。8 個節點至少要 4 層（前 3 層最多只能放 1 + 2 + 4 = 7 個），而最省的放法正是 1、2、4、1，總和也是 21，所以這棵樹已經是最佳形狀。</p>"
+    },
+    {
+      "id": "ds-0019",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "original"
+      },
+      "question": "寫一個函式判斷一棵二元樹是不是 BST，並分析時間複雜度。只比較每個節點和它的左右子節點為什麼不夠？",
+      "answer": "用遞迴傳遞每個節點允許的範圍 (low, high)，O(n)。",
+      "explanation": "<pre class=\"code-output\">int isBST(Node *t, long low, long high) {\n  if (t == NULL) return 1;\n  if (t->key <= low || t->key >= high) return 0;\n  return isBST(t->left, low, t->key) &&\n         isBST(t->right, t->key, high);\n}\n/* 呼叫：isBST(root, LONG_MIN, LONG_MAX) */</pre><p>每個節點只拜訪一次，所以是 O(n)。只比較父子節點不夠，因為 BST 性質要求「整棵子樹」都要滿足：例如 10 的左子 5 底下有右子 12，5 和 12 的父子關係沒問題，但 12 &gt; 10 卻在 10 的左子樹中。另一個做法是做中序走訪，檢查是否嚴格遞增，同樣是 O(n)。</p>"
+    },
+    {
+      "id": "ds-0020",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "刪除有兩個子節點的節點時，若用「左子樹最大」的節點頂替，那個節點最多會有幾個子節點？",
+      "choices": [
+        "(A) 0 個",
+        "(B) 最多 1 個，而且只可能是左子節點",
+        "(C) 最多 1 個，而且只可能是右子節點",
+        "(D) 可能有 2 個"
+      ],
+      "answer": "(B) 最多 1 個，而且只可能是左子節點",
+      "explanation": "<p>左子樹中最大的節點是從左子節點一路往右走到底的位置，所以它一定沒有右子節點（否則右邊還有更大的值），但可能有左子節點。因此刪除它時只會是 Case 1 或 Case 2。</p>"
+    }
+  ]
+}
