@@ -19,7 +19,6 @@
   --banner-glow: #c7d2fe;
   --banner-accent: #6366f1;
   --banner-ink: #1b1f2a;
-  --banner-line: .75;
 
   /* 動畫節點狀態色（CLAUDE.md 第 6 節的 state 對照） */
   --s-default: #94a3b8;  --s-default-fill: #ffffff;
@@ -59,7 +58,7 @@
   --bg: #0e1117; --paper: #161a23; --ink: #e8ebf2; --ink-soft: #9aa3b5;
   --line: #262c3a; --line-strong: #39415a; --code-bg: #1c212c;
   --brand: #8b85ff; --brand-soft: #1f2040;
-  --banner-bg: #181d2b; --banner-glow: #6366f1; --banner-accent: #a5b4fc; --banner-ink: #ffffff; --banner-line: .55;
+  --banner-bg: #181d2b; --banner-glow: #6366f1; --banner-accent: #a5b4fc; --banner-ink: #ffffff;
   --s-default: #6b7590; --s-default-fill: #1b202b;
   --s-active-fill: #3a2c10; --s-compare-fill: #142542; --s-found-fill: #0f3329;
   --s-new-fill: #2a1f4a; --s-removed-fill: #3d1717; --s-visited-fill: #10332f;
@@ -417,9 +416,6 @@ details.qans .qa > :last-child { margin-bottom: 0; }
     radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--banner-ink) 8%, transparent) 1px, transparent 1.5px) 0 0 / 18px 18px,
     var(--banner-bg);
   box-shadow: var(--shadow); }
-.banner-art { position: absolute; right: 36px; top: 50%; transform: translateY(-50%); width: 230px; opacity: var(--banner-line); pointer-events: none; }
-.banner-art .art-edges line { stroke: color-mix(in srgb, var(--banner-accent) 70%, transparent); stroke-width: 2.5; }
-.banner-art .art-nodes circle { fill: color-mix(in srgb, var(--banner-bg) 70%, transparent); stroke: color-mix(in srgb, var(--banner-accent) 85%, transparent); stroke-width: 2.5; }
 .banner-body { position: relative; }
 .banner h1 { font-size: clamp(1.5em, 4vw, 2em); margin: 0; letter-spacing: -.01em; }
 .banner p { margin: 8px 0 0; color: color-mix(in srgb, var(--banner-ink) 62%, transparent); font-size: .95em; }
@@ -448,8 +444,7 @@ details.qans .qa > :last-child { margin-bottom: 0; }
   .theme-toggle { padding: 6px 8px; }
   .page-title { margin-top: 22px; }
   .banner { margin-top: 16px; padding: 22px 18px; border-radius: 16px; }
-  .banner-art { width: 140px; right: -16px; top: 16px; transform: none; opacity: calc(var(--banner-line) * .5); }
-  .stats { gap: 8px; }
+    .stats { gap: 8px; }
   .stat { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 10px; }
   .stat-label { font-size: .76em; }
   .stat-icon { width: 30px; height: 30px; }
