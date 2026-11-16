@@ -222,6 +222,9 @@ def check_topic(path, subj, ch, t, errors):
     for qid in p.qlinks:
         if qid not in ids:
             err(f"「例題」連結指向不存在的題目 {qid}")
+    name = f"{t['en']}（{t['zh']}）"
+    if not re.search(r"<title>\s*" + re.escape(name), html):
+        err(f"<title> 要以 JSON 登錄的名稱「{name}」開頭")
     if p.full_code:
         err('頁面上不放完整程式（details.code-full），完整程式只存在 code/ 裡供編譯驗證')
     src = ROOT / "code" / subj["id"] / f"{t['id']}.c"

@@ -197,7 +197,7 @@
 
 - 每個頂層 `<section>` 要有 kebab-case 的 `id` 和一個 `<h2>`（右側目錄 TOC 靠它），至少 2 個 section。
 - `<body data-subject="<subject-id>" data-chapter="<chapter-id>" data-chno="<章節編號>" data-topic="<subject-id>/<chapter-id>/<topic-id>" data-root="../../../">`
-- `<title>`：`English（中文） · 科目中文 | 資工考研互動學習站`；`<meta name="description">` 一句話、≤ 70 字。
+- `<title>`：`English（中文） · 科目中文 | 資工考研互動學習站`，English、中文要和 JSON 的 `en`、`zh` 完全一致（`check.py` 會檢查）；`<meta name="description">` 一句話、≤ 70 字。
 - 麵包屑：`首頁 › 科目 English（中文） › Ch<編號> 章節 English（中文） › 主題 English（中文）`
 - meta 列：`Ch<編號> 章節 English`、難度、tags。
 - 頁尾「最後更新：YYYY-MM-DD」與 JSON 的 `updated` 一致。

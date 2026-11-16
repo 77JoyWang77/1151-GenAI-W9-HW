@@ -242,9 +242,17 @@
           "en": "Heap",
           "zh": "堆積",
           "book": "5.6",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": true
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "priority queue",
+            "max heap",
+            "insert",
+            "delete-max"
+          ],
+          "updated": "2026-11-16"
         },
         {
           "id": "binary-search-tree",

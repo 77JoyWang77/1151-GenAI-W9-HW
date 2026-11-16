@@ -8,7 +8,7 @@
 
 | 科目 | 狀態 | 參考書（僅供 AI 查閱） |
 |---|---|---|
-| Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 2 個 | Horowitz《Fundamentals of Data Structures in C》 |
+| Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 5 個 | Horowitz《Fundamentals of Data Structures in C》 |
 | Algorithms（演算法） | 籌備中 | |
 | Computer Organization（計算機組織） | 籌備中 | |
 | Operating Systems（作業系統） | 籌備中 | |
@@ -20,6 +20,9 @@
 | 主題 | 互動動畫 |
 |---|---|
 | Stack（堆疊） | push / pop / peek；中序轉後序（isp / icp 寫法） |
+| Circular Queue（環狀佇列） | 佇列畫成一個環：enqueue / dequeue / 放到滿，可切換「犧牲一格／多記 count」 |
+| Binary Tree Traversal（二元樹走訪與重建） | 自己輸入樹，播放前序 / 中序 / 後序 / 層序與 stack 版中序，看得到 stack、queue 內容 |
+| Heap（堆積） | insert / delete-max / build heap（由下往上），樹和陣列同步移動 |
 | Binary Search Tree（二元搜尋樹） | insert / search / delete（三種情況，可切換左子樹最大 / 右子樹最小）、中序走訪 |
 
 ## 這個專案的重點：CLAUDE.md

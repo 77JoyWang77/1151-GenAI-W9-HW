@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Heap（堆積） · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="用完全二元樹與陣列實作的優先佇列；考研必考 insert、delete-max 追蹤與 O(n) 建堆。">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <script src="../../../assets/js/theme.js"></script>
+</head>
+<body data-subject="data-structures" data-chapter="tree" data-chno="5" data-topic="data-structures/tree/heap" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>Data Structures</small></a>
+      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>深色</button></nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures（資料結構）</a> › Ch5 Trees（樹） › Heap（堆積）</nav>
+      <div class="topic-head">
+        <h1>Heap（堆積）<small>只要隨時知道誰最大，不必整個排好序</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch5 Trees</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">priority queue</span>
+          <span class="chip">max heap</span>
+          <span class="chip">insert</span>
+          <span class="chip">delete-max</span>
+        </div>
+      </div>
+
+      <section id="why-heap">
+        <h2>為什麼需要 Heap：優先佇列</h2>
+        <div class="panel prose">
+          <p>一般的 Queue 是先來先處理，但很多時候我們要的是「<b>最重要的先處理</b>」：急診室先看病情最重的病人、作業系統先執行優先權最高的行程、Dijkstra 演算法每次先處理距離最短的點。這種資料結構叫做 <span class="term">Priority Queue<small>（優先佇列）</small></span>，需要兩個操作：加入一個元素（insert），以及取出優先權最高的元素（delete-max）。</p>
+          <p>用已經學過的結構來做，都會有一個操作很慢：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>實作方式</th><th>insert</th><th>delete-max</th><th>問題</th></tr></thead>
+              <tbody>
+                <tr><td>沒排序的陣列</td><td><code>O(1)</code></td><td><code>O(n)</code></td><td>每次取最大都要掃過全部</td></tr>
+                <tr><td>排序好的陣列</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>每次插入都要搬動元素</td></tr>
+                <tr><td>BST</td><td><code>O(h)</code></td><td><code>O(h)</code></td><td>沒有平衡時 h 可能是 n</td></tr>
+                <tr><td><b>Heap</b></td><td><code>O(log n)</code></td><td><code>O(log n)</code></td><td>兩個操作都快，而且一定是 log n</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><span class="term">Heap<small>（堆積）</small></span>的關鍵想法是：既然只需要隨時知道「最大的是誰」，就不必把全部資料排好序，只要維持一個比較弱、但比較容易維護的順序就夠了。當 n = 1,000,000 時，log₂n 約為 20，代表每次 insert 或 delete-max 最多只要往上或往下調整約 20 層，而不是動到一百萬個元素。</p>
+        </div>
+      </section>
+
+      <section id="definition">
+        <h2>定義：完全二元樹 + 父節點比子節點大</h2>
+        <div class="panel prose">
+          <p>一棵 <span class="term">Max Heap<small>（最大堆積）</small></span>要同時滿足兩個條件：</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>形狀</b>：是一棵 <span class="term">Complete Binary Tree<small>（完全二元樹）</small></span>，除了最後一層，每層都填滿，最後一層的節點全部靠左。<br><b>順序</b>：每個節點的值都 ≥ 它的子節點（所以根一定是最大值）。</p></div>
+          <p>把「≥」改成「≤」就是 <span class="term">Min Heap<small>（最小堆積）</small></span>，根是最小值，操作完全對稱。本頁以 max heap 為例。</p>
+          <p>注意 heap 的順序條件只規定「上下」，<b>不規定左右</b>：兄弟節點之間誰大都可以，左子樹的值也可能比右子樹大。所以 heap 不是排序好的結構，對它做中序走訪不會得到排序結果；它只保證「從根往下的每條路徑都是遞減的」。這是 heap 和 BST 最大的差別，也是最常被拿來出選擇題的地方。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="heap-valid-invalid"></div>
+            <figcaption><b>圖 1</b>：(a) 合法的 max heap：右子樹的 75 比左子樹的 70 大也沒關係，左右之間沒有限制；(b) 75 比父節點 70 大，違反順序條件；(c) 每個父節點都比較大，但 [5] 空著卻用了 [6]，不是完全二元樹。</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="array">
+        <h2>用陣列存放：不需要指標</h2>
+        <div class="panel prose">
+          <p>完全二元樹的節點是一層一層、由左到右「擠在一起」的，中間沒有空洞，所以可以直接依層序編號放進陣列，用索引算出父子關係，完全不需要 left、right 指標。習慣上從 <b>heap[1]</b> 開始放（heap[0] 不用），公式最乾淨：</p>
+          <pre class="formula">父節點 = i / 2（整數除法）　　左子 = 2i　　右子 = 2i + 1　　i 是葉子 ⇔ 2i &gt; n</pre>
+          <p>如果陣列從 0 開始，公式要改成：父節點 (i − 1) / 2、左子 2i + 1、右子 2i + 2。考試兩種都會出現，一定要先看清楚題目從哪裡開始編號。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="heap-array-mapping"></div>
+            <figcaption><b>圖 2</b>：同一個 heap 的樹狀與陣列表示。heap[2] = 60 的兩個子節點在 heap[4] = 30 與 heap[5] = 50。</figcaption>
+          </figure>
+          <p>因為是完全二元樹，n 個節點的高度一定是 ⌊log₂n⌋ + 1 層，不會像 BST 那樣退化成鏈。這就是 heap 能保證 <code>O(log n)</code> 的原因：所有操作都只沿著一條從根到葉（或從葉到根）的路徑走。</p>
+        </div>
+      </section>
+
+      <section id="insert">
+        <h2>insert：放在最後，往上浮</h2>
+        <div class="panel prose">
+          <p>插入新元素時，先顧好<b>形狀</b>：把它放在陣列的下一格（heap[n + 1]），也就是最下層最左邊的空位，樹仍然是完全二元樹。接著修正<b>順序</b>：新元素可能比父節點大，就和父節點交換，一路往上比較，直到它不比父節點大、或已經到了根為止。這個過程叫 <span class="term">Bubble Up<small>（上浮，也叫 sift-up）</small></span>。</p>
+          <p>為什麼交換後其他地方不會壞掉？交換時，原本的父節點 p 往下移到新元素的位置，而 p 本來就比它原本的所有子孫都大，所以 p 移下來後仍然比新的子節點大；往上移的新元素又比 p 大，自然也比 p 的另一個子節點大。所以每次交換只會讓問題往上移一層，不會在別處產生新的錯誤。</p>
+          <h3>例子：依序 insert 30、50、20、70、60、10、80</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>insert</th><th>過程</th><th>陣列 heap[1..n]</th></tr></thead>
+              <tbody>
+                <tr><td>30</td><td>空 heap，直接當根</td><td>30</td></tr>
+                <tr><td>50</td><td>放在 [2]，50 &gt; 30，交換</td><td>50 30</td></tr>
+                <tr><td>20</td><td>放在 [3]，20 &lt; 50，停</td><td>50 30 20</td></tr>
+                <tr><td>70</td><td>放在 [4]，70 &gt; 30 交換到 [2]，70 &gt; 50 再交換到 [1]</td><td>70 50 20 30</td></tr>
+                <tr><td>60</td><td>放在 [5]，60 &gt; 50 交換到 [2]，60 &lt; 70 停</td><td>70 60 20 30 50</td></tr>
+                <tr><td>10</td><td>放在 [6]，10 &lt; 20，停</td><td>70 60 20 30 50 10</td></tr>
+                <tr><td>80</td><td>放在 [7]，80 &gt; 20 交換到 [3]，80 &gt; 70 交換到 [1]</td><td>80 60 70 30 50 10 20</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>每個新元素最多往上換 ⌊log₂n⌋ 次（樹高減一），所以 insert 是 <code>O(log n)</code>。上面 7 次插入總共交換了 6 次。</p>
+          <details class="code-fold">
+            <summary>看程式碼：insert()：往上浮</summary>
+            <div class="code-block">
+              <div class="code-head">insert()：往上浮</div>
+              <pre class="code">#define MAX 100
+int heap[MAX + 1];                             /* 用 heap[1..n]，heap[0] 不用 */
+int n = 0;
+
+void swap(int *a, int *b) { int t = *a; *a = *b; *b = t; }
+
+void insert(int x) {
+  if (n == MAX) { printf("Heap Full\n"); exit(1); }
+  int i = ++n;                                 /* 先放在最後一個位置 */
+  heap[i] = x;
+  while (i &gt; 1 &amp;&amp; heap[i] &gt; heap[i / 2]) {     /* 比父節點大就往上換 */
+    swap(&amp;heap[i], &amp;heap[i / 2]);
+    i /= 2;
+  }
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="delete-max">
+        <h2>delete-max：最後一個補到根，往下沉</h2>
+        <div class="panel prose">
+          <p>最大值一定在根，取走它很容易，難的是補洞。如果直接把較大的子節點往上提，最後空出來的位置可能在最下層的中間，形狀就不再是完全二元樹。正確做法同樣是<b>先顧形狀、再修順序</b>：</p>
+          <ol>
+            <li>記下根 heap[1]（要回傳的最大值）。</li>
+            <li>把<b>最後一個元素</b> heap[n] 搬到根，n 減 1。最後一格消失，形狀仍是完全二元樹。</li>
+            <li>新的根通常很小，要往下沉：和<b>兩個子節點中較大的那個</b>比較，比它小就交換，一路往下，直到比兩個子節點都大或已經是葉子。這叫 <span class="term">Sift Down<small>（下沉，也叫 heapify）</small></span>。</li>
+          </ol>
+          <p>為什麼一定要挑<b>較大</b>的子節點交換？因為換上來的節點會成為另一個子節點的父親，只有挑較大的，它才會 ≥ 另一個子節點。如果挑錯成較小的那個，換上去後馬上就違反 heap 性質。</p>
+          <p>以上一節的結果 80 60 70 30 50 10 20 為例：取走 80，把最後的 20 搬到根；20 的子節點是 60、70，較大的是 70，交換；20 到了 [3]，唯一的子節點是 10，20 ≥ 10，停。結果是 70 60 20 30 50 10。往下沉每層要比較 2 次（先比兩個子節點，再和較大的比），最多沉 ⌊log₂n⌋ 層，所以 delete-max 也是 <code>O(log n)</code>。</p>
+          <details class="code-fold">
+            <summary>看程式碼：deleteMax() 與 siftDown()</summary>
+            <div class="code-block">
+              <div class="code-head">deleteMax() 與 siftDown()</div>
+              <pre class="code">void siftDown(int a[], int i, int size) {
+  while (2 * i &lt;= size) {                      /* 還有子節點就繼續 */
+    int c = 2 * i;                             /* 先假設左子比較大 */
+    if (c + 1 &lt;= size &amp;&amp; a[c + 1] &gt; a[c]) c++; /* 右子更大就改選右子 */
+    if (a[i] &gt;= a[c]) break;                   /* 比兩個子節點都大，停 */
+    swap(&amp;a[i], &amp;a[c]);
+    i = c;
+  }
+}
+
+int deleteMax(void) {
+  if (n == 0) { printf("Heap Empty\n"); exit(1); }
+  int top = heap[1];
+  heap[1] = heap[n--];                         /* 最後一個移到根 */
+  siftDown(heap, 1, n);
+  return top;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>上方是樹、下方是陣列，兩者是同一份資料：交換時節點在樹上和陣列裡會一起移動，可以對照索引公式。輸入一個數字按 insert；按 delete-max 取出最大值；輸入一串數字（例如按「範例數列」）再按 build heap，可以看下一節的由下往上建堆。</p>
+        </div>
+        <div class="viz" data-viz="heap"></div>
+      </section>
+
+      <section id="build-heap">
+        <h2>建立 heap：由下往上只要 O(n)</h2>
+        <div class="panel prose">
+          <p>手上已經有 n 個數字，要把它們變成一個 heap，有兩種做法：</p>
+          <ul>
+            <li><b>由上往下（逐一 insert）</b>：從空 heap 開始，一個一個 insert。每次最多 <code>O(log n)</code>，總共 <code>O(n log n)</code>。</li>
+            <li><b>由下往上（bottom-up）</b>：先把 n 個數照原順序放進陣列（形狀已經是完全二元樹），再從<b>最後一個內部節點</b> ⌊n / 2⌋ 開始往前，對每個節點做 siftDown。輪到節點 i 時，它的兩棵子樹都已經是 heap，只要把 i 沉到正確位置，以 i 為根的子樹就變成 heap。做到根就完成。</li>
+          </ul>
+          <p>由下往上為什麼只要 <code>O(n)</code>？關鍵是「大部分的節點都在底層，而底層節點沉不了幾層」。以 n = 15 的完全二元樹為例（圖 3）：8 個葉節點不用動，4 個節點最多沉 1 層，2 個最多沉 2 層，只有根最多沉 3 層，總交換次數最多 4·1 + 2·2 + 1·3 = 11 次，比 n 還少。一般化：高度為 h 的節點約有 n / 2ʰ⁺¹ 個，每個最多沉 h 層：</p>
+          <pre class="formula">總成本 ≤ Σ (n / 2ʰ⁺¹) · h = (n / 2) · Σ h / 2ʰ ≤ (n / 2) · 2 = n　→　O(n)</pre>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="heap-build-cost"></div>
+            <figcaption><b>圖 3</b>：n = 15 時由下往上建 heap 的最多交換次數。越下層節點越多、但能沉的層數越少，總和只有 11。</figcaption>
+          </figure>
+          <p>要特別注意：兩種做法得到的 heap <b>不一定相同</b>，都是合法的 heap 但陣列內容可能不同。例如 15 25 10 40 35 50 20，由下往上得到 50 40 20 25 35 10 15（交換 4 次），逐一 insert 得到 50 35 40 15 25 10 20（交換 6 次）。考題問「建出來的 heap」時，要看清楚指定哪一種方法。</p>
+          <details class="code-fold">
+            <summary>看程式碼：buildHeap()：由下往上</summary>
+            <div class="code-block">
+              <div class="code-head">buildHeap()：由下往上</div>
+              <pre class="code">void buildHeap(int a[], int size) {
+  for (int i = size / 2; i &gt;= 1; i--)          /* 從最後一個內部節點往前 */
+    siftDown(a, i, size);
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="applications">
+        <h2>應用與比較</h2>
+        <div class="panel prose">
+          <ul>
+            <li><b>Priority Queue</b>：作業系統的行程排程、事件模擬、網路封包排隊，幾乎都用 heap 實作。</li>
+            <li><b>Heap Sort</b>：先 build heap（<code>O(n)</code>），再做 n 次 delete-max，每次把取出的最大值放到陣列尾端，總共 <code>O(n log n)</code>，而且只需要 <code>O(1)</code> 額外空間。</li>
+            <li><b>Top-k 問題</b>：要從大量資料中找出最大的 k 個，用一個大小 k 的 min heap，每來一個數就和堆頂比較，總共 <code>O(n log k)</code>。</li>
+            <li><b>圖的演算法</b>：Dijkstra 最短路徑、Prim 最小生成樹每次都要取出「目前最小」的候選，用 min heap 可以加速。</li>
+          </ul>
+          <p>和 BST 比較：heap 只能快速找到<b>最大（或最小）</b>的一個，要搜尋任意值只能整個掃過，<code>O(n)</code>；BST 可以搜尋任意值、也能依序輸出，但沒有平衡時可能退化。所以只需要「反覆取最值」時用 heap，需要「查詢任意值或依序列出」時用（平衡的）BST。</p>
+        </div>
+      </section>
+
+      <section id="ops">
+        <h2>操作與複雜度整理</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>操作 Operation</th><th>做法</th><th>時間</th></tr></thead>
+              <tbody>
+                <tr><td>取最大值</td><td>直接看 heap[1]</td><td><code>O(1)</code></td></tr>
+                <tr><td><code>insert(x)</code></td><td>放在 heap[n + 1]，往上浮</td><td><code>O(log n)</code></td></tr>
+                <tr><td><code>deleteMax()</code></td><td>heap[n] 搬到根，往下沉（和較大的子節點換）</td><td><code>O(log n)</code></td></tr>
+                <tr><td>build heap（由下往上）</td><td>從 ⌊n / 2⌋ 到 1 依序 siftDown</td><td><code>O(n)</code></td></tr>
+                <tr><td>build heap（逐一 insert）</td><td>n 次 insert</td><td><code>O(n log n)</code></td></tr>
+                <tr><td>搜尋任意值</td><td>沒有左右順序，只能全部掃過</td><td><code>O(n)</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>判斷是否為 heap</td><td>很常考</td><td>檢查每個 i ≥ 2：heap[i] ≤ heap[i / 2]；還要確認沒有空洞</td><td><a class="q-link" href="#q-ds-0033">例題</a></td></tr>
+                <tr><td>依序 insert 畫出結果</td><td>很常考</td><td>每次放在最後一格，和父節點比，大就換，畫表格逐步記錄陣列</td><td><a class="q-link" href="#q-ds-0035">例題</a></td></tr>
+                <tr><td>delete-max 追蹤</td><td>很常考</td><td>最後一個補到根，每層和「較大的子節點」比較</td><td><a class="q-link" href="#q-ds-0036">例題</a></td></tr>
+                <tr><td>build heap 兩種方法比較</td><td>常考</td><td>由下往上從 ⌊n / 2⌋ 開始 siftDown；兩種方法結果可能不同</td><td><a class="q-link" href="#q-ds-0037">例題</a></td></tr>
+                <tr><td>索引公式</td><td>常考</td><td>先確認從 0 還是 1 開始編號</td><td><a class="q-link" href="#q-ds-0034">例題</a></td></tr>
+                <tr><td>第 k 大可能的位置</td><td>偶爾</td><td>第 k 大的祖先一定都比它大，所以深度 ≤ k − 1</td><td><a class="q-link" href="#q-ds-0038">例題</a></td></tr>
+                <tr><td>複雜度證明</td><td>偶爾</td><td>build heap：Σ h · n / 2ʰ⁺¹ = O(n)</td><td><a class="q-link" href="#q-ds-0039">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> heap 是排序好的，中序走訪會遞增</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> heap 只規定父 ≥ 子，兄弟、左右子樹之間沒有順序</span> <a class="q-link" href="#q-ds-0033">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> delete-max 後把較大的子節點直接提上來補洞</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 這樣會破壞完全二元樹的形狀；要把最後一個元素搬到根再往下沉</span> <a class="q-link" href="#q-ds-0036">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 往下沉時和左子節點比就好</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要和兩個子節點中「較大」的交換，否則換上來的節點比另一個子節點小</span> <a class="q-link" href="#q-ds-0036">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 逐一 insert 和由下往上建出來的 heap 一樣</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 兩者都是合法 heap，但內容常常不同；而且一個 O(n log n)、一個 O(n)</span> <a class="q-link" href="#q-ds-0037">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 左子一律是 2i</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 從 1 開始才是 2i；從 0 開始是 2i + 1，父節點是 (i − 1) / 2</span> <a class="q-link" href="#q-ds-0034">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="heap"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js"></script>
+  <script src="../../../assets/js/viz-core.js"></script>
+  <script src="../../../assets/js/viz/data-structures/heap.js"></script>
+</body>
+</html>
