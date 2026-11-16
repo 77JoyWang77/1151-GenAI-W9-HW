@@ -260,6 +260,9 @@
     input.addEventListener("keydown", (e) => e.key === "Enter" && player.toolbar.querySelector(".vop").click());
 
     reset([50, 30, 70, 20, 40, 60, 80, 35, 65]);
-    player.load([frame("輸入 key 後試試 <b>insert</b>、<b>search</b>、<b>delete</b>。建議刪除 30（兩個子節點）、20（葉節點）、60（一個子節點）比較三種情況。", null)], { autoplay: false });
+    // 初始載入一段 search(35) 示範（不改變樹），讓 ▶ 一按就能播放
+    const demo = doSearch(35);
+    demo[0].caption = "▶ 按播放看 <b>search(35)</b> 的示範。之後輸入 key 試試 <b>insert</b>、<b>search</b>、<b>delete</b>，建議刪除 30（兩個子節點）、20（葉節點）、60（一個子節點）比較三種情況。";
+    player.load(demo, { autoplay: false });
   });
 })();

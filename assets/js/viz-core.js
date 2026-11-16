@@ -126,6 +126,7 @@
         ? h("div", { class: "viz-legend" }, this.opts.legend.map(([s, t]) => h("span", { class: "lg" }, [h("i", { class: "sw s-" + s }), document.createTextNode(t)])))
         : null;
 
+      this.controls = controls;
       [head, body, this.caption, controls, legend].forEach((el) => el && root.appendChild(el));
 
       root.addEventListener("keydown", (e) => {
@@ -157,11 +158,21 @@
 
     toggle() { this.playing ? this.pause() : this.play(); }
     play() {
+      // 只有一步時沒有東西可播：提示使用者先用上方按鈕執行操作
+      if (this.frames.length <= 1) return this._nudge();
       if (this.index >= this.frames.length - 1) this.show(0);
       this.playing = true;
       this.btnPlay.textContent = "⏸";
       this._schedule();
     }
+    _nudge() {
+      const hint = "👆 目前只有 1 步可以看。先用上方的按鈕執行一個操作（例如輸入數值後按第一個按鈕），產生步驟後就能播放。";
+      if (!this.caption.querySelector(".viz-hint")) this.caption.insertAdjacentHTML("beforeend", `<div class="viz-hint">${hint}</div>`);
+      this.toolbar.classList.remove("is-nudge");
+      void this.toolbar.offsetWidth; // 重新觸發 CSS 動畫
+      this.toolbar.classList.add("is-nudge");
+    }
+
     pause() {
       this.playing = false;
       this.btnPlay.textContent = "▶";
@@ -182,6 +193,7 @@
       this.index = i;
       const f = this.frames[i];
       this.slider.value = String(i);
+      this.controls.classList.toggle("is-single", this.frames.length <= 1);
       this.counter.textContent = `${i + 1} / ${this.frames.length}`;
       this.caption.innerHTML = f.caption || "";
       this._highlight(f.line);

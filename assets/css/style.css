@@ -215,6 +215,10 @@ details.quiz p { margin: 0; color: var(--ink-soft); padding-left: 22px; }
 .code-line.is-active { background: color-mix(in srgb, var(--s-active) 18%, transparent); border-left-color: var(--s-active); }
 .viz-caption { min-height: 2.6em; margin: 10px 2px 6px; font-size: .95em; }
 .viz-caption b { color: var(--accent); }
+.viz-hint { margin-top: 6px; font-size: .9em; color: var(--accent); font-weight: 600; }
+.viz-controls.is-single .vbtn:not(:nth-child(3)), .viz-controls.is-single .viz-slider { opacity: .4; }
+.viz-toolbar.is-nudge .vop { animation: nudge .5s ease-in-out 2; }
+@keyframes nudge { 50% { transform: translateY(-3px); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); } }
 .viz-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 10px; }
 .vbtn { font: inherit; font-size: .85em; width: 34px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
 .vbtn:hover { border-color: var(--accent); color: var(--accent); }
