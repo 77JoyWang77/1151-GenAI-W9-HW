@@ -19,7 +19,7 @@
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>{{科目 English}}</small></a>
-      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button></nav>
+      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>深色</button></nav>
     </div>
   </header>
 
@@ -30,7 +30,7 @@
         <h1>{{English}}（{{中文}}）<small>{{一句話副標}}</small></h1>
         <div class="meta">
           <span class="chip accent">Ch{{章節編號}} {{章節 English}}</span>
-          <span class="chip">難度 {{★★☆}}</span>
+          <span class="chip" data-difficulty="{{1～3}}">難度</span>
           <span class="chip">{{tag}}</span>
         </div>
       </div>
@@ -101,7 +101,7 @@
         <p>每一點都附了一題專門考這個觀念的例題，可以馬上驗證自己有沒有搞懂。</p>
         <div class="panel">
           <ul class="pitfalls">
-            <li><span class="bad">❌ {{錯誤想法}}</span> → <span class="ok">✅ {{正確觀念}}</span> <a class="q-link" href="#q-{{題目id}}">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> {{錯誤想法}}</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> {{正確觀念}}</span> <a class="q-link" href="#q-{{題目id}}">例題</a></li>
           </ul>
         </div>
       </section>
@@ -111,7 +111,7 @@
         <h2>練習題與考古題</h2>
         <div class="practice-tools">
           <p>題目分成基礎、進階、考研級三個難度，最後是考古題。先自己作答，再點開答案與詳解。</p>
-          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 →</a></span>
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
         </div>
         <div class="qbank" data-questions="{{topic-id}}"></div>
       </section>

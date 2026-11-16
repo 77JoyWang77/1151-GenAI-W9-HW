@@ -5,7 +5,7 @@
    ===================================================================== */
 (function () {
   "use strict";
-  const { Player, Recorder, ui, register, esc } = window.DSViz;
+  const { Player, Recorder, ui, register, esc, iconHTML } = window.DSViz;
 
   // ===================================================================
   // 1) stack-ops
@@ -128,9 +128,9 @@
     ui.button(player, "清空", () => { items = []; player.load([idle("堆疊已清空，top = −1。")], { autoplay: false }); }, "ghost");
     input.addEventListener("keydown", (e) => e.key === "Enter" && player.toolbar.querySelector(".vop").click());
 
-    // 初始載入一段 push(5) 示範，讓 ▶ 一按就能播放
+    // 初始載入一段 push(5) 示範，讓播放鍵一按就能播放
     const demo = push(5);
-    demo[0].caption = "▶ 按播放看 <b>push(5)</b> 的示範；之後可以自己輸入數值按 <b>push</b>，或試試 <b>pop</b> / <b>peek</b>。也可以用 ← → 鍵逐步看。";
+    demo[0].caption = iconHTML("play") + " 按播放看 <b>push(5)</b> 的示範；之後可以自己輸入數值按 <b>push</b>，或試試 <b>pop</b> / <b>peek</b>。也可以用 ← → 鍵逐步看。";
     player.load(demo, { autoplay: false });
     input.value = "12";
   });
@@ -196,7 +196,7 @@
 
     function run(expr) {
       const tk = tokenize(expr);
-      if (tk.error) return [{ caption: `<b>⚠ ${tk.error}</b>`, labels: [{ id: "err", x: 340, y: 170, text: tk.error, cls: "warn" }] }];
+      if (tk.error) return [{ caption: `${iconHTML("alert")} <b>${tk.error}</b>`, labels: [{ id: "err", x: 340, y: 170, text: tk.error, cls: "warn" }] }];
       const toks = tk.tokens.map((t, i) => ({ id: "t" + i, t }));
       const n = toks.length;
       const inStep = Math.min(40, 440 / n);

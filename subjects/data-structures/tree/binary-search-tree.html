@@ -12,7 +12,7 @@
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>Data Structures</small></a>
-      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button></nav>
+      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>深色</button></nav>
     </div>
   </header>
 
@@ -23,7 +23,7 @@
         <h1>Binary Search Tree（二元搜尋樹）<small>左子樹都比我小，右子樹都比我大</small></h1>
         <div class="meta">
           <span class="chip accent">Ch5 Trees</span>
-          <span class="chip">難度 ★★☆</span>
+          <span class="chip" data-difficulty="2">難度</span>
           <span class="chip">BST</span>
           <span class="chip">insert</span>
           <span class="chip">delete</span>
@@ -35,7 +35,7 @@
         <div class="panel prose">
           <p>假設要維護一群會不斷新增、刪除的資料，又要能很快地找到某個值。排序好的陣列可以用二分搜尋，在 <code>O(log n)</code> 找到資料，但插入或刪除時要搬動一大堆元素，要 <code>O(n)</code>；鏈結串列插入、刪除很方便，搜尋卻只能從頭一個一個找，也是 <code>O(n)</code>。有沒有辦法同時擁有兩者的優點？</p>
           <p><span class="term">Binary Search Tree<small>（二元搜尋樹，BST）</small></span>就是答案。它是一棵二元樹，每個節點存一個 <span class="term">key<small>（鍵值）</small></span>，並且所有節點都滿足：</p>
-          <div class="callout"><p>📌 <b>BST 性質</b>：節點的<b>左子樹中所有 key 都比它小</b>，<b>右子樹中所有 key 都比它大</b>；而且左、右子樹本身也都是 BST。</p></div>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>BST 性質</b>：節點的<b>左子樹中所有 key 都比它小</b>，<b>右子樹中所有 key 都比它大</b>；而且左、右子樹本身也都是 BST。</p></div>
           <p>注意是「<b>整棵</b>左子樹」，不是只看直接相連的左子節點。圖 1 (b) 中，每個節點和自己的子節點比都沒問題，但 12 落在 10 的左子樹裡，卻比 10 大，所以整棵樹就不是 BST。這是考題最常設的陷阱。</p>
           <figure class="fig">
             <div class="fig-draw" data-fig="bst-valid-invalid"></div>
@@ -311,10 +311,10 @@ Node *newNode(int x) {
         <p>每一點都附了一題專門考這個觀念的例題，可以馬上驗證自己有沒有搞懂。</p>
         <div class="panel">
           <ul class="pitfalls">
-            <li><span class="bad">❌ 只要每個節點「左子 &lt; 自己 &lt; 右子」就是 BST</span> → <span class="ok">✅ 必須是左「整棵子樹」都比較小。例如 10 的左子 5 底下若有右子 15，就不是 BST</span> <a class="q-link" href="#q-ds-0019">例題</a></li>
-            <li><span class="bad">❌ BST 的操作都是 O(log n)</span> → <span class="ok">✅ 是 O(h)。沒有平衡機制時，最差是 O(n)</span> <a class="q-link" href="#q-ds-0015">例題</a></li>
-            <li><span class="bad">❌ 左子樹最大的節點一定是葉節點</span> → <span class="ok">✅ 它沒有右子節點，但可能有左子節點，刪掉後要把左子節點接上去（右子樹最小則可能有右子節點）</span> <a class="q-link" href="#q-ds-0020">例題</a></li>
-            <li><span class="bad">❌ 刪除兩個子節點的節點只有一種正確答案</span> → <span class="ok">✅ 用後繼或前驅都正確，但結果的樹不同，要照題目指定的方式</span> <a class="q-link" href="#q-ds-0013">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 只要每個節點「左子 &lt; 自己 &lt; 右子」就是 BST</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 必須是左「整棵子樹」都比較小。例如 10 的左子 5 底下若有右子 15，就不是 BST</span> <a class="q-link" href="#q-ds-0019">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> BST 的操作都是 O(log n)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 是 O(h)。沒有平衡機制時，最差是 O(n)</span> <a class="q-link" href="#q-ds-0015">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 左子樹最大的節點一定是葉節點</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 它沒有右子節點，但可能有左子節點，刪掉後要把左子節點接上去（右子樹最小則可能有右子節點）</span> <a class="q-link" href="#q-ds-0020">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 刪除兩個子節點的節點只有一種正確答案</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 用後繼或前驅都正確，但結果的樹不同，要照題目指定的方式</span> <a class="q-link" href="#q-ds-0013">例題</a></li>
           </ul>
         </div>
       </section>
@@ -323,7 +323,7 @@ Node *newNode(int x) {
         <h2>練習題與考古題</h2>
         <div class="practice-tools">
           <p>題目分成基礎、進階、考研級三個難度，最後是考古題。先自己作答，再點開答案與詳解。</p>
-          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 →</a></span>
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
         </div>
         <div class="qbank" data-questions="binary-search-tree"></div>
       </section>

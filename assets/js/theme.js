@@ -9,6 +9,8 @@
   "use strict";
   const KEY = "ds-theme";
   const root = document.documentElement;
+  const ICONS = new URL("../icons.svg", document.currentScript.src).href;
+  const icon = (n) => `<svg class="icon" aria-hidden="true"><use href="${ICONS}#i-${n}"></use></svg>`;
 
   function saved() {
     try { return localStorage.getItem(KEY); } catch (e) { return null; }
@@ -16,7 +18,7 @@
   function apply(theme) {
     root.setAttribute("data-theme", theme);
     document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
-      btn.textContent = theme === "dark" ? "☀️ 淺色" : "🌙 深色";
+      btn.innerHTML = theme === "dark" ? `${icon("sun")}<span>淺色</span>` : `${icon("moon")}<span>深色</span>`;
       btn.setAttribute("aria-label", theme === "dark" ? "切換成淺色模式" : "切換成深色模式");
     });
   }

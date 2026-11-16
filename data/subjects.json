@@ -8,7 +8,7 @@
       "id": "data-structures",
       "en": "Data Structures",
       "zh": "資料結構",
-      "icon": "🌲",
+      "icon": "tree",
       "color": 5,
       "status": "active",
       "desc": "堆疊、樹、圖、排序、雜湊——用動畫看懂每一步"
@@ -17,7 +17,7 @@
       "id": "algorithms",
       "en": "Algorithms",
       "zh": "演算法",
-      "icon": "🧭",
+      "icon": "compass",
       "color": 7,
       "status": "planned",
       "desc": "分治、動態規劃、貪婪、NP 完備"
@@ -26,7 +26,7 @@
       "id": "computer-organization",
       "en": "Computer Organization",
       "zh": "計算機組織",
-      "icon": "🧮",
+      "icon": "cpu",
       "color": 2,
       "status": "planned",
       "desc": "指令集、管線、快取、記憶體階層"
@@ -35,7 +35,7 @@
       "id": "operating-systems",
       "en": "Operating Systems",
       "zh": "作業系統",
-      "icon": "⚙️",
+      "icon": "layers",
       "color": 3,
       "status": "planned",
       "desc": "行程排程、同步、死結、記憶體管理"
@@ -44,7 +44,7 @@
       "id": "discrete-math",
       "en": "Discrete Mathematics",
       "zh": "離散數學",
-      "icon": "🔢",
+      "icon": "sigma",
       "color": 9,
       "status": "planned",
       "desc": "邏輯、集合、組合、遞迴關係、圖論"
@@ -53,7 +53,7 @@
       "id": "linear-algebra",
       "en": "Linear Algebra",
       "zh": "線性代數",
-      "icon": "📐",
+      "icon": "matrix",
       "color": 6,
       "status": "planned",
       "desc": "向量空間、特徵值、對角化"

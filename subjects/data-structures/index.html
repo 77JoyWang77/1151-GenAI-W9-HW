@@ -15,7 +15,7 @@
       <nav class="nav-links">
         <a href="questions.html">題庫</a>
         <a href="../../index.html#subjects">所有科目</a>
-        <button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
       </nav>
     </div>
   </header>
@@ -27,7 +27,12 @@
       <h1>Data Structures（資料結構）</h1>
       <p>依章節排列，每個主題都有可以自己操作的逐步動畫。</p>
       <div id="progress"></div>
-      <p><a class="vop primary" href="questions.html">📝 進入題庫：練習題與考古題</a></p>
+      <a class="entry-card" href="questions.html">
+        <span class="entry-icon"><svg class="icon" aria-hidden="true"><use href="../../assets/icons.svg#i-book"></use></svg></span>
+        <span class="entry-text"><b>題庫：練習題與考古題</b><small data-qcount>依主題、難度、題型、學校篩選</small></span>
+        <svg class="icon entry-arrow" aria-hidden="true"><use href="../../assets/icons.svg#i-arrow-right"></use></svg>
+      </a>
+      <p class="legend-line"><svg class="icon is-hot" aria-hidden="true"><use href="../../assets/icons.svg#i-flame"></use></svg> 標示考研高頻主題</p>
     </section>
     <div class="chapters" id="chapters"></div>
   </main>

@@ -237,8 +237,24 @@ def check_topic(path, subj, ch, t, errors):
         err("tags 應為 2～5 個")
 
 
+# 網站上不可用 emoji 或文字符號當 icon（CLAUDE.md 第 10.1 節）
+EMOJI = re.compile("[\U0001F300-\U0001FAFF\u2600-\u27BF\u2B50\u23E9-\u23FA\u25B6\u25B8\u25C0\u2713\u2717]")
+
+
+def check_no_emoji(errors):
+    paths = [ROOT / "index.html", *ROOT.glob("subjects/**/*.html"), *ROOT.glob("templates/*.html"),
+             *ROOT.glob("assets/**/*.js"), *ROOT.glob("assets/**/*.css"), *ROOT.glob("data/**/*.json")]
+    for path in paths:
+        for n, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
+            m = EMOJI.search(line)
+            if m:
+                errors.append(f"[{path.relative_to(ROOT)}:{n}] 用了 emoji / 符號「{m.group(0)}」當 icon，請改用 assets/icons.svg")
+                break
+
+
 def main():
     errors = []
+    check_no_emoji(errors)
     css = (ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
     reg = load("data/subjects.json")
     total_done = total = 0

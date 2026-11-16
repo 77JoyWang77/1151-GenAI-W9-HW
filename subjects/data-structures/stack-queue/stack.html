@@ -12,7 +12,7 @@
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../../../index.html"><span class="logo">CS</span>資工考研互動學習站<small>Data Structures</small></a>
-      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>🌙 深色</button></nav>
+      <nav class="nav-links"><a href="../index.html">所有章節</a><button class="theme-toggle" type="button" data-theme-toggle>深色</button></nav>
     </div>
   </header>
 
@@ -23,7 +23,7 @@
         <h1>Stack（堆疊）<small>最後放進去的，最先拿出來</small></h1>
         <div class="meta">
           <span class="chip accent">Ch3 Stacks and Queues</span>
-          <span class="chip">難度 ★★☆</span>
+          <span class="chip" data-difficulty="2">難度</span>
           <span class="chip">LIFO</span>
           <span class="chip">infix</span>
           <span class="chip">postfix</span>
@@ -40,7 +40,7 @@
             <div class="fig-draw" data-fig="stack-concept"></div>
             <figcaption><b>圖 1</b>：Stack 只能從 top 進出。依序 push A、B、C 之後，第一個被 pop 的是 C。</figcaption>
           </figure>
-          <div class="callout"><p>💡 只要題目出現「<b>反轉順序</b>」「<b>配對</b>」「<b>回到上一步</b>」，例如括號配對、函式呼叫、遞迴、undo，第一個想到的就是 Stack。</p></div>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 只要題目出現「<b>反轉順序</b>」「<b>配對</b>」「<b>回到上一步</b>」，例如括號配對、函式呼叫、遞迴、undo，第一個想到的就是 Stack。</p></div>
         </div>
       </section>
 
@@ -192,7 +192,7 @@ int lpop(void) {
             <li><code>2 1 3</code>：push 1、push 2、pop、pop；push 3、pop。</li>
             <li><code>2 3 1</code>：push 1、push 2、pop；push 3、pop；pop。</li>
             <li><code>3 2 1</code>：全部 push 完再全部 pop。</li>
-            <li><code>3 1 2</code> ✗：要先輸出 3，表示 1、2 都已經在 Stack 裡，而且 2 壓在 1 上面。下一個只能 pop 出 2，不可能先輸出 1。</li>
+            <li><code>3 1 2</code> <svg class="icon is-bad" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg>：要先輸出 3，表示 1、2 都已經在 Stack 裡，而且 2 壓在 1 上面。下一個只能 pop 出 2，不可能先輸出 1。</li>
           </ul>
           <p>一般化的判斷法：輸出序列中只要出現「某個大數 k 先出來，後面跟著兩個比它小的 i、j，且 i &lt; j、i 又排在 j 前面」（也就是 <code>…k…i…j…</code> 且 i &lt; j &lt; k），這個序列就不可能。所有合法序列的數量是 <span class="term">Catalan number<small>（卡塔蘭數）</small></span>：</p>
           <pre class="formula">C(n) = (2n)! / ((n+1)! · n!)      C(1)=1, C(2)=2, C(3)=5, C(4)=14, C(5)=42</pre>
@@ -392,11 +392,11 @@ void infixToPostfix(const char *in, char *out) {
         <p>每一點都附了一題專門考這個觀念的例題，可以馬上驗證自己有沒有搞懂。</p>
         <div class="panel">
           <ul class="pitfalls">
-            <li><span class="bad">❌ 後序求值時 <code>a = pop(), b = pop()</code> 再算 a − b</span> → <span class="ok">✅ 先 pop 的是右運算元 b，要算 <code>a − b</code>，減法與除法順序錯就全錯</span> <a class="q-link" href="#q-ds-0005">例題</a></li>
-            <li><span class="bad">❌ <code>(</code> 只有一個優先權</span> → <span class="ok">✅ <code>(</code> 的 icp = 20（讀入時最大，一定 push），isp = 0（在堆疊裡最小，誰都不會把它 pop 掉）。這就是要分成 isp / icp 兩張表的原因</span> <a class="q-link" href="#q-ds-0008">例題</a></li>
-            <li><span class="bad">❌ <code>^</code> 和 <code>+ -</code> 一樣，同優先權就 pop</span> → <span class="ok">✅ <code>^</code> 是右結合，同級時不 pop（isp 14 &lt; icp 15），<code>2^3^2</code> 轉成 <code>2 3 2 ^ ^</code></span> <a class="q-link" href="#q-ds-0003">例題</a></li>
-            <li><span class="bad">❌ 前序式 = 把後序式整個反過來</span> → <span class="ok">✅ 不對。<code>a-b</code> 後序是 <code>a b -</code>，反過來是 <code>- b a</code>，但前序應為 <code>- a b</code></span> <a class="q-link" href="#q-ds-0004">例題</a></li>
-            <li><span class="bad">❌ <code>top</code> 一定從 −1 開始</span> → <span class="ok">✅ 也有教科書讓 top 指向「下一個空位」、從 0 開始，這時 push 寫成 <code>stack[top++] = x</code>。作答前先看題目的定義</span> <a class="q-link" href="#q-ds-0002">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 後序求值時 <code>a = pop(), b = pop()</code> 再算 a − b</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 先 pop 的是右運算元 b，要算 <code>a − b</code>，減法與除法順序錯就全錯</span> <a class="q-link" href="#q-ds-0005">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> <code>(</code> 只有一個優先權</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> <code>(</code> 的 icp = 20（讀入時最大，一定 push），isp = 0（在堆疊裡最小，誰都不會把它 pop 掉）。這就是要分成 isp / icp 兩張表的原因</span> <a class="q-link" href="#q-ds-0008">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> <code>^</code> 和 <code>+ -</code> 一樣，同優先權就 pop</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> <code>^</code> 是右結合，同級時不 pop（isp 14 &lt; icp 15），<code>2^3^2</code> 轉成 <code>2 3 2 ^ ^</code></span> <a class="q-link" href="#q-ds-0003">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 前序式 = 把後序式整個反過來</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 不對。<code>a-b</code> 後序是 <code>a b -</code>，反過來是 <code>- b a</code>，但前序應為 <code>- a b</code></span> <a class="q-link" href="#q-ds-0004">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> <code>top</code> 一定從 −1 開始</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 也有教科書讓 top 指向「下一個空位」、從 0 開始，這時 push 寫成 <code>stack[top++] = x</code>。作答前先看題目的定義</span> <a class="q-link" href="#q-ds-0002">例題</a></li>
           </ul>
         </div>
       </section>
@@ -405,7 +405,7 @@ void infixToPostfix(const char *in, char *out) {
         <h2>練習題與考古題</h2>
         <div class="practice-tools">
           <p>題目分成基礎、進階、考研級三個難度，最後是考古題。先自己作答，再點開答案與詳解。</p>
-          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 →</a></span>
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
         </div>
         <div class="qbank" data-questions="stack"></div>
       </section>

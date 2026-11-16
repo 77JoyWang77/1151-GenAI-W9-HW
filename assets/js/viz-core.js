@@ -36,6 +36,8 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const clone = (o) => JSON.parse(JSON.stringify(o));
+  const ICONS = new URL("../icons.svg", document.currentScript.src).href;
+  const iconHTML = (n) => `<svg class="icon" aria-hidden="true"><use href="${ICONS}#i-${n}"></use></svg>`;
   const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ---------- Recorder：主題腳本用來收集 frames ----------
@@ -111,8 +113,8 @@
 
       this.caption = h("div", { class: "viz-caption", "aria-live": "polite" });
 
-      const btn = (label, title, fn) => h("button", { type: "button", class: "vbtn", title, "aria-label": title, text: label, onclick: fn });
-      this.btnPlay = btn("▶", "播放 / 暫停（空白鍵）", () => this.toggle());
+      const btn = (ico, title, fn) => h("button", { type: "button", class: "vbtn", title, "aria-label": title, html: iconHTML(ico), onclick: fn });
+      this.btnPlay = btn("play", "播放 / 暫停（空白鍵）", () => this.toggle());
       this.slider = h("input", { type: "range", min: "0", max: "0", value: "0", class: "viz-slider", "aria-label": "步驟" });
       this.slider.addEventListener("input", () => { this.pause(); this.show(+this.slider.value); });
       this.counter = h("span", { class: "viz-counter", text: "0 / 0" });
@@ -122,11 +124,11 @@
       speed.addEventListener("change", () => (this.speed = +speed.value));
 
       const controls = h("div", { class: "viz-controls" }, [
-        btn("⏮", "第一步", () => { this.pause(); this.show(0); }),
-        btn("◀", "上一步（←）", () => { this.pause(); this.show(this.index - 1); }),
+        btn("first", "第一步", () => { this.pause(); this.show(0); }),
+        btn("prev", "上一步（←）", () => { this.pause(); this.show(this.index - 1); }),
         this.btnPlay,
-        btn("▶|", "下一步（→）", () => { this.pause(); this.show(this.index + 1); }),
-        btn("⏭", "最後一步", () => { this.pause(); this.show(this.frames.length - 1); }),
+        btn("next", "下一步（→）", () => { this.pause(); this.show(this.index + 1); }),
+        btn("last", "最後一步", () => { this.pause(); this.show(this.frames.length - 1); }),
         this.slider, this.counter, speed,
       ]);
 
@@ -171,11 +173,11 @@
       if (this.frames.length <= 1) return this._nudge();
       if (this.index >= this.frames.length - 1) this.show(0);
       this.playing = true;
-      this.btnPlay.textContent = "⏸";
+      this.btnPlay.innerHTML = iconHTML("pause");
       this._schedule();
     }
     _nudge() {
-      const hint = "👆 目前只有 1 步可以看。先用上方的按鈕執行一個操作（例如輸入數值後按第一個按鈕），產生步驟後就能播放。";
+      const hint = iconHTML("pointer-up") + " 目前只有 1 步可以看。先用上方的按鈕執行一個操作（例如輸入數值後按第一個按鈕），產生步驟後就能播放。";
       if (!this.caption.querySelector(".viz-hint")) this.caption.insertAdjacentHTML("beforeend", `<div class="viz-hint">${hint}</div>`);
       this.toolbar.classList.remove("is-nudge");
       void this.toolbar.offsetWidth; // 重新觸發 CSS 動畫
@@ -184,7 +186,7 @@
 
     pause() {
       this.playing = false;
-      this.btnPlay.textContent = "▶";
+      this.btnPlay.innerHTML = iconHTML("play");
       clearTimeout(this.timer);
     }
     _schedule() {
@@ -470,7 +472,7 @@
     document.querySelectorAll(".fig-draw[data-fig]").forEach((el) => {
       const draw = figures[el.dataset.fig];
       if (!draw) {
-        el.textContent = `⚠ 找不到名為「${el.dataset.fig}」的圖，請確認已載入對應的 js 檔。`;
+        el.innerHTML = `${iconHTML("alert")} 找不到名為「${esc(el.dataset.fig)}」的圖，請確認已載入對應的 js 檔。`;
         return;
       }
       const f = draw();
@@ -480,7 +482,7 @@
     document.querySelectorAll(".viz[data-viz]").forEach((el) => {
       const init = registry[el.dataset.viz];
       if (!init) {
-        el.textContent = `⚠ 找不到名為「${el.dataset.viz}」的視覺化，請確認已載入對應的 js 檔。`;
+        el.innerHTML = `${iconHTML("alert")} 找不到名為「${esc(el.dataset.viz)}」的視覺化，請確認已載入對應的 js 檔。`;
         return;
       }
       init(el);
@@ -488,5 +490,5 @@
   }
   document.addEventListener("DOMContentLoaded", mountAll);
 
-  window.DSViz = { Player, Recorder, ui, register, figure, esc, clone };
+  window.DSViz = { Player, Recorder, ui, register, figure, esc, clone, iconHTML };
 })();

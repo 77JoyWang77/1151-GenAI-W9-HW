@@ -87,6 +87,7 @@
 │   ├── questions.html
 │   └── topic.html
 ├── assets/
+│   ├── icons.svg                 ← 全站 SVG icon（第 10.1 節）
 │   ├── css/style.css
 │   └── js/
 │       ├── theme.js              ← 亮 / 暗模式（放在 <head>，預設淺色）
@@ -128,7 +129,7 @@
 
 ### 6.3 程式碼
 
-- **程式碼跟著講解走，但預設收合**：每個操作講完，接一個「▸ 看程式碼」按鈕，點開才顯示，不打斷閱讀。不要把程式碼集中在頁尾一大段，也不要直接攤開在講解中。
+- **程式碼跟著講解走，但預設收合**：每個操作講完，接一個「看程式碼」按鈕（箭頭 icon 由 `site.js` 自動加上），點開才顯示，不打斷閱讀。不要把程式碼集中在頁尾一大段，也不要直接攤開在講解中。
 - **每段程式碼都要有標題**；同一件事有多種寫法時（陣列／鏈結、遞迴／迴圈、左子樹最大／右子樹最小）用頁籤切換，預設頁籤放考研最常見的寫法：
 
 ```html
@@ -162,7 +163,7 @@
 | section id | 內容 |
 |---|---|
 | `exam`：考研重點：題型地圖 | 表格 `.exam-map`：**題型／常見度（很常考、常考、偶爾）／解題步驟／例題**。例題欄用 `<a class="q-link" href="#q-<題目id>">例題</a>` 連到下方題目，網頁會自動換成題號 |
-| `pitfalls`：易錯點 | `❌ 錯誤想法 → ✅ 正確觀念`，**每一點後面都要附一個 `q-link`**，連到專門考這個觀念的題目 |
+| `pitfalls`：易錯點 | `x-circle` icon＋錯誤想法 → `check-circle` icon＋正確觀念，**每一點後面都要附一個 `q-link`**，連到專門考這個觀念的題目 |
 | `practice`：練習題與考古題 | 只放 `<div class="qbank" data-questions="<topic-id>">`，題目由 `data/questions/<subject-id>.json` 自動產生，依難度分組，最後是考古題 |
 
 **題目難度**（`level`）：
@@ -198,6 +199,7 @@
 - 麵包屑：`首頁 › 科目 English（中文） › Ch<編號> 章節 English（中文） › 主題 English（中文）`
 - meta 列：`Ch<編號> 章節 English`、難度、tags。
 - 頁尾「最後更新：YYYY-MM-DD」與 JSON 的 `updated` 一致。
+- 難度寫成 `<span class="chip" data-difficulty="1～3">難度</span>`，星星由 `site.js` 畫。
 - `<head>` 載入 `theme.js`；頁首要有 `<button class="theme-toggle" data-theme-toggle>`。
 - 結尾載入 `site.js`，再依序載入 `viz-core.js` → `viz/<subject-id>/<topic-id>.js`（圖和動畫都寫在這個腳本裡）。
 
@@ -253,7 +255,7 @@
 ```json
 {
   "subjects": [
-    { "id": "data-structures", "en": "Data Structures", "zh": "資料結構", "icon": "🌲",
+    { "id": "data-structures", "en": "Data Structures", "zh": "資料結構", "icon": "tree",
       "color": 5, "status": "active", "desc": "一句話描述" }
   ]
 }
@@ -261,6 +263,7 @@
 
 - `status`：`"active"`（已開始，要有 `data/<id>.json` 和 `subjects/<id>/index.html`）或 `"planned"`。
 - `color`：1～12，對應 CSS 的 `--ch-<n>` 色盤。
+- `icon`：`assets/icons.svg` 裡的 icon 名稱（不含 `i-`，第 10.1 節）。
 
 ### `data/<subject-id>.json`
 
@@ -281,7 +284,7 @@
 
 - `no`：章節編號（可對應參考書章號），也決定章節色：`--ch-<(no-1) % 12 + 1>`。
 - `status`：`"done"`（有頁面）或 `"planned"`（籌備中，灰色顯示）。
-- `priority`：`"high"`（考研高頻，科目頁顯示「高頻」標籤）、`"mid"`、`"low"`。製作順序優先做 high。
+- `priority`：`"high"`（考研高頻，科目頁在主題名稱前顯示火焰 icon）、`"mid"`、`"low"`。製作順序優先做 high。
 - `viz`：頁面有沒有互動元件，要和頁面一致（`check.py` 會檢查）。
 - `done` 的主題必須有 `difficulty`（1～3）、`tags`（2～5 個）、`updated`；有參考書時要填 `book`（只給 AI 查閱，不顯示）。
 - 章節與主題的順序 = 學習順序，也決定頁面底部「上一個／下一個主題」。
@@ -298,7 +301,7 @@
 
 ```js
 (function () {
-  const { Player, Recorder, ui, register, esc } = window.DSViz;
+  const { Player, Recorder, ui, register, esc, iconHTML } = window.DSViz;
 
   register("my-viz", function (root) {
     const player = new Player(root, {
@@ -324,7 +327,7 @@
       if (v !== null) player.load(doSomething(v));
     });
     const demo = doSomething(5);         // 初始載入一段示範
-    demo[0].caption = "▶ 按播放看示範……";
+    demo[0].caption = iconHTML("play") + " 按播放看示範……";
     player.load(demo, { autoplay: false });
   });
 })();
@@ -363,7 +366,7 @@
 3. 每個 frame 都要標 `line`，讓程式碼和動畫同步（初始或總結畫面可以是 `null`）。
 4. 一次操作約 3～40 步；畫面放不下時要提前擋住並說明（例如限制樹高、token 數）。
 5. 使用者輸入的文字放進 caption 前要用 `esc()` 跳脫。
-6. 初始畫面要先載入**一段示範操作**，用 `{ autoplay: false }`，讓使用者一按 ▶ 就能播放；只有 1 步時按 ▶ 會出現提示（Player 內建）。
+6. 初始畫面要先載入**一段示範操作**，用 `{ autoplay: false }`，讓使用者一按播放鍵就能播放；只有 1 步時按播放鍵會出現提示（Player 內建）。
 7. 演算法有多種做法時，**預設用考研最常見的做法**，用 `ui.button` 做切換（見 BST 的「刪除用：左子樹最大」）。
 8. 需要新的視覺元素時，**優先用既有的 nodes / edges / pointers / labels 組合**；真的不夠時，先向使用者說明要怎麼擴充 `viz-core.js`，同意後再改，並確認其他主題的動畫都還正常。
 
@@ -400,6 +403,33 @@ figure("bst-valid-invalid", () => ({
 - **預設淺色**，頁首按鈕可切換深色：`theme.js` 在 `<html>` 設定 `data-theme="dark"`，深色配色寫在 `:root[data-theme="dark"]`，選擇存在 localStorage。
 - 新元件一律用 CSS 變數上色，才會自動適用兩種模式；也要支援手機寬度（≥ 360px）。
 - 動畫要平滑、不炫技：顏色代表狀態（第 9.4 節），位置移動代表資料移動。
+- 科目頁的主題列表保持簡潔：已完成的主題是連結、籌備中的灰色並標「籌備中」，高頻主題名稱前有火焰 icon；不要再加其他標籤。
+
+### 10.1 Icon
+
+- **網站上不使用 emoji 或文字符號當 icon**（例如 💡 ❌ ✅ ▶ ★ ⚠），一律用 `assets/icons.svg` 的 SVG（`check.py` 會檢查）。內文中的箭頭「→」屬於文字，可以照用。
+- HTML 裡的寫法（路徑依頁面深度調整）：
+
+```html
+<svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg>
+```
+
+- JS 裡：`site.js` 用 `icon("名稱")`，動畫腳本用 `DSViz.iconHTML("名稱")`（回傳 HTML 字串，可放進 caption）。
+- 常用 icon 與用途：
+
+| 名稱 | 用途 |
+|---|---|
+| `bulb` | callout：一句話記憶法、提示 |
+| `bookmark` | callout：重要定義、性質 |
+| `x-circle` / `check-circle` | 易錯點的錯誤想法 / 正確觀念、不合法的例子 |
+| `flame` | 考研高頻 |
+| `star` / `star-fill` | 難度（`<span class="chip" data-difficulty="2">難度</span>` 會自動畫星星） |
+| `book` | 題庫 |
+| `alert` | 警告、錯誤訊息 |
+| `play` `pause` `first` `prev` `next` `last` | 播放器（Player 內建） |
+| `tree` `compass` `cpu` `layers` `sigma` `matrix` | 科目 |
+
+- 需要新 icon 時加進 `assets/icons.svg`：24×24、`fill="none"`、`stroke="currentColor"`、`stroke-width="2"`、圓角端點，風格和現有的一致，並更新上表。
 
 ---
 
@@ -453,7 +483,8 @@ figure("bst-valid-invalid", () => ({
 - [ ] 程式碼放在對應講解旁並預設收合、每段有標題、多種寫法用頁籤；頁尾附完整程式，已用 gcc 編譯執行，片段與動畫程式碼一致
 - [ ] 考研重點有題型地圖、易錯點都有例題連結；題庫中每個難度至少 2 題，答案已驗算
 - [ ] 有動畫時：可以自己輸入資料、有示範、能逐步播放，程式碼高亮正確
-- [ ] JSON 已更新，科目首頁看得到「完成」標籤（有互動時加「▶ 互動」），全站首頁進度有變化
+- [ ] JSON 已更新，科目首頁的主題變成可點的連結，全站首頁進度有變化
+- [ ] 沒有用 emoji 或文字符號當 icon，都用 `assets/icons.svg`
 - [ ] `python scripts/check.py` 通過
 - [ ] 手機寬度，以及淺色、深色兩種模式下都能正常閱讀
 

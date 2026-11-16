@@ -18,6 +18,18 @@
   }
 
   const ROOT = document.body.dataset.root || "";
+  const ICONS = new URL("../icons.svg", document.currentScript.src).href;
+  // 全站 icon：assets/icons.svg 裡的 <symbol id="i-名稱">
+  function icon(name, cls) {
+    const NS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("class", "icon" + (cls ? " " + cls : ""));
+    svg.setAttribute("aria-hidden", "true");
+    const use = document.createElementNS(NS, "use");
+    use.setAttribute("href", `${ICONS}#i-${name}`);
+    svg.appendChild(use);
+    return svg;
+  }
   const getJSON = (path) => fetch(ROOT + path, { cache: "no-cache" }).then((r) => r.json());
   const chColor = (no) => `var(--ch-${((no - 1) % 12) + 1})`;
   const allTopics = (subj) => subj.chapters.flatMap((c) => c.topics);
@@ -41,7 +53,7 @@
         try { const subj = await getJSON(`data/${s.id}.json`); prog = progress(doneCount(subj), allTopics(subj).length); } catch (e) { /* 忽略 */ }
       }
       const inner = [
-        h("div", { class: "subj-icon", text: s.icon }),
+        h("div", { class: "subj-icon" }, [icon(s.icon)]),
         h("h3", { text: s.en }),
         h("div", { class: "zh", text: s.zh }),
         h("p", { text: s.desc }),
@@ -61,10 +73,12 @@
     data.chapters.forEach((ch) => {
       const list = h("ul", {}, ch.topics.map((t) => {
         const name = `${t.en}（${t.zh}）`;
-        const hot = t.priority === "high" ? h("span", { class: "badge hot", text: "高頻" }) : null;
-        if (t.status !== "done") return h("li", {}, [h("span", { class: "planned", text: name }), h("span", { class: "badges" }, [hot, h("span", { class: "badge", text: "籌備中" })])]);
-        const badges = h("span", { class: "badges" }, [hot, t.viz ? h("span", { class: "badge viz", text: "▶ 互動" }) : null, h("span", { class: "badge done", text: "完成" })]);
-        return h("li", {}, [h("a", { href: `${ch.id}/${t.id}.html`, text: name }), badges]);
+        // 考研高頻的主題在名稱前加火焰 icon；沒有高頻的留同寬空位，讓名稱對齊
+        const mark = t.priority === "high"
+          ? h("span", { class: "hot-mark", title: "考研高頻" }, [icon("flame")])
+          : h("span", { class: "hot-mark is-empty" });
+        if (t.status !== "done") return h("li", {}, [h("span", { class: "topic-name planned" }, [mark, name]), h("span", { class: "badge", text: "籌備中" })]);
+        return h("li", {}, [h("a", { class: "topic-name", href: `${ch.id}/${t.id}.html` }, [mark, name])]);
       }));
       box.appendChild(h("article", { class: "chapter", style: `--accent: ${chColor(ch.no)}` }, [
         h("div", { class: "no", text: "CHAPTER " + ch.no }),
@@ -109,14 +123,18 @@
       const head = block.querySelector(".code-head");
       const pre = block.querySelector("pre");
       if (!head || !pre) return;
-      const btn = h("button", { type: "button", class: "code-copy", text: "複製" });
+      const btn = h("button", { type: "button", class: "code-copy" });
+      const label = (ico, text) => btn.replaceChildren(icon(ico), document.createTextNode(text));
+      label("copy", "複製");
       btn.addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(pre.innerText); btn.textContent = "已複製 ✓"; }
-        catch (e) { btn.textContent = "請手動選取"; }
-        setTimeout(() => (btn.textContent = "複製"), 1500);
+        try { await navigator.clipboard.writeText(pre.innerText); label("check", "已複製"); }
+        catch (e) { label("alert", "請手動選取"); }
+        setTimeout(() => label("copy", "複製"), 1500);
       });
       head.appendChild(btn);
     });
+    // 「看程式碼」前面加上會轉動的箭頭 icon
+    document.querySelectorAll("details.code-fold > summary").forEach((sm) => sm.prepend(icon("chevron-right", "fold-arrow")));
     document.querySelectorAll(".code-tabs").forEach((tabs) => {
       const blocks = Array.from(tabs.querySelectorAll(":scope > .code-block[data-tab]"));
       if (!blocks.length) return;
@@ -194,7 +212,8 @@
     // 頁面上「例題」連結改成顯示題號；找不到題目的連結標成錯誤，方便發現
     document.querySelectorAll('a.q-link[href^="#q-"]').forEach((a) => {
       const card = document.getElementById(a.getAttribute("href").slice(1));
-      a.textContent = card ? card.querySelector(".qnum").textContent : "⚠ 題目不存在";
+      if (card) a.textContent = card.querySelector(".qnum").textContent;
+      else a.replaceChildren(icon("alert"), document.createTextNode(" 題目不存在"));
     });
     focusHash();
   }
@@ -246,20 +265,40 @@
     const data = await getJSON(`data/${subjectId}.json`);
     const flat = data.chapters.flatMap((c) => c.topics.filter((t) => t.status === "done").map((t) => ({ ...t, ch: c.id })));
     const i = flat.findIndex((t) => t.ch === chId && t.id === tId);
-    const link = (t, cls, hint) => h("a", { class: cls, href: `${ROOT}subjects/${subjectId}/${t.ch}/${t.id}.html` }, [h("small", { text: hint }), `${t.en}（${t.zh}）`]);
-    if (i > 0) pager.appendChild(link(flat[i - 1], "prev", "← 上一個主題"));
-    if (i >= 0 && i < flat.length - 1) pager.appendChild(link(flat[i + 1], "next", "下一個主題 →"));
+    const link = (t, cls, hint) => h("a", { class: cls, href: `${ROOT}subjects/${subjectId}/${t.ch}/${t.id}.html` }, [h("small", {}, hint), `${t.en}（${t.zh}）`]);
+    if (i > 0) pager.appendChild(link(flat[i - 1], "prev", [icon("prev"), " 上一個主題"]));
+    if (i >= 0 && i < flat.length - 1) pager.appendChild(link(flat[i + 1], "next", ["下一個主題 ", icon("next")]));
+  }
+
+  // 難度：<span class="chip" data-difficulty="2">難度</span> → 3 顆星，亮 2 顆
+  function renderDifficulty() {
+    document.querySelectorAll("[data-difficulty]").forEach((el) => {
+      const n = +el.dataset.difficulty;
+      const stars = h("span", { class: "stars", "aria-label": `難度 ${n} / 3` });
+      for (let i = 1; i <= 3; i++) stars.appendChild(i <= n ? icon("star-fill", "on") : icon("star", "off"));
+      el.appendChild(stars);
+    });
+  }
+
+  // 科目頁的題庫入口：顯示題數
+  async function renderBankEntry(el, subjectId) {
+    const data = await loadQuestions(subjectId);
+    const exam = data.questions.filter((q) => q.source && q.source.kind === "exam").length;
+    el.textContent = `${data.questions.length - exam} 題練習題 · ${exam} 題考古題 · 可依主題、難度、學校篩選`;
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
     renderToc();
     renderQuizToggle();
     renderCodeBlocks();
+    renderDifficulty();
     try {
       const subjects = $("#subjects");
       if (subjects) await renderSubjects(subjects);
       const chapters = $("#chapters");
       if (chapters) await renderSubject(chapters, document.body.dataset.subject);
+      const entry = $("[data-qcount]");
+      if (entry) await renderBankEntry(entry, document.body.dataset.subject);
       const qbox = $(".qbank[data-questions]");
       if (qbox) await renderTopicQuestions(qbox, document.body.dataset.subject, qbox.dataset.questions);
       const bank = $("#qbank-all");
