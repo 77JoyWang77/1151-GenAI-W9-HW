@@ -106,7 +106,7 @@ code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); pa
 .viz-hint .icon, .viz-caption .icon { color: var(--accent); }
 
 /* 科目卡片的 icon */
-.subject .subj-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--paper)); margin-bottom: 12px; }
+.subject .subj-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--brand); background: var(--brand-soft); margin-bottom: 12px; }
 .subject .subj-icon .icon { width: 24px; height: 24px; }
 
 /* 主題列表：高頻火焰 icon */
@@ -164,13 +164,12 @@ code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); pa
 
 .subjects { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 .subject { --accent: var(--brand); display: block; text-decoration: none; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; position: relative; overflow: hidden; transition: transform .15s, border-color .15s; }
-.subject::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--accent); }
-a.subject:hover { transform: translateY(-2px); border-color: var(--accent); }
+a.subject:hover { transform: translateY(-2px); border-color: var(--brand); }
 .subject .subj-icon { font-size: 28px; line-height: 1; margin-bottom: 10px; }
 .subject h3 { margin: 0; font-size: 1.15em; }
-.subject .zh { color: var(--accent); font-weight: 600; font-size: .92em; }
+.subject .zh { color: var(--ink-soft); font-weight: 600; font-size: .92em; }
 .subject p { color: var(--ink-soft); font-size: .9em; margin: 8px 0 12px; }
-.subject.is-planned { opacity: .62; box-shadow: none; }
+.subject.is-planned .subj-icon { color: var(--ink-soft); background: var(--line); }
 .subject .progress { margin-top: 0; }
 .subject .progress .bar i { background: var(--accent); }
 
@@ -443,8 +442,8 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 .stat-label { color: color-mix(in srgb, var(--on-brand) 62%, transparent); font-size: .82em; white-space: nowrap; }
 .home-block h2 { font-size: 1.2em; margin: 32px 0 12px; }
 .done-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.done-topic { --accent: var(--brand); display: flex; flex-direction: column; gap: 4px; padding: 12px 16px 12px 18px; background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
-.done-topic:hover { transform: translateY(-1px); border-color: var(--accent); }
+.done-topic { display: flex; flex-direction: column; gap: 4px; padding: 14px 18px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
+.done-topic:hover { transform: translateY(-1px); border-color: var(--brand); }
 .dt-meta { font-size: .78em; color: var(--ink-soft); }
 .dt-name { font-weight: 600; display: flex; align-items: center; gap: 4px; }
 .dt-name .icon { flex: none; }

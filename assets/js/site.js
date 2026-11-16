@@ -59,7 +59,7 @@
         h("p", { text: s.desc }),
         prog,
       ];
-      const attrs = { class: "subject" + (active ? "" : " is-planned"), style: `--accent: ${chColor(s.color)}` };
+      const attrs = { class: "subject" + (active ? "" : " is-planned") };   // 首頁卡片統一用品牌色，不依科目上色
       box.appendChild(active ? h("a", Object.assign({ href: `subjects/${s.id}/index.html` }, attrs), inner) : h("article", attrs, inner));
     }
   }
@@ -104,7 +104,7 @@
     topics.forEach(({ s, c, t }) => {
       const stars = h("span", { class: "stars" });
       for (let i = 1; i <= 3; i++) stars.appendChild(i <= (t.difficulty || 0) ? icon("star-fill", "on") : icon("star", "off"));
-      box.appendChild(h("a", { class: "done-topic", href: `subjects/${s.id}/${c.id}/${t.id}.html`, style: `--accent: ${chColor(c.no)}` }, [
+      box.appendChild(h("a", { class: "done-topic", href: `subjects/${s.id}/${c.id}/${t.id}.html` }, [
         h("span", { class: "dt-meta", text: `${s.zh} · Ch${c.no} ${c.en}` }),
         h("span", { class: "dt-name" }, [t.priority === "high" ? icon("flame", "is-hot") : "", `${t.en}（${t.zh}）`]),
         stars,
