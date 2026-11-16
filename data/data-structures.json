@@ -216,9 +216,17 @@
           "en": "Binary Tree Traversal",
           "zh": "二元樹走訪與重建",
           "book": "5.3",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": true
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "preorder",
+            "inorder",
+            "postorder",
+            "level-order"
+          ],
+          "updated": "2026-11-16"
         },
         {
           "id": "threaded-binary-tree",
