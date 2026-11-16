@@ -70,7 +70,7 @@
       box.appendChild(h("article", { class: "chapter", style: `--accent: ${chColor(ch.no)}` }, [
         h("div", { class: "no", text: "CHAPTER " + ch.no }),
         h("h3", { text: ch.en }),
-        h("div", { class: "zh", text: ch.zh + "　·　" + ch.desc }),
+        h("div", { class: "zh", text: ch.zh + " · " + ch.desc }),
         list,
       ]));
     });
