@@ -1,0 +1,428 @@
+{
+  "subject": {
+    "id": "algorithms",
+    "en": "Algorithms",
+    "zh": "演算法"
+  },
+  "textbook": {
+    "title": "Introduction to Algorithms",
+    "author": "Cormen, Leiserson, Rivest, Stein",
+    "edition": "4th"
+  },
+  "chapters": [
+    {
+      "id": "foundations",
+      "no": 1,
+      "en": "Foundations",
+      "zh": "演算法基礎",
+      "desc": "正確性證明、漸近符號與成長率",
+      "topics": [
+        {
+          "id": "loop-invariant",
+          "en": "Loop Invariants and Correctness",
+          "zh": "迴圈不變量與正確性",
+          "book": "2.1–2.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "asymptotic-notation",
+          "en": "Asymptotic Notation",
+          "zh": "漸近符號",
+          "book": "3",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "divide-and-conquer",
+      "no": 2,
+      "en": "Divide and Conquer",
+      "zh": "分治法",
+      "desc": "遞迴式的三種解法與經典分治演算法",
+      "topics": [
+        {
+          "id": "recurrence-methods",
+          "en": "Substitution and Recursion-Tree Methods",
+          "zh": "代入法與遞迴樹",
+          "book": "4.3–4.4",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "master-theorem",
+          "en": "Master Theorem",
+          "zh": "主定理",
+          "book": "4.5–4.6",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "maximum-subarray",
+          "en": "Maximum Subarray",
+          "zh": "最大子陣列",
+          "book": "4（習題）",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "strassen",
+          "en": "Strassen Matrix Multiplication",
+          "zh": "Strassen 矩陣乘法",
+          "book": "4.1–4.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "closest-pair",
+          "en": "Closest Pair of Points",
+          "zh": "最近點對",
+          "book": "33.4",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "randomized",
+      "no": 3,
+      "en": "Probabilistic Analysis",
+      "zh": "機率分析與隨機演算法",
+      "desc": "指標隨機變數與隨機化快速排序",
+      "topics": [
+        {
+          "id": "indicator-random-variables",
+          "en": "Indicator Random Variables",
+          "zh": "指標隨機變數",
+          "book": "5.1–5.3",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "randomized-quicksort",
+          "en": "Randomized Quicksort Analysis",
+          "zh": "隨機化快速排序分析",
+          "book": "7.2–7.4",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "sorting-selection",
+      "no": 4,
+      "en": "Sorting and Selection",
+      "zh": "排序與選擇",
+      "desc": "線性時間排序與第 k 小元素",
+      "topics": [
+        {
+          "id": "linear-time-sorting",
+          "en": "Counting Sort and Bucket Sort",
+          "zh": "計數排序與桶排序",
+          "book": "8.2, 8.4",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "order-statistics",
+          "en": "Order Statistics",
+          "zh": "順序統計量與選擇演算法",
+          "book": "9",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "dynamic-programming",
+      "no": 5,
+      "en": "Dynamic Programming",
+      "zh": "動態規劃",
+      "desc": "最佳子結構、重疊子問題與經典 DP",
+      "topics": [
+        {
+          "id": "rod-cutting",
+          "en": "Rod Cutting",
+          "zh": "切鋼條問題",
+          "book": "14.1, 14.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "matrix-chain",
+          "en": "Matrix-Chain Multiplication",
+          "zh": "矩陣鏈乘法",
+          "book": "14.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "longest-common-subsequence",
+          "en": "Longest Common Subsequence",
+          "zh": "最長共同子序列",
+          "book": "14.4",
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "dynamic programming",
+            "LCS",
+            "traceback",
+            "memoization"
+          ],
+          "updated": "2026-11-16"
+        },
+        {
+          "id": "knapsack",
+          "en": "0/1 Knapsack",
+          "zh": "0/1 背包問題",
+          "book": "15（習題）",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "optimal-bst",
+          "en": "Optimal Binary Search Tree",
+          "zh": "最佳二元搜尋樹",
+          "book": "14.5",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "edit-distance",
+          "en": "Edit Distance",
+          "zh": "編輯距離",
+          "book": "14（習題）",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "greedy",
+      "no": 6,
+      "en": "Greedy Algorithms",
+      "zh": "貪婪演算法",
+      "desc": "貪婪選擇性質與正確性證明",
+      "topics": [
+        {
+          "id": "activity-selection",
+          "en": "Activity Selection",
+          "zh": "活動選擇問題",
+          "book": "15.1–15.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "huffman-coding",
+          "en": "Huffman Coding",
+          "zh": "霍夫曼編碼",
+          "book": "15.3",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "amortized",
+      "no": 7,
+      "en": "Amortized Analysis",
+      "zh": "攤銷分析",
+      "desc": "聚合法、記帳法、位能法",
+      "topics": [
+        {
+          "id": "amortized-analysis",
+          "en": "Amortized Analysis",
+          "zh": "攤銷分析",
+          "book": "16",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "graph-algorithms",
+      "no": 8,
+      "en": "Graph Algorithms",
+      "zh": "圖論演算法",
+      "desc": "DFS 應用、最短路徑與正確性",
+      "topics": [
+        {
+          "id": "topological-sort",
+          "en": "Topological Sort",
+          "zh": "拓撲排序",
+          "book": "20.4",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "strongly-connected-components",
+          "en": "Strongly Connected Components",
+          "zh": "強連通元件",
+          "book": "20.5",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "bellman-ford",
+          "en": "Bellman-Ford Algorithm",
+          "zh": "Bellman-Ford 演算法",
+          "book": "22.1–22.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "floyd-warshall",
+          "en": "Floyd-Warshall Algorithm",
+          "zh": "Floyd-Warshall 演算法",
+          "book": "23.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "johnson",
+          "en": "Johnson's Algorithm",
+          "zh": "Johnson 演算法",
+          "book": "23.3",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "network-flow",
+      "no": 9,
+      "en": "Network Flow",
+      "zh": "網路流",
+      "desc": "最大流最小割與二分圖匹配",
+      "topics": [
+        {
+          "id": "maximum-flow",
+          "en": "Maximum Flow",
+          "zh": "最大流",
+          "book": "24.1–24.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "bipartite-matching",
+          "en": "Bipartite Matching",
+          "zh": "二分圖匹配",
+          "book": "24.3, 25.1",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "stable-matching",
+          "en": "Stable Matching",
+          "zh": "穩定匹配",
+          "book": "25.2",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "number-theory",
+      "no": 10,
+      "en": "Number-Theoretic Algorithms",
+      "zh": "數論演算法",
+      "desc": "GCD、模運算與 RSA",
+      "topics": [
+        {
+          "id": "euclid-gcd",
+          "en": "Euclidean Algorithm",
+          "zh": "輾轉相除法",
+          "book": "31.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "modular-exponentiation",
+          "en": "Modular Exponentiation and RSA",
+          "zh": "模指數與 RSA",
+          "book": "31.6–31.7",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "string-matching",
+      "no": 11,
+      "en": "String Matching",
+      "zh": "字串比對",
+      "desc": "Rabin-Karp 與有限自動機",
+      "topics": [
+        {
+          "id": "rabin-karp",
+          "en": "Rabin-Karp Algorithm",
+          "zh": "Rabin-Karp 演算法",
+          "book": "32.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "string-automata",
+          "en": "String Matching with Finite Automata",
+          "zh": "有限自動機字串比對",
+          "book": "32.3",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "np-completeness",
+      "no": 12,
+      "en": "NP-Completeness",
+      "zh": "NP 完備",
+      "desc": "P、NP、歸約與常見的 NP 完備問題",
+      "topics": [
+        {
+          "id": "p-np",
+          "en": "P, NP, and NP-Completeness",
+          "zh": "P、NP 與 NP 完備",
+          "book": "34.1–34.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "np-reductions",
+          "en": "NP-Completeness Reductions",
+          "zh": "NP 完備歸約",
+          "book": "34.4–34.5",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "approximation",
+      "no": 13,
+      "en": "Approximation Algorithms",
+      "zh": "近似演算法",
+      "desc": "近似比與經典近似演算法",
+      "topics": [
+        {
+          "id": "vertex-cover-approx",
+          "en": "Vertex Cover and TSP Approximation",
+          "zh": "頂點覆蓋與 TSP 近似",
+          "book": "35.1–35.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "set-cover-approx",
+          "en": "Set Cover Approximation",
+          "zh": "集合覆蓋近似",
+          "book": "35.3",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    }
+  ]
+}

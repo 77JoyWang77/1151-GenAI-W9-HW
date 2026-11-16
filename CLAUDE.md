@@ -17,7 +17,7 @@
 | 科目 | subject-id | 狀態 |
 |---|---|---|
 | Data Structures（資料結構） | `data-structures` | 進行中（參考書：Horowitz《Fundamentals of Data Structures in C》，僅供 AI 查閱） |
-| Algorithms（演算法） | `algorithms` | 籌備中 |
+| Algorithms（演算法） | `algorithms` | 進行中（參考書：Cormen 等《Introduction to Algorithms》4th，僅供 AI 查閱；題號前綴 `al-`） |
 | Computer Organization（計算機組織） | `computer-organization` | 籌備中 |
 | Operating Systems（作業系統） | `operating-systems` | 進行中（參考書：Silberschatz《Operating System Concepts》10th，僅供 AI 查閱；題號前綴 `os-`） |
 | Discrete Mathematics（離散數學） | `discrete-math` | 進行中（參考書：Rosen《Discrete Mathematics and Its Applications》8th，僅供 AI 查閱；題號前綴 `dm-`） |

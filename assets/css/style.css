@@ -284,7 +284,7 @@ details.quiz p { margin: 0; color: var(--ink-soft); padding-left: 22px; }
 @media (min-width: 860px) { .viz-body { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); } .viz-body.no-code { grid-template-columns: 1fr; } }
 .viz-stage { background: radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0) 0 0 / 22px 22px, var(--bg); border-radius: 10px; border: 1px solid var(--line); }
 .viz-svg { width: 100%; height: auto; display: block; }
-.viz-code { background: var(--code-bg); border-radius: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; line-height: 1.65; padding: 8px 0; max-height: 330px; overflow: auto; }
+.viz-code { position: relative; background: var(--code-bg); border-radius: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; line-height: 1.65; padding: 8px 0; max-height: 330px; overflow: auto; }
 .code-line { display: flex; white-space: pre; padding: 0 10px; border-left: 3px solid transparent; transition: background .2s; }
 .code-line .ln { width: 22px; flex: none; color: var(--ink-soft); opacity: .6; text-align: right; margin-right: 10px; user-select: none; }
 .code-line.is-active { background: color-mix(in srgb, var(--s-active) 18%, transparent); border-left-color: var(--s-active); }

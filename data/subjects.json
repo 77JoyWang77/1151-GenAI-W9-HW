@@ -19,7 +19,7 @@
       "zh": "演算法",
       "icon": "compass",
       "color": 7,
-      "status": "planned",
+      "status": "active",
       "desc": "分治、動態規劃、貪婪、NP 完備"
     },
     {

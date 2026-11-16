@@ -1,0 +1,134 @@
+{
+  "subject": "algorithms",
+  "levels": {
+    "basic": "基礎",
+    "advanced": "進階",
+    "exam": "考研級"
+  },
+  "questions": [
+    {
+      "id": "al-0001",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列哪一個是 ALGORITHM 的<b>子序列</b>？",
+      "choices": [
+        "(A) GOAL",
+        "(B) LRTM",
+        "(C) HIT",
+        "(D) MAT"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>子序列只要字元順序和原字串一致，可以跳著選。ALGORITHM 的字元位置是 A1 L2 G3 O4 R5 I6 T7 H8 M9。</p><ul><li>(A) GOAL：G3、O4 之後要找 A，但 A 只在位置 1，順序錯了。</li><li>(B) LRTM：L2、R5、T7、M9，位置遞增，<b>是子序列</b>。</li><li>(C) HIT：H8 之後要找 I，但 I 在位置 6，往回跑了。</li><li>(D) MAT：M 在最後一個，後面沒有 A。</li></ul><p>常見錯誤：以為子序列要連續。LRTM 在原字串中不連續，但仍是子序列；要連續的是子字串。</p>"
+    },
+    {
+      "id": "al-0002",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "用由下而上填表求兩個長度 m、n 的字串的 LCS，下列敘述何者<b>錯誤</b>？",
+      "choices": [
+        "(A) 填表時間是 Θ(mn)",
+        "(B) 有了 b 表後，回溯出一個 LCS 只要 O(m + n)",
+        "(C) 只求 LCS 長度時，空間可以降到 O(min(m, n))",
+        "(D) 只保留兩列的版本，一樣可以回溯出 LCS 本身"
+      ],
+      "answer": "(D)",
+      "explanation": "<ul><li>(A) 對：(m+1)(n+1) 格，每格 O(1)。</li><li>(B) 對：每一步 i 或 j 至少減 1，最多 m + n 步。</li><li>(C) 對：第 i 列只用到第 i−1 列，只留兩列就夠；把短的字串放在行的方向，就是 O(min(m, n))。</li><li>(D) <b>錯</b>：只留兩列時，前面各列的 b 已經被覆蓋，沒辦法從右下角回溯，只能得到長度。</li></ul>"
+    },
+    {
+      "id": "al-0003",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "X = BDCB、Y = ABCDB。填出 LCS 長度表 c，並以「上面 ≥ 左邊時往上」的規則回溯，寫出 LCS。",
+      "answer": "LCS 長度 3，LCS = BDB",
+      "explanation": "<p>先填第 0 列、第 0 行為 0，再逐列由左到右：字元相同取左上 + 1，不同取 max(上, 左)。</p><div class=\"table-scroll\"><table><thead><tr><th></th><th>0</th><th>A</th><th>B</th><th>C</th><th>D</th><th>B</th></tr></thead><tbody><tr><th>0</th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th>B</th><td>0</td><td>↑0</td><td>↖1</td><td>←1</td><td>←1</td><td>↖1</td></tr><tr><th>D</th><td>0</td><td>↑0</td><td>↑1</td><td>↑1</td><td>↖2</td><td>←2</td></tr><tr><th>C</th><td>0</td><td>↑0</td><td>↑1</td><td>↖2</td><td>↑2</td><td>↑2</td></tr><tr><th>B</th><td>0</td><td>↑0</td><td>↖1</td><td>↑2</td><td>↑2</td><td>↖3</td></tr></tbody></table></div><p>右下角 c[4][5] = 3。回溯：(4,5) ↖ 記 B → (3,4) ↑ → (2,4) ↖ 記 D → (1,3) ← → (1,2) ↖ 記 B → (0,1) 停。倒過來得到 <b>BDB</b>。</p><p>注意 c[3][4]：C ≠ D，上面 c[2][4] = 2、左邊 c[3][3] = 2 平手，依規則往上。如果平手往左，會找到另一個 LCS：BCB，長度一樣是 3。</p>"
+    },
+    {
+      "id": "al-0004",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "X = AABBC、Y = ABCBA。分別用「平手往上」和「平手往左」兩種規則回溯，各會找到哪一個 LCS？這說明了什麼？",
+      "answer": "平手往上得 ABB，平手往左得 ABC，長度都是 3",
+      "explanation": "<p>兩種規則的 c 表數字完全一樣（右下角都是 3），只有平手格的箭頭不同。</p><ul><li><b>平手往上</b>：(5,5) ↑ → (4,5) ← → (4,4) ↖ 記 B → (3,3) ← → (3,2) ↖ 記 B → (2,1) ↖ 記 A → 停，得到 <b>ABB</b>。</li><li><b>平手往左</b>：(5,5) ← → (5,4) ← → (5,3) ↖ 記 C → (4,2) ↖ 記 B → (3,1) ↑ → (2,1) ↖ 記 A → 停，得到 <b>ABC</b>。</li></ul><p>這說明 <b>LCS 的長度唯一，內容不一定唯一</b>。題目若規定平手規則，就必須照規則走；沒規定時，任何一個長度 3 的共同子序列都正確。另外回溯只在 ↖ 記字元，而且記下的順序是反的，要倒過來寫。</p>"
+    },
+    {
+      "id": "al-0005",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "不用記憶化、直接照遞迴式寫 LCS 的遞迴函式。若 X、Y 長度都是 n，而且<b>沒有任何相同字元</b>，函式總共會被呼叫幾次（含第一次呼叫）？n = 10 時是多少？和由下而上填表比較。",
+      "answer": "2·C(2n, n) − 1；n = 10 時 369,511 次",
+      "explanation": "<p>設 T(i, j) 是計算 c(i, j) 的總呼叫次數。沒有相同字元時每次都走 max 那一支：</p><pre class=\"formula\">T(i, j) = 1                              若 i = 0 或 j = 0\nT(i, j) = 1 + T(i−1, j) + T(i, j−1)      其他</pre><p>把每一次呼叫看成格子圖上的一個點：從 (n, n) 出發，每次往上或往左一步，碰到邊界就停。呼叫次數等於所有「走到某個點為止」的路徑數。可以驗證 T(i, j) = 2·C(i + j, i) − 1 滿足遞迴式：</p><pre class=\"formula\">1 + [2C(i+j−1, i−1) − 1] + [2C(i+j−1, i) − 1]\n= 2[C(i+j−1, i−1) + C(i+j−1, i)] − 1\n= 2C(i+j, i) − 1          （巴斯卡定理）</pre><p>邊界 i = 0 時 2C(j, 0) − 1 = 1，也成立。所以 T(n, n) = 2·C(2n, n) − 1。n = 10：C(20, 10) = 184,756，T = <b>369,511</b>。C(2n, n) 約為 4<sup>n</sup>/√(πn)，是指數成長。</p><p>由下而上只填 (n+1)² = 121 格，大約是遞迴的 1/3000。差距來自重疊子問題：不同的子問題只有 121 種，卻被重複計算了 30 萬次以上。（呼叫次數已用程式實際計數驗證。）</p>"
+    },
+    {
+      "id": "al-0006",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "設 Z = z<sub>1</sub>…z<sub>k</sub> 是 X = x<sub>1</sub>…x<sub>m</sub> 和 Y = y<sub>1</sub>…y<sub>n</sub> 的一個 LCS。證明：若 x<sub>m</sub> = y<sub>n</sub>，則 z<sub>k</sub> = x<sub>m</sub>，而且 Z<sub>k−1</sub> 是 X<sub>m−1</sub> 和 Y<sub>n−1</sub> 的一個 LCS。",
+      "answer": "見詳解（反證＋剪貼論證）",
+      "explanation": "<p><b>(1) z<sub>k</sub> = x<sub>m</sub></b>：假設 z<sub>k</sub> ≠ x<sub>m</sub>。因為 x<sub>m</sub> = y<sub>n</sub> 是兩個字串的最後一個字元，Z 在 X、Y 中用到的位置都在它們之前，所以把 x<sub>m</sub> 接在 Z 後面，得到的 Z x<sub>m</sub> 仍是 X 和 Y 的共同子序列，長度 k + 1 &gt; k，與 Z 是 LCS 矛盾。故 z<sub>k</sub> = x<sub>m</sub> = y<sub>n</sub>。</p><p><b>(2) Z<sub>k−1</sub> 是 X<sub>m−1</sub>、Y<sub>n−1</sub> 的 LCS</b>：Z 的最後一個字元對應到 x<sub>m</sub> 和 y<sub>n</sub>，去掉它，Z<sub>k−1</sub> 是 X<sub>m−1</sub> 和 Y<sub>n−1</sub> 的共同子序列，長度 k − 1。假設它不是最長的，存在長度 &gt; k − 1 的共同子序列 W。那麼 W x<sub>m</sub> 是 X 和 Y 的共同子序列，長度 &gt; k，又與 Z 是 LCS 矛盾。故 Z<sub>k−1</sub> 是 X<sub>m−1</sub> 和 Y<sub>n−1</sub> 的 LCS。證畢。</p><p>第 (2) 部分的手法就是<b>剪貼論證</b>：把子問題的解換成更好的解，會讓整體變得更好，矛盾。這是證明最佳子結構的標準寫法，其他 DP 題也通用。</p>"
+    },
+    {
+      "id": "al-0007",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "original"
+      },
+      "question": "寫出求兩字串<b>最長共同子字串</b>（必須連續）的 DP 遞迴式，說明答案在表格的哪裡，並求 X = ABABC、Y = BABCA 的答案。它和 LCS 的遞迴式差在哪裡？",
+      "answer": "L[i][j] = L[i−1][j−1] + 1（相同）或 0（不同），答案是全表最大值；ABABC 與 BABCA 的最長共同子字串是 BABC，長度 4",
+      "explanation": "<p>令 L[i][j] 是「以 x<sub>i</sub> 和 y<sub>j</sub> <b>結尾</b>」的最長共同子字串長度：</p><pre class=\"formula\">L[i][j] = 0                    若 i = 0 或 j = 0\nL[i][j] = L[i−1][j−1] + 1      若 x(i) = y(j)\nL[i][j] = 0                    若 x(i) ≠ y(j)</pre><p>字元不同時，以這兩個字元結尾的共同子字串不存在，所以是 0；這和 LCS 取 max(上, 左) 不同，因為子字串不能跳過字元。也因為 L 的定義是「結尾在這裡」，最長的那段可能結束在任何位置，所以<b>答案是整張表的最大值</b>，不是右下角。</p><p>X = ABABC、Y = BABCA：L[5][4] 對應 X 的 C（第 5 個）和 Y 的 C（第 4 個），沿左上連續相等 C、B、A、B，所以 L[5][4] = 4，是全表最大值。子字串是 X 的第 2～5 個字元 <b>BABC</b>。時間 Θ(mn)；只要長度時一樣可以只留兩列。（已用程式驗證。）</p>"
+    },
+    {
+      "id": "al-0008",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "用 LCS 求序列 A = 3, 1, 4, 1, 5, 9, 2, 6 的最長<b>嚴格遞增</b>子序列（LIS）的長度，並寫出一個。說明為什麼這個方法是對的。",
+      "answer": "長度 4，例如 1, 4, 5, 9",
+      "explanation": "<p>把 A 排序並去掉重複，得到 B = 1, 2, 3, 4, 5, 6, 9。A 和 B 的 LCS 就是 A 的 LIS：</p><ul><li>A 的任何嚴格遞增子序列，元素互不相同且由小到大，所以也是 B 的子序列，是共同子序列。</li><li>反過來，A、B 的共同子序列是 B 的子序列，B 嚴格遞增，所以它在 A 裡也是嚴格遞增的。</li></ul><p>兩者是同一群序列，最長的自然一樣長。對 A、B 做 LCS，得到長度 <b>4</b>，例如 1, 4, 5, 9（也可以是 3, 4, 5, 9 或 1, 4, 5, 6）。時間 O(n²)。（已用程式驗證：LCS 長度 = 窮舉所得 LIS 長度 = 4。）</p><p>注意一定要<b>去掉重複</b>：如果 B 保留兩個 1，LCS 可能選到 1, 1，就不是嚴格遞增了。</p>"
+    }
+  ]
+}

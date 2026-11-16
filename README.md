@@ -9,7 +9,7 @@
 | 科目 | 狀態 | 參考書（僅供 AI 查閱） |
 |---|---|---|
 | Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 5 個 | Horowitz《Fundamentals of Data Structures in C》 |
-| Algorithms（演算法） | 籌備中 | |
+| Algorithms（演算法） | 進行中：13 章、36 個主題（高頻 19 個），已完成 1 個 | Cormen 等《Introduction to Algorithms》 |
 | Computer Organization（計算機組織） | 籌備中 | |
 | Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 1 個 | Silberschatz《Operating System Concepts》 |
 | Discrete Mathematics（離散數學） | 進行中：12 章、38 個主題（高頻 18 個），已完成 1 個 | Rosen《Discrete Mathematics and Its Applications》 |
@@ -24,6 +24,12 @@
 | Binary Tree Traversal（二元樹走訪與重建） | 自己輸入樹，播放前序 / 中序 / 後序 / 層序與 stack 版中序，看得到 stack、queue 內容 |
 | Heap（堆積） | insert / delete-max / build heap（由下往上），樹和陣列同步移動 |
 | Binary Search Tree（二元搜尋樹） | insert / search / delete（三種情況，可切換左子樹最大 / 右子樹最小）、中序走訪 |
+
+### 演算法已完成的主題
+
+| 主題 | 互動動畫 |
+|---|---|
+| Longest Common Subsequence（最長共同子序列） | 自己輸入兩個字串，一格一格填 LCS 長度表，再從右下角照箭頭回溯找出 LCS；可切換平手往上／往左，比較不同的 LCS |
 
 ### 離散數學已完成的主題
 

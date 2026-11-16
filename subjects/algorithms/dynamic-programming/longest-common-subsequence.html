@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Longest Common Subsequence 最長共同子序列 · 演算法 | 資工考研互動學習站</title>
+  <meta name="description" content="LCS 的最佳子結構、遞迴式、由下而上填表與回溯；動態規劃考研必考的經典題。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=cfb35b17">
+  <script src="../../../assets/js/theme.js?v=cfb35b17"></script>
+</head>
+<body data-subject="algorithms" data-chapter="dynamic-programming" data-chno="5" data-topic="algorithms/dynamic-programming/longest-common-subsequence" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Algorithms 演算法</a> › Ch5 Dynamic Programming 動態規劃 › Longest Common Subsequence 最長共同子序列</nav>
+      <div class="topic-head">
+        <h1>Longest Common Subsequence 最長共同子序列<small>比最後一個字元，把問題切成三個更小的問題</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch5 Dynamic Programming</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">dynamic programming</span>
+          <span class="chip">LCS</span>
+          <span class="chip">traceback</span>
+          <span class="chip">memoization</span>
+        </div>
+      </div>
+
+      <section id="problem">
+        <h2>問題：兩個字串最長的共同部分</h2>
+        <div class="panel prose">
+          <p>給兩個字串 X 和 Y，想知道它們「最像」到什麼程度。比對兩份檔案哪幾行改過（<code>diff</code>）、比對兩段 DNA 的相似度、抄襲偵測，都會遇到這個問題。最常用的衡量方式是找它們的 <span class="term">Longest Common Subsequence<small>（最長共同子序列，LCS）</small></span>。</p>
+          <p>先把「子序列」講清楚：<span class="term">Subsequence<small>（子序列）</small></span>是從字串中<b>刪掉零個或多個字元</b>、剩下的字元<b>保持原本順序</b>得到的字串。它可以跳著選，但不能調換順序。例如 STONE 的子序列有 SON、TNE、ONE；但 NOE 不是，因為 N 在 O 後面。要特別和 <span class="term">Substring<small>（子字串）</small></span>分清楚：子字串必須是<b>連續</b>的一段，STONE 的子字串有 TON、ONE，但 SON 不是。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="lcs-subsequence"></div>
+            <figcaption><b>圖 1</b>：STONE 和 LONGEST 的 LCS 是 ONE。把選到的字元連起來，線不會交叉，代表三個字元在兩個字串中的先後順序一樣；O、N、E 在 LONGEST 裡並不相鄰，所以它是子序列而不是子字串。</figcaption>
+          </figure>
+          <p><b>共同子序列</b>是同時是 X 和 Y 子序列的字串，LCS 就是其中最長的一個。注意 LCS <b>不一定唯一</b>：ABAB 和 BABA 的 LCS 長度是 3，ABA 和 BAB 都是。題目問「LCS 長度」只有一個答案，問「一個 LCS」可能有好幾個正確答案。</p>
+          <h3>暴力法為什麼不行</h3>
+          <p>最直接的方法是列出 X 的所有子序列，逐一檢查它是不是 Y 的子序列，留下最長的。長度 m 的字串，每個字元選或不選，共有 2<sup>m</sup> 個子序列；每個要花 O(n) 檢查，總共 O(n · 2<sup>m</sup>)。m = 30 時 2<sup>30</sup> 已經超過 10 億，m = 100 就算到宇宙毀滅也算不完。我們需要利用問題本身的結構。</p>
+        </div>
+      </section>
+
+      <section id="substructure">
+        <h2>最佳子結構：只看最後一個字元</h2>
+        <div class="panel prose">
+          <p>記 X<sub>i</sub> 是 X 的前 i 個字元（例如 X = STONE 時 X<sub>3</sub> = STO），X<sub>0</sub> 是空字串。關鍵觀察是：只要比較兩個字串的<b>最後一個字元</b>，就能把問題化成更小的同類問題。設 X 長度 m、Y 長度 n，Z = z<sub>1</sub>…z<sub>k</sub> 是 X 和 Y 的某一個 LCS：</p>
+          <ol>
+            <li><b>如果 x<sub>m</sub> = y<sub>n</sub></b>：那麼 z<sub>k</sub> = x<sub>m</sub> = y<sub>n</sub>，而且 Z<sub>k−1</sub> 是 X<sub>m−1</sub> 和 Y<sub>n−1</sub> 的 LCS。也就是說，兩邊相同的最後一個字元<b>一定</b>可以放進 LCS 的最後面。</li>
+            <li><b>如果 x<sub>m</sub> ≠ y<sub>n</sub> 且 z<sub>k</sub> ≠ x<sub>m</sub></b>：x<sub>m</sub> 沒用到，Z 是 X<sub>m−1</sub> 和 Y 的 LCS。</li>
+            <li><b>如果 x<sub>m</sub> ≠ y<sub>n</sub> 且 z<sub>k</sub> ≠ y<sub>n</sub></b>：y<sub>n</sub> 沒用到，Z 是 X 和 Y<sub>n−1</sub> 的 LCS。</li>
+          </ol>
+          <p>情況 1 為什麼成立？如果 z<sub>k</sub> 不是 x<sub>m</sub>，那把 x<sub>m</sub> 接在 Z 後面，會得到一個長度 k + 1 的共同子序列，和「Z 最長」矛盾。所以 z<sub>k</sub> 一定是那個相同的字元；而剩下的 Z<sub>k−1</sub> 如果不是 X<sub>m−1</sub>、Y<sub>n−1</sub> 的 LCS，就能換成更長的那個再接上 x<sub>m</sub>，又得到比 Z 更長的答案，同樣矛盾。這種「用更好的子問題解替換，會讓整體更好」的論證叫 <span class="term">Cut-and-Paste<small>（剪貼論證）</small></span>，是證明 <span class="term">Optimal Substructure<small>（最佳子結構）</small></span>的標準手法。</p>
+          <p>情況 2、3 的意思是：最後兩個字元不同時，它們<b>不可能同時</b>出現在 LCS 的最後，至少要丟掉一個。我們不知道丟哪個比較好，所以兩種都試，取比較大的。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="lcs-cases"></div>
+            <figcaption><b>圖 2</b>：表格中每一格只看三個鄰居。(a) 最後一個字元相同時，看左上角再加 1；(b) 不同時，看上面（丟掉 X 的最後一個字元）和左邊（丟掉 Y 的最後一個字元），取比較大的。</figcaption>
+          </figure>
+          <p>令 c[i][j] 為 X<sub>i</sub> 和 Y<sub>j</sub> 的 LCS 長度，就得到遞迴式：</p>
+          <pre class="formula">         ┌ 0                              若 i = 0 或 j = 0
+c[i][j] = ┤ c[i−1][j−1] + 1                若 i, j &gt; 0 且 x(i) = y(j)
+         └ max(c[i−1][j], c[i][j−1])      若 i, j &gt; 0 且 x(i) ≠ y(j)</pre>
+          <p>答案是 c[m][n]。</p>
+        </div>
+      </section>
+
+      <section id="overlap">
+        <h2>重疊子問題：為什麼不能直接遞迴</h2>
+        <div class="panel prose">
+          <p>照遞迴式直接寫成遞迴函式，答案是對的，但會非常慢。最後兩個字元不同時，c(i, j) 會呼叫 c(i−1, j) 和 c(i, j−1)，而這兩個又都會呼叫 c(i−1, j−1)，同一個子問題被重算好幾次，越往下重複得越多。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="lcs-overlap"></div>
+            <figcaption><b>圖 3</b>：字元都不相同時的遞迴樹（只畫上面三層）。(2,2) 從兩條路徑各被呼叫一次，(1,2)、(2,1) 也各出現兩次，而且越往下重複得越多。</figcaption>
+          </figure>
+          <p>最壞情況（完全沒有相同字元）下呼叫次數是 2·C(m+n, m) − 1，m = n = 10 時是 369,511 次；但不同的子問題只有 (m+1)(n+1) = 121 種。<span class="term">Overlapping Subproblems<small>（重疊子問題）</small></span>加上最佳子結構，正是適合用 <span class="term">Dynamic Programming<small>（動態規劃，DP）</small></span>的訊號：把每個子問題的答案存起來，算過的就不要再算。</p>
+          <p>做法有兩種：</p>
+          <ul>
+            <li><span class="term">Memoization<small>（記憶化，由上而下）</small></span>：保留遞迴的寫法，但先查表，算過就直接回傳。</li>
+            <li><b>Bottom-up（由下而上）</b>：把子問題依「誰先需要誰」排好順序，用迴圈從小填到大，完全不用遞迴。下一節的填表法就是這種。</li>
+          </ul>
+          <p>實際跑 STONE 和 LONGEST：單純遞迴呼叫了 829 次，記憶化只呼叫 50 次（約 6%）；換成 ABCDEFGHIJ 和 BADCFEHGJI，單純遞迴 8,341 次，記憶化 149 次，差了 56 倍，而且字串越長差距越大。</p>
+          <details class="code-fold">
+            <summary>看程式碼：直接遞迴與記憶化</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="記憶化"><div class="code-head">lcsMemo()：由上而下 + 記憶</div><pre class="code">int memo[MAX + 1][MAX + 1];
+int lcsMemo(const char *X, const char *Y, int i, int j) {
+  calls++;
+  if (i == 0 || j == 0) return 0;
+  if (memo[i][j] != -1) return memo[i][j];     /* 算過了，直接查表 */
+  int r;
+  if (X[i - 1] == Y[j - 1]) r = lcsMemo(X, Y, i - 1, j - 1) + 1;
+  else {
+    int up = lcsMemo(X, Y, i - 1, j), left = lcsMemo(X, Y, i, j - 1);
+    r = up &gt;= left ? up : left;
+  }
+  return memo[i][j] = r;
+}</pre></div>
+              <div class="code-block" data-tab="直接遞迴"><div class="code-head">lcsNaive()：直接照遞迴式（指數時間）</div><pre class="code">int lcsNaive(const char *X, const char *Y, int i, int j) {
+  calls++;
+  if (i == 0 || j == 0) return 0;
+  if (X[i - 1] == Y[j - 1]) return lcsNaive(X, Y, i - 1, j - 1) + 1;
+  int up = lcsNaive(X, Y, i - 1, j), left = lcsNaive(X, Y, i, j - 1);
+  return up &gt;= left ? up : left;
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="table">
+        <h2>由下而上填表</h2>
+        <div class="panel prose">
+          <p>c[i][j] 只用到左上、上、左三格，所以只要<b>一列一列、每列由左到右</b>填，需要的格子一定都已經算好了。先把第 0 列和第 0 行全填 0（空字串和任何字串的 LCS 長度是 0），再從 c[1][1] 填到 c[m][n]。</p>
+          <p>為了之後能找出 LCS 本身，每一格順便記下它的值是從哪裡來的，存在 b[i][j]：</p>
+          <ul>
+            <li><b>↖</b>：字元相同，值 = 左上 + 1。</li>
+            <li><b>↑</b>：字元不同，上面比較大（或平手），值 = 上面。</li>
+            <li><b>←</b>：字元不同，左邊比較大，值 = 左邊。</li>
+          </ul>
+          <p>以 X = STONE、Y = LONGEST 為例，填完的表如下（每格是「箭頭 長度」）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>j = 0</th><th>L</th><th>O</th><th>N</th><th>G</th><th>E</th><th>S</th><th>T</th></tr></thead>
+              <tbody>
+                <tr><th>i = 0</th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                <tr><th>S</th><td>0</td><td>↑ 0</td><td>↑ 0</td><td>↑ 0</td><td>↑ 0</td><td>↑ 0</td><td>↖ 1</td><td>← 1</td></tr>
+                <tr><th>T</th><td>0</td><td>↑ 0</td><td>↑ 0</td><td>↑ 0</td><td>↑ 0</td><td>↑ 0</td><td>↑ 1</td><td>↖ 2</td></tr>
+                <tr><th>O</th><td>0</td><td>↑ 0</td><td><b>↖ 1</b></td><td>← 1</td><td>← 1</td><td>← 1</td><td>↑ 1</td><td>↑ 2</td></tr>
+                <tr><th>N</th><td>0</td><td>↑ 0</td><td>↑ 1</td><td><b>↖ 2</b></td><td>← 2</td><td>← 2</td><td>← 2</td><td>↑ 2</td></tr>
+                <tr><th>E</th><td>0</td><td>↑ 0</td><td>↑ 1</td><td>↑ 2</td><td>↑ 2</td><td><b>↖ 3</b></td><td>← 3</td><td>← 3</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>幾個值得看的格子：</p>
+          <ul>
+            <li>c[1][6]：S = S，左上是 0，所以 c = 1、箭頭 ↖。</li>
+            <li>c[3][2]：O = O，左上 c[2][1] = 0，所以 c = 1。</li>
+            <li>c[4][3]：N = N，左上 c[3][2] = 1，所以 c = 2，表示「STON 和 LON」的 LCS 是 ON。</li>
+            <li>c[5][5]：E = E，左上 c[4][4] = 2，所以 c = 3。</li>
+            <li>右下角 c[5][7] = 3，就是答案。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：lcsLength() 填表</summary>
+            <div class="code-block"><div class="code-head">lcsLength()：由下而上填 c 和 b</div><pre class="code">int lcsLength(const char *X, const char *Y) {
+  int m = strlen(X), n = strlen(Y);
+  for (int i = 0; i &lt;= m; i++) c[i][0] = 0;   /* 空字串和任何字串的 LCS 長度都是 0 */
+  for (int j = 0; j &lt;= n; j++) c[0][j] = 0;
+  for (int i = 1; i &lt;= m; i++)
+    for (int j = 1; j &lt;= n; j++) {
+      if (X[i - 1] == Y[j - 1]) {              /* 最後一個字元相同：一定可以接在 LCS 後面 */
+        c[i][j] = c[i - 1][j - 1] + 1;
+        b[i][j] = 'D';
+      } else if (c[i - 1][j] &gt;= c[i][j - 1]) { /* 不同：丟掉 X 的最後一個字元比較好（平手往上） */
+        c[i][j] = c[i - 1][j];
+        b[i][j] = 'U';
+      } else {                                 /* 丟掉 Y 的最後一個字元比較好 */
+        c[i][j] = c[i][j - 1];
+        b[i][j] = 'L';
+      }
+    }
+  return c[m][n];
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>輸入兩個字串（X 最多 7 個字元、Y 最多 8 個），看表格一格一格填出來：橘色是正在填的格子，藍色是它參考的格子，綠色表示字元相同。表格填完後，會從右下角照箭頭往回走，紫色的格子就是 LCS 用到的字元。按「ABAB / BABA」再切換「平手時：往上／往左」，可以看到同樣長度 3、但內容不同的兩個 LCS。</p>
+        </div>
+        <div class="viz" data-viz="lcs-table"></div>
+      </section>
+
+      <section id="traceback">
+        <h2>找出 LCS：照箭頭走回去</h2>
+        <div class="panel prose">
+          <p>c[m][n] 只告訴我們長度。要找出 LCS 本身，就從右下角 (m, n) 出發，照 b 的箭頭往回走：</p>
+          <ul>
+            <li>遇到 ↖：x<sub>i</sub> 是 LCS 的一個字元，記下來，往左上走。</li>
+            <li>遇到 ↑ 或 ←：照箭頭走，不記字元。</li>
+            <li>走到第 0 列或第 0 行就停。</li>
+          </ul>
+          <p>因為是從字串尾巴往前找，字元出現的順序是反的。printLCS() 用遞迴解決這件事：<b>先遞迴到左上，回來時再印</b>，印出來就是正的順序。每走一步 i 或 j 至少減 1，所以回溯最多 m + n 步，時間 O(m + n)。</p>
+          <p>STONE、LONGEST 的路徑是 (5,7) ← (5,6) ← (5,5) ↖ (4,4) ← (4,3) ↖ (3,2) ↖ (2,1) ↑ (1,1) ↑ (0,1)，記下的字元依序是 E、N、O，反過來得到 <b>ONE</b>。</p>
+          <h3>平手時往哪走，會影響找到哪一個 LCS</h3>
+          <p>上面和左邊一樣大時，往上或往左都對，但會走到不同的路徑。表格的數字不受影響，只有箭頭不同，所以<b>長度一定一樣</b>，找到的 LCS 卻可能不同：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>X</th><th>Y</th><th>LCS 長度</th><th>平手往上</th><th>平手往左</th></tr></thead>
+              <tbody>
+                <tr><td>ABAB</td><td>BABA</td><td>3</td><td>ABA</td><td>BAB</td></tr>
+                <tr><td>AABBC</td><td>ABCBA</td><td>3</td><td>ABB</td><td>ABC</td></tr>
+                <tr><td>STONE</td><td>LONGEST</td><td>3</td><td>ONE</td><td>ONE</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>考題通常會指定平手的規則（最常見的是「≥ 時往上」），沒有指定時，任何一個 LCS 都算對。</p>
+          <details class="code-fold">
+            <summary>看程式碼：printLCS() 回溯</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="回溯"><div class="code-head">printLCS()：照箭頭走回去</div><pre class="code">void printLCS(const char *X, int i, int j) {
+  if (i == 0 || j == 0) return;
+  if (b[i][j] == 'D') {
+    printLCS(X, i - 1, j - 1);
+    putchar(X[i - 1]);
+  } else if (b[i][j] == 'U') {
+    printLCS(X, i - 1, j);
+  } else {
+    printLCS(X, i, j - 1);
+  }
+}</pre></div>
+              <div class="code-block" data-tab="平手往左的填表"><div class="code-head">lcsLengthLeft()：平手時記 ←</div><pre class="code">int lcsLengthLeft(const char *X, const char *Y) {
+  int m = strlen(X), n = strlen(Y);
+  for (int i = 0; i &lt;= m; i++) c[i][0] = 0;
+  for (int j = 0; j &lt;= n; j++) c[0][j] = 0;
+  for (int i = 1; i &lt;= m; i++)
+    for (int j = 1; j &lt;= n; j++) {
+      if (X[i - 1] == Y[j - 1]) {
+        c[i][j] = c[i - 1][j - 1] + 1;
+        b[i][j] = 'D';
+      } else if (c[i][j - 1] &gt;= c[i - 1][j]) { /* 平手往左 */
+        c[i][j] = c[i][j - 1];
+        b[i][j] = 'L';
+      } else {
+        c[i][j] = c[i - 1][j];
+        b[i][j] = 'U';
+      }
+    }
+  return c[m][n];
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="complexity">
+        <h2>複雜度與省空間</h2>
+        <div class="panel prose">
+          <p>表格有 (m+1)(n+1) 格，每格只做一次比較和一次取最大值，都是 O(1)，所以：</p>
+          <ul>
+            <li><b>時間</b>：填表 Θ(mn)，回溯 O(m + n)，總共 Θ(mn)。兩個長度 1000 的字串大約填一百萬格，一瞬間就算完；暴力法要 2<sup>1000</sup> 個子序列。</li>
+            <li><b>空間</b>：c 和 b 各 (m+1)(n+1) 格，Θ(mn)。</li>
+          </ul>
+          <p>如果<b>只要長度、不要 LCS 本身</b>，空間可以大幅節省：填第 i 列只需要第 i−1 列，所以只留兩列就夠，空間降到 O(n)；把較短的字串放在 Y，就是 O(min(m, n))。代價是沒有完整的 b 表，無法再回溯出 LCS。（只用 O(min(m, n)) 空間又要找出 LCS，需要更進階的分治技巧，考研很少考。）</p>
+          <details class="code-fold">
+            <summary>看程式碼：lcsTwoRows() 只留兩列</summary>
+            <div class="code-block"><div class="code-head">lcsTwoRows()：O(n) 空間求長度</div><pre class="code">int lcsTwoRows(const char *X, const char *Y) {
+  int m = strlen(X), n = strlen(Y);
+  int prev[MAX + 1] = {0}, cur[MAX + 1] = {0};
+  for (int i = 1; i &lt;= m; i++) {
+    for (int j = 1; j &lt;= n; j++) {
+      if (X[i - 1] == Y[j - 1]) cur[j] = prev[j - 1] + 1;
+      else cur[j] = prev[j] &gt;= cur[j - 1] ? prev[j] : cur[j - 1];
+    }
+    memcpy(prev, cur, sizeof prev);             /* 這一列變成下一輪的「上一列」 */
+  }
+  return prev[n];
+}</pre></div>
+          </details>
+          <h3>由上而下 vs 由下而上</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>記憶化（由上而下）</th><th>填表（由下而上）</th></tr></thead>
+              <tbody>
+                <tr><td>寫法</td><td>遞迴 + 查表，最接近遞迴式</td><td>雙層迴圈，要自己決定填表順序</td></tr>
+                <tr><td>算哪些子問題</td><td>只算真的用得到的</td><td>全部 (m+1)(n+1) 格都算</td></tr>
+                <tr><td>額外成本</td><td>遞迴呼叫、堆疊深度最多 m + n</td><td>沒有遞迴，常數比較小</td></tr>
+                <tr><td>省空間</td><td>不容易</td><td>容易改成只留兩列</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="related">
+        <h2>相關問題與 DP 的四個步驟</h2>
+        <div class="panel prose">
+          <h3>最長共同子字串</h3>
+          <p>如果要求連續（子字串），遞迴式要改：字元不同時，連續的共同部分在這裡<b>斷掉了</b>，所以是 0 而不是取 max；答案也不是右下角，而是整張表的最大值。</p>
+          <pre class="formula">L[i][j] = L[i−1][j−1] + 1     若 x(i) = y(j)
+L[i][j] = 0                   若 x(i) ≠ y(j)
+答案 = max over all i, j of L[i][j]</pre>
+          <p>例如 ABABC 和 BABCA：最長共同子字串是 BABC（長度 4）。這組剛好 LCS 也是 BABC，但一般來說 LCS 長度 ≥ 最長共同子字串長度，因為子字串一定也是子序列。</p>
+          <h3>其他用到 LCS 的地方</h3>
+          <ul>
+            <li><b>最長遞增子序列（LIS）</b>：把序列 A 排序並去掉重複得到 B，A 和 B 的 LCS 就是 A 的最長嚴格遞增子序列，時間 O(n²)。</li>
+            <li><b>Edit distance（編輯距離）</b>：同樣是兩個字串的二維表，每格看左、上、左上三格，只是成本換成插入、刪除、替換的次數。</li>
+            <li><b>diff</b>：兩份檔案以「行」為字元求 LCS，LCS 之外的行就是被新增或刪除的行。</li>
+          </ul>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 設計 DP 的四個步驟：(1) 找出最佳解的結構（最佳子結構）；(2) 寫出遞迴式定義最佳值；(3) 由下而上（或記憶化）算出最佳值；(4) 用記錄下來的選擇回推出最佳解本身。LCS 對應的就是：比最後一個字元 → c[i][j] 的遞迴式 → 填表 → 照箭頭回溯。</p></div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>填 c / b 表、求 LCS</td><td>很常考</td><td>先填第 0 列、第 0 行；逐列由左到右，相同取左上 + 1，不同取 max(上, 左)；從右下角照箭頭回溯</td><td><a class="q-link" href="#q-al-0003">例題</a> <a class="q-link" href="#q-al-0004">例題</a></td></tr>
+                <tr><td>子序列與子字串的定義</td><td>常考</td><td>子序列可跳著選、順序不變；子字串必須連續</td><td><a class="q-link" href="#q-al-0001">例題</a></td></tr>
+                <tr><td>時間、空間複雜度</td><td>常考</td><td>Θ(mn) 時間；只求長度可降到 O(min(m, n)) 空間</td><td><a class="q-link" href="#q-al-0002">例題</a></td></tr>
+                <tr><td>直接遞迴的呼叫次數</td><td>偶爾</td><td>寫出 T(m, n) = 1 + T(m−1, n) + T(m, n−1)，用格子路徑計數求解</td><td><a class="q-link" href="#q-al-0005">例題</a></td></tr>
+                <tr><td>證明最佳子結構</td><td>常考</td><td>剪貼論證：假設子問題不是最佳，換掉後得到更好的整體解，矛盾</td><td><a class="q-link" href="#q-al-0006">例題</a></td></tr>
+                <tr><td>變形：子字串、LIS</td><td>常考</td><td>子字串不同時歸 0、答案取全表最大；LIS 用排序後的序列做 LCS</td><td><a class="q-link" href="#q-al-0007">例題</a> <a class="q-link" href="#q-al-0008">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 子序列要連續</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 子序列只要順序不變、可以跳著選；要連續的是子字串</span> <a class="q-link" href="#q-al-0001">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 字元不同時取 max(上, 左, 左上)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 左上一定 ≤ 上和左，看它沒有意義；不同時只比上和左</span> <a class="q-link" href="#q-al-0003">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> LCS 是唯一的</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 長度唯一，內容不一定；平手往上或往左可能找到不同的 LCS</span> <a class="q-link" href="#q-al-0004">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 回溯時遇到 ↑、← 也要記字元</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只有 ↖ 的格子對應 LCS 的字元，而且找到的順序是反的</span> <a class="q-link" href="#q-al-0004">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 只留兩列也能找出 LCS</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 兩列版只能算長度，沒有完整的 b 表就無法回溯</span> <a class="q-link" href="#q-al-0002">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 最長共同子字串和 LCS 用同一個遞迴式</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 子字串在字元不同時要歸 0，答案取整張表的最大值而不是右下角</span> <a class="q-link" href="#q-al-0007">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="longest-common-subsequence"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=cfb35b17"></script>
+  <script src="../../../assets/js/viz-core.js?v=cfb35b17"></script>
+  <script src="../../../assets/js/viz/algorithms/longest-common-subsequence.js?v=cfb35b17"></script>
+</body>
+</html>
