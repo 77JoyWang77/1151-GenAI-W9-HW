@@ -1,0 +1,120 @@
+{
+  "subject": "operating-systems",
+  "levels": {
+    "basic": "基礎",
+    "advanced": "進階",
+    "exam": "考研級"
+  },
+  "questions": [
+    {
+      "id": "os-0001",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列哪一種排程演算法<b>不會</b>造成 starvation（飢餓）？",
+      "choices": [
+        "(A) SJF",
+        "(B) SRTF",
+        "(C) 不可搶先的 Priority",
+        "(D) Round Robin"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>SJF、SRTF 只要一直有更短的新工作到達，長工作就可能永遠等下去；Priority 只要一直有高優先權的行程進來，低優先權的就輪不到。</p><p>RR 用 FIFO queue 輪流，n 個行程時每個行程最多等 (n − 1)·q 就會再輪到一次，所以<b>不會飢餓</b>，答案 (D)。</p><p>常見錯誤：以為「SJF 的長工作最後一定會變成最短」。只有在沒有新工作進來時才成立。</p>"
+    },
+    {
+      "id": "os-0002",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "Round Robin 的 time quantum 設得非常大（大於所有行程的 burst），它的行為會等同於哪一種演算法？",
+      "choices": [
+        "(A) FCFS",
+        "(B) SJF",
+        "(C) SRTF",
+        "(D) Priority"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>每個行程都能在一個 quantum 內跑完，不會有任何行程被計時器中斷，ready queue 又是 FIFO，所以就是<b>先到先服務</b>，答案 (A)。</p><p>反過來，q 太小時 context switch 的比例會變高：例如切換一次 0.1 ms、q = 1 ms，約 9% 的時間花在切換。</p>"
+    },
+    {
+      "id": "os-0003",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "四個行程的（到達時間, burst）為 A(0, 6)、B(1, 3)、C(2, 8)、D(4, 2)。用 SRTF 排程，畫出甘特圖並求平均等待時間。",
+      "answer": "甘特圖 0–1 A、1–4 B、4–6 D、6–11 A、11–19 C；平均等待時間 3.50",
+      "explanation": "<ul><li>t = 1：B 到達，B 的 3 &lt; A 剩下的 5，B 搶先。</li><li>t = 2：C 到達，8 比 B 剩下的 2 長，B 繼續。</li><li>t = 4：B 做完；D 剛到，候選 A(5)、C(8)、D(2)，選 D。</li><li>t = 6：D 做完，A(5) &lt; C(8)，A 跑到 11；最後 C 跑到 19。</li></ul><p>等待時間用「完成 − 到達 − burst」：A = 11 − 0 − 6 = 5、B = 4 − 1 − 3 = 0、C = 19 − 2 − 8 = 9、D = 6 − 4 − 2 = 0，平均 14 / 4 = <b>3.50</b>。</p><p>常見錯誤：把 A 的等待寫成 0（它在時間 0 就開始執行），但 A 被搶走後在 1～6 之間等了 5 個單位；「開始時間 − 到達時間」是回應時間，不是等待時間。</p>"
+    },
+    {
+      "id": "os-0004",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "四個行程的（到達時間, burst）為 P1(0, 5)、P2(1, 3)、P3(2, 7)、P4(4, 4)。用 Round Robin、q = 3 排程（時間片用完時，同時刻新到達的行程先進 queue），畫出甘特圖並求平均周轉時間與平均等待時間。",
+      "answer": "甘特圖 0–3 P1、3–6 P2、6–9 P3、9–11 P1、11–14 P4、14–17 P3、17–18 P4、18–19 P3；平均周轉 11.75、平均等待 7.00",
+      "explanation": "<p>逐步追蹤 ready queue：</p><ul><li>t = 0～3：P1 跑 3；期間 P2、P3 到達。t = 3 時 queue = [P2, P3, P1]。</li><li>t = 3～6：P2 跑 3 做完；期間 P4 在 4 到達，queue = [P3, P1, P4]。</li><li>t = 6～9：P3 跑 3（剩 4），queue = [P1, P4, P3]。</li><li>t = 9～11：P1 剩 2，做完。</li><li>t = 11～14：P4 跑 3（剩 1）；14～17：P3 跑 3（剩 1）；17～18：P4 做完；18～19：P3 做完。</li></ul><p>完成時間 P1 = 11、P2 = 6、P3 = 19、P4 = 18。周轉 = 完成 − 到達 = 11、5、17、14，平均 47 / 4 = <b>11.75</b>；等待 = 周轉 − burst = 6、2、10、10，平均 28 / 4 = <b>7.00</b>。</p><p>注意 t = 3 時：P1 被搶走，而 P2、P3 早在它之前就到了，所以 P1 排在它們後面；如果把 P1 排在 P3 前面，後面整張甘特圖都會跟著錯。</p>"
+    },
+    {
+      "id": "os-0005",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "四個行程的（到達時間, burst）為 P1(0, 9)、P2(1, 3)、P3(2, 5)、P4(3, 2)。分別用 FCFS、不可搶先 SJF、SRTF、RR（q = 2）排程，求各自的平均等待時間，並說明哪一種最低、為什麼。",
+      "answer": "FCFS 8.00、SJF 7.00、SRTF 3.75、RR(q=2) 7.75；SRTF 最低",
+      "explanation": "<div class=\"table-scroll\"><table><thead><tr><th>演算法</th><th>甘特圖</th><th>等待（P1–P4）</th><th>平均</th></tr></thead><tbody><tr><td>FCFS</td><td>0–9 P1、9–12 P2、12–17 P3、17–19 P4</td><td>0、8、10、14</td><td>8.00</td></tr><tr><td>SJF</td><td>0–9 P1、9–11 P4、11–14 P2、14–19 P3</td><td>0、10、12、6</td><td>7.00</td></tr><tr><td>SRTF</td><td>0–1 P1、1–4 P2、4–6 P4、6–11 P3、11–19 P1</td><td>10、0、4、1</td><td>3.75</td></tr><tr><td>RR q=2</td><td>0–2 P1、2–4 P2、4–6 P3、6–8 P1、8–10 P4、10–11 P2、11–13 P3、13–15 P1、15–16 P3、16–19 P1</td><td>10、7、9、5</td><td>7.75</td></tr></tbody></table></div><p>SRTF 最低，約只有 FCFS 的一半（3.75 / 8.00 ≈ 47%）。原因是 P1 很長又最早到：FCFS 和不可搶先的 SJF 都得讓 P1 先跑完 9 個單位，三個短行程全被擋住（convoy effect）；SRTF 在 t = 1 就把 CPU 交給短的 P2，讓三個短行程先做完，只有 P1 多等。</p><p>RR 雖然沒有被長工作擋住，但每個行程都被切成好幾段、輪流等待，平均等待反而不低；它換到的是回應時間有上限。</p>"
+    },
+    {
+      "id": "os-0006",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "證明：若 n 個行程同時在時間 0 到達，不可搶先的 SJF 所得到的平均等待時間是所有排程順序中最小的。",
+      "answer": "見詳解（交換論證）",
+      "explanation": "<p>設某個排程順序依序執行 burst 為 b<sub>1</sub>, b<sub>2</sub>, …, b<sub>n</sub> 的行程。第 k 個行程要等前面所有行程做完，等待時間是 b<sub>1</sub> + … + b<sub>k−1</sub>，所以總等待時間為</p><pre class=\"formula\">W = Σ (n − i) · b(i)     i = 1..n</pre><p>也就是第 i 個執行的 burst 被計算了 (n − i) 次，越前面的權重越大。</p><p><b>交換論證</b>：假設某個最佳順序不是由短到長，那一定存在相鄰的兩個位置 i、i + 1 滿足 b<sub>i</sub> &gt; b<sub>i+1</sub>。把兩者交換，其他行程的等待時間不變；原本排在後面的短行程少等 b<sub>i</sub>，長行程多等 b<sub>i+1</sub>，總等待變化為 b<sub>i+1</sub> − b<sub>i</sub> &lt; 0，比原本更小，與「最佳」矛盾。</p><p>所以最佳順序中不存在相鄰的逆序，也就是 burst 由短到長排列，正是 SJF 的順序。平均等待 = W / n，W 最小時平均也最小。證畢。</p><p>注意：這個結論的前提是「同時到達、不可搶先」；行程陸續到達時，平均等待最小的是可搶先的 SRTF。</p>"
+    },
+    {
+      "id": "os-0007",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "用指數平均預測 CPU burst：τ(n+1) = α·t(n) + (1 − α)·τ(n)，α = 0.5，初始預測 τ(0) = 10。若接下來實際的 burst 依序為 6、4、6、4，求 τ(1)、τ(2)、τ(3)、τ(4)。",
+      "answer": "τ(1) = 8、τ(2) = 6、τ(3) = 6、τ(4) = 5",
+      "explanation": "<pre class=\"formula\">τ(1) = 0.5·6 + 0.5·10 = 8\nτ(2) = 0.5·4 + 0.5·8  = 6\nτ(3) = 0.5·6 + 0.5·6  = 6\nτ(4) = 0.5·4 + 0.5·6  = 5</pre><p>初始猜 10 明顯偏高，經過兩次實際值就拉到 6，之後在實際值 4～6 之間擺動：α = 0.5 時，舊預測每過一次影響就減半，所以 τ(0) 對 τ(4) 的權重只剩 (0.5)<sup>4</sup> = 1/16。</p><p>常見錯誤：把 t(n) 和 τ(n) 的位置對調，或用 τ(n+1) 去算 τ(n+1)。</p>"
+    }
+  ]
+}

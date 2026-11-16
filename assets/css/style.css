@@ -330,6 +330,7 @@ figure.fig figcaption b { color: var(--ink); }
 .vtext.title { font-size: 12px; font-weight: 700; letter-spacing: .08em; fill: var(--ink-soft); }
 .vtext.strong { font-size: 15px; font-weight: 700; fill: var(--ink); font-family: var(--mono); }
 .vtext.warn { fill: var(--s-removed); font-weight: 700; }
+.vtext.ok { fill: var(--s-found); font-weight: 700; }
 .vptr text { font-family: var(--mono); font-size: 13px; font-weight: 700; }
 .vptr path { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 

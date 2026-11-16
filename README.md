@@ -11,7 +11,7 @@
 | Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 5 個 | Horowitz《Fundamentals of Data Structures in C》 |
 | Algorithms（演算法） | 籌備中 | |
 | Computer Organization（計算機組織） | 籌備中 | |
-| Operating Systems（作業系統） | 籌備中 | |
+| Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 1 個 | Silberschatz《Operating System Concepts》 |
 | Discrete Mathematics（離散數學） | 進行中：12 章、38 個主題（高頻 18 個），已完成 1 個 | Rosen《Discrete Mathematics and Its Applications》 |
 | Linear Algebra（線性代數） | 進行中：8 章、30 個主題（高頻 18 個），已完成 1 個 | Leon《Linear Algebra with Applications》 |
 
@@ -36,6 +36,12 @@
 | 主題 | 互動動畫 |
 |---|---|
 | Gaussian Elimination（高斯消去法與列梯形） | 自己輸入增廣矩陣（可用分數），逐步列運算化成 RREF，判斷唯一解／無限多解／無解並寫出通解 |
+
+### 作業系統已完成的主題
+
+| 主題 | 互動動畫 |
+|---|---|
+| CPU Scheduling Algorithms（CPU 排程演算法） | 自己輸入行程（到達、burst、優先權），切換 FCFS／SJF／SRTF／Priority／RR，逐步看 ready queue 與甘特圖，算出平均等待、周轉、回應時間 |
 
 ## 這個專案的重點：CLAUDE.md
 

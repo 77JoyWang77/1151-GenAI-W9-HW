@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CPU Scheduling Algorithms CPU 排程演算法 · 作業系統 | 資工考研互動學習站</title>
+  <meta name="description" content="FCFS、SJF、SRTF、Priority、RR 與多層回饋佇列；考研必考甘特圖與平均等待時間計算。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=f9f7849b">
+  <script src="../../../assets/js/theme.js?v=f9f7849b"></script>
+</head>
+<body data-subject="operating-systems" data-chapter="cpu-scheduling" data-chno="3" data-topic="operating-systems/cpu-scheduling/cpu-scheduling" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Operating Systems 作業系統</a> › Ch3 CPU Scheduling CPU 排程 › CPU Scheduling Algorithms CPU 排程演算法</nav>
+      <div class="topic-head">
+        <h1>CPU Scheduling Algorithms CPU 排程演算法<small>下一個給誰用 CPU，決定了大家要等多久</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch3 CPU Scheduling</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">FCFS</span>
+          <span class="chip">SJF / SRTF</span>
+          <span class="chip">Round Robin</span>
+          <span class="chip">Gantt chart</span>
+        </div>
+      </div>
+
+      <section id="why-scheduling">
+        <h2>為什麼需要 CPU 排程</h2>
+        <div class="panel prose">
+          <p>一個程式執行時，通常是「算一下 → 等 I/O → 再算一下 → 再等 I/O」交替進行，前者叫 <span class="term">CPU Burst<small>（CPU 爆發期）</span>，後者叫 I/O burst。如果 CPU 只服務一個程式，它在等硬碟、等網路、等使用者輸入的時候，CPU 就只能空轉。<span class="term">Multiprogramming<small>（多工）</small></span>的做法是讓記憶體裡同時放好幾個行程，一個去等 I/O，就把 CPU 交給另一個，讓 CPU 盡量一直有事做。</p>
+          <p>這時就需要決定：好幾個行程都準備好了，<b>下一個要給誰用 CPU</b>？這就是 <span class="term">CPU Scheduler<small>（CPU 排程器）</small></span>的工作。排程器從 ready queue 中挑一個行程，再由 <span class="term">Dispatcher<small>（分派器）</small></span>負責切換：存下舊行程的狀態、載入新行程的狀態、跳到使用者模式開始執行。切換所花的時間叫 dispatch latency，這段時間 CPU 沒在做有用的工作，所以切換太頻繁也不好。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="sched-states"></div>
+            <figcaption><b>圖 1</b>：行程的五種狀態。排程發生在行程離開 running 的時候：跑完（terminated）、去等 I/O（waiting），或被計時器中斷搶走、回到 ready（紅色的「中斷」這條路只有可搶先的排程才有）。</figcaption>
+          </figure>
+          <p>排程的時機有四種：(1) running → waiting（例如發出 I/O 要求）；(2) running → ready（例如計時器中斷）；(3) waiting → ready（I/O 完成）；(4) 行程結束。如果只在 (1) 和 (4) 這種「行程自己讓出 CPU」的時候排程，叫 <span class="term">Nonpreemptive<small>（不可搶先）</small></span>；如果 (2)、(3) 也會排程，也就是可以中途把 CPU 搶走，叫 <span class="term">Preemptive<small>（可搶先）</small></span>。現代作業系統都是可搶先的，但搶先會帶來共享資料的同步問題，這是之後「行程同步」要處理的。</p>
+        </div>
+      </section>
+
+      <section id="criteria">
+        <h2>排程好不好：五個指標</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>指標</th><th>定義</th><th>希望</th></tr></thead>
+              <tbody>
+                <tr><td>CPU utilization（CPU 使用率）</td><td>CPU 忙碌的時間比例</td><td>越高越好</td></tr>
+                <tr><td>Throughput（產出量）</td><td>單位時間完成的行程數</td><td>越高越好</td></tr>
+                <tr><td>Turnaround time（周轉時間）</td><td>從到達到完成的總時間</td><td>越短越好</td></tr>
+                <tr><td>Waiting time（等待時間）</td><td>待在 ready queue 裡的時間總和</td><td>越短越好</td></tr>
+                <tr><td>Response time（回應時間）</td><td>從到達到<b>第一次</b>拿到 CPU 的時間</td><td>越短越好（互動系統最在意）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>考試最常算的是等待時間和周轉時間。只考慮 CPU、不考慮 I/O 時，它們有固定的關係：</p>
+          <pre class="formula">周轉時間 = 完成時間 − 到達時間
+等待時間 = 周轉時間 − burst 時間
+回應時間 = 第一次執行的時間 − 到達時間</pre>
+          <p>排程演算法改變的只是「誰先誰後」，每個行程真正用 CPU 的時間（burst）不會變，所以<b>排程演算法真正能影響的就是等待時間</b>。這也是為什麼比較演算法時，最常看平均等待時間。</p>
+        </div>
+      </section>
+
+      <section id="fcfs">
+        <h2>FCFS：先到先服務</h2>
+        <div class="panel prose">
+          <p><span class="term">First-Come, First-Served<small>（先到先服務，FCFS）</small></span>最簡單：ready queue 就是一般的 FIFO queue，誰先到誰先用，用到做完為止，不可搶先。實作容易、也公平，但有個嚴重的問題：如果一個很長的行程先到，後面一堆短行程都得乾等。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="sched-convoy"></div>
+            <figcaption><b>圖 2</b>：三個行程同時到達，burst 分別是 20、4、2。長的排在前面時，兩個短行程分別等了 20 和 24，平均等待約 14.67；讓短的先跑，平均等待只剩約 2.67，差了 5 倍多。</figcaption>
+          </figure>
+          <p>這種「一台慢車擋住後面一整排車」的現象叫 <span class="term">Convoy Effect<small>（護航效應）</small></span>。在真實系統裡，一個 CPU 密集的行程佔住 CPU 時，所有 I/O 密集的行程都卡在 ready queue，I/O 裝置也跟著閒置，CPU 和裝置的使用率都變差。所以 FCFS 很少單獨使用，但它常是其他演算法在平手時的規則。</p>
+        </div>
+      </section>
+
+      <section id="sjf">
+        <h2>SJF 與 SRTF：短的先跑</h2>
+        <div class="panel prose">
+          <p>圖 2 已經暗示了答案：要讓平均等待時間最小，就讓短的先跑。<span class="term">Shortest-Job-First<small>（最短工作優先，SJF）</small></span>每次從 ready 的行程中挑 burst 最短的來執行。可以證明：當所有行程同時到達時，SJF 的平均等待時間是<b>所有排法中最小的</b>。直覺是交換論證：如果長的排在短的前面，把兩者交換，短的少等了「長的 burst」、長的多等了「短的 burst」，總等待時間一定下降。</p>
+          <p>SJF 有兩種版本：</p>
+          <ul>
+            <li><b>不可搶先的 SJF</b>：一旦開始就做到完，新到達的行程再短也要等。</li>
+            <li><b>可搶先的 SJF</b>，叫 <span class="term">Shortest-Remaining-Time-First<small>（最短剩餘時間優先，SRTF）</small></span>：每當有新行程到達，就比較它的 burst 和正在執行的行程<b>剩餘</b>的時間，新來的比較短就搶走 CPU。</li>
+          </ul>
+          <h3>例子：同一組行程，SJF 與 SRTF</h3>
+          <p>P1（到達 0，burst 7）、P2（到達 2，burst 4）、P3（到達 3，burst 1）、P4（到達 5，burst 6）。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>演算法</th><th>甘特圖（時間：行程）</th><th>各行程等待時間</th><th>平均等待</th></tr></thead>
+              <tbody>
+                <tr><td>SJF（不可搶先）</td><td>0–7 P1、7–8 P3、8–12 P2、12–18 P4</td><td>P1 = 0、P2 = 6、P3 = 4、P4 = 7</td><td>4.25</td></tr>
+                <tr><td>SRTF（可搶先）</td><td>0–2 P1、2–3 P2、3–4 P3、4–7 P2、7–12 P1、12–18 P4</td><td>P1 = 5、P2 = 1、P3 = 0、P4 = 7</td><td>3.25</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>SRTF 在時間 2 時，P2 的 4 比 P1 剩下的 5 短，所以搶先；時間 3 時 P3 只要 1，又搶走 P2。結果平均等待比 SJF 少了 1（約少 24%）。代價是切換次數變多（SJF 切換 3 次，SRTF 切換 5 次）。</p>
+          <h3>問題：怎麼知道下一個 burst 多長？</h3>
+          <p>SJF 的致命問題是：真正執行之前，沒有人知道一個行程下一次會用 CPU 多久。實務上只能<b>預測</b>，最常用的是 <span class="term">Exponential Averaging<small>（指數平均）</small></span>：用上一次實際的 burst t<sub>n</sub> 和上一次的預測值 τ<sub>n</sub> 加權平均。</p>
+          <pre class="formula">τ(n+1) = α · t(n) + (1 − α) · τ(n)      0 ≤ α ≤ 1
+α = 0：完全不看最近的實際值（預測永遠不變）
+α = 1：只看上一次的實際值
+α = 1/2：最近一次和過去的歷史各佔一半</pre>
+          <p>展開後可以看出，越久以前的實際值，權重是 (1 − α) 的越高次方，影響越小，所以這個公式「記得歷史，但更相信最近」。</p>
+          <details class="code-fold">
+            <summary>看程式碼：非搶先與搶先排程（FCFS / SJF / Priority / SRTF）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="不可搶先">
+                <div class="code-head">nonPreemptive()：FCFS、SJF、Priority</div>
+                <pre class="code">int key(int i, int alg) {                      /* 挑選依據：值越小越先 */
+  if (alg == FCFS) return p[i].arrival;
+  if (alg == SJF) return p[i].remain;          /* SJF / SRTF 看剩下的 burst */
+  return p[i].priority;
+}
+
+/* 在時間 t 已到達、還沒做完的行程中，挑 key 最小的；平手時先到的優先 */
+int pick(int t, int alg) {
+  int best = -1;
+  for (int i = 0; i &lt; n; i++) {
+    if (p[i].remain == 0 || p[i].arrival &gt; t) continue;
+    if (best == -1 || key(i, alg) &lt; key(best, alg) ||
+        (key(i, alg) == key(best, alg) &amp;&amp; p[i].arrival &lt; p[best].arrival)) best = i;
+  }
+  return best;
+}
+
+void nonPreemptive(int alg) {
+  int t = 0, done = 0;
+  reset();
+  while (done &lt; n) {
+    int i = pick(t, alg);
+    if (i == -1) { gantt[t++] = -1; continue; }   /* 沒有行程到達：CPU 閒置 */
+    p[i].start = t;
+    while (p[i].remain &gt; 0) {                  /* 一旦開始就做到完 */
+      gantt[t++] = i;
+      p[i].remain--;
+    }
+    p[i].finish = t;
+    done++;
+  }
+  len = t;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="可搶先">
+                <div class="code-head">preemptive()：SRTF、搶先式 Priority</div>
+                <pre class="code">void preemptive(int alg) {
+  int t = 0, done = 0, cur = -1;
+  reset();
+  while (done &lt; n) {
+    int i = pick(t, alg);
+    if (cur != -1 &amp;&amp; p[cur].remain &gt; 0 &amp;&amp; key(cur, alg) &lt;= key(i, alg)) i = cur;   /* 平手不搶 */
+    if (i == -1) { gantt[t++] = -1; continue; }
+    if (p[i].start == -1) p[i].start = t;
+    gantt[t++] = i;                            /* 每個時間單位都重新挑一次 */
+    if (--p[i].remain == 0) { p[i].finish = t; done++; }
+    cur = i;
+  }
+  len = t;
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="priority">
+        <h2>Priority 排程與飢餓</h2>
+        <div class="panel prose">
+          <p><span class="term">Priority Scheduling<small>（優先權排程）</small></span>替每個行程定一個優先權，每次挑優先權最高的執行；本頁約定<b>數字越小越優先</b>（不同題目的約定可能相反，作答前要先看清楚）。優先權可以由系統內部決定（例如記憶體需求、I/O 比例），也可以由外部決定（例如付費等級）。SJF 其實就是「以預測的 burst 當優先權」的特例。</p>
+          <p>Priority 一樣有不可搶先和可搶先兩種。上面同一組行程若優先權為 P1 = 3、P2 = 1、P3 = 4、P4 = 2：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>版本</th><th>甘特圖</th><th>平均等待</th></tr></thead>
+              <tbody>
+                <tr><td>不可搶先</td><td>0–7 P1、7–11 P2、11–17 P4、17–18 P3</td><td>6.25</td></tr>
+                <tr><td>可搶先</td><td>0–2 P1、2–6 P2、6–12 P4、12–17 P1、17–18 P3</td><td>6.25</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩個版本的平均等待剛好一樣，但個別行程的感受差很多：可搶先時 P2 一到就執行、等待 0，P1 卻等了 10；不可搶先時 P1 等待 0，P2 等了 5。</p>
+          <p>Priority 最大的問題是 <span class="term">Starvation<small>（飢餓）</small></span>：只要一直有高優先權的行程進來，低優先權的行程可能永遠輪不到。標準解法是 <span class="term">Aging<small>（老化）</small></span>：行程在 ready queue 裡每等一段時間，優先權就提高一點，等得夠久一定會輪到。SJF 也有同樣的飢餓問題，因為長工作可能一直被新來的短工作插隊。</p>
+        </div>
+      </section>
+
+      <section id="round-robin">
+        <h2>Round Robin：輪流使用</h2>
+        <div class="panel prose">
+          <p><span class="term">Round Robin<small>（輪轉法，RR）</small></span>是為分時系統設計的：規定一個 <span class="term">Time Quantum<small>（時間配額）</small></span> q，ready queue 用 FIFO，每個行程最多連續跑 q 個時間單位；時間到還沒做完，就被計時器中斷、排到 queue 的最後面。所以 RR 一定是可搶先的。</p>
+          <p>有 n 個行程時，每個行程最多等 (n − 1) · q 就會再輪到一次，<b>回應時間有上限</b>，這正是互動系統要的。上面那組行程用 q = 3：甘特圖是 0–3 P1、3–6 P2、6–7 P3、7–10 P1、10–13 P4、13–14 P2、14–15 P1、15–18 P4，平均等待 6.50，比 SRTF 的 3.25 高，但平均回應時間只有 2.25。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> RR 的慣例：時間片用完的那一刻，如果剛好有新行程到達，<b>新到的先排進 queue，被搶走的再排到它後面</b>。不同題目可能有不同約定，題目沒說時照這個慣例，並在答案中寫出來。</p></div>
+          <h3>q 要多大？</h3>
+          <ul>
+            <li><b>q 太大</b>：每個行程都在一個 quantum 內做完，RR 就退化成 FCFS。</li>
+            <li><b>q 太小</b>：切換太頻繁。例如 context switch 要 0.1 ms，q = 1 ms 時，約 9% 的時間浪費在切換（0.1 / 1.1）；q = 10 ms 時只剩約 1%。</li>
+            <li>經驗法則：q 要比大約 80% 的 CPU burst 長，讓大多數行程在一個 quantum 內做完；q 通常遠大於 context switch 時間。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：roundRobin()</summary>
+            <div class="code-block">
+              <div class="code-head">roundRobin()：time quantum = q</div>
+              <pre class="code">void roundRobin(int q) {
+  int queue[TMAX], front = 0, rear = 0;
+  int t = 0, done = 0, next = 0;               /* next：下一個還沒進 queue 的行程（依到達時間排序） */
+  reset();
+  while (done &lt; n) {
+    while (next &lt; n &amp;&amp; p[next].arrival &lt;= t) queue[rear++] = next++;   /* 新到的放進 queue 尾端 */
+    if (front == rear) { gantt[t++] = -1; continue; }
+    int i = queue[front++];
+    if (p[i].start == -1) p[i].start = t;
+    int run = p[i].remain &lt; q ? p[i].remain : q;   /* 最多跑一個 time quantum */
+    for (int k = 0; k &lt; run; k++) { gantt[t++] = i; p[i].remain--; }
+    while (next &lt; n &amp;&amp; p[next].arrival &lt;= t) queue[rear++] = next++;   /* 這段時間內到達的先排進去 */
+    if (p[i].remain &gt; 0) queue[rear++] = i;    /* 還沒做完：排到 queue 最後面 */
+    else { p[i].finish = t; done++; }
+  }
+  len = t;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>每個行程寫成「到達時間 burst [優先權]」，用分號隔開，例如預設的 <code>0 7 3; 2 4 1; 3 1 4; 5 6 2</code> 就是上面的例子，行程依序命名為 P1、P2……。選一種演算法按播放，可以看到 ready queue 怎麼變、甘特圖怎麼長出來，最後算出平均等待、周轉與回應時間。Round Robin 的 q 在第二個輸入框設定；按「convoy 範例」可以看到圖 2 的情況。</p>
+        </div>
+        <div class="viz" data-viz="cpu-scheduling"></div>
+      </section>
+
+      <section id="multilevel">
+        <h2>多層佇列與多層回饋佇列</h2>
+        <div class="panel prose">
+          <p>真實系統裡行程的性質差很多：互動式的前景行程要回應快，批次的背景行程只要最後做完就好。<span class="term">Multilevel Queue<small>（多層佇列）</small></span>把 ready queue 分成好幾個，每個 queue 有自己的演算法（例如前景用 RR、背景用 FCFS），queue 之間再用固定優先權或分配 CPU 時間比例來排。缺點是行程一開始被分到哪個 queue 就固定了。</p>
+          <p><span class="term">Multilevel Feedback Queue<small>（多層回饋佇列，MLFQ）</small></span>允許行程在 queue 之間移動，用「過去的行為」來推測它是哪一種行程：</p>
+          <ul>
+            <li>新行程先進最高優先權的 Q0，quantum 很小。</li>
+            <li>用完整個 quantum 還沒做完，代表它可能是 CPU 密集，就<b>降到下一層</b>，quantum 變大、優先權變低。</li>
+            <li>很快就去做 I/O 的行程會一直留在上層，回應快。</li>
+            <li>在低層等太久的行程可以往上升（aging），避免飢餓。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="sched-mlfq"></div>
+            <figcaption><b>圖 3</b>：三層的 MLFQ。只有上層的 queue 是空的時候，下層才能用 CPU；在 Q0 用完 8 個單位還沒做完的行程降到 Q1，在 Q1 用完 16 個單位再降到 Q2 用 FCFS 跑完。</figcaption>
+          </figure>
+          <p>MLFQ 不需要事先知道 burst 長度，卻能近似 SJF「短的先跑」的效果，所以是最通用的設計；代價是參數很多（幾層、各層的演算法與 quantum、升降規則），調整起來也最複雜。</p>
+        </div>
+      </section>
+
+      <section id="comparison">
+        <h2>整理：演算法比較</h2>
+        <div class="panel prose">
+          <p>以本頁同一組行程（P1：0/7、P2：2/4、P3：3/1、P4：5/6）比較：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>演算法</th><th>可搶先</th><th>平均等待</th><th>平均回應</th><th>優點</th><th>缺點</th></tr></thead>
+              <tbody>
+                <tr><td>FCFS</td><td>否</td><td>5.00</td><td>5.00</td><td>最簡單、公平</td><td>convoy effect</td></tr>
+                <tr><td>SJF</td><td>否</td><td>4.25</td><td>4.25</td><td>同時到達時平均等待最小</td><td>不知道 burst、長工作飢餓</td></tr>
+                <tr><td>SRTF</td><td>是</td><td>3.25</td><td>1.75</td><td>平均等待最小</td><td>切換多、長工作飢餓</td></tr>
+                <tr><td>Priority</td><td>可選</td><td>6.25</td><td>6.25（搶先 3.75）</td><td>能反映重要性</td><td>飢餓，要 aging</td></tr>
+                <tr><td>RR（q = 3）</td><td>是</td><td>6.50</td><td>2.25</td><td>回應時間有上限</td><td>平均等待通常較長、q 難選</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>可以看到沒有一種演算法在所有指標都最好：SRTF 的平均等待最低，RR 的回應時間有保證，FCFS 最簡單。考題常問「哪一種適合互動系統」（RR）、「哪一種平均等待最小」（SRTF，不可搶先時是 SJF）、「哪些會飢餓」（SJF、SRTF、Priority）。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>畫甘特圖、算平均等待／周轉時間</td><td>很常考</td><td>依到達時間逐一決定誰跑；搶先式在每個到達時間重新比較；用「完成 − 到達 − burst」算等待</td><td><a class="q-link" href="#q-os-0003">例題</a> <a class="q-link" href="#q-os-0004">例題</a></td></tr>
+                <tr><td>多種演算法比較</td><td>很常考</td><td>同一組資料分別畫甘特圖，列表比較；搶先的 SRTF 平均等待最小</td><td><a class="q-link" href="#q-os-0005">例題</a></td></tr>
+                <tr><td>觀念：飢餓、搶先、q 的影響</td><td>常考</td><td>SJF、SRTF、Priority 會飢餓；q 太大 → FCFS，q 太小 → 切換成本高</td><td><a class="q-link" href="#q-os-0001">例題</a> <a class="q-link" href="#q-os-0002">例題</a></td></tr>
+                <tr><td>指數平均預測 burst</td><td>常考</td><td>τ(n+1) = α t(n) + (1 − α) τ(n)，逐次代入</td><td><a class="q-link" href="#q-os-0007">例題</a></td></tr>
+                <tr><td>證明 SJF 最佳</td><td>偶爾</td><td>交換論證：相鄰的長、短行程交換後總等待下降</td><td><a class="q-link" href="#q-os-0006">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 等待時間 = 開始執行的時間 − 到達時間</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是回應時間；可搶先時行程會被中斷再等，等待時間要用「完成 − 到達 − burst」</span> <a class="q-link" href="#q-os-0003">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> SJF 不可能飢餓，因為每個工作終究會變成最短的</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只要一直有更短的新工作到達，長工作就可能永遠等下去</span> <a class="q-link" href="#q-os-0001">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> RR 的 quantum 越小越好，回應越快</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> q 太小時 context switch 的比例變高；q 太大則退化成 FCFS</span> <a class="q-link" href="#q-os-0002">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> RR 時間片用完時，被中斷的行程和新到的行程誰先排都一樣</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 順序會改變甘特圖；慣例是新到的先排，題目有規定就照題目</span> <a class="q-link" href="#q-os-0004">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> SRTF 只在行程完成時才重新挑選</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每當有新行程到達都要比較「新行程的 burst」和「目前行程的剩餘時間」</span> <a class="q-link" href="#q-os-0005">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="cpu-scheduling"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=f9f7849b"></script>
+  <script src="../../../assets/js/viz-core.js?v=f9f7849b"></script>
+  <script src="../../../assets/js/viz/operating-systems/cpu-scheduling.js?v=f9f7849b"></script>
+</body>
+</html>

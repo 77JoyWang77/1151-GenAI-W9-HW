@@ -37,7 +37,7 @@
       "zh": "作業系統",
       "icon": "layers",
       "color": 3,
-      "status": "planned",
+      "status": "active",
       "desc": "行程排程、同步、死結、記憶體管理"
     },
     {

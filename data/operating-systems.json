@@ -1,0 +1,347 @@
+{
+  "subject": {
+    "id": "operating-systems",
+    "en": "Operating Systems",
+    "zh": "作業系統"
+  },
+  "textbook": {
+    "title": "Operating System Concepts",
+    "author": "Silberschatz, Galvin, Gagne",
+    "edition": "10th"
+  },
+  "chapters": [
+    {
+      "id": "overview",
+      "no": 1,
+      "en": "Overview",
+      "zh": "作業系統概論",
+      "desc": "中斷、雙重模式、系統呼叫與 OS 結構",
+      "topics": [
+        {
+          "id": "os-basics",
+          "en": "Interrupts and Dual-Mode Operation",
+          "zh": "中斷與雙重模式",
+          "book": "1.2–1.5",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "os-structures",
+          "en": "System Calls and OS Structures",
+          "zh": "系統呼叫與作業系統結構",
+          "book": "2.3, 2.8",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "processes",
+      "no": 2,
+      "en": "Processes and Threads",
+      "zh": "行程與執行緒",
+      "desc": "行程狀態、PCB、行程間通訊、多執行緒模型",
+      "topics": [
+        {
+          "id": "process-concept",
+          "en": "Process Concept",
+          "zh": "行程與行程狀態",
+          "book": "3.1–3.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "ipc",
+          "en": "Interprocess Communication",
+          "zh": "行程間通訊",
+          "book": "3.4–3.6",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "threads",
+          "en": "Threads and Multithreading Models",
+          "zh": "執行緒與多執行緒模型",
+          "book": "4.1–4.3",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "cpu-scheduling",
+      "no": 3,
+      "en": "CPU Scheduling",
+      "zh": "CPU 排程",
+      "desc": "排程準則、排程演算法、多處理器與即時排程",
+      "topics": [
+        {
+          "id": "cpu-scheduling",
+          "en": "CPU Scheduling Algorithms",
+          "zh": "CPU 排程演算法",
+          "book": "5.1–5.3",
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "FCFS",
+            "SJF / SRTF",
+            "Round Robin",
+            "Gantt chart"
+          ],
+          "updated": "2026-11-16"
+        },
+        {
+          "id": "realtime-scheduling",
+          "en": "Multiprocessor and Real-Time Scheduling",
+          "zh": "多處理器與即時排程",
+          "book": "5.5–5.6",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "synchronization",
+      "no": 4,
+      "en": "Process Synchronization",
+      "zh": "行程同步",
+      "desc": "臨界區問題、號誌、監視器與經典同步問題",
+      "topics": [
+        {
+          "id": "critical-section",
+          "en": "The Critical-Section Problem",
+          "zh": "臨界區問題",
+          "book": "6.1–6.4",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "semaphores",
+          "en": "Mutex Locks and Semaphores",
+          "zh": "互斥鎖與號誌",
+          "book": "6.5–6.6",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "monitors",
+          "en": "Monitors",
+          "zh": "監視器",
+          "book": "6.7",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "classic-sync-problems",
+          "en": "Classic Synchronization Problems",
+          "zh": "經典同步問題",
+          "book": "7.1",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "deadlocks",
+      "no": 5,
+      "en": "Deadlocks",
+      "zh": "死結",
+      "desc": "死結條件、預防、避免與偵測",
+      "topics": [
+        {
+          "id": "deadlock-characterization",
+          "en": "Deadlock Characterization and Prevention",
+          "zh": "死結的條件與預防",
+          "book": "8.1–8.5",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "bankers-algorithm",
+          "en": "Deadlock Avoidance and Banker's Algorithm",
+          "zh": "死結避免與銀行家演算法",
+          "book": "8.6–8.7",
+          "status": "planned",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "main-memory",
+      "no": 6,
+      "en": "Main Memory",
+      "zh": "主記憶體",
+      "desc": "連續配置、分頁、TLB 與分頁表結構",
+      "topics": [
+        {
+          "id": "contiguous-allocation",
+          "en": "Contiguous Memory Allocation",
+          "zh": "連續記憶體配置與碎片",
+          "book": "9.2",
+          "status": "planned",
+          "priority": "mid"
+        },
+        {
+          "id": "paging",
+          "en": "Paging and TLB",
+          "zh": "分頁與 TLB",
+          "book": "9.3–9.4",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "segmentation",
+          "en": "Segmentation",
+          "zh": "分段",
+          "book": "9.6",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "virtual-memory",
+      "no": 7,
+      "en": "Virtual Memory",
+      "zh": "虛擬記憶體",
+      "desc": "需求分頁、分頁替換與 Thrashing",
+      "topics": [
+        {
+          "id": "demand-paging",
+          "en": "Demand Paging",
+          "zh": "需求分頁與有效存取時間",
+          "book": "10.2–10.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "page-replacement",
+          "en": "Page Replacement",
+          "zh": "分頁替換演算法",
+          "book": "10.4",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "thrashing",
+          "en": "Frame Allocation and Thrashing",
+          "zh": "頁框配置與 Thrashing",
+          "book": "10.5–10.6",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "storage",
+      "no": 8,
+      "en": "Mass-Storage Structure",
+      "zh": "大量儲存結構",
+      "desc": "磁碟排程與 RAID",
+      "topics": [
+        {
+          "id": "disk-scheduling",
+          "en": "Disk Scheduling",
+          "zh": "磁碟排程",
+          "book": "11.2",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
+          "id": "raid",
+          "en": "RAID",
+          "zh": "RAID",
+          "book": "11.8",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "file-systems",
+      "no": 9,
+      "en": "File Systems",
+      "zh": "檔案系統",
+      "desc": "檔案介面、目錄、配置方法與空間管理",
+      "topics": [
+        {
+          "id": "file-system-interface",
+          "en": "File-System Interface",
+          "zh": "檔案系統介面與目錄結構",
+          "book": "13.1–13.3",
+          "status": "planned",
+          "priority": "low"
+        },
+        {
+          "id": "file-allocation",
+          "en": "Allocation Methods",
+          "zh": "檔案配置方法與 inode",
+          "book": "14.4–14.5",
+          "status": "planned",
+          "priority": "mid"
+        }
+      ]
+    },
+    {
+      "id": "io-systems",
+      "no": 10,
+      "en": "I/O Systems",
+      "zh": "I/O 系統",
+      "desc": "輪詢、中斷與 DMA",
+      "topics": [
+        {
+          "id": "io-systems",
+          "en": "I/O Hardware and DMA",
+          "zh": "I/O 硬體與 DMA",
+          "book": "12.2–12.4",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "protection-security",
+      "no": 11,
+      "en": "Protection and Security",
+      "zh": "保護與安全",
+      "desc": "存取矩陣與安全威脅",
+      "topics": [
+        {
+          "id": "protection",
+          "en": "Protection and Access Matrix",
+          "zh": "保護與存取矩陣",
+          "book": "17.4–17.6",
+          "status": "planned",
+          "priority": "low"
+        },
+        {
+          "id": "security",
+          "en": "Security",
+          "zh": "安全",
+          "book": "16.1–16.5",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    },
+    {
+      "id": "virtualization",
+      "no": 12,
+      "en": "Virtual Machines",
+      "zh": "虛擬機器",
+      "desc": "虛擬化的種類與實作",
+      "topics": [
+        {
+          "id": "virtual-machines",
+          "en": "Virtual Machines",
+          "zh": "虛擬機器",
+          "book": "18.1–18.6",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
+    }
+  ]
+}
