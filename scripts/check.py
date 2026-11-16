@@ -4,6 +4,7 @@
 用法：python scripts/check.py
 """
 import json
+from html import unescape
 import re
 import sys
 from html.parser import HTMLParser
@@ -11,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MIN_TEXT = 2500   # 主題頁正文最少字數（不含程式碼），確保講解完整
+VOID = {"meta", "link", "br", "img", "input", "hr", "source", "wbr"}
 SLUG = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
 
@@ -26,6 +28,10 @@ class Page(HTMLParser):
         self._skip = 0              # 在 <pre>/<script>/<style> 裡時不計入文字量
         self._in_main = False
         self.text = []
+        self._open = []             # 目前開啟中的元素 class（用來判斷 pre.code 是否在 .code-block 裡）
+        self.loose_code = 0         # 沒有放在 .code-block 裡的 pre.code
+        self.code_blocks = self.untitled = self.full_code = 0
+        self.bad_tabs = 0
 
     def handle_starttag(self, tag, a):
         a = dict(a)
@@ -58,8 +64,22 @@ class Page(HTMLParser):
             self._skip += 1
         if tag == "main":
             self._in_main = True
+        if tag == "pre" and "code" in cls and not any("code-block" in c for c in self._open):
+            self.loose_code += 1
+        if "code-block" in cls:
+            self.code_blocks += 1
+            if any("code-tabs" in c for c in self._open[-1:]) and not a.get("data-tab"):
+                self.bad_tabs += 1
+        if "code-head" in cls:
+            self._open_head = True
+        if tag == "details" and "code-full" in cls:
+            self.full_code += 1
+        if tag not in VOID:
+            self._open.append(cls)
 
     def handle_endtag(self, tag):
+        if tag not in VOID and self._open:
+            self._open.pop()
         if tag == "section":
             self._depth -= 1
         if tag in ("pre", "script", "style"):
@@ -116,6 +136,30 @@ def check_topic(path, subj, ch, t, errors):
         err(f"找不到圖與動畫腳本 assets/js/viz/{subj['id']}/{t['id']}.js")
     if p.scripts != expected:
         err(f"script 應依序為 {expected}")
+    # 程式碼：每段都要放在有標題的 .code-block；有程式碼時要附完整可編譯程式
+    if p.loose_code:
+        err(f'有 {p.loose_code} 段 <pre class="code"> 沒有放在 <div class="code-block"> 裡（每段程式碼都要有標題）')
+    if p.code_blocks and html.count('class="code-head"') < p.code_blocks:
+        err("每個 .code-block 都要有 .code-head 標題")
+    if p.bad_tabs:
+        err(".code-tabs 裡的每個 .code-block 都要有 data-tab（頁籤名稱）")
+    if p.code_blocks and not p.full_code:
+        err('有程式碼的主題要在最後附 <details class="code-full"> 完整可編譯程式')
+    src = ROOT / "code" / subj["id"] / f"{t['id']}.c"
+    if p.code_blocks:
+        if not src.exists():
+            err(f"有程式碼的主題要把完整程式存成 code/{subj['id']}/{t['id']}.c")
+        else:
+            m = re.search(r'<details class="code-full">.*?<pre class="code">(.*?)</pre>', html, re.S)
+            if not m or unescape(m.group(1)).strip() != src.read_text(encoding="utf-8").strip():
+                err(f"頁面上的完整程式和 code/{subj['id']}/{t['id']}.c 不一致")
+            # 每段片段的每一行都要能在完整程式中找到（片段要從完整程式取出）
+            src_lines = set(src.read_text(encoding="utf-8").split("\n"))
+            for snip in re.findall(r'<pre class="code">(.*?)</pre>', html, re.S):
+                missing = [l for l in unescape(snip).split("\n") if l.strip() and l not in src_lines]
+                if missing:
+                    err(f"程式碼片段有 {len(missing)} 行不在 code/{subj['id']}/{t['id']}.c 裡，例如：{missing[0].strip()[:50]}")
+                    break
     if bool(t.get("viz")) != bool(p.viz):
         err(f"JSON 的 viz = {t.get('viz')}，但頁面{'有' if p.viz else '沒有'}互動元件")
     if re.search(r'(href|src)="/', html):

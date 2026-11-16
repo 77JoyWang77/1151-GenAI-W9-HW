@@ -30,6 +30,7 @@
 - **參考書只給 AI 查閱**：頁面內容獨立完整，不在網站上提到課本
 - 主題頁依主題安排內容，提供常用段落元件；互動只在有助理解時使用
 - **共用動畫播放器的使用方式**：Frame 格式、狀態色的意義、動畫規則
+- **程式碼規則**：片段放在對應講解旁、每段有標題、多種寫法用頁籤；完整程式存在 `code/` 並實際用 gcc 編譯執行，頁面片段與動畫程式碼都從它取出
 - 新增主題、開始新科目的 SOP，以及禁止事項、完成的定義
 
 新增主題只要對 AI 說：
@@ -41,4 +42,5 @@
 ```bash
 python -m http.server 8000      # 開啟 http://localhost:8000
 python scripts/check.py         # 檢查所有科目與主題是否符合 CLAUDE.md
+gcc -std=c99 -Wall -Wextra code/data-structures/stack.c -o stack && ./stack   # 編譯執行範例程式
 ```

@@ -16,20 +16,27 @@
     const slotY = (i) => BOTTOM - i * STEP;
 
     const code = [
-      "#define MAX 6",
-      "int stack[MAX], top = -1;",
+      "#define MAX 6                          /* 堆疊大小（示範用） */",
+      "int stack[MAX];",
+      "int top = -1;                         /* -1 表示空堆疊 */",
+      "",
+      "int isEmpty(void) { return top == -1; }",
+      "int isFull(void)  { return top == MAX - 1; }",
       "",
       "void push(int x) {",
-      "  if (top == MAX - 1) { overflow(); return; }",
-      "  stack[++top] = x;",
+      "  if (isFull()) { printf(\"Stack Overflow\\n\"); exit(1); }",
+      "  stack[++top] = x;                   /* 先把 top 加 1，再放入 */",
       "}",
       "",
       "int pop(void) {",
-      "  if (top == -1) { underflow(); return -1; }",
-      "  return stack[top--];",
+      "  if (isEmpty()) { printf(\"Stack Underflow\\n\"); exit(1); }",
+      "  return stack[top--];                /* 先取出，再把 top 減 1 */",
       "}",
       "",
-      "int peek(void) { return stack[top]; }",
+      "int peek(void) {",
+      "  if (isEmpty()) { printf(\"Stack Underflow\\n\"); exit(1); }",
+      "  return stack[top];",
+      "}",
     ];
 
     const player = new Player(root, {
@@ -66,17 +73,17 @@
     function push(v) {
       const r = new Recorder();
       const top = items.length - 1;
-      r.push(frame({ caption: `呼叫 <b>push(${v})</b>，先檢查堆疊是否已滿。`, line: [4, 5] }));
+      r.push(frame({ caption: `呼叫 <b>push(${v})</b>，先檢查堆疊是否已滿。`, line: [8, 9] }));
       if (top === MAX - 1) {
-        r.push(frame({ caption: `top = ${top} = MAX − 1，堆疊已滿 → <b>Stack Overflow（堆疊溢位）</b>，${v} 無法放入。`, line: 5, warn: "Overflow!", topState: "removed" }));
+        r.push(frame({ caption: `top = ${top} = MAX − 1，堆疊已滿 → <b>Stack Overflow（堆疊溢位）</b>，${v} 無法放入。`, line: 9, warn: "Overflow!", topState: "removed" }));
         return r.frames;
       }
       const id = "n" + uid++;
       const ghost = { id, label: v, x: SIDE, y: slotY(top + 1), state: "new" };
-      r.push(frame({ caption: `top = ${top}，還沒滿（MAX − 1 = ${MAX - 1}），可以放入。`, line: 5, floating: [ghost] }));
-      r.push(frame({ caption: `<b>++top</b>：top 先加 1 變成 ${top + 1}，指向下一個空位。`, line: 6, floating: [ghost], top: top + 1, topState: "active" }));
+      r.push(frame({ caption: `top = ${top}，還沒滿（MAX − 1 = ${MAX - 1}），可以放入。`, line: 9, floating: [ghost] }));
+      r.push(frame({ caption: `<b>++top</b>：top 先加 1 變成 ${top + 1}，指向下一個空位。`, line: 10, floating: [ghost], top: top + 1, topState: "active" }));
       items.push({ id, v });
-      r.push(frame({ caption: `stack[${top + 1}] = ${v}，資料放進 top 指的位置。`, line: 6, states: { [id]: "new" }, topState: "active" }));
+      r.push(frame({ caption: `stack[${top + 1}] = ${v}，資料放進 top 指的位置。`, line: 10, states: { [id]: "new" }, topState: "active" }));
       r.push(idle(`push(${v}) 完成。目前有 ${items.length} 個元素，top = ${items.length - 1}。`));
       return r.frames;
     }
@@ -84,15 +91,15 @@
     function pop() {
       const r = new Recorder();
       const top = items.length - 1;
-      r.push(frame({ caption: "呼叫 <b>pop()</b>，先檢查堆疊是否為空。", line: [9, 10] }));
+      r.push(frame({ caption: "呼叫 <b>pop()</b>，先檢查堆疊是否為空。", line: [13, 14] }));
       if (top === -1) {
-        r.push(frame({ caption: "top = −1，堆疊是空的 → <b>Stack Underflow（堆疊下溢）</b>。", line: 10, warn: "Underflow!", topState: "removed" }));
+        r.push(frame({ caption: "top = −1，堆疊是空的 → <b>Stack Underflow（堆疊下溢）</b>。", line: 14, warn: "Underflow!", topState: "removed" }));
         return r.frames;
       }
       const it = items[top];
-      r.push(frame({ caption: `top = ${top}，取出 stack[${top}] = <b>${it.v}</b>。`, line: 11, states: { [it.id]: "active" }, topState: "active" }));
+      r.push(frame({ caption: `top = ${top}，取出 stack[${top}] = <b>${it.v}</b>。`, line: 15, states: { [it.id]: "active" }, topState: "active" }));
       items.pop();
-      r.push(frame({ caption: `<b>top--</b>：top 變成 ${top - 1}。注意陣列裡的值不用真的清掉，top 以上的位置都視為空的。`, line: 11, floating: [{ id: it.id, label: it.v, x: SIDE, y: slotY(top), state: "removed" }], topState: "active" }));
+      r.push(frame({ caption: `<b>top--</b>：top 變成 ${top - 1}。注意陣列裡的值不用真的清掉，top 以上的位置都視為空的。`, line: 15, floating: [{ id: it.id, label: it.v, x: SIDE, y: slotY(top), state: "removed" }], topState: "active" }));
       r.push(idle(`pop() 回傳 <b>${it.v}</b>。後進先出（LIFO）：最後 push 的最先被 pop。`));
       return r.frames;
     }
@@ -101,10 +108,10 @@
       const r = new Recorder();
       const top = items.length - 1;
       if (top === -1) {
-        r.push(frame({ caption: "堆疊是空的，peek() 沒有東西可看（實作上應先檢查 isEmpty）。", line: 14, warn: "Empty", topState: "removed" }));
+        r.push(frame({ caption: "堆疊是空的，peek() 沒有東西可看（實作上應先檢查 isEmpty）。", line: 19, warn: "Empty", topState: "removed" }));
         return r.frames;
       }
-      r.push(frame({ caption: `peek() 只「看」最上面的元素 <b>${items[top].v}</b>，不移除，top 不變。`, line: 14, states: { [items[top].id]: "found" }, topState: "found" }));
+      r.push(frame({ caption: `peek() 只「看」最上面的元素 <b>${items[top].v}</b>，不移除，top 不變。`, line: 20, states: { [items[top].id]: "found" }, topState: "found" }));
       r.push(idle(`peek() 回傳 ${items[top].v}，堆疊內容不變。`));
       return r.frames;
     }
@@ -139,20 +146,24 @@
     const rowOf = (t) => (t === "(" ? 0 : "+-".includes(t) ? 1 : "*/%".includes(t) ? 2 : t === "^" ? 3 : 4);
 
     const code = [
-      "void postfix(void) {",
-      "  stack[0] = eos; top = 0;        /* 堆疊底放 eos */",
-      "  for (token = getToken(); token != eos; token = getToken()) {",
-      "    if (token == operand) printf(\"%c\", symbol);",
-      "    else if (token == rparen) {",
-      "      while (stack[top] != lparen) printToken(pop());",
-      "      pop();                        /* 丟掉 '(' */",
+      "void infixToPostfix(const char *in, char *out) {",
+      "  char ops[EXPR_MAX];                 /* 運算子堆疊 */",
+      "  int otop = 0, k = 0;",
+      "  ops[0] = '#';                       /* 堆疊底放 eos */",
+      "  for (int i = 0; in[i] != '\\0'; i++) {",
+      "    char t = in[i];",
+      "    if (isalnum((unsigned char)t)) {",
+      "      out[k++] = t;                   /* 運算元直接輸出 */",
+      "    } else if (t == ')') {",
+      "      while (ops[otop] != '(') out[k++] = ops[otop--];",
+      "      otop--;                         /* 丟掉 '(' */",
       "    } else {",
-      "      while (isp[stack[top]] >= icp[token])",
-      "        printToken(pop());",
-      "      push(token);",
+      "      while (isp(ops[otop]) >= icp(t)) out[k++] = ops[otop--];",
+      "      ops[++otop] = t;",
       "    }",
       "  }",
-      "  while ((token = pop()) != eos) printToken(token);",
+      "  while (ops[otop] != '#') out[k++] = ops[otop--];",
+      "  out[k] = '\\0';",
       "}",
     ];
 
@@ -232,53 +243,53 @@
         r.push({ nodes, labels, pointers, caption, line });
       }
 
-      frame(`把中序式 <code>${esc(tk.tokens.join(" "))}</code> 由左到右讀入。堆疊底先放 <b>eos</b>（isp = 0），之後就不用特別判斷「堆疊是否為空」。`, 2);
+      frame(`把中序式 <code>${esc(tk.tokens.join(" "))}</code> 由左到右讀入。堆疊底先放 <b>eos</b>（isp = 0），之後就不用特別判斷「堆疊是否為空」。`, 4);
 
       for (const x of toks) {
         const t = x.t;
         if (/^[A-Za-z0-9_]+$/.test(t)) {
-          frame(`讀到運算元 <b>${esc(t)}</b>。`, 3, { cur: x.id, states: { [x.id]: "active" } });
+          frame(`讀到運算元 <b>${esc(t)}</b>。`, [6, 7], { cur: x.id, states: { [x.id]: "active" } });
           where[x.id] = "out"; output.push(x);
-          frame(`運算元直接輸出，順序和原式相同。`, 4, { states: { [x.id]: "new" } });
+          frame(`運算元直接輸出，順序和原式相同。`, 8, { states: { [x.id]: "new" } });
         } else if (t === ")") {
-          frame("讀到 <b>)</b>：把堆疊一路 pop 到遇見 <b>(</b> 為止。", 5, { cur: x.id, states: { [x.id]: "active" } });
+          frame("讀到 <b>)</b>：把堆疊一路 pop 到遇見 <b>(</b> 為止。", 9, { cur: x.id, states: { [x.id]: "active" } });
           while (top().t !== "(") {
             const y = stack.pop(); where[y.id] = "out"; output.push(y);
-            frame(`top 是 <b>${esc(y.t)}</b>，不是 (，pop 出來輸出。`, 6, { states: { [y.id]: "new", [x.id]: "active" } });
+            frame(`top 是 <b>${esc(y.t)}</b>，不是 (，pop 出來輸出。`, 10, { states: { [y.id]: "new", [x.id]: "active" } });
           }
           const lp = top();
-          frame("遇到 <b>(</b>，把它和 ) 一起丟掉——括號不會出現在後序式中。", 7, { states: { [lp.id]: "removed", [x.id]: "removed" } });
+          frame("遇到 <b>(</b>，把它和 ) 一起丟掉——括號不會出現在後序式中。", 11, { states: { [lp.id]: "removed", [x.id]: "removed" } });
           stack.pop(); where[lp.id] = "gone"; where[x.id] = "gone";
-          frame("括號處理完畢。", 7);
+          frame("括號處理完畢。", 11);
         } else {
-          frame(`讀到 <b>${esc(t)}</b>，icp[${esc(t)}] = ${ICP[t]}。和堆疊頂端的 isp 比較。`, 8, { cur: x.id, states: { [x.id]: "active" }, rows: [rowOf(t)] });
+          frame(`讀到 <b>${esc(t)}</b>，icp[${esc(t)}] = ${ICP[t]}。和堆疊頂端的 isp 比較。`, 12, { cur: x.id, states: { [x.id]: "active" }, rows: [rowOf(t)] });
           for (;;) {
             const y = top();
             const a = ISP[y.t], b = ICP[t];
             const rows = [rowOf(y.t), rowOf(t)];
             const st = { [x.id]: "active", [y.id]: "compare" };
             if (a >= b) {
-              frame(`isp[${esc(y.t)}] = ${a} ≥ icp[${esc(t)}] = ${b}：top 的運算子要先算，pop 出來輸出。`, 9, { cur: x.id, states: st, rows });
+              frame(`isp[${esc(y.t)}] = ${a} ≥ icp[${esc(t)}] = ${b}：top 的運算子要先算，pop 出來輸出。`, 13, { cur: x.id, states: st, rows });
               stack.pop(); where[y.id] = "out"; output.push(y);
-              frame(`輸出 <b>${esc(y.t)}</b>。`, 10, { cur: x.id, states: { [x.id]: "active", [y.id]: "new" }, rows });
+              frame(`輸出 <b>${esc(y.t)}</b>。`, 13, { cur: x.id, states: { [x.id]: "active", [y.id]: "new" }, rows });
             } else {
               let why = "";
               if (t === "(") why = "（icp[(] = 20 比誰都大，所以 ( 一定直接 push）";
               else if (y.t === "(") why = "（isp[(] = 0 比誰都小，所以 ( 在堆疊裡像一道牆）";
               else if (y.t === "eos") why = "（碰到堆疊底 eos）";
               else if (t === "^" && y.t === "^") why = "（^ 右結合：isp 14 < icp 15，同級不 pop）";
-              frame(`isp[${esc(y.t)}] = ${a} < icp[${esc(t)}] = ${b}，停止 pop ${why}。`, 9, { cur: x.id, states: st, rows });
+              frame(`isp[${esc(y.t)}] = ${a} < icp[${esc(t)}] = ${b}，停止 pop ${why}。`, 13, { cur: x.id, states: st, rows });
               break;
             }
           }
           where[x.id] = "stack"; stack.push(x);
-          frame(`把 <b>${esc(t)}</b> push 進堆疊。`, 11, { states: { [x.id]: "new" } });
+          frame(`把 <b>${esc(t)}</b> push 進堆疊。`, 14, { states: { [x.id]: "new" } });
         }
       }
-      if (stack.length > 1) frame("輸入讀完（token = eos），把堆疊 pop 到 eos 為止。", 14);
+      if (stack.length > 1) frame("輸入讀完（token = eos），把堆疊 pop 到 eos 為止。", 17);
       while (stack.length > 1) {
         const y = stack.pop(); where[y.id] = "out"; output.push(y);
-        frame(`pop 出 <b>${esc(y.t)}</b> 並輸出。`, 14, { states: { [y.id]: "new" } });
+        frame(`pop 出 <b>${esc(y.t)}</b> 並輸出。`, 17, { states: { [y.id]: "new" } });
       }
       const result = output.map((x) => x.t).join(" ");
       const st = {}; output.forEach((x) => (st[x.id] = "found"));

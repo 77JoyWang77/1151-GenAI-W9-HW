@@ -78,6 +78,8 @@
 │   └── <subject-id>/
 │       ├── index.html            ← 科目首頁（從 templates/subject.html 複製）
 │       └── <chapter-id>/<topic-id>.html   ← 主題頁（從 templates/topic.html 複製）
+├── code/
+│   └── <subject-id>/<topic-id>.c    ← 每個主題的完整 C 程式（頁面上的完整程式要和它一致）
 ├── templates/
 │   ├── subject.html
 │   └── topic.html
@@ -121,7 +123,33 @@
 - **互動動畫**（`.viz`，第 8 節）：資料會移動、指標會改變、結構會變形的主題都要做，讓讀者可以自己輸入資料操作。放在對應的文字講解之後。
 - 純觀念或純計算的主題（例如複雜度分析），至少要有靜態圖；有適合的互動形式（例如計算器）再加。
 
-### 6.3 常用的段落元件
+### 6.3 程式碼
+
+- **程式碼跟著講解走**：每個操作講完，馬上接它的程式碼，不要全部集中在頁尾一大段。
+- **每段程式碼都要有標題**，用程式碼區塊元件（右上角會自動出現「複製」按鈕）：
+
+```html
+<div class="code-block">
+  <div class="code-head">push / pop / peek（陣列實作）</div>
+  <pre class="code">...</pre>
+</div>
+```
+
+- **同一件事有多種寫法時用頁籤切換**（例如陣列／鏈結、遞迴／迴圈、左子樹最大／右子樹最小），預設頁籤放考研最常見的寫法：
+
+```html
+<div class="code-tabs">
+  <div class="code-block" data-tab="遞迴版"><div class="code-head">insert()：遞迴版</div><pre class="code">...</pre></div>
+  <div class="code-block" data-tab="迴圈版"><div class="code-head">insertIter()：迴圈版</div><pre class="code">...</pre></div>
+</div>
+```
+
+- **頁尾附完整可編譯程式**：最後一個 section 是「完整程式碼」，用 `<details class="code-full">` 預設收合，裡面放含 `main()` 的完整程式，以及實際執行結果（`<pre class="code-output">`）。完整程式同時存成 `code/<subject-id>/<topic-id>.c`，`check.py` 會比對兩者是否一致。
+- **程式碼一定要實際編譯執行過**：用 `gcc -std=c99 -Wall -Wextra` 編譯不能有警告，最好再加 `-fsanitize=address,undefined` 跑一次確認沒有記憶體錯誤；頁面上的片段、動畫右側的程式碼都要從這份完整程式中**原封不動地取出**，三者必須一致。
+- 片段可以省略與該段無關的部分，但不能用頁面上沒定義的函式卻不說明（例如用到輔助函式時，要說明它在完整程式裡）。
+- 不要寫依賴未定義行為的程式（例如在同一個 `printf` 參數裡呼叫多次 `pop()`）。
+
+### 6.4 常用的段落元件
 
 | 元件 | 用途 |
 |---|---|
@@ -131,12 +159,12 @@
 | `.callout` | 一句話記憶法、重要定義 |
 | 表格 | 操作與複雜度、做法比較、逐步追蹤的例子 |
 | 公式 `<pre class="formula">` | 重要公式、遞迴式 |
-| 程式碼 `<pre class="code">` | C 實作；有動畫時要和動畫右側程式碼一致。`< > &` 要跳脫 |
+| 程式碼區塊 `.code-block`、頁籤 `.code-tabs`、完整程式 `details.code-full` | 見 6.3；`< > &` 要跳脫 |
 | 考研重點 `.exam-q`（`<span class="qtype">` 標題型＋解題方向） | 常見考法與解題思路 |
 | 易錯點 `.pitfalls`（`❌ 錯誤想法 → ✅ 正確觀念`） | 常見觀念錯誤 |
 | 自我測驗 `<details class="quiz">`（答案要附理由） | 讀完後自我檢查 |
 
-### 6.4 每頁都要遵守的外殼
+### 6.5 每頁都要遵守的外殼
 
 - 每個頂層 `<section>` 要有 kebab-case 的 `id` 和一個 `<h2>`（右側目錄 TOC 靠它），至少 2 個 section。
 - `<body data-subject="<subject-id>" data-chapter="<chapter-id>" data-chno="<章節編號>" data-topic="<subject-id>/<chapter-id>/<topic-id>" data-root="../../../">`
@@ -313,7 +341,7 @@ figure("bst-valid-invalid", () => ({
 1. 在 `data/<subject-id>.json` 找到主題（通常已是 `planned`，優先做 `priority: high`），可以先查參考書對應節次確認觀念，但頁面內容要自己寫、獨立完整。
 2. 複製 `templates/topic.html` → `subjects/<subject-id>/<chapter-id>/<topic-id>.html`。
 3. 先規劃講解的骨架（第 6.1 節），再決定哪些地方配靜態圖、哪些地方做動畫，寫在 `assets/js/viz/<subject-id>/<topic-id>.js`（第 8 節）。
-4. 撰寫完整的文字講解，把圖和動畫放在對應的文字旁；有動畫時程式碼和動畫一致；不提到參考書。
+4. 先寫好完整的 C 程式並實際編譯執行（第 6.3 節），再撰寫文字講解，把圖、動畫和程式碼片段放在對應的文字旁；片段和動畫右側程式碼都從完整程式取出；不提到參考書。
 5. JSON 中把 `status` 改成 `"done"`，補上 `difficulty`、`tags`、`updated`，`viz` 依頁面實際情況填。
 6. 執行 `python scripts/check.py`，必須顯示 `All checks passed`。
 7. 本機預覽：`python -m http.server 8000` → `http://localhost:8000`（直接雙擊 html 會讀不到 json）。
@@ -348,6 +376,7 @@ figure("bst-valid-invalid", () => ({
 - [ ] 檔案位置與命名符合第 5 節
 - [ ] 文字講解完整（動機、定義、運作原理、例子、效能、應用），只讀這頁就能學會；獨立完整、不提到參考書
 - [ ] 至少一張有圖說的靜態圖；適合的主題有互動動畫；圖文不重疊、不超出畫面
+- [ ] 程式碼放在對應講解旁、每段有標題、多種寫法用頁籤；頁尾附完整程式，已用 gcc 編譯執行，片段與動畫程式碼一致
 - [ ] 有動畫時：可以自己輸入資料、有示範、能逐步播放，程式碼高亮正確
 - [ ] JSON 已更新，科目首頁看得到「完成」標籤（有互動時加「▶ 互動」），全站首頁進度有變化
 - [ ] `python scripts/check.py` 通過

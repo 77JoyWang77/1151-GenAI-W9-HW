@@ -103,6 +103,38 @@
     });
   }
 
+  // 程式碼區塊：複製按鈕 + 分頁切換
+  function renderCodeBlocks() {
+    document.querySelectorAll(".code-block").forEach((block) => {
+      const head = block.querySelector(".code-head");
+      const pre = block.querySelector("pre");
+      if (!head || !pre) return;
+      const btn = h("button", { type: "button", class: "code-copy", text: "複製" });
+      btn.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(pre.innerText); btn.textContent = "已複製 ✓"; }
+        catch (e) { btn.textContent = "請手動選取"; }
+        setTimeout(() => (btn.textContent = "複製"), 1500);
+      });
+      head.appendChild(btn);
+    });
+    document.querySelectorAll(".code-tabs").forEach((tabs) => {
+      const blocks = Array.from(tabs.querySelectorAll(":scope > .code-block[data-tab]"));
+      if (!blocks.length) return;
+      const bar = h("div", { class: "tab-bar", role: "tablist" });
+      const select = (k) => blocks.forEach((b, i) => {
+        b.hidden = i !== k;
+        bar.children[i].setAttribute("aria-selected", String(i === k));
+      });
+      blocks.forEach((b, i) => {
+        const t = h("button", { type: "button", role: "tab", text: b.dataset.tab });
+        t.addEventListener("click", () => select(i));
+        bar.appendChild(t);
+      });
+      tabs.insertBefore(bar, blocks[0]);
+      select(0);
+    });
+  }
+
   async function renderPager(pager, topicKey) {
     const [subjectId, chId, tId] = topicKey.split("/");
     const data = await getJSON(`data/${subjectId}.json`);
@@ -116,6 +148,7 @@
   document.addEventListener("DOMContentLoaded", async () => {
     renderToc();
     renderQuizToggle();
+    renderCodeBlocks();
     try {
       const subjects = $("#subjects");
       if (subjects) await renderSubjects(subjects);
