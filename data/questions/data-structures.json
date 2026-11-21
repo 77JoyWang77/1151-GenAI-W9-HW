@@ -1924,6 +1924,483 @@
       ],
       "answer": "(A)",
       "explanation": "<p>單一次 DEQUEUE 最差要把 S<sub>in</sub> 整個倒過去，是 Θ(m)；但每個元素一生只會經歷 4 個 stack 操作：push 進 S<sub>in</sub>、從 S<sub>in</sub> pop、push 進 S<sub>out</sub>、從 S<sub>out</sub> pop。m 個操作最多處理 m 個元素，總成本 ≤ 4m，平均每個操作 <b>Θ(1)</b>。</p><p>為什麼順序對：S<sub>in</sub> 倒進 S<sub>out</sub> 時順序反過來，最早進來的跑到 S<sub>out</sub> 頂端，正好先出去，符合 queue 的 FIFO。只有 S<sub>out</sub> 空了才倒，所以不會打亂順序。</p>"
+    },
+    {
+      "id": "ds-0097",
+      "topics": [
+        "singly-linked-list",
+        "circular-queue",
+        "doubly-linked-list"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "<p>（多選題，選項必須完全符合才得分）</p><p>Assume that we have a data structure S that contains <i>n</i> elements with <i>n</i> &gt; 0. Which of the following statement(s) is(are) true?</p>",
+      "choices": [
+        "(A) Let S be a linked list with its elements required to be ordered in ascending order. It takes O(1) time to insert a new element into S.",
+        "(B) Let S be a queue. It takes O(n) time to remove all the elements one by one from S.",
+        "(C) Let S be a double-ended queue which is implemented as a doubly linked list and supports insertion and deletion from both ends. It takes O(1) time to add an element to the back of S and O(1) time to find an element of S.",
+        "(D) Let S be a doubly linked list. Given a node of S, it takes O(n) time to delete the node from S."
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(A) 錯。要維持遞增順序，得先從頭找到插入位置，最差 O(n)；真正改指標才是 O(1)。</li><li>(B) 對。每次 dequeue 是 O(1)，做 n 次共 O(n)。</li><li>(C) 錯。加到尾端是 O(1)，但「找某個元素」只能一個個比，O(n)。</li><li>(D) 錯。雙向串列的節點知道自己的前一個，給定節點後直接 <code>p-&gt;prev-&gt;next = p-&gt;next; p-&gt;next-&gt;prev = p-&gt;prev;</code>，O(1)。單向串列才需要 O(n) 找前一個。</li></ul>"
+    },
+    {
+      "id": "ds-0098",
+      "topics": [
+        "binary-search-tree",
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "<p>（多選題，選項必須完全符合才得分）</p><p>The preorder tree walk of a certain binary search tree generates the following sequence of node keys: 6, 2, 4, 3, 5, 9, 7, 8. Which of the following statement(s) is(are) correct?</p>",
+      "choices": [
+        "(A) 5 is an ancestor of 3.",
+        "(B) 7 has no sibling.",
+        "(C) 5 appears after 3 during the postorder tree walk.",
+        "(D) 8 appears after 7 during the postorder tree walk.",
+        "(E) The two subtrees of the root have the same heights."
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<p>BST 的前序第一個是根，依序插入就能還原：6 是根；2 &lt; 6 在左；4 在 2 的右；3 在 4 的左、5 在 4 的右；9 在 6 的右；7 在 9 的左；8 在 7 的右。</p><pre class=\"formula\">        6\n      /   \\\n     2     9\n      \\   /\n       4 7\n      / \\  \\\n     3   5  8</pre><p>後序：3 5 4 2 8 7 9 6。</p><ul><li>(A) 錯。3 和 5 是兄弟，3 的祖先是 4、2、6。</li><li>(B) 對。7 是 9 唯一的子節點。</li><li>(C) 對。後序中 3 在 5 前面。</li><li>(D) 錯。8 是 7 的子節點，後序子節點先出，8 在 7 前面。</li><li>(E) 對。左子樹 2→4→3 和右子樹 9→7→8 高度都是 3。</li></ul><p>（已用程式建樹驗算。）</p>"
+    },
+    {
+      "id": "ds-0099",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "<p>（多選題，選項必須完全符合才得分）</p><p>This question is about binary search trees. All the keys are unique. Let x be a tree node, <i>parent</i>[x] be the parent of x, <i>left</i>[x] be the left child of x, <i>right</i>[x] be the right child of x, and <i>key</i>[x] be the key of x. Assume that the root of a binary search tree has left and right children. The key of the root is greater than the key of the left child but is smaller than the key of the right child. Which of the following statement(s) is(are) true for binary search trees?</p>",
+      "choices": [
+        "(A) If <i>left</i>[x] and <i>left</i>[<i>left</i>[x]] are non-empty, then <i>key</i>[x] is greater than all the keys in the subtree rooted at <i>left</i>[x].",
+        "(B) If <i>parent</i>[x] is non-empty, then we must have <i>key</i>[<i>parent</i>[x]] &gt; <i>key</i>[x].",
+        "(C) If <i>left</i>[<i>left</i>[x]] and <i>left</i>[<i>right</i>[x]] are non-empty, then <i>key</i>[<i>left</i>[<i>left</i>[x]]] must be larger than <i>key</i>[<i>left</i>[<i>right</i>[x]]].",
+        "(D) If <i>parent</i>[x], <i>right</i>[x], and <i>right</i>[<i>right</i>[x]] are non-empty, then <i>key</i>[<i>parent</i>[x]] must be less than all the keys in the subtree rooted at <i>right</i>[x]."
+      ],
+      "answer": "(A)",
+      "explanation": "<ul><li>(A) 對。BST 的定義就是 x 大於左子樹的<b>所有</b>鍵值，不只是左子。</li><li>(B) 錯。x 若是父節點的右子，父節點比 x 小。</li><li>(C) 錯。left[left[x]] 在 x 的左子樹、left[right[x]] 在 x 的右子樹，所以 left[left[x]] &lt; x &lt; left[right[x]]，是「小於」。</li><li>(D) 錯。要看 x 是父節點的左子還是右子：x 是右子時父節點比整棵 x 子樹都小，成立；x 是左子時父節點反而比它們都大。題目沒說是哪一種，所以不一定。</li></ul>"
+    },
+    {
+      "id": "ds-0100",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "<p>（多選題，選項必須完全符合才得分）</p><p>A maximum binary heap (Max-Heap for short) is implemented in an array, starting with index 1. (In many programming languages, the array index starts at 0. In this case, we skip the first cell which has index 0. For example, [-,3,2,1] represents a Max-Heap where 3 is the root, 2 is the left child of 3, and 1 is the right child of 3. Since we don't use the first cell, it is marked as '-'.) Which of the following statement(s) is(are) correct?</p>",
+      "choices": [
+        "(A) Given the input A = [-,1,2,3,4,5,6,7,8,9], the Max-Heap built by the best (linear-time) algorithm from A is [-,9,8,6,7,3,2,5,1,4].",
+        "(B) B = [-,9,8,7,4,5,6,3,1,2] is a Max-Heap. By deleting the maximum, we get B = [-,8,5,7,4,2,6,3,1]",
+        "(C) C = [-,8,5,7,4,2,6,3,1] is a Max-Heap. By inserting 10, we get C = [-,10,8,7,4,5,6,3,1,2].",
+        "(D) Binary Max-Heap supports the merging of two Max-Heap in linear time."
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯。由下往上 heapify（從第 4 個開始）的結果是 <b>[-,9,8,7,4,5,6,3,2,1]</b>。</li><li>(B) 對。刪掉 9，把最後的 2 搬到根往下換：2 和 8 換、再和 5 換，得到 [-,8,5,7,4,2,6,3,1]。</li><li>(C) 錯。10 放在第 9 格，依序和父節點 4、5、8 交換，結果是 <b>[-,10,8,7,5,2,6,3,1,4]</b>，不是選項那樣。</li><li>(D) 對。把兩個陣列接起來，再做一次線性時間的 BUILD-MAX-HEAP，O(n + m)。這是線性時間，只是比不上 leftist heap 等可以 O(log n) 合併的結構。</li></ul><p>（(A)(B)(C) 都已用程式模擬驗算。）</p>"
+    },
+    {
+      "id": "ds-0101",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "<p>（多選題）</p><p>For a binary search tree, which one(s) of the followings is correct?</p>",
+      "choices": [
+        "(A) Each element has a key and each pair of elements have distinct keys.",
+        "(B) The keys (if any) in the left subtree are smaller than the key in the root.",
+        "(C) The keys (if any) in the right subtree are smaller than the key in the root.",
+        "(D) The left and right subtrees are also a binary search tree.",
+        "(E) The height of a binary search tree is O(log(n)) in general."
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<p>(A)(B)(D) 是 BST 的遞迴定義：鍵值互不相同、左子樹都比根小、右子樹都比根大、左右子樹本身也是 BST。</p><ul><li>(C) 錯。右子樹的鍵值都比根<b>大</b>。</li><li>(E) 錯。一般的 BST 不保證平衡，依序插入排好的資料會變成歪斜樹，高度 n。只有隨機插入時「平均」高度是 O(log n)，或是使用 AVL、紅黑樹這類平衡樹。</li></ul>"
+    },
+    {
+      "id": "ds-0102",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "<p>（多選題）</p><p>According to the infix regular expression (A+B)*D+E/(F+A*D), which one(s) of the statements is correct?</p>",
+      "choices": [
+        "(A) Its prefix form is +*+ABD/+EF*AD.",
+        "(B) Its postfix form is AB+D*EFAD*+/+.",
+        "(C) Let the operators be '+', '-', '*', '/', '(', and ')'. If the token number of an infix expression is n in the worst case, its tree height is O(log(n)).",
+        "(D) Same as Part (C), the length of its prefix form is O(n).",
+        "(E) Similarly, the length of its postfix form is O(nlog(n))."
+      ],
+      "answer": "(B)(D)（E 的解讀待確認）",
+      "explanation": "<p>運算式樹：根是 +，左邊 (A+B)*D，右邊 E/(F+A*D)。</p><ul><li>(A) 錯。正確前序是 <b>+*+ABD/E+F*AD</b>；選項把 E 和右邊的 + 對調了。</li><li>(B) 對。後序 AB+D*EFAD*+/+。</li><li>(C) 錯。最差情況像 a+b+c+…，運算式樹是一條鏈，高度 O(n)。</li><li>(D) 對。前序只是去掉括號、重排符號，長度不超過 n。</li><li>(E) 依出題意思是錯的：後序長度和前序一樣是 Θ(n)，寫成 O(n log n) 不是緊界。不過照 Big-O 的字面定義，O(n) 也屬於 O(n log n)（待確認）。</li></ul><p>（前序和後序都已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0103",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "<p>（多選題）</p><p>Given a binary heap of integers whose amount is n, show the correct one(s).</p>",
+      "choices": [
+        "(A) If it is a minimum heap, getting the minimum from the heap needs O(n) times in the worst case.",
+        "(B) Similarly, if it is a maximum heap, getting the maximum from the heap needs O(1) times.",
+        "(C) Transforming a list of n random integers into an ordered single list needs O(n) times.",
+        "(D) Transforming a series of n random integers into a maximum heap needs O(n) times.",
+        "(E) Transforming a minimum heap of n elements to a maximum heap needs O(n) times."
+      ],
+      "answer": "(B)(D)(E)",
+      "explanation": "<ul><li>(A) 錯。最小值就在根，讀出來 O(1)；如果是「取出並刪除」也只要 O(log n)。</li><li>(B) 對。最大值在根，O(1)。</li><li>(C) 錯。把隨機整數排成有序串列，以比較為基礎的排序下界是 Ω(n log n)。</li><li>(D) 對。由下往上 heapify（BUILD-MAX-HEAP）是 O(n)。</li><li>(E) 對。min heap 對 max heap 來說只是一個普通的陣列，直接再做一次 BUILD-MAX-HEAP，O(n)。</li></ul>"
+    },
+    {
+      "id": "ds-0104",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 28,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "<p>（多選題）</p><p>Which of the following are true about binary search tree?</p>",
+      "choices": [
+        "(A) The time complexity of inserting a node is O(h) for a tree with height h",
+        "(B) The time complexity of deleting a node is O(h) for a tree with height h",
+        "(C) The time complexity of finding the maximum node is O(1)",
+        "(D) The space complexity of a binary search tree with n nodes is O(n)",
+        "(E) The shape of a binary search tree is uniquely defined by the set of keys stored in the tree."
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A)(B) 對。插入、刪除（含找替代節點）都只沿著一條往下的路走，O(h)。</li><li>(C) 錯。最大值在一路往右走到底的節點，要走 O(h) 步。</li><li>(D) 對。每個節點固定大小，n 個節點 O(n)。</li><li>(E) 錯。形狀取決於插入順序：同樣是 {1, 2, 3}，依 2、1、3 插入是平衡的，依 1、2、3 插入是歪斜樹。</li></ul>"
+    },
+    {
+      "id": "ds-0105",
+      "topics": [
+        "binary-search-tree",
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_software.pdf"
+      },
+      "question": "<p>（多選題）</p><p>(3%) Insert the following nodes {6,15,3,9,4,10,8} in order into a binary search tree. Which of the following is(are) correct?</p>",
+      "choices": [
+        "(A) Pre-order: 4,3,8,10,9,15,6",
+        "(B) In-order: 3,4,6,8,9,10,15",
+        "(C) Finding the node of 8 will go through three edges",
+        "(D) The nodes of 4 and 9 are at the same level"
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<p>依序插入：6 是根；15 在右；3 在左；9 在 15 的左；4 在 3 的右；10 在 9 的右；8 在 9 的左。</p><pre class=\"formula\">      6\n     / \\\n    3   15\n     \\  /\n     4 9\n      / \\\n     8  10</pre><ul><li>(A) 錯。前序是 6,3,4,15,9,8,10；選項 4,3,8,10,9,15,6 是後序。</li><li>(B) 對。BST 的中序一定是由小到大。</li><li>(C) 對。6 → 15 → 9 → 8，經過 3 條邊。</li><li>(D) 對。4 和 9 都在第 3 層（深度 2）。</li></ul><p>（已用程式建樹驗算。）</p>"
+    },
+    {
+      "id": "ds-0106",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_software.pdf"
+      },
+      "question": "<p>（多選題）</p><p>(3%) A min binary heap has one element which is 10. Now the following elements are stored to the heap in order: 5, 4, 3, 2, 9, 7, 8, 6. After that, node 5 is deleted. Which of the following statement(s) is(are) correct?</p>",
+      "choices": [
+        "(A) The parent of node 9 is 7 and 8 is the child of 6.",
+        "(B) Node 4 is not the child of node 5 and 7 is not the parent of node 8.",
+        "(C) The children of node 3 are nodes 4 and 6.",
+        "(D) Node 2 does not have a parent and node 8 does not have any children."
+      ],
+      "answer": "(C)(D)",
+      "explanation": "<p><b>插入</b>：從 [10] 開始依序插入並上移，得到陣列 [2, 3, 5, 6, 4, 9, 7, 10, 8]。</p><p><b>刪除 5</b>（第 3 格）：把最後一個 8 搬過來補位，8 比子節點 9、7 都大，和較小的 7 交換，得到 <b>[2, 3, 7, 6, 4, 9, 8, 10]</b>。</p><pre class=\"formula\">         2\n       /   \\\n      3     7\n     / \\   / \\\n    6   4 9   8\n   /\n  10</pre><ul><li>(A) 錯。9 的父節點是 7 沒錯，但 8 是 7 的子節點，不是 6 的。</li><li>(B) 錯。前半對（5 已刪除），但 7 正是 8 的父節點。</li><li>(C) 對。3 的子節點是 6 和 4。</li><li>(D) 對。2 是根；8 在最後一層，沒有子節點。</li></ul><p>（插入與刪除都已用程式模擬驗算；刪除任意節點的做法是「最後一個補位，再視情況上移或下移」。）</p>"
+    },
+    {
+      "id": "ds-0107",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_software.pdf"
+      },
+      "question": "<p>（多選題）</p><p>(3%) S is an ordered sequence of numbers. S is formed by two ordered sequences: {2n-1, 2n-3, ..., 1} and {2, 4, 6, ..., 2n}. Let S = {(2n-1), 2, (2n-3), 4, (2n-5), 6, ..., 3, (2n-2), 1, 2n}, where n &gt;= 10. The elements of S are stored into an empty stack one by one in the given order. After that the elements are popped from the stack one by one. At the X-th step, (n-1) is popped from the stack while (n+1) is popped from the stack at the Y-th step. Assume that s and t are two different positive elements of S, and s + t = 2n. Which of the following statement(s) is(are) correct?</p>",
+      "choices": [
+        "(A) X = n or Y = n.",
+        "(B) |Y-X| = 2.",
+        "(C) X must be larger than Y for any positive integer n.",
+        "(D) It takes at most n pop operations to pop one of the two elements, s and t."
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<p>全部 push 完再 pop，pop 的順序就是 S 倒過來：2n, 1, 2n−2, 3, 2n−4, 5, …。第 2k−1 步 pop 出偶數 2n−2(k−1)，第 2k 步 pop 出奇數 2k−1。</p><ul><li>n−1 和 n+1 的奇偶相同。n 為偶數時兩者都是奇數：n−1 在第 n 步，n+1 在第 n+2 步；n 為奇數時兩者都是偶數：n+1 在第 n 步，n−1 在第 n+2 步。</li><li>(A) 對：一定有一個在第 n 步。</li><li>(B) 對：兩者差 2 步。</li><li>(C) 錯：n 為偶數時 X = n &lt; Y = n+2。</li><li>(D) 對：s + t = 2n 的配對中，一個在前半段被 pop，最慢在第 n 步就會拿到其中一個。</li></ul><p>（已用程式對 n = 10～15 逐一驗算。）</p>"
+    },
+    {
+      "id": "ds-0108",
+      "topics": [
+        "stack",
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_software.pdf"
+      },
+      "question": "<p>Stack operations are</p><ul><li>Push(item): S.push(item) pushes item into the stack S.</li><li>Pop(): S.Pop() removes top of the stack S.</li><li>isEmpty(): S.isEmpty() answers whether the stack S is empty.</li></ul><p>The questions are about implementing a FIFO queue Q by using two stacks S1 and S2.</p><p>(a) (2%). Describe the algorithm enQueue(item) (insert item into Q) using pseudo code.<br>(b) (2%). Describe the algorithm deQueue() (delete an item from the Q) using pseudo code.<br>(c) (4%). Show that deQueue takes O(1) amortized cost.</p>",
+      "answer": "S1 負責進、S2 負責出：enQueue 直接 push 進 S1；deQueue 時 S2 空了才把 S1 全部倒進 S2，再從 S2 pop。每個元素最多被搬 1 次，攤銷 O(1)。",
+      "explanation": "<pre class=\"code\">enQueue(item):\n    S1.push(item)\n\ndeQueue():\n    if S2.isEmpty():\n        while not S1.isEmpty():\n            S2.push(S1.top()); S1.Pop()   /* 倒過去，順序反轉 */\n        if S2.isEmpty(): error \"queue empty\"\n    x = S2.top(); S2.Pop()\n    return x</pre><p><b>為什麼是 FIFO</b>：S1 頂端是最新的元素，整疊倒進 S2 後順序反過來，最舊的元素到了 S2 頂端，正好先出去。S2 不空時不倒，所以後來的元素不會插到前面。</p><p><b>攤銷分析（aggregate method）</b>：追蹤任一個元素，它一生最多經歷 4 次 stack 操作：push 進 S1、從 S1 pop、push 進 S2、從 S2 pop。所以 m 次 queue 操作的總成本 ≤ 4m，平均每次 O(1)。單一次 deQueue 最差要倒 n 個元素（O(n)），但那些元素之後都不會再被倒一次，成本被分攤掉了。</p><p>也可以用 potential method：令 Φ = 2 × |S1|，enQueue 的攤銷成本 = 1 + 2 = 3；倒 k 個元素的 deQueue 實際成本 2k + 1、位能下降 2k，攤銷成本 = 1。</p>"
+    },
+    {
+      "id": "ds-0109",
+      "topics": [
+        "singly-linked-list",
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "1-①",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_software.pdf"
+      },
+      "question": "<p>（題組，須全答對才計分）</p><p>1. (7%) The following contains the C++ code for a <b>queue</b> implemented with a singly linked list.</p><pre class=\"code\">struct Qnode\n{\n    int key;\n    Qnode * next;\n    Qnode(int n = 0) : key(n), next(NULL) {}\n};\nstruct Qlist\n{\n    Qnode * head, * tail;\n    Qlist() : head(NULL), tail(NULL) {}\n    void push(int n)\n    {\n        Qnode* node = new Qnode(n);\n        if (!head) __①__ = node;\n        if (tail) __②__ = node;\n        tail = __③__;\n    }\n    void pop()\n    {\n        if (head) {\n            Qnode* node = __④__;\n            __⑤__ = __⑥__;\n            delete node;\n        }\n        if (!head) tail = NULL;\n    }\n};</pre><p>① Which way of filling in the code will make the <b>push</b> function work correctly?</p>",
+      "choices": [
+        "(A) ①: head ②: tail->next ③: node",
+        "(B) ①: head->next ②: tail ③: node->next",
+        "(C) ①: tail ②: tail->next ③: head",
+        "(D) ①: head->next ②: tail ③: tail->next",
+        "(E) None of the above"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>push 時新節點接在尾端：佇列空的話 head 也要指向它（① = head）；原本有 tail 的話，舊的最後一個要接上新節點（② = tail-&gt;next）；最後 tail 移到新節點（③ = node）。pop 時從頭拿：先記住要刪的 head（④ = head），head 往後移（⑤ = head、⑥ = head-&gt;next），再 delete。刪完如果 head 變成 NULL，代表佇列空了，tail 也要清成 NULL，否則 tail 會指向已刪除的節點。</p>"
+    },
+    {
+      "id": "ds-0110",
+      "topics": [
+        "singly-linked-list",
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "1-②",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_software.pdf"
+      },
+      "question": "<p>（題組，須全答對才計分）</p><p>1. (7%) The following contains the C++ code for a <b>queue</b> implemented with a singly linked list.</p><pre class=\"code\">struct Qnode\n{\n    int key;\n    Qnode * next;\n    Qnode(int n = 0) : key(n), next(NULL) {}\n};\nstruct Qlist\n{\n    Qnode * head, * tail;\n    Qlist() : head(NULL), tail(NULL) {}\n    void push(int n)\n    {\n        Qnode* node = new Qnode(n);\n        if (!head) __①__ = node;\n        if (tail) __②__ = node;\n        tail = __③__;\n    }\n    void pop()\n    {\n        if (head) {\n            Qnode* node = __④__;\n            __⑤__ = __⑥__;\n            delete node;\n        }\n        if (!head) tail = NULL;\n    }\n};</pre><p>② Which way of filling in the code will make the <b>pop</b> function work correctly?</p>",
+      "choices": [
+        "(A) ④: tail ⑤: tail->next ⑥: tail",
+        "(B) ④: head ⑤: head->next ⑥: node->next",
+        "(C) ④: tail ⑤: tail ⑥: node",
+        "(D) ④: head ⑤: head ⑥: head->next",
+        "(E) None of the above"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>push 時新節點接在尾端：佇列空的話 head 也要指向它（① = head）；原本有 tail 的話，舊的最後一個要接上新節點（② = tail-&gt;next）；最後 tail 移到新節點（③ = node）。pop 時從頭拿：先記住要刪的 head（④ = head），head 往後移（⑤ = head、⑥ = head-&gt;next），再 delete。刪完如果 head 變成 NULL，代表佇列空了，tail 也要清成 NULL，否則 tail 會指向已刪除的節點。</p><p>(B) 改的是 head-&gt;next，head 本身沒有往後移，下一次 pop 會刪到已經刪過的節點。從 tail 刪（(A)(C)）在單向串列做不到，因為找不到 tail 的前一個。</p>"
+    },
+    {
+      "id": "ds-0111",
+      "topics": [
+        "singly-linked-list",
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "1-③",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_software.pdf"
+      },
+      "question": "<p>（題組，須全答對才計分）</p><p>1. (7%) The following contains the C++ code for a <b>queue</b> implemented with a singly linked list.</p><pre class=\"code\">struct Qnode\n{\n    int key;\n    Qnode * next;\n    Qnode(int n = 0) : key(n), next(NULL) {}\n};\nstruct Qlist\n{\n    Qnode * head, * tail;\n    Qlist() : head(NULL), tail(NULL) {}\n    void push(int n)\n    {\n        Qnode* node = new Qnode(n);\n        if (!head) __①__ = node;\n        if (tail) __②__ = node;\n        tail = __③__;\n    }\n    void pop()\n    {\n        if (head) {\n            Qnode* node = __④__;\n            __⑤__ = __⑥__;\n            delete node;\n        }\n        if (!head) tail = NULL;\n    }\n};</pre><p>③ Based on the code above, given the following statements, what are the key values of the two nodes pointed to by <b>head</b> and <b>tail</b>?</p><pre class=\"code\">Qlist L = Qlist();\nL.pop();  L.push(10);  L.push(5);  L.push(3);  L.pop();\nL.push(12);  L.push(8);  L.pop();</pre>",
+      "choices": [
+        "(A) head: 10, tail: 8",
+        "(B) head: 10, tail: 12",
+        "(C) head: 3, tail: 8",
+        "(D) head: 3, tail: 10",
+        "(E) None of the above"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>依 queue（先進先出）追蹤：</p><ul><li>pop()：空的，什麼都不做。</li><li>push 10、5、3：10 → 5 → 3。</li><li>pop()：拿走 10，剩 5 → 3。</li><li>push 12、8：5 → 3 → 12 → 8。</li><li>pop()：拿走 5，剩 <b>3</b> → 12 → <b>8</b>。</li></ul><p>head 是 3、tail 是 8。</p>"
+    },
+    {
+      "id": "ds-0112",
+      "topics": [
+        "binary-tree-traversal",
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "II-1",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_software.pdf"
+      },
+      "question": "<p>（非選擇題，節錄 (A)～(C)）</p><p>1. (13%) There are 5 questions. The following contains two functions for traversing a binary tree:</p><pre class=\"code\">struct Node\n{\n    char key;\n    Node * left, * right;\n};\n\nvoid trv1(Node* root)\n{\n    std::queue&lt;Node*&gt; Q;\n    Q.push(root);\n    while (!Q.empty()) {\n        Node* cur = Q.front();\n        Q.pop();\n        printf(\"%c\", cur-&gt;key);\n        if (cur-&gt;left) Q.push(cur-&gt;left);\n        if (cur-&gt;right) Q.push(cur-&gt;right);\n    }\n}\n\nvoid trv2(Node* root)\n{\n    std::stack&lt;Node*&gt; Q;\n    Q.push(root);\n    while (!Q.empty()) {\n        Node* cur = Q.top();\n        Q.pop();\n        printf(\"%c\", cur-&gt;key);\n        if (cur-&gt;right) Q.push(cur-&gt;right);\n        if (cur-&gt;left) Q.push(cur-&gt;left);\n    }\n}</pre><p>(A) [3%] Use the following two traversal sequences (each character is the key of a node) to reconstruct the binary tree. Note: There are more than one possible trees, and you only need to show one of them.<br>trv1: OPMRTECUS<br>trv2: OPRTCSUME</p><p>(B) [3%] Start with an empty binary search tree and insert the characters in \"COMPUTERS\" into it. List the resulting preorder traversal sequence.</p><p>(C) [2%] Among preorder, postorder, inorder, and level-order traversals, which one(s) can uniquely identify a binary search tree by itself?</p>",
+      "answer": "(A) 見詳解的樹（共 4 種符合，任一種皆可）；(B) COMEPUTRS；(C) preorder、postorder、level-order",
+      "explanation": "<p><b>先看兩個函式</b>：trv1 用 queue，是<b>層序</b>走訪；trv2 用 stack，先 push 右再 push 左，所以左子先被拿出來，是<b>前序</b>走訪。</p><p><b>(A)</b> 層序 OPMRTECUS、前序 OPRTCSUME。前序加層序不一定能唯一決定樹，用程式窮舉 9 個節點的所有形狀，共有 4 棵符合，其中一棵：</p><pre class=\"formula\">          O\n        /   \\\n       P     M\n      / \\     \\\n     R   T     E\n        / \\\n       C   U\n        \\\n         S</pre><p>驗算：層序 O｜P M｜R T E｜C U｜S；前序 O P R T C S U M E，都相符。</p><p><b>(B)</b> 依字母順序插入 C、O、M、P、U、T、E、R、S：C 是根；O &gt; C 在右；M 在 O 的左；P 在 O 的右；U 在 P 的右；T 在 U 的左；E 在 M 的左；R 在 T 的左；S 在 R 的右。前序：<b>C O M E P U T R S</b>。</p><p><b>(C)</b> <b>preorder、postorder、level-order</b> 都可以：BST 的中序一定是排序好的，有了任一個能看出根和上下關係的走訪，再配上排序（中序）就能唯一重建；而且直接把 preorder 或 level-order 依序插入空的 BST，就會得到原本那棵樹。只有 <b>inorder 不行</b>，因為所有含相同鍵值的 BST 中序都一樣。</p><p>（(A)(B) 都已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0113",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "<p>(3%) Considering the following implementation of min heap.</p><pre class=\"code\">#define MAX_SIZE 10\nint data[MAX_SIZE];\nint size=0;\nvoid insert(int x)\n{\n  if (size&gt;=MAX_SIZE-1)   return;\n  int cur= ___□□___;\n  while(cur!=0 &amp;&amp; data[___◇◇___]&gt;x)   {\n    data[cur]=data[___◇◇___];\n    cur= ___◇◇___;\n  }\n  data[cur]=x;\n}</pre><p>Which way of filling in the code to make function insert work correctly?</p>",
+      "choices": [
+        "(A) □□: size++,  ◇◇: cur/2",
+        "(B) □□: ++size,  ◇◇: cur/2",
+        "(C) □□: size++,  ◇◇: (cur-1)/2",
+        "(D) □□: ++size,  ◇◇: (cur-1)/2",
+        "(E) None of the above"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>這個 heap 的陣列從 data[0] 開始放根（看 <code>cur!=0</code> 就知道根在 0）。</p><ul><li>□□：新元素要放在目前最後一格的下一格，也就是索引 size，放完 size 加 1，所以是 <b>size++</b>（先取值再加）。用 ++size 會跳過一格。</li><li>◇◇：0-based 時節點 cur 的父節點是 <b>(cur−1)/2</b>；cur/2 是 1-based 的公式，用在這裡會找錯父節點（例如 cur = 2 的父節點應該是 0，cur/2 卻得到 1）。</li></ul><p>寫法上它不是一路交換，而是讓比 x 大的父節點往下搬、cur 往上走，最後才把 x 放進空出來的位置，少做一半的賦值。</p>"
+    },
+    {
+      "id": "ds-0114",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "<p>(3%) Considering the following implementation of min heap.</p><pre class=\"code\">#define MAX_SIZE 10\nint data[MAX_SIZE];\nint size=0;\nvoid insert(int x)\n{\n  if (size&gt;=MAX_SIZE-1)   return;\n  int cur= ___□□___;\n  while(cur!=0 &amp;&amp; data[___◇◇___]&gt;x)   {\n    data[cur]=data[___◇◇___];\n    cur= ___◇◇___;\n  }\n  data[cur]=x;\n}</pre><p>(3%) If the following numbers are sequentially inserted into a min heap using the function insert,</p><p>40 15 50 10 30 20 5 12</p><p>what are the numbers of data[1] and data[4] (suppose that the index starts from 0)?</p>",
+      "choices": [
+        "(A) data[1]: 12,  data[4]: 30",
+        "(B) data[1]: 5,  data[4]: 15",
+        "(C) data[1]: 10,  data[4]: 20",
+        "(D) data[1]: 12,  data[4]: 20",
+        "(E) None of the above"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>依序插入並上移（0-based，父節點 (i−1)/2）：</p><ul><li>40 → [40]；15 → [15, 40]；50 → [15, 40, 50]</li><li>10：放在 [3]，父 [1] = 40 下移，再和 [0] = 15 比，15 下移 → [10, 15, 50, 40]</li><li>30：放在 [4]，父 [1] = 15 &lt; 30，停 → [10, 15, 50, 40, 30]</li><li>20：放在 [5]，父 [2] = 50 下移，父 [0] = 10 停 → [10, 15, 20, 40, 30, 50]</li><li>5：放在 [6]，父 [2] = 20 下移、父 [0] = 10 下移 → [5, 15, 10, 40, 30, 50, 20]</li><li>12：放在 [7]，父 [3] = 40 下移、父 [1] = 15 下移、父 [0] = 5 停 → <b>[5, 12, 10, 15, 30, 50, 20, 40]</b></li></ul><p>data[1] = <b>12</b>，data[4] = <b>30</b>（已用題目的 C 程式實際執行驗算）。</p>"
+    },
+    {
+      "id": "ds-0115",
+      "topics": [
+        "heap",
+        "binary-tree-properties"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "II-5",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "<p>（非選擇題）</p><p>5. (3%) In a heap of size n, what is the index range of the leaf nodes? Note that the index starts from 0.</p>",
+      "answer": "⌊n/2⌋ 到 n − 1",
+      "explanation": "<p>0-based 時節點 i 的左子是 2i + 1。節點 i 是葉子 ⇔ 它沒有左子 ⇔ 2i + 1 ≥ n ⇔ i ≥ (n − 1)/2，取整數就是 i ≥ ⌊n/2⌋。所以葉子的索引是 <b>⌊n/2⌋ ～ n − 1</b>，共 n − ⌊n/2⌋ = ⌈n/2⌉ 個（和完全二元樹「葉子有 ⌈n/2⌉ 個」一致）。</p><p>例：n = 7，葉子是 3～6；n = 8，葉子是 4～7（索引 3 的左子是 7 &lt; 8，所以 3 不是葉子）。若改成 1-based，範圍變成 ⌊n/2⌋ + 1 ～ n。</p>"
     }
   ]
 }
