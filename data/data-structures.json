@@ -162,9 +162,17 @@
           "en": "Singly Linked List",
           "zh": "單向鏈結串列",
           "book": "4.2",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": true
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "pointer",
+            "insert",
+            "delete",
+            "reverse"
+          ],
+          "updated": "2026-11-21"
         },
         {
           "id": "circular-linked-list",

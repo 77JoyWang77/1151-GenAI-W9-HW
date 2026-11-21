@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Singly Linked List 單向鏈結串列 · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="用指標把節點串起來，插入刪除只改指標；考研必考插入順序、刪除要前一個節點與串列反轉。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=be8ea90a">
+  <script src="../../../assets/js/theme.js?v=be8ea90a"></script>
+</head>
+<body data-subject="data-structures" data-chapter="lists" data-chno="4" data-topic="data-structures/lists/singly-linked-list" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures 資料結構</a> › Ch4 Linked Lists 鏈結串列 › Singly Linked List 單向鏈結串列</nav>
+      <div class="topic-head">
+        <h1>Singly Linked List 單向鏈結串列<small>不用搬資料，改幾個指標就能插入和刪除</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch4 Linked Lists</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">pointer</span>
+          <span class="chip">insert</span>
+          <span class="chip">delete</span>
+          <span class="chip">reverse</span>
+        </div>
+      </div>
+
+      <section id="why-linked-list">
+        <h2>為什麼需要鏈結串列</h2>
+        <div class="panel prose">
+          <p>陣列把元素放在<b>連續</b>的記憶體裡，好處是可以用索引直接算出第 i 個元素的位址，存取是 <code>O(1)</code>。但連續也帶來兩個麻煩：</p>
+          <ul>
+            <li><b>插入、刪除要搬資料</b>：在一個 1000 個元素的有序陣列最前面插入一個數，後面 1000 個元素都要往後移一格；刪除也一樣要往前補。平均要搬 n / 2 個元素，是 <code>O(n)</code>。</li>
+            <li><b>大小要先決定</b>：陣列宣告時就要給大小，給太小會不夠用，給太大又浪費；要擴充只能另外配置一塊更大的空間，把全部資料複製過去。</li>
+          </ul>
+          <p><span class="term">Linked List<small>（鏈結串列）</small></span>換一個想法：元素不必放在一起，每個元素旁邊多存一個「下一個元素在哪裡」的指標，用指標把散落各處的元素串成一條。要插入時，只要改一兩個指標讓它「接進來」，其他元素完全不用動；要多少空間就隨時用 <code>malloc</code> 配置一個節點，不用事先決定大小。</p>
+          <p>代價是失去了隨機存取：想找第 k 個元素，只能從頭沿著指標走 k − 1 步，是 <code>O(k)</code>。所以鏈結串列適合「常常插入、刪除，但很少依位置查詢」的情況，和陣列剛好互補。</p>
+        </div>
+      </section>
+
+      <section id="node-structure">
+        <h2>節點的結構：data 加上 link</h2>
+        <div class="panel prose">
+          <p>鏈結串列由一個個 <span class="term">Node<small>（節點）</small></span>組成，每個節點有兩個欄位：<b>data</b> 存資料，<b>link</b> 存下一個節點的位址。最後一個節點後面沒有東西，link 設成 <code>NULL</code>，代表串列到此結束。另外用一個指標 <b>first</b>（也常叫 head）指向第一個節點，整條串列就靠它找到；first 是 <code>NULL</code> 就是空串列。</p>
+          <p>因為每個節點只知道「下一個」在哪裡、不知道「上一個」，只能單方向往後走，所以叫 <span class="term">Singly Linked List<small>（單向鏈結串列）</small></span>。之後會學到每個節點也記住前一個的雙向串列，以及最後一個節點接回第一個的環狀串列。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="sll-structure"></div>
+            <figcaption><b>圖 1</b>：三個節點在記憶體中的位址是 0x1A0、0x3F8、0x2C4，並不連續；每個節點的 link 欄位存著下一個節點的位址，最後一個存 NULL。</figcaption>
+          </figure>
+          <p>在 C 裡，節點是一個 <span class="term">Self-referential Structure<small>（自我參考結構）</small></span>：結構裡有一個指向同型別結構的指標。習慣上先用 typedef 定義「指向節點的指標」型別 listPointer，程式會比較好讀。節點要用 <code>malloc</code> 動態配置，配置失敗會回傳 <code>NULL</code>，一定要檢查。</p>
+          <details class="code-fold">
+            <summary>看程式碼：節點結構與 newNode()</summary>
+            <div class="code-block">
+              <div class="code-head">節點結構與 newNode()</div>
+              <pre class="code">typedef struct node *listPointer;
+typedef struct node {
+  int data;
+  listPointer link;                            /* 指向下一個節點，最後一個是 NULL */
+} node;
+
+listPointer newNode(int x) {
+  listPointer p = malloc(sizeof(node));
+  if (p == NULL) { printf("Memory Full\n"); exit(1); }
+  p-&gt;data = x;
+  p-&gt;link = NULL;
+  return p;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="traversal">
+        <h2>走訪：沿著 link 一路走到 NULL</h2>
+        <div class="panel prose">
+          <p>所有操作的基礎都是 <span class="term">Traversal<small>（走訪）</small></span>：用一個指標 p 從 first 出發，處理完目前的節點後執行 <code>p = p-&gt;link</code> 移到下一個，直到 p 變成 <code>NULL</code>。印出所有元素、計算長度、搜尋某個值都是這個樣子，差別只在每一步做什麼。</p>
+          <p>注意走訪時要用<b>另一個指標 p</b>，不能直接移動 first。first 一旦往後移，前面的節點就再也找不到了（沒有任何指標指向它們），不但資料不見，記憶體也沒辦法 free，造成 <span class="term">Memory Leak<small>（記憶體洩漏）</small></span>。</p>
+          <p>搜尋時最好情況是第一個就找到，比較 1 次；最差情況是要找的值在最後一個或根本不存在，要比較 n 次，所以是 <code>O(n)</code>。即使串列是排序好的，也<b>不能用二分搜尋</b>：二分搜尋需要直接跳到中間，而鏈結串列要走到中間本身就要 n / 2 步。</p>
+          <details class="code-fold">
+            <summary>看程式碼：printList()、length()、search()</summary>
+            <div class="code-block">
+              <div class="code-head">printList()、length()、search()</div>
+              <pre class="code">void printList(listPointer first) {
+  for (listPointer p = first; p != NULL; p = p-&gt;link)
+    printf("%d -&gt; ", p-&gt;data);
+  printf("NULL\n");
+}
+
+int length(listPointer first) {
+  int count = 0;
+  for (listPointer p = first; p != NULL; p = p-&gt;link)
+    count++;
+  return count;
+}
+
+listPointer search(listPointer first, int x) {
+  listPointer p = first;
+  while (p != NULL &amp;&amp; p-&gt;data != x)            /* 一個一個往後找 */
+    p = p-&gt;link;
+  return p;                                    /* 找不到時 p 是 NULL */
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="insert">
+        <h2>插入：先接後面，再接前面</h2>
+        <div class="panel prose">
+          <p>插入分成兩種情況，關鍵差別在「<b>first 會不會改變</b>」。</p>
+          <h3>插在最前面</h3>
+          <p>新節點 p 要變成第一個：先讓 <code>p-&gt;link</code> 指向原本的第一個，再把 first 改成 p。因為 first 本身會被改掉，函式要收 first 的<b>位址</b>（<code>listPointer *first</code>，也就是指標的指標），才能改到呼叫端的那個變數。如果只傳 <code>listPointer first</code>，函式裡改的只是一份複本，回到呼叫端 first 還是指著舊的第一個，新節點就遺失了。</p>
+          <h3>插在某個節點 prev 之後</h3>
+          <p>這種情況 first 不變，只要兩個步驟，<b>順序不能顛倒</b>：</p>
+          <ol>
+            <li><code>p-&gt;link = prev-&gt;link;</code>：新節點先指向 prev 原本的下一個（先接後面）。</li>
+            <li><code>prev-&gt;link = p;</code>：prev 改指向新節點（再接前面）。</li>
+          </ol>
+          <p>如果先做第 2 步，prev-&gt;link 已經變成 p，原本的下一個節點就沒有任何指標記得了；接著第 1 步的 <code>p-&gt;link = prev-&gt;link</code> 讀到的是 p 自己，p 指向自己形成一個小環，後半段整個遺失。記法很簡單：<b>改掉一個指標之前，要先確定它原本指的東西有別人記住</b>。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="sll-insert-order"></div>
+            <figcaption><b>圖 2</b>：在 20 和 30 之間插入 25。(a) 順序正確，兩條橘色的 link 都接好；(b) 先改 prev-&gt;link，原本指向 30 的路斷掉，p 只能指向自己。</figcaption>
+          </figure>
+          <p>不管串列多長，插入本身都只改 2 個指標，是 <code>O(1)</code>。但「找到 prev」通常要從頭走，像在一個遞增串列中插入並維持排序（insertSorted），要先找到第一個 ≥ x 的節點，最差走 n 步，所以整體是 <code>O(n)</code>。找的時候要用兩個指標：cur 往前探，prev 跟在後面一格，因為單向串列沒辦法從 cur 往回找到它的前一個。</p>
+          <details class="code-fold">
+            <summary>看程式碼：insertFront()、insertAfter()、insertSorted()</summary>
+            <div class="code-block">
+              <div class="code-head">insertFront()、insertAfter()、insertSorted()</div>
+              <pre class="code">void insertFront(listPointer *first, int x) {
+  listPointer p = newNode(x);
+  p-&gt;link = *first;                            /* 新節點先指向原本的第一個 */
+  *first = p;                                  /* 再讓 first 指向新節點 */
+}
+
+void insertAfter(listPointer prev, int x) {
+  listPointer p = newNode(x);
+  p-&gt;link = prev-&gt;link;                        /* 先接後面 */
+  prev-&gt;link = p;                              /* 再接前面 */
+}
+
+void insertSorted(listPointer *first, int x) {
+  listPointer prev = NULL, cur = *first;
+  while (cur != NULL &amp;&amp; cur-&gt;data &lt; x) {       /* 找第一個 &gt;= x 的節點 */
+    prev = cur;
+    cur = cur-&gt;link;
+  }
+  if (prev == NULL) insertFront(first, x);     /* 插在最前面要改 first */
+  else insertAfter(prev, x);
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="delete">
+        <h2>刪除：一定要找到前一個節點</h2>
+        <div class="panel prose">
+          <p>刪掉節點 cur，就是讓它的前一個節點直接跳過它：<code>prev-&gt;link = cur-&gt;link</code>，然後 <code>free(cur)</code> 把記憶體還回去。所以刪除的重點不是 cur，而是 <b>cur 的前一個</b>。做法和 insertSorted 一樣，搜尋時讓 prev 跟在 cur 後面一格。</p>
+          <p>要分三種情況檢查：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>情況</th><th>怎麼判斷</th><th>要做什麼</th></tr></thead>
+              <tbody>
+                <tr><td>找不到</td><td>cur 走到 NULL</td><td>什麼都不改，回傳失敗</td></tr>
+                <tr><td>刪第一個</td><td>prev 還是 NULL</td><td><code>*first = cur-&gt;link</code>：first 往後移，所以函式同樣要收 <code>listPointer *first</code></td></tr>
+                <tr><td>刪中間或最後</td><td>prev 不是 NULL</td><td><code>prev-&gt;link = cur-&gt;link</code>；刪最後一個時 cur-&gt;link 是 NULL，prev 就變成新的最後一個</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>為什麼不能「只給 cur 就刪掉 cur」？因為改的是 prev 的 link，而單向串列從 cur 找不到 prev，只能從頭再走一次，<code>O(n)</code>。有一個常見的取巧：把 cur 下一個節點的資料複製到 cur，再刪掉下一個節點，這樣只要 <code>O(1)</code>；但如果 cur 是最後一個節點就沒有「下一個」可以抄，這招不能用，考題常拿這點問。</p>
+          <p>最後別忘了 <code>free</code>。<code>free(cur)</code> 之後 cur 就不能再使用（變成 dangling pointer），所以 <code>cur-&gt;link</code> 一定要在 free 之前讀出來。</p>
+          <details class="code-fold">
+            <summary>看程式碼：deleteValue()</summary>
+            <div class="code-block">
+              <div class="code-head">deleteValue()</div>
+              <pre class="code">int deleteValue(listPointer *first, int x) {
+  listPointer prev = NULL, cur = *first;
+  while (cur != NULL &amp;&amp; cur-&gt;data != x) {      /* 找要刪的節點，順便記住前一個 */
+    prev = cur;
+    cur = cur-&gt;link;
+  }
+  if (cur == NULL) return 0;                   /* 找不到 */
+  if (prev == NULL) *first = cur-&gt;link;        /* 刪第一個：first 往後移 */
+  else prev-&gt;link = cur-&gt;link;                 /* 前一個直接跳過 cur */
+  free(cur);
+  return 1;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>下面的串列是遞增排序的。輸入一個數字按 <b>insertSorted</b>，可以看到 prev 和 cur 一起往後找位置，再依序改兩個 link；按 <b>insertFront</b> 會直接插在最前面（不維持排序）；<b>delete</b> 和 <b>search</b> 輸入要找的值；<b>reverse</b> 不用輸入，會把整條串列反轉。橘色的箭頭是這一步剛被改掉的 link。</p>
+        </div>
+        <div class="viz" data-viz="sll"></div>
+      </section>
+
+      <section id="reverse">
+        <h2>反轉串列：三個指標</h2>
+        <div class="panel prose">
+          <p>反轉是考研最愛考的鏈結串列題，要求通常是「不配置新節點、<code>O(1)</code> 額外空間」。想法是從頭到尾把每一個 link 的方向反過來。用三個指標：</p>
+          <ul>
+            <li><b>prev</b>：已經反轉好的部分的第一個節點，一開始是 <code>NULL</code>。</li>
+            <li><b>cur</b>：現在要處理的節點，一開始是 first。</li>
+            <li><b>next</b>：cur 原本的下一個。改掉 cur-&gt;link 之前要先把它存起來，否則後面的節點全部找不到。</li>
+          </ul>
+          <p>每一輪做四件事：記住 next、把 cur-&gt;link 改成 prev、prev 移到 cur、cur 移到 next。cur 變成 <code>NULL</code> 時，prev 停在原本的最後一個節點，也就是反轉後的第一個，回傳它。</p>
+          <h3>例子：反轉 1 → 2 → 3 → NULL</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>輪</th><th>next</th><th>做完後已反轉的部分（從 prev 開始）</th><th>還沒處理的部分（從 cur 開始）</th></tr></thead>
+              <tbody>
+                <tr><td>開始</td><td>—</td><td>NULL</td><td>1 → 2 → 3 → NULL</td></tr>
+                <tr><td>1</td><td>2</td><td>1 → NULL</td><td>2 → 3 → NULL</td></tr>
+                <tr><td>2</td><td>3</td><td>2 → 1 → NULL</td><td>3 → NULL</td></tr>
+                <tr><td>3</td><td>NULL</td><td>3 → 2 → 1 → NULL</td><td>NULL，迴圈結束</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>每個節點只被處理一次，n 個節點迴圈跑 n 輪，時間 <code>O(n)</code>；只多用了三個指標，額外空間 <code>O(1)</code>。注意函式是<b>回傳</b>新的第一個節點，呼叫端要寫 <code>first = reverse(first);</code>。如果只呼叫 <code>reverse(first)</code> 而沒有接回傳值，first 還指著原本的第一個節點，而它現在是最後一個，從 first 印出來只剩一個元素。</p>
+          <p>也可以用遞迴：先反轉第一個節點之後的部分，再把第一個節點接到尾巴。寫起來短，但遞迴深度是 n，要 <code>O(n)</code> 的 stack 空間，串列很長時可能 stack overflow，所以題目要求 <code>O(1)</code> 空間時要用迴圈版。</p>
+          <details class="code-fold">
+            <summary>看程式碼：reverse()</summary>
+            <div class="code-block">
+              <div class="code-head">reverse()</div>
+              <pre class="code">listPointer reverse(listPointer first) {
+  listPointer prev = NULL, cur = first, next;
+  while (cur != NULL) {
+    next = cur-&gt;link;                          /* 先記住下一個，不然會斷掉 */
+    cur-&gt;link = prev;                          /* 箭頭反過來指向前一個 */
+    prev = cur;                                /* 三個指標一起往後移 */
+    cur = next;
+  }
+  return prev;                                 /* prev 停在原本的最後一個 */
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="dummy-head">
+        <h2>Dummy Head：讓第一個節點不再特別</h2>
+        <div class="panel prose">
+          <p>回頭看 insertSorted 和 deleteValue，都有一個「prev 是 NULL」的特殊情況，因為第一個節點前面沒有節點，只能改 first。這種邊界情況是寫錯最多的地方。</p>
+          <p>解法是在最前面放一個<b>不存資料</b>的 <span class="term">Dummy Head<small>（虛擬頭節點，也叫 header node）</small></span>。這樣每個資料節點前面都一定有一個節點，插入和刪除都能用同一套「改 prev-&gt;link」的寫法，函式也不用再收指標的指標，因為 head 本身永遠不會變。代價只是多一個節點的空間。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="sll-dummy-head"></div>
+            <figcaption><b>圖 3</b>：加了 dummy head 的串列。真正的資料從 head-&gt;link 開始；空串列是 head-&gt;link == NULL，而不是 head == NULL。</figcaption>
+          </figure>
+          <p>比較 insertSortedDummy 和前面的 insertSorted：prev 直接從 head 出發，迴圈改成看 <code>prev-&gt;link</code>，最後一律呼叫 insertAfter，少了一個 if。考題看到 header node，判斷空串列、計算長度時要記得 dummy 不算在內。</p>
+          <details class="code-fold">
+            <summary>看程式碼：insertSortedDummy()</summary>
+            <div class="code-block">
+              <div class="code-head">insertSortedDummy()</div>
+              <pre class="code">void insertSortedDummy(listPointer head, int x) {
+  listPointer prev = head;                     /* head 是不存資料的 dummy */
+  while (prev-&gt;link != NULL &amp;&amp; prev-&gt;link-&gt;data &lt; x)
+    prev = prev-&gt;link;
+  insertAfter(prev, x);                        /* 不需要特別處理最前面 */
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="more-ops">
+        <h2>其他常考操作</h2>
+        <div class="panel prose">
+          <ul>
+            <li><b>找中間節點</b>：用快慢兩個指標，slow 一次走一步、fast 一次走兩步，fast 走到底時 slow 剛好在中間。只走一遍就好，不用先算長度。n 是偶數時，下面的寫法停在後半的第一個（1 2 3 4 停在 3）。</li>
+            <li><b>串接兩條串列</b>：走到第一條的最後一個節點，把它的 link 指向第二條的開頭。要走完第一條，<code>O(n)</code>；如果平常就多記一個指向最後一個節點的 last 指標，就變成 <code>O(1)</code>。</li>
+            <li><b>釋放整條串列</b>：一個一個 free，free 之前要先把 link 存起來，理由和反轉時先存 next 一樣。</li>
+            <li><b>找倒數第 k 個</b>：先讓 fast 走 k 步，再讓 slow 和 fast 一起走，fast 到 NULL 時 slow 就是倒數第 k 個，同樣只走一遍。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：middle()、concatenate()、freeList()</summary>
+            <div class="code-block">
+              <div class="code-head">middle()、concatenate()、freeList()</div>
+              <pre class="code">listPointer middle(listPointer first) {
+  listPointer slow = first, fast = first;
+  while (fast != NULL &amp;&amp; fast-&gt;link != NULL) { /* fast 一次走兩步 */
+    slow = slow-&gt;link;
+    fast = fast-&gt;link-&gt;link;
+  }
+  return slow;                                 /* 偶數個時回傳後半的第一個 */
+}
+
+listPointer concatenate(listPointer a, listPointer b) {
+  if (a == NULL) return b;
+  listPointer p = a;
+  while (p-&gt;link != NULL) p = p-&gt;link;         /* 走到 a 的最後一個 */
+  p-&gt;link = b;
+  return a;
+}
+
+void freeList(listPointer first) {
+  while (first != NULL) {
+    listPointer next = first-&gt;link;            /* free 之前先記住下一個 */
+    free(first);
+    first = next;
+  }
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="compare">
+        <h2>陣列與鏈結串列比較</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較項目</th><th>陣列</th><th>單向鏈結串列</th></tr></thead>
+              <tbody>
+                <tr><td>存取第 k 個</td><td><code>O(1)</code>，用索引算位址</td><td><code>O(k)</code>，從頭走</td></tr>
+                <tr><td>已知位置後插入／刪除</td><td><code>O(n)</code>，要搬資料</td><td><code>O(1)</code>，改指標（刪除要知道前一個）</td></tr>
+                <tr><td>在最前面插入</td><td><code>O(n)</code></td><td><code>O(1)</code></td></tr>
+                <tr><td>排序後搜尋</td><td><code>O(log n)</code>，二分搜尋</td><td><code>O(n)</code>，不能二分</td></tr>
+                <tr><td>大小</td><td>宣告時固定</td><td>隨時 malloc，可以一直長</td></tr>
+                <tr><td>額外空間</td><td>沒有</td><td>每個節點多一個指標</td></tr>
+                <tr><td>快取效率</td><td>好，資料連續</td><td>較差，節點散在各處</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>應用上，鏈結串列常用來實作 stack 和 queue（不用擔心滿）、多項式（只存非零項）、圖的 adjacency list，以及雜湊表處理碰撞的 chaining。只要資料量會變、而且主要操作是在頭尾或已知位置插入刪除，就適合用鏈結串列。</p>
+        </div>
+      </section>
+
+      <section id="ops">
+        <h2>操作與複雜度整理</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>操作 Operation</th><th>做法</th><th>時間</th></tr></thead>
+              <tbody>
+                <tr><td><code>insertFront(&amp;first, x)</code></td><td>p-&gt;link = first，first = p</td><td><code>O(1)</code></td></tr>
+                <tr><td><code>insertAfter(prev, x)</code></td><td>先接後面再接前面</td><td><code>O(1)</code></td></tr>
+                <tr><td><code>insertSorted(&amp;first, x)</code></td><td>prev、cur 找第一個 ≥ x 的位置</td><td><code>O(n)</code></td></tr>
+                <tr><td><code>deleteValue(&amp;first, x)</code></td><td>找到 cur 與 prev，prev-&gt;link = cur-&gt;link</td><td><code>O(n)</code></td></tr>
+                <tr><td><code>search(first, x)</code>、<code>length(first)</code></td><td>從頭走到 NULL</td><td><code>O(n)</code></td></tr>
+                <tr><td>刪除最後一個節點</td><td>要找到倒數第二個，即使有 last 指標也一樣</td><td><code>O(n)</code></td></tr>
+                <tr><td><code>reverse(first)</code></td><td>prev、cur、next 三個指標</td><td><code>O(n)</code> 時間、<code>O(1)</code> 空間</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>指標操作追蹤</td><td>很常考</td><td>每一行都畫出「誰指向誰」，被改掉的箭頭馬上擦掉重畫</td><td><a class="q-link" href="#q-ds-0043">例題</a></td></tr>
+                <tr><td>插入／刪除的敘述填空</td><td>很常考</td><td>插入先接後面再接前面；刪除改前一個節點的 link，最後 free</td><td><a class="q-link" href="#q-ds-0042">例題</a></td></tr>
+                <tr><td>反轉串列</td><td>很常考</td><td>prev、cur、next 三個指標，先存 next 再改 link；記得接回傳值</td><td><a class="q-link" href="#q-ds-0044">例題</a></td></tr>
+                <tr><td>各操作的時間複雜度</td><td>常考</td><td>看「要不要從頭走」：需要前一個節點或第 k 個就是 O(n)</td><td><a class="q-link" href="#q-ds-0045">例題</a></td></tr>
+                <tr><td>遞迴函式的輸出</td><td>常考</td><td>畫出呼叫樹，遞迴呼叫前後的 printf 分開記</td><td><a class="q-link" href="#q-ds-0047">例題</a></td></tr>
+                <tr><td>寫函式：快慢指標、合併</td><td>常考</td><td>倒數第 k 個、找中間用兩個速度不同的指標；合併用 dummy 節點接尾巴</td><td><a class="q-link" href="#q-ds-0046">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 插入時先寫 prev-&gt;link = p</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要先 p-&gt;link = prev-&gt;link，否則後半段遺失</span> <a class="q-link" href="#q-ds-0041">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 鏈結串列也能 O(1) 取第 k 個、排序後能二分搜尋</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 沒有隨機存取，走到第 k 個要 O(k)</span> <a class="q-link" href="#q-ds-0040">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 有 last 指標，刪除最後一個就是 O(1)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要改的是倒數第二個的 link，還是得從頭找</span> <a class="q-link" href="#q-ds-0045">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 呼叫 reverse(first) 之後 first 就是新的開頭</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要寫 first = reverse(first)；沒接回傳值時 first 指著原本的頭，現在是尾巴</span> <a class="q-link" href="#q-ds-0044">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 刪除後再讀 cur-&gt;link 往下走</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> free 之後不能再用 cur，要先把 cur-&gt;link 存起來或先接好</span> <a class="q-link" href="#q-ds-0042">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="singly-linked-list"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-21 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=be8ea90a"></script>
+  <script src="../../../assets/js/viz-core.js?v=be8ea90a"></script>
+  <script src="../../../assets/js/viz/data-structures/singly-linked-list.js?v=be8ea90a"></script>
+</body>
+</html>

@@ -629,6 +629,156 @@
       "source": {
         "kind": "original"
       }
+    },
+    {
+      "id": "ds-0040",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一條有 n 個節點的單向鏈結串列，只有指向第一個節點的指標 first。要讀取第 k 個節點的資料（1 ≤ k ≤ n），需要多少時間？",
+      "choices": [
+        "(A) O(1)",
+        "(B) O(log k)",
+        "(C) O(k)",
+        "(D) O(n log n)"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>鏈結串列沒有隨機存取：節點不在連續記憶體裡，沒辦法用索引算出位址，只能從 first 沿著 link 走 k − 1 步，所以是 <b>O(k)</b>（最差 k = n 時是 O(n)）。</p><p>(A) 是陣列的答案。(B) 是把二分搜尋套過來的常見誤解：即使串列是排序好的，走到中間本身就要 n / 2 步，二分搜尋在鏈結串列上沒有好處。</p>"
+    },
+    {
+      "id": "ds-0041",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "prev 指向串列中的某個節點，p 是剛配置好的新節點。要把 p 插在 prev 之後，下列哪一組敘述正確？",
+      "choices": [
+        "(A) <code>prev-&gt;link = p; p-&gt;link = prev-&gt;link;</code>",
+        "(B) <code>p-&gt;link = prev-&gt;link; prev-&gt;link = p;</code>",
+        "(C) <code>p-&gt;link = prev; prev-&gt;link = p;</code>",
+        "(D) <code>prev-&gt;link = p-&gt;link; p-&gt;link = prev;</code>"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>先接後面、再接前面：p 先指向 prev 原本的下一個，prev 再改指向 p。</p><ul><li>(A) 順序顛倒：第一行之後 prev-&gt;link 已經是 p，第二行讓 p 指向自己，原本 prev 後面的節點全部遺失。</li><li>(C) p 指回 prev，形成 prev ⇄ p 的小環，後半段也遺失。</li><li>(D) p-&gt;link 還是 NULL，第一行就把 prev 後面整段切斷。</li></ul>"
+    },
+    {
+      "id": "ds-0042",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "prev 指向串列中的某個節點，而且 prev 後面還有節點。下面的程式要刪除 prev 的下一個節點，請填入空格：<pre class=\"code\">listPointer q = prev-&gt;link;\n________;\nfree(q);</pre>",
+      "answer": "<code>prev-&gt;link = q-&gt;link</code>",
+      "explanation": "<p>要刪掉 q，就讓它的前一個節點 prev 直接跳過它，指向 q 的下一個：<code>prev-&gt;link = q-&gt;link</code>。這一行一定要在 <code>free(q)</code> 之前，free 之後 q 指向的記憶體已經還回去，再讀 <code>q-&gt;link</code> 是未定義行為。</p><p>常見錯誤是寫成 <code>prev-&gt;link = prev-&gt;link</code>（沒有改變）或 <code>q = q-&gt;link</code>（只移動了區域變數 q，串列本身沒有改）。</p>"
+    },
+    {
+      "id": "ds-0043",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "串列為 first → 10 → 20 → 30 → 40 → 50 → NULL。執行下列程式後，從 first 印出整條串列的結果是？<pre class=\"code\">listPointer p = first, q;\nq = p-&gt;link-&gt;link;\np-&gt;link-&gt;link = q-&gt;link;\nq-&gt;link = first;\nfirst = q;</pre>",
+      "answer": "30 → 10 → 20 → 40 → 50 → NULL",
+      "explanation": "<p>一行一行畫出誰指向誰：</p><ol><li>p 指向 10，<code>q = p-&gt;link-&gt;link</code>：10 的下一個是 20，20 的下一個是 30，所以 q 指向 <b>30</b>。</li><li><code>p-&gt;link-&gt;link = q-&gt;link</code>：20 的 link 改成 30 的下一個（40），30 被跳過，串列變成 10 → 20 → 40 → 50，30 暫時只剩 q 記得。</li><li><code>q-&gt;link = first</code>：30 指向 10。</li><li><code>first = q</code>：30 變成第一個。</li></ol><p>結果是 <b>30 → 10 → 20 → 40 → 50 → NULL</b>，等於把第 3 個節點搬到最前面（已用程式驗算）。</p>"
+    },
+    {
+      "id": "ds-0044",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "串列為 first → 1 → 2 → 3 → 4 → 5 → NULL。執行本頁的 reverse() 時，while 迴圈<b>剛好跑完 2 輪</b>就暫停。此時若從 <b>first</b> 開始印（first 還沒被修改），會印出什麼？",
+      "choices": [
+        "(A) 1 → NULL",
+        "(B) 2 → 1 → NULL",
+        "(C) 1 → 2 → 3 → 4 → 5 → NULL",
+        "(D) 3 → 4 → 5 → NULL"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>第 1 輪把 1 的 link 改成 NULL（prev 一開始是 NULL），第 2 輪把 2 的 link 改成指向 1。兩輪後：prev 指向 2，已反轉的部分是 <b>2 → 1 → NULL</b>；cur 指向 3，還沒處理的部分是 <b>3 → 4 → 5 → NULL</b>。</p><p>first 仍然指向節點 1，而 1 的 link 在第 1 輪就變成 NULL 了，所以只印出 <b>1 → NULL</b>（已用程式驗算）。這也說明為什麼呼叫端一定要寫 <code>first = reverse(first)</code>：反轉完成後，first 指的節點 1 已經是最後一個。(B) 是從 prev 印、(D) 是從 cur 印的結果。</p>"
+    },
+    {
+      "id": "ds-0045",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一條單向鏈結串列有 n 個節點，同時保留指向第一個節點的 first 與指向最後一個節點的 last。下列哪一個操作<b>無法</b>在 O(1) 完成？",
+      "choices": [
+        "(A) 在最前面插入一個節點",
+        "(B) 在最後面插入一個節點",
+        "(C) 刪除第一個節點",
+        "(D) 刪除最後一個節點"
+      ],
+      "answer": "(D)",
+      "explanation": "<ul><li>(A) 新節點指向 first，first 改成新節點：O(1)。</li><li>(B) <code>last-&gt;link = p; last = p;</code>：有 last 指標所以 O(1)。</li><li>(C) first 往後移一個再 free：O(1)。</li><li>(D) 刪掉最後一個之後，<b>倒數第二個</b>要變成新的 last，它的 link 也要改成 NULL。但單向串列從 last 走不回倒數第二個，只能從 first 走 n − 2 步，是 <b>O(n)</b>。</li></ul><p>這就是為什麼用單向串列實作 queue 時，要從 first 端刪除、從 last 端加入，而不是反過來。要讓刪除最後一個也是 O(1)，就要用雙向鏈結串列。</p>"
+    },
+    {
+      "id": "ds-0046",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "original"
+      },
+      "question": "寫一個函式 <code>listPointer kthFromEnd(listPointer first, int k)</code>，回傳單向串列<b>倒數第 k 個</b>節點（k ≥ 1；不存在時回傳 NULL）。限制：只能走訪串列一次、O(1) 額外空間。並以 3 → 8 → 1 → 9 → 4 → 7 → NULL 說明 k = 2 時的結果。",
+      "answer": "兩個指標相隔 k 步：fast 先走 k 步，再和 slow 一起走到 fast 為 NULL，slow 就是倒數第 k 個；例子 k = 2 回傳 4。",
+      "explanation": "<pre class=\"code\">listPointer kthFromEnd(listPointer first, int k) {\n  listPointer fast = first, slow = first;\n  for (int i = 0; i &lt; k; i++) {          /* fast 先走 k 步 */\n    if (fast == NULL) return NULL;      /* 串列不到 k 個 */\n    fast = fast-&gt;link;\n  }\n  while (fast != NULL) {                /* 兩個一起走，距離保持 k */\n    slow = slow-&gt;link;\n    fast = fast-&gt;link;\n  }\n  return slow;\n}</pre><p><b>為什麼對</b>：fast 和 slow 之間永遠隔 k 個節點。fast 走到 NULL（也就是最後一個節點的下一格）時，slow 剛好在 NULL 前面第 k 個，即倒數第 k 個。</p><p><b>例子</b>：k = 2，fast 先走到 1；接著兩者一起走：(slow, fast) = (8, 9)、(1, 4)、(9, 7)、(4, NULL)，回傳 <b>4</b>。驗算其他 k：k = 1 回傳 7、k = 6 回傳 3、k = 7 回傳 NULL（已用程式驗算）。</p><p><b>複雜度</b>：fast 共走 n 步、slow 走 n − k 步，只掃一次，時間 O(n)、空間 O(1)。先算長度 n 再走 n − k 步也是 O(n)，但要走訪兩次，不符合題目限制。</p>"
+    },
+    {
+      "id": "ds-0047",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "串列為 first → 1 → 2 → 3 → 4 → 5 → 6 → NULL。呼叫 <code>f(first)</code> 會印出什麼？<pre class=\"code\">void f(listPointer p) {\n  if (p == NULL) return;\n  printf(\"%d \", p-&gt;data);\n  if (p-&gt;link != NULL) f(p-&gt;link-&gt;link);\n  printf(\"%d \", p-&gt;data);\n}</pre>",
+      "answer": "1 3 5 5 3 1",
+      "explanation": "<p>f 每次跳過一個節點（往後走兩步），而且在遞迴呼叫的<b>前後各印一次</b>：</p><ul><li>f(1)：印 1，呼叫 f(3)</li><li>f(3)：印 3，呼叫 f(5)</li><li>f(5)：印 5；5 的下一個是 6，呼叫 f(6-&gt;link) = f(NULL)，直接返回；再印 5</li><li>回到 f(3) 印 3，回到 f(1) 印 1</li></ul><p>結果 <b>1 3 5 5 3 1</b>（已用程式驗算）。前半段是往下遞迴時印的（正序），後半段是返回時印的（反序），這是「遞迴前後各做一次」題型的固定模式。若串列只有 1～5，f(5) 時 5-&gt;link 是 NULL，不會呼叫，輸出一樣是 1 3 5 5 3 1。</p>"
+    },
+    {
+      "id": "ds-0048",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "original"
+      },
+      "question": "兩條單向串列 a、b 都已遞增排序。寫一個函式把它們合併成一條遞增串列並回傳開頭，<b>不可配置新的資料節點</b>（只能改 link）。分析時間與空間複雜度，並寫出 a = 1 → 4 → 7 → 10、b = 2 → 3 → 8 的結果。",
+      "answer": "用一個區域的 dummy 節點當新串列的頭，每次把 a、b 中較小的節點接到尾巴；結果 1 → 2 → 3 → 4 → 7 → 8 → 10，時間 O(m + n)、空間 O(1)。",
+      "explanation": "<pre class=\"code\">listPointer merge(listPointer a, listPointer b) {\n  node dummy;                      /* 區域變數，不是 malloc 的新節點 */\n  listPointer t = &amp;dummy;          /* t 永遠指向結果的最後一個 */\n  while (a != NULL &amp;&amp; b != NULL) {\n    if (a-&gt;data &lt;= b-&gt;data) { t-&gt;link = a; a = a-&gt;link; }\n    else                    { t-&gt;link = b; b = b-&gt;link; }\n    t = t-&gt;link;\n  }\n  t-&gt;link = (a != NULL) ? a : b;   /* 剩下的整段直接接上 */\n  return dummy.link;\n}</pre><p><b>想法</b>：和合併排序的 merge 一樣，每次比較兩條的開頭，把較小的那個節點「摘下來」接到結果尾巴。dummy 節點讓第一次接上不用特別處理（和 dummy head 的道理相同）。其中一條用完時，另一條剩下的部分本來就排好序，整段接上即可，不用一個一個搬。</p><p><b>例子</b>：依序接上 1、2、3、4、7、8，這時 b 用完，把 a 剩下的 10 整段接上，結果 <b>1 → 2 → 3 → 4 → 7 → 8 → 10</b>（已用程式驗算；a 為空時直接回傳 b）。</p><p><b>複雜度</b>：每輪接上一個節點，最多 m + n 輪，時間 <b>O(m + n)</b>；只用了 dummy 和 t 等固定幾個變數，額外空間 <b>O(1)</b>。用 <code>&lt;=</code> 讓相同值時 a 的節點先接，合併是穩定的。</p>"
     }
   ]
 }
