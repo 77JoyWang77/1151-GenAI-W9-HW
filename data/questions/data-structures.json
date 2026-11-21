@@ -1025,6 +1025,462 @@
       ],
       "answer": "(A)(B)(C)(D)（A、B 的解讀待確認）",
       "explanation": "<p>個數是 Catalan 數 b(n)，遞迴式 b(n) = Σ<sub>i=0..n−1</sub> b(i)·b(n−1−i)，b(0) = 1。依序算出 1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862：</p><ul><li>(C) 對：b(7) = 429。</li><li>(D) 對：b(9) = 4862。</li><li>(A)(B)：如果「determining」是指<b>算出有幾種</b>，用上面的 DP：要存 b(0..n) 共 n + 1 個值，空間 O(n)；算 b(k) 要加 k 項，總共 1 + 2 + … + n = n(n+1)/2 次，時間 O(n²)，兩個都對。如果解讀成<b>把每一棵樹都列出來</b>，輸出量就是 b(n) 棵、約 4<sup>n</sup> / n<sup>1.5</sup>，不可能是 O(n²)。題目沒有公布官方答案，這裡依題目只問「determining」的較常見解讀作答（待確認）。</li></ul><p>（b(0)～b(9) 已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0062",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Which of the following statements are true?",
+      "choices": [
+        "(A) When converting the infix expression a*(b+c/d)*(e-f)+g to its postfix form, there are at most 4 tokens in the stack at any moment.",
+        "(B) The postfix form of infix expression (a+b-c)*(d-e) is abc-+de-*",
+        "(C) The infix expression of postfix expression 3k-2m4+*+pab-*/ is ((3-k)+2(m+4))/(p*(a-b))",
+        "(D) When converting the infix expression a*(b+c/d)*(e-f) to its postfix form, there are at most 3 tokens in the stack at any moment."
+      ],
+      "answer": "(A)(C)（C 的寫法待確認）",
+      "explanation": "<ul><li>(A) 對。用 stack 轉換時，掃到 c/d 的 / 那一刻，stack 裡由底到頂是 <code>* ( + /</code>，共 4 個，這是最多的時候；結果是 abcd/+*ef-*g+。</li><li>(B) 錯。+ 和 − 同級、由左到右，(a+b-c) 是 (a+b)−c，後序是 ab+c-；整題是 ab+c-de-*。選項的 abc-+ 是 a+(b−c)。</li><li>(C) 對（待確認）。依序還原：3k- → (3−k)；2m4+* → 2*(m+4)；+ → (3−k)+2*(m+4)；pab-* → p*(a−b)；最後 /。選項把 2*(m+4) 寫成 2(m+4)，若接受省略乘號的寫法就是對的。</li><li>(D) 錯。去掉最後的 +g 不影響前面的過程，stack 一樣最多 4 個（<code>* ( + /</code>），不是 3 個。</li></ul><p>（轉換結果和 stack 最大深度都已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0063",
+      "topics": [
+        "stack",
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Given PUSH sequence and POP sequence. Which of the following statements are false?",
+      "choices": [
+        "(A) PUSH 1 2 3 4; POP 1 2 3 4; It must be a Queue",
+        "(B) PUSH 1 2 3 4; POP 2 1 3 4; It must be a Stack",
+        "(C) PUSH 1 2; POP 1 2; It could be a Stack",
+        "(D) PUSH 1 2 3 4; POP 2 3 1 4; It is neither Stack nor Queue"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>題目只給 push 的順序和 pop 的順序，push、pop 可以交錯進行。</p><ul><li>(A) 錯（所以要選）。stack 也能做到：push 1、pop 1、push 2、pop 2……每放一個就馬上拿出來，pop 順序同樣是 1 2 3 4，所以不一定是 queue。</li><li>(B) 正確。queue 的 pop 順序一定等於 push 順序，2 1 3 4 不可能是 queue；stack 可以：push 1、push 2、pop 2、pop 1、push 3、pop 3、push 4、pop 4。</li><li>(C) 正確。push 1、pop 1、push 2、pop 2。</li><li>(D) 錯（所以要選）。stack 做得到：push 1、push 2、pop 2、push 3、pop 3、pop 1、push 4、pop 4，得到 2 3 1 4。</li></ul>"
+    },
+    {
+      "id": "ds-0064",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>The pseudo code below aims to reverse a linked list.<pre class=\"code\">typedef struct Node{\n    int data;\n    Node *next;\n};\nNode *NPtr;\n\nint main()\n{\n    NPtr head = NULL; /* Start with an empty linked list */\n    push(&amp;head, ...); /* insert items into the linked list */\n    reverse(&amp;head); /* reverse the linked list */\n}\n\nvoid reverse(NPtr *Href)\n{\n    NPtr P = NULL;\n    NPtr C = *Href;\n    NPtr N = NULL;\n\n    while (___(1)___) {\n        N = C-&gt;next;\n        C-&gt;next = P;\n        P = C;\n        C = N;\n    }\n    ___(2)___\n}</pre>Which of the following statements are true?",
+      "choices": [
+        "(A) Blank (1) should be C != NULL.",
+        "(B) Statement C->next = P; reverses node's pointer.",
+        "(C) Blank (2) should be *Href = C;",
+        "(D) Statement P = C; moves the pointer to the next."
+      ],
+      "answer": "(A)(B)(D)（D 的敘述待確認）",
+      "explanation": "<p>這就是三指標反轉：P 是已反轉部分的開頭、C 是目前節點、N 先記住 C 的下一個。</p><ul><li>(A) 對。C 走到 NULL 代表每個節點都處理完了，迴圈條件是 <code>C != NULL</code>。</li><li>(B) 對。<code>C-&gt;next = P</code> 把 C 的箭頭從「指向下一個」改成「指向前一個」。</li><li>(C) 錯。迴圈結束時 C 是 NULL，P 才停在原本的最後一個（反轉後的第一個），應該是 <code>*Href = P;</code>。寫成 <code>*Href = C</code> 會讓 head 變成 NULL，整條串列遺失。</li><li>(D) 對（待確認）。<code>P = C</code> 讓 P 往後移一格，到剛處理完的節點；接著 <code>C = N</code> 再讓 C 往後移。題目的「moves the pointer to the next」指的應該是這件事。</li></ul>"
+    },
+    {
+      "id": "ds-0065",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Which of the following statements are true?",
+      "choices": [
+        "(A) Consider the convert the infix expression a*(b+c/d)*(e-f)+g to its postfix form. There are at most 4 tokens in this stack at any moment during the conversion.",
+        "(B) The postfix form of infix expression (a+b-c)*(d-e) is abc+-de-*",
+        "(C) The infix expression of postfix expression 3k-2m4+*+pab-*/ is ((3-k)+2(m+4))/(p*(a-b))",
+        "(D) Consider the convert the infix expression a*(b+c/d)*(e-f) to its postfix form. There are at most 3 tokens in this stack at any moment during the conversion."
+      ],
+      "answer": "(A)(C)（C 的寫法待確認）",
+      "explanation": "<p>和 110 學年度第 1 題幾乎相同，只有 (B) 換了。</p><ul><li>(A) 對。掃到 / 時 stack 由底到頂是 <code>* ( + /</code>，最多 4 個。</li><li>(B) 錯。(a+b-c) 的後序是 ab+c-，整題是 ab+c-de-*。abc+- 代表 a−(b+c)，意思完全不同。</li><li>(C) 對（待確認）。還原結果是 ((3−k)+2*(m+4))/(p*(a−b))，選項省略了 2 和 (m+4) 之間的乘號。</li><li>(D) 錯。去掉 +g 之後 stack 一樣最多 4 個。</li></ul><p>（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0066",
+      "topics": [
+        "stack",
+        "circular-queue",
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Given two devices, A and B, connected through a black box. When device A transmits 5 messages, m1, m2, m3, m4, and m5, to device B sequentially, which of the following statements are false?",
+      "choices": [
+        "(A) The black box must be a queue when device B receives m1, m2, m3, m4, and m5 sequentially.",
+        "(B) The black box could be a stack when device B receives m3, m2, m1, m4, and m5 sequentially.",
+        "(C) The black box could be a max heap when device B receives m3, m2, m5, m4, and m1 sequentially.",
+        "(D) The black box neither a stack nor queue when device B receives m3, m2, m1, m4, and m5 sequentially"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>和 110 學年度第 6 題同一個觀念：送出（push）和接收（pop）可以交錯。</p><ul><li>(A) 錯（要選）。stack 每收到一個就馬上送出，順序也是 m1～m5，所以不一定是 queue。</li><li>(B) 正確。push m1、m2、m3，pop m3、m2、m1，再 push m4 pop m4、push m5 pop m5。</li><li>(C) 正確。題目沒給訊息的優先權，只要 m3 &gt; m2 &gt; m5 &gt; m4 &gt; m1，全部放進 max heap 再依序取出就是這個順序，所以「could be」成立。</li><li>(D) 錯（要選）。(B) 已經說明 stack 做得到這個順序。</li></ul>"
+    },
+    {
+      "id": "ds-0067",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>The pseudo code below aims to reverse a linked list.<pre class=\"code\">struct Node {\n    int data;\n    struct Node* next;\n};\ntypedef struct Node* NPtr;\n\nint main()\n{\n    NPtr head = NULL; /* Start with an empty linked list */\n    push(&amp;head, ...); /* insert items into the linked list */\n    reverse(&amp;head); /* reverse the linked list */\n}\n\nvoid reverse(NPtr* Href)\n{\n    NPtr P = NULL;\n    NPtr C = *Href;\n    NPtr N = NULL;\n\n    while (___(1)___) {\n        N = C-&gt;next;\n        C-&gt;next = ___(2)___;\n        P = C;\n        C = N;\n    }\n    ___(3)___\n}</pre>Which of the following statements are true?",
+      "choices": [
+        "(A) Blank (1) should be C* != NULL.",
+        "(B) Blank (2) should be N.",
+        "(C) Blank (3) should be *Href = C;",
+        "(D) Statement P = C; moves the pointer to the next."
+      ],
+      "answer": "(D)（A 的寫法待確認）",
+      "explanation": "<ul><li>(A) 待確認。迴圈條件應該是 <code>C != NULL</code>；選項寫成 <code>C* != NULL</code>，在 C 語言裡不是合法的運算式。如果當成筆誤就是對的，照字面就是錯的，這裡依字面不選。</li><li>(B) 錯。這一行要把箭頭反過來指向前一個節點，應該是 <code>C-&gt;next = P</code>；填 N 等於沒改。</li><li>(C) 錯。迴圈結束時 C 是 NULL，反轉後的第一個節點是 P，應該是 <code>*Href = P;</code>。</li><li>(D) 對。<code>P = C</code> 讓 P 前進到剛處理完的節點。</li></ul>"
+    },
+    {
+      "id": "ds-0068",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題，答錯 1 題倒扣 1 分）</p>Which of the following statement(s) is (are) correct?",
+      "choices": [
+        "(A) The time complexity of inserting an element to an n-node min-Heap is O(n).",
+        "(B) The time complexity of searching an element in an n-node max-Heap is O(n).",
+        "(C) Building the min-Heap by inserting these nodes one by one {42, 9, 23, 37, 4, 34, 2}. The level order traversal sequence of the min-Heap is {2, 9, 4, 42, 37, 23, 34}.",
+        "(D) The time complexity of deleting min in an n-node min-Heap is O(log n)"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯。插入是放到最後再往上比，最多走樹高 ⌊log₂n⌋ 層，O(log n)。</li><li>(B) 對。heap 只保證父 ≥ 子，左右子樹之間沒有大小關係，找任意值最差要看過全部 n 個。</li><li>(C) 錯。逐一插入並上移：42 → 9 上到根 → 23 → 37 上移到 9 下面、42 下移 → 4 上到根 → 34 → 2 上到根、4 下移到 [3]、23 下移到 [7]。最後陣列是 <b>{2, 9, 4, 42, 37, 34, 23}</b>，最後兩個和選項的順序相反。</li><li>(D) 對。刪除最小值把最後一個搬到根再往下比，O(log n)。</li></ul><p>（(C) 已用程式模擬逐一插入驗算。）</p>"
+    },
+    {
+      "id": "ds-0069",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題，答錯 1 題倒扣 1 分）</p>In a stack structure, let X denote a push operation and let Y denote a pop operation. After 8 stack operations, consisting of 4 pushes and 4 pops, an input sequence 1234 may change its order. For example, after XYXXYYXY is performed, 1234 will become 1324. Which of the following is (are) possible output sequences?",
+      "choices": [
+        "(A) 1243",
+        "(B) 4123",
+        "(C) 2134",
+        "(D) 4321"
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<p>判斷方法：要輸出 x，就把還沒進 stack 的數字一路 push 到 x，然後 pop；如果 x 已經在 stack 裡但不在頂端，就不可能。</p><ul><li>(A) 可以：XY XY XX YY（1、2 直接進出，3、4 進去再反著出來）。</li><li>(B) 不行：先輸出 4 代表 1、2、3 都已經壓在 stack 裡，頂端是 3，下一個只能出 3，不可能是 1。</li><li>(C) 可以：XX YY XY XY。</li><li>(D) 可以：XXXX YYYY。</li></ul><p>4 個元素共有 14 種合法輸出（Catalan 數 C(4)），已用程式逐一驗算這 4 個選項。</p>"
+    },
+    {
+      "id": "ds-0070",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題，答錯 1 題倒扣 1 分）</p>Which of the following statements are correct?",
+      "choices": [
+        "(A) Inserting the first element of an n-node one-dimension array has time complexity higher than a singly linked list.",
+        "(B) Removing the third element of an n-node one-dimension array takes O(n) time complexity.",
+        "(C) Inserting the first element of a circular singly linked list has time complexity much higher than that of a singly linked list.",
+        "(D) Inserting the last element of an n-node singly linked list takes O(n) time complexity."
+      ],
+      "answer": "(A)(B)(D)（C、D 依實作而定，待確認）",
+      "explanation": "<ul><li>(A) 對。陣列插在最前面要把 n 個元素都往後搬，O(n)；串列只改兩個指標，O(1)。</li><li>(B) 對。刪掉第 3 個之後，後面 n − 3 個都要往前補，O(n)。</li><li>(C) 錯（待確認）。環狀串列插在最前面，最後一個節點的 link 也要改成新節點。一般的寫法會記住指向最後一個節點的指標（由它找到第一個），這樣仍然是 O(1)，不會「much higher」。如果只記第一個節點，就要先走到最後一個，變成 O(n)。</li><li>(D) 對（待確認）。只有 first 指標時，要先走到最後一個節點，O(n)；如果另外記了 last 指標就是 O(1)。題目沒說有 last，依一般情況算 O(n)。</li></ul>"
+    },
+    {
+      "id": "ds-0071",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題，答錯 1 題倒扣 1 分）</p>Which of the following statements are correct?",
+      "choices": [
+        "(A) The postfix of infix expression <b>b+a*c/d</b> is <b>bac+d/*</b>.",
+        "(B) The postfix of <b>(a+b)/(c-d)*e</b> is <b>ab+cd-*/</b>.",
+        "(C) The infix of the postfix expression <b>ab+c*d/ef-/</b> is <b>(a+b)*c/(d/(e-f))</b>.",
+        "(D) The prefix of the postfix expression <b>abc+d/*</b> is <b>*a/+bcd</b>."
+      ],
+      "answer": "(D)",
+      "explanation": "<ul><li>(A) 錯。正確是 bac*d/+；選項的 bac+d/* 代表 b*((a+c)/d)。</li><li>(B) 錯。/ 和 * 同級、由左到右，先 (a+b)/(c−d) 再乘 e：ab+cd-/e*。選項 ab+cd-*/ 是 (a+b)/((c−d)*e)。</li><li>(C) 錯。依序還原：ab+ → (a+b)；c* → (a+b)*c；d/ → ((a+b)*c)/d；ef- → (e−f)；最後 / → (((a+b)*c)/d)/(e−f)。選項把它寫成 ((a+b)*c)/(d/(e−f))，括號位置不同、值也不同。</li><li>(D) 對。abc+d/* 是 a*((b+c)/d)，前序 * a / + b c d。</li></ul><p>（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0072",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Which of the following statements are true? Let T(n) denote the time complexity of performing insertion in an n-element Binary Search Tree.",
+      "choices": [
+        "(A) T(n) = 2T(n/2) + O(1) and T(1) = T(0) = O(1) holds for best case only.",
+        "(B) T(n) = T(n-1) + O(1) and T(1) = T(0) = O(1) holds for worst case only",
+        "(C) T(n) = T(n/2) + O(1) and T(1) = T(0) = O(1) holds for best case.",
+        "(D) T(n) = T(n-2) + O(1) and T(1) = T(0) = O(1) holds for worst case."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<p>插入只會沿著<b>一條</b>從根往下的路徑走，每層做一次比較，所以遞迴式只有一個子問題。</p><ul><li>(A) 錯。2T(n/2) 代表左右子樹都要處理，那是走訪整棵樹，結果是 O(n)，不是插入。</li><li>(B) 對。最差情況是歪斜樹，往下一層子樹只少一個節點：T(n) = T(n−1) + O(1) = O(n)。</li><li>(C) 對。最好情況是平衡的樹，往下一層子樹大小減半：T(n) = T(n/2) + O(1) = O(log n)。</li><li>(D) 錯。歪斜樹每層只少 1 個節點，不是 2 個。雖然 T(n−2) 解出來也是 O(n)，但它不是最差情況的正確遞迴式。</li></ul>"
+    },
+    {
+      "id": "ds-0073",
+      "topics": [
+        "binary-tree-traversal",
+        "binary-tree-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Let LASTPOST, LASTIN and LASTPRE denote the last vertex visited in a postorder, inorder and preorder traversal, respectively. Which of the following are true?",
+      "choices": [
+        "(A) LASTIN = LASTPOST of a complete binary tree.",
+        "(B) LASTIN = LASTPRE of a full binary tree",
+        "(C) LASTPRE = LASTPOST of a full binary tree",
+        "(D) LASTIN = LASTPRE of a complete binary tree"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>先找出三個「最後一個」各是誰：</p><ul><li>LASTPOST 永遠是<b>根</b>（後序最後才拜訪根）。</li><li>LASTIN 是從根一路往右走、走到沒有右子的那個節點。</li><li>LASTPRE 是從根開始「有右子就往右、沒有就往左」一路走到的葉子。</li></ul><ul><li>(A) 錯。除非根沒有右子，否則 LASTIN 不是根。例如 3 個節點的完全二元樹，LASTIN 是右子、LASTPOST 是根。</li><li>(B) 對。full binary tree 的內部節點一定有兩個子節點，所以一路往右走到的節點本身就是葉子，和 LASTPRE 是同一個。不管 full 是指「每層都填滿」還是「每個節點 0 或 2 個子節點」都成立。</li><li>(C) 錯。LASTPOST 是根，LASTPRE 是葉子，只有一個節點時才相等。</li><li>(D) 錯。完全二元樹右邊那條路的終點可能還有左子。例如 6 個節點的完全二元樹：節點 3 只有左子 6，LASTIN 是 3，LASTPRE 卻是 6。</li></ul><p>（已用程式對 1～15 個節點的完全二元樹，以及所有 9 個節點以內、每個節點 0 或 2 個子節點的樹驗算。）</p>"
+    },
+    {
+      "id": "ds-0074",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Which of the following statements are true?",
+      "choices": [
+        "(A) AB+DE*F/-BC*+ is the postfix expression of A+B-D*E/F+B*C",
+        "(B) AB+DE*F/*BC-+ is the postfix expression of A+B-D*E/F+B*C",
+        "(C) AB*DE*F/+BC*+ is the postfix expression of A+B*D*E/F+B*C",
+        "(D) ABD*E*F/+BC*+ is the postfix expression of A+B*D*E/F+B*C"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<ul><li>(A) 對。A+B 先算（左結合），D*E/F 是 ((D*E)/F)，相減後再加 B*C：AB+ DE*F/ − BC* +。</li><li>(B) 錯。運算子變成 * 和 −，意思完全不同。</li><li>(C) 錯。AB* 代表 A*B，但原式的 A 是被加的。</li><li>(D) 對。B*D*E/F 由左到右是 (((B*D)*E)/F)：BD*E*F/，前面加 A，最後加 B*C。</li></ul><p>（已用程式轉換驗算。）</p>"
+    },
+    {
+      "id": "ds-0075",
+      "topics": [
+        "doubly-linked-list"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Consider the following function that takes reference to head of a Doubly Linked List as parameter. Assume that a node of doubly linked list has previous pointer as prev and next pointer as next.<pre class=\"code\">void fun(struct node **head_ref)\n{\n    struct node *temp = NULL;\n    struct node *current = *head_ref;\n\n    while (current !=  NULL)\n    {\n        temp = current-&gt;prev;\n        current-&gt;prev = current-&gt;next;\n        current-&gt;next = temp;\n        current = current-&gt;prev;\n    }\n\n    if(temp != NULL )\n        *head_ref = temp-&gt;prev;\n}</pre>Assume that reference of head of a doubly linked list L is passed to above function. What is the resulting linked list after the function call?",
+      "choices": [
+        "(A) 2 &lt;--&gt; 1 &lt;--&gt; 4 &lt;--&gt; 3 &lt;--&gt; 6 &lt;--&gt;5 when L is 2 &lt;--&gt; 1 &lt;--&gt; 4 &lt;--&gt; 3 &lt;--&gt; 6 &lt;--&gt;5",
+        "(B) 5 &lt;--&gt; 4 &lt;--&gt; 3 &lt;--&gt; 2 &lt;--&gt; 1 &lt;--&gt;6 when L is 5 &lt;--&gt;4 &lt;--&gt; 3 &lt;--&gt;2 &lt;--&gt; 6&lt;--&gt;1",
+        "(C) 6 &lt;--&gt; 5 &lt;--&gt; 4 &lt;--&gt; 3 &lt;--&gt; 2 &lt;--&gt; 1 when L is 1 &lt;--&gt; 2 &lt;--&gt; 3 &lt;--&gt; 4 &lt;--&gt; 5 &lt;--&gt;6",
+        "(D) 6 &lt;--&gt; 5 &lt;--&gt; 4 &lt;--&gt; 3 &lt;--&gt; 1 &lt;--&gt; 2 when L is 1 &lt;--&gt; 2 &lt;--&gt; 3 &lt;--&gt; 4 &lt;--&gt; 5 &lt;--&gt;6"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>迴圈對每個節點交換 prev 和 next；交換完，原本的 next 存在 prev 裡，所以 <code>current = current-&gt;prev</code> 其實是往原本的下一個節點走。全部交換完就是把整條雙向串列<b>反轉</b>。</p><p>迴圈結束時，temp 是最後一個節點交換前的 prev，也就是原本的倒數第二個；它的 prev 已經換成原本的 next，正好是原本的最後一個節點，成為新的 head。</p><ul><li>(A) 錯：反轉後應該是 5 6 3 4 1 2。</li><li>(B) 錯：應該是 1 6 2 3 4 5。</li><li>(C) 對：1～6 反轉成 6～1。</li><li>(D) 錯：最後兩個的順序不對。</li></ul>"
+    },
+    {
+      "id": "ds-0076",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>The following function reverse() is supposed to reverse a singly linked list. There is one line missing at the end of the function.<pre class=\"code\">/* Link list node */\nstruct node\n{\n  int data;\n  struct node* next;\n};\n\n/* head_ref is a double pointer which points to head (or start) pointer of linked list */\nstatic void reverse(struct node** head_ref)\n{\n  struct node* prev   = NULL;\n  struct node* current = *head_ref;\n  struct node* next;\n  while (current != NULL)\n  {\n    next  = current-&gt;next;\n    current-&gt;next = prev;\n    prev = current;\n    current = next;\n  }\n  /*ADD A STATEMENT HERE*/\n}</pre>What should be added in place of \"/*ADD A STATEMENT HERE*/\", so that the function correctly reverses a linked list.",
+      "choices": [
+        "(A) *head_ref = prev;",
+        "(B) current = *head_ref;",
+        "(C) next = *head_ref;",
+        "(D) *head_ref = NULL;"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>迴圈結束時 current 是 NULL，prev 停在原本的最後一個節點，也就是反轉後的第一個，所以要讓 head 指向它：<code>*head_ref = prev;</code>。(B)(C) 只改區域變數，呼叫端的 head 還指著原本的第一個（現在是最後一個）；(D) 直接讓整條串列遺失。</p>"
+    },
+    {
+      "id": "ds-0077",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Which of the following statements are correct?",
+      "choices": [
+        "(a) The postfix of (a+b)/(c-d)+e is ab+cd-/+e.",
+        "(b) The postfix of infix expression b+a/c*d is bac+d/*.",
+        "(c) The infix of the postfix expression ab+c*d/ef-/ is (((a+b)*c)/d)/(e-f).",
+        "(d) The prefix of the postfix expression abc+d/* is *a/+bcd."
+      ],
+      "answer": "(c)(d)",
+      "explanation": "<ul><li>(a) 錯。正確是 ab+cd-/e+，最後的 + 要在 e 之後。</li><li>(b) 錯。/ 和 * 同級由左到右：a/c 先算再乘 d，最後加到 b 上：bac/d*+。</li><li>(c) 對。ab+ → (a+b)，c* → ((a+b)*c)，d/ → (((a+b)*c)/d)，ef- → (e−f)，最後 /。</li><li>(d) 對。abc+d/* 是 a*((b+c)/d)，前序 *a/+bcd。</li></ul><p>（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0078",
+      "topics": [
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>A binary tree has inorder traversal, <b>ILOVENCU</b>, and postorder traversal, <b>ILVNCUEO</b>. Which of the following statements is (are) true?",
+      "choices": [
+        "(a) The fifth letter in the level-order traversal is V",
+        "(b) The height of the binary tree is 4",
+        "(c) C is a leaf node",
+        "(d) The sixth letter in the level-order traversal is U"
+      ],
+      "answer": "(a)(d)",
+      "explanation": "<p><b>重建</b>：後序最後一個 O 是根；中序切成 IL | O | VENCU。左邊的後序 IL，根是 L，I 是 L 的左子。右邊的後序 VNCUE，根是 E，中序 V | E | NCU：V 是 E 的左子；NCU 的後序 NCU，根是 U，中序 NC 都在 U 左邊，所以 C 是 U 的左子、N 是 C 的左子。</p><pre class=\"formula\">        O\n      /   \\\n     L     E\n    /     / \\\n   I     V   U\n            /\n           C\n          /\n         N</pre><p>層序：<b>O L E I V U C N</b>。</p><ul><li>(a) 對：第 5 個是 V。</li><li>(b) 錯：O → E → U → C → N 共 5 層，高度 5。</li><li>(c) 錯：C 有左子 N。</li><li>(d) 對：第 6 個是 U。</li></ul><p>（已用程式重建驗算。和 115 學年度第 18 題用同一個中序，但後序不同，樹的形狀也不同。）</p>"
+    },
+    {
+      "id": "ds-0079",
+      "topics": [
+        "stack",
+        "circular-queue",
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Consider the code fragment below.<pre class=\"code\">container.push('I');\ncontainer.push('L');\ncontainer.push('O');\ncontainer.push('V');\ncontainer.pop();\ncontainer.push('E');\ncontainer.pop();\ncontainer.push('N');\ncontainer.pop();\ncontainer.push('C');\ncontainer.push('U');</pre>Which of the following statements is (are) true?",
+      "choices": [
+        "(a) If the \"container\" is an <b>empty standard stack.</b> The sequence of elements inside the \"container\" <b>from its top to the bottom</b> is ILOCU",
+        "(b) If the \"container\" is an <b>empty standard queue.</b> The sequence of elements inside the \"container\" <b>from its front to its rear</b> is VENCU",
+        "(c) If the \"container\" is an <b>empty min heap</b>, the level order traversal of the heap is CNOVU",
+        "(d) If the \"container\" is an <b>empty max heap</b>, the level order traversal of the heap is ULEIC"
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<ul><li>(a) 錯。stack 依序 pop 掉 V、E、N，剩下由底到頂 I L O C U，<b>由頂到底是 UCOLI</b>；ILOCU 是由底到頂。</li><li>(b) 對。queue 依序 pop 掉 I、L、O，剩下 V E N C U。</li><li>(c) 對。min heap 依序 pop 掉 I、E、L，最後陣列是 C N O V U。</li><li>(d) 錯。max heap 依序 pop 掉 V、O、N，最後陣列是 <b>ULECI</b>：插入 U 時它從最後一格往上換到根，原本的 L 換下來，所以最後兩格是 C、I，不是 I、C。</li></ul><p>（四種容器都已用程式模擬驗算。）</p>"
     }
   ]
 }
