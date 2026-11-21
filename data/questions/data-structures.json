@@ -1481,6 +1481,449 @@
       ],
       "answer": "(b)(c)",
       "explanation": "<ul><li>(a) 錯。stack 依序 pop 掉 V、E、N，剩下由底到頂 I L O C U，<b>由頂到底是 UCOLI</b>；ILOCU 是由底到頂。</li><li>(b) 對。queue 依序 pop 掉 I、L、O，剩下 V E N C U。</li><li>(c) 對。min heap 依序 pop 掉 I、E、L，最後陣列是 C N O V U。</li><li>(d) 錯。max heap 依序 pop 掉 V、O、N，最後陣列是 <b>ULECI</b>：插入 U 時它從最後一格往上換到根，原本的 L 換下來，所以最後兩格是 C、I，不是 I、C。</li></ul><p>（四種容器都已用程式模擬驗算。）</p>"
+    },
+    {
+      "id": "ds-0080",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>There is a large enough array A with indices p and q which are initialized by 0, and functions f(x) and g() are defined as follows. Array A and indices p and q can only be accessed in the functions f(x) and g().</p><pre class=\"code\">f(x)\n  • p ← p + 1\n  • A[p] ← x\ng()\n  • x ← A[p]\n  • p ← p − 1\n  • return x</pre><p>(a) Which data structure is operated by those functions? (7)</p>",
+      "choices": [
+        "(A) Queue",
+        "(B) Stack",
+        "(C) Hash",
+        "(D) Heap"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>f 先把 p 加 1 再存入，g 取出 A[p] 後把 p 減 1。只有一個索引 p，存和取都在同一端，最後放進去的最先被拿出來，是 <b>stack</b>：p 就是 top，f 是 push、g 是 pop。</p>"
+    },
+    {
+      "id": "ds-0081",
+      "topics": [
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>There is a large enough array A with indices p and q which are initialized by 0, and functions f(x) and g() are defined as follows. Array A and indices p and q can only be accessed in the functions f(x) and g().</p><p>(b) If functions f(x) and g() are changed as following:</p><pre class=\"code\">f(x)\n  • A[q] ← x\n  • q ← q + 1\ng()\n  • x ← A[p]\n  • p ← p + 1\n  • return x</pre><p>Which data structure is operated by those functions? (8)</p>",
+      "choices": [
+        "(A) Queue",
+        "(B) Stack",
+        "(C) Hash",
+        "(D) Heap"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>現在有兩個索引：f 在 q 的位置放入、q 往後移；g 從 p 的位置取出、p 也往後移。放入和取出在不同端，先放的先拿，是 <b>queue</b>：q 是 rear、p 是 front。兩個索引都只會往後走，陣列不會回頭重用，這就是為什麼實務上要用環狀佇列（mod 陣列大小）。</p>"
+    },
+    {
+      "id": "ds-0082",
+      "topics": [
+        "binary-tree-traversal",
+        "binary-tree-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>There is a binary tree stored in an array as:</p><p>T[] = {+, a, *, null, null, −, d, null, null, null, null, b, c},</p><p>in which T[i] is the parent of T[2i + 1] and T[2i + 2], where i is an index and null means there is no element in the slot.</p><p>(a) What is its postorder traversal result? (9)</p>",
+      "choices": [
+        "(A) +a∗−dbc",
+        "(B) a+b−c∗d",
+        "(C) abc−d∗+",
+        "(D) +a∗−bcd"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>依規則把陣列放回樹上（根在 T[0]）：T[0] = + 的子節點是 T[1] = a、T[2] = *；T[2] 的子節點是 T[5] = −、T[6] = d；T[5] 的子節點是 T[11] = b、T[12] = c。T[3]、T[4] 是 null，所以 a 是葉子。</p><pre class=\"formula\">      +\n     / \\\n    a   *\n       / \\\n      -   d\n     / \\\n    b   c</pre><p>也就是運算式 a + ((b − c) * d)。</p><p>後序（左、右、根）：a、然後右子樹 * 的後序 b c − d *，最後 +，得到 <b>abc−d∗+</b>。注意陣列從 0 開始，子節點是 2i + 1、2i + 2。(B) 是中序，(D) 是前序。</p>"
+    },
+    {
+      "id": "ds-0083",
+      "topics": [
+        "binary-tree-traversal",
+        "binary-tree-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>There is a binary tree stored in an array as:</p><p>T[] = {+, a, *, null, null, −, d, null, null, null, null, b, c},</p><p>in which T[i] is the parent of T[2i + 1] and T[2i + 2], where i is an index and null means there is no element in the slot.</p><p>(b) What is its BFS traversal result? (10)</p>",
+      "choices": [
+        "(A) +a∗−dbc",
+        "(B) a+b−c∗d",
+        "(C) abc−d∗+",
+        "(D) +a∗−bcd"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>依規則把陣列放回樹上（根在 T[0]）：T[0] = + 的子節點是 T[1] = a、T[2] = *；T[2] 的子節點是 T[5] = −、T[6] = d；T[5] 的子節點是 T[11] = b、T[12] = c。T[3]、T[4] 是 null，所以 a 是葉子。</p><pre class=\"formula\">      +\n     / \\\n    a   *\n       / \\\n      -   d\n     / \\\n    b   c</pre><p>也就是運算式 a + ((b − c) * d)。</p><p>BFS 就是層序走訪，一層一層由左到右：第 1 層 +；第 2 層 a、*；第 3 層 −、d；第 4 層 b、c，得到 <b>+a∗−dbc</b>。陣列表示法中，層序就是依索引由小到大跳過 null，可以直接從 T[] 讀出來。</p>"
+    },
+    {
+      "id": "ds-0084",
+      "topics": [
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>There is a linked-list with n elements, which are x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>. Let f(n) be the time complexity of inserting a new element x<sub>n+1</sub> to the tail of the list, and g(n) be that of deleting the last element x<sub>n</sub>. If there is only one pointer pointed to the head of the list, we know to access the list is time-consuming, and functions f(n) and g(n) are denoted as f<sub>1</sub>(n) and g<sub>1</sub>(n) in this case. To improve it, we may also add another pointer pointed to the tail of it, so the functions f(n) and g(n) become f<sub>2</sub>(n) and g<sub>2</sub>(n). Which of the following option is false if n becomes large. (13)</p>",
+      "choices": [
+        "(A) f<sub>1</sub>(n) / g<sub>1</sub>(n) = 1",
+        "(B) f<sub>2</sub>(n) / g<sub>2</sub>(n) = n",
+        "(C) f<sub>1</sub>(n) / f<sub>2</sub>(n) = n",
+        "(D) g<sub>1</sub>(n) / g<sub>2</sub>(n) = 1"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>先分別算出四個複雜度（以單向串列來看）：</p><ul><li>只有 head：插在尾端要先走到最後一個，f<sub>1</sub> = O(n)；刪最後一個要找倒數第二個，g<sub>1</sub> = O(n)。</li><li>多一個 tail：插在尾端直接 <code>tail-&gt;link = p; tail = p;</code>，f<sub>2</sub> = O(1)；但刪最後一個仍要把倒數第二個變成新的 tail，tail 往回走不了，還是要從 head 找，g<sub>2</sub> = O(n)。</li></ul><p>所以 f<sub>1</sub>/g<sub>1</sub> ≈ 1、f<sub>1</sub>/f<sub>2</sub> ≈ n、g<sub>1</sub>/g<sub>2</sub> ≈ 1 都成立；f<sub>2</sub>/g<sub>2</sub> 是 1/n，不是 n，所以 <b>(B)</b> 是錯的。這也是為什麼 tail 指標只對「尾端加入」有幫助，要讓尾端刪除也是 O(1) 就要用雙向串列。</p>"
+    },
+    {
+      "id": "ds-0085",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>For each of the following algorithms in the next five problems, what is the tightest asymptotic upper bound for its runtime complexity for n numbers? Please use the following table of (A)-(E) choices when answering.</p><p>(3 points) MAX_HEAPIFY for a max-heap: expected time?</p>",
+      "choices": [
+        "(A) O(1)",
+        "(B) O(lg n)",
+        "(C) O(n)",
+        "(D) O(n lg n)",
+        "(E) O(n<sup>2</sup>)"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>MAX_HEAPIFY 從某個節點開始，和較大的子節點比較、必要時交換，再往下一層繼續，最多走到葉子。n 個節點的 heap 高度是 ⌊lg n⌋，所以是 <b>O(lg n)</b>。注意它和「建立整個 heap」（BUILD-MAX-HEAP，O(n)）不同。</p>"
+    },
+    {
+      "id": "ds-0086",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) In a <i>max-heap</i> stored in an array, after these 6 numbers have been inserted in this exact sequence: 5, 4, 2, 6, 1, 3, what is the value of the node at index 2 (with the root being the node at index 1)?</p>",
+      "choices": [
+        "(A) 1",
+        "(B) 2",
+        "(C) 4",
+        "(D) 5",
+        "(E) none of the other choices"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>逐一插入，每次放到最後一格再往上和父節點（索引 i/2）比：</p><div class=\"table-scroll\"><table><thead><tr><th>插入</th><th>陣列 [1..]</th><th>說明</th></tr></thead><tbody><tr><td>5、4、2</td><td>5 4 2</td><td>都比父節點小，不用換</td></tr><tr><td>6</td><td>6 5 2 4</td><td>放在 [4]，大於父 [2] = 4 → 換；再大於 [1] = 5 → 換到根</td></tr><tr><td>1</td><td>6 5 2 4 1</td><td>放在 [5]，小於父 [2] = 5</td></tr><tr><td>3</td><td>6 5 3 4 1 2</td><td>放在 [6]，大於父 [3] = 2 → 換；小於根 6，停</td></tr></tbody></table></div><p>最後陣列是 [6, 5, 3, 4, 1, 2]，索引 2 的值是 <b>5</b>。（已用程式模擬驗算。）</p>"
+    },
+    {
+      "id": "ds-0087",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) In a <i>max-heap</i> stored in an array, after these 6 numbers have been inserted in this exact sequence: 5, 4, 2, 6, 1, 3, what is the value of the node at index 2 (with the root being the node at index 1)?</p><p>(5 points) Following the previous problem, what is the value of the left child of the node with value 3?</p>",
+      "choices": [
+        "(A) 1",
+        "(B) 2",
+        "(C) 4",
+        "(D) 5",
+        "(E) none of the other choices"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>逐一插入，每次放到最後一格再往上和父節點（索引 i/2）比：</p><div class=\"table-scroll\"><table><thead><tr><th>插入</th><th>陣列 [1..]</th><th>說明</th></tr></thead><tbody><tr><td>5、4、2</td><td>5 4 2</td><td>都比父節點小，不用換</td></tr><tr><td>6</td><td>6 5 2 4</td><td>放在 [4]，大於父 [2] = 4 → 換；再大於 [1] = 5 → 換到根</td></tr><tr><td>1</td><td>6 5 2 4 1</td><td>放在 [5]，小於父 [2] = 5</td></tr><tr><td>3</td><td>6 5 3 4 1 2</td><td>放在 [6]，大於父 [3] = 2 → 換；小於根 6，停</td></tr></tbody></table></div><p>值 3 在索引 3，左子是索引 2 × 3 = 6，值是 <b>2</b>（2 是在插入 3 時被換下去的）。</p>"
+    },
+    {
+      "id": "ds-0088",
+      "topics": [
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "<p>（單選）We now use several algorithms to traverse a binary tree. Assuming there are a total number of N nodes, how many of the following statements about the <b>worst-case space complexity</b> are <b>TRUE</b>?</p><ul><li>Using DFS to traverse a balanced binary tree takes O(N).</li><li>Using DFS to traverse a binary tree takes O(N).</li><li>Using BFS to traverse a balanced binary tree takes O(N).</li><li>Using BFS to traverse a binary tree takes O(N).</li></ul>",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(D)（O 的解讀待確認）",
+      "explanation": "<p>DFS 用的空間是遞迴（或 stack）的深度，也就是樹高；BFS 用的是 queue，最多同時放一整層。</p><ul><li>DFS、平衡樹：樹高 O(log N)，所以實際是 <b>O(log N)</b>。題目要的是「這個說法的緊界」時，O(N) 算錯。</li><li>DFS、任意樹：最差是歪斜樹，深度 N，O(N)，對。</li><li>BFS、平衡樹：最後一層約有 N/2 個節點會同時在 queue 裡，O(N)，對。</li><li>BFS、任意樹：最差也是一層很寬，O(N)，對。</li></ul><p>所以有 3 個成立，選 <b>(D)</b>。（待確認）如果把 O 當成單純的上界，O(log N) 也屬於 O(N)，4 個都成立就會選 (E)；這題看得出是在考 DFS 在平衡樹只要 O(log N)，所以依緊界作答。</p>"
+    },
+    {
+      "id": "ds-0089",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "<p>（複選題，每個選項單獨計分）</p><p><b>Postfix advantages:</b> What is/are the advantage(s) of using postfix notation for math expressions?</p>",
+      "choices": [
+        "(A) No need to use parentheses",
+        "(B) No need to consider precedence of operators",
+        "(C) Easier for human to read",
+        "(D) Easier for computers to evaluate",
+        "(E) More concise when compared with prefix notation"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) 對。運算順序完全由符號的位置決定，不需要括號。</li><li>(B) 對。求值時由左到右掃，遇到運算子就拿 stack 頂端兩個數來算，不必比較優先順序（優先順序只在中序轉後序時用到）。</li><li>(C) 錯。人習慣讀中序，後序反而難讀。</li><li>(D) 對。只要一個 stack、掃一遍就能求值，O(n)。</li><li>(E) 錯。前序和後序的符號數量完全一樣，都沒有括號，長度相同。</li></ul>"
+    },
+    {
+      "id": "ds-0090",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "<p>（複選題，每個選項單獨計分）</p><p><b>Heap applications:</b> Which one(s) of the following applications may involve the use of heaps to increase time efficiency?</p>",
+      "choices": [
+        "(A) Find the k largest numbers from a given stream of numbers.",
+        "(B) Given a stream of numbers coming one after another, calculate the median of the currently received set of numbers.",
+        "(C) Compute the page rank of a given set of web pages",
+        "(D) Detect appropriate \"buy\" and \"sell\" requests to create transactions in stock market",
+        "(E) Identify the next timing for collisions in event-driven simulation for molecular dynamics"
+      ],
+      "answer": "(A)(B)(D)(E)",
+      "explanation": "<p>heap 擅長的是「一直有新資料進來，又要很快拿到最大或最小值」。</p><ul><li>(A) 對。維持一個大小 k 的 min heap，新數字比堆頂大就替換，每個數字 O(log k)。</li><li>(B) 對。經典的雙 heap：max heap 存較小的一半、min heap 存較大的一半，中位數就在兩個堆頂。</li><li>(C) 錯。PageRank 是反覆做矩陣與向量相乘（power iteration），不需要一直取最大值。</li><li>(D) 對。撮合交易要隨時找出最高的買價和最低的賣價，兩邊各用一個 priority queue（heap）。</li><li>(E) 對。事件驅動模擬每次都要處理「最早發生的下一個事件」，用 min heap 依時間排序。</li></ul>"
+    },
+    {
+      "id": "ds-0091",
+      "topics": [
+        "stack",
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "<p>（複選題，每個選項單獨計分）</p><p><b>Prefix, infix, and postfix:</b> Which of the following statements is/are correct?</p>",
+      "choices": [
+        "(A) We can use a stack to convert an infix to postfix expression.",
+        "(B) We can use a stack to convert a postfix to an infix expression.",
+        "(C) We can derive a binary tree from its infix and prefix notations.",
+        "(D) We can derive a binary tree from its infix and postfix notations.",
+        "(E) We can derive a binary tree from its prefix and postfix notations."
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<ul><li>(A) 對。這就是中序轉後序的標準做法，stack 存運算子。</li><li>(B) 對。掃後序，遇到運算元就 push，遇到運算子就 pop 兩個、組成「(左 op 右)」再 push 回去。</li><li>(C)(D) 對。前序（或後序）告訴你根是誰，中序再用根把左右子樹切開，遞迴下去就能唯一決定整棵樹（節點名稱不重複時）。</li><li>(E) 錯。前序加後序只能確定誰是根、誰在誰下面，但節點只有一個子節點時分不出是左還是右。例如根 A、子 B：前序 AB、後序 BA，B 在左或在右都一樣。只有每個節點都是 0 或 2 個子節點時才唯一。</li></ul>"
+    },
+    {
+      "id": "ds-0092",
+      "topics": [
+        "binary-tree-properties",
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "<p>（複選題，每個選項單獨計分）</p><p>(5 points) We define the height of a tree to be the maximum number of edges from the root to a leaf. We also define the level of a node v, denoted as l(v) to be the height of the subtree rooted at v. Which of the following descriptions is correct?</p>",
+      "choices": [
+        "A. If v is a leaf, then l(v) = 1.",
+        "B. If v is an internal node, l(v) = max<sub>s∈S</sub> l(s), where S is the set of children of v.",
+        "C. We can compute l(v) by starting a breadth-first-search (BFS) from v, traversing all nodes of the subtree rooted at v, and computing the maximum distance to a leaf as l(v). Since there are no more than n v's and each BFS takes O(n) time, the total time complexity is O(n<sup>2</sup>)",
+        "D. We can compute the levels for all nodes by a depth-first-search (DFS) starting from the root of T. That is, we can compute the level of an internal node v after we compute the l values of all children of v.",
+        "E. Since there are n tree nodes to visit, the DFS from the root takes O(n) time."
+      ],
+      "answer": "C, D, E",
+      "explanation": "<p>這題的高度用「邊數」定義，所以只有一個節點的子樹高度是 0（本站其他頁用節點數算，只有根時高度是 1，兩者差 1）。</p><ul><li>A 錯。葉子往下沒有邊，l(v) = 0。</li><li>B 錯。少了連到子節點的那一條邊，應該是 l(v) = 1 + max l(s)。</li><li>C 對。對每個節點各做一次 BFS 找最遠的葉子，方法正確，只是慢：n 次、每次 O(n)，共 O(n²)。</li><li>D 對。這就是後序走訪的想法：子節點的高度都算完，才能算自己。</li><li>E 對。DFS 每個節點拜訪一次，每條邊走兩次，O(n)，一次就算出所有節點的 l。</li></ul>"
+    },
+    {
+      "id": "ds-0093",
+      "topics": [
+        "binary-search-tree",
+        "binary-tree-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "資料結構與演算法",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_software.pdf"
+      },
+      "question": "<p>（複選題，每個選項單獨計分）</p><p>(5 points) Select all the correct statement(s) from the following statements regarding binary trees and binary search trees.</p>",
+      "choices": [
+        "(A) Every binary tree is a binary search tree.",
+        "(B) Every binary search tree on n nodes has height O(log n).",
+        "(C) In a binary search tree, we can find the next smallest element to a given element in O(1) time.",
+        "(D) Let A<sub>1</sub>, A<sub>2</sub>, and A<sub>3</sub> be three sorted arrays of n distinct real numbers. Constructing a balanced binary search tree of the set A<sub>1</sub> ∪ A<sub>2</sub> ∪ A<sub>3</sub> requires O(n) time.",
+        "(E) Let T be a complete binary tree with n nodes. Finding a path from the root of T to a given vertex v ∈ T using breadth-first search takes Ω(n lg n) time."
+      ],
+      "answer": "(D)",
+      "explanation": "<ul><li>(A) 錯。BST 是有額外條件（左小右大）的二元樹，反過來不成立。</li><li>(B) 錯。依序插入排好的資料會變成歪斜樹，高度 n。只有平衡的 BST（AVL、紅黑樹）才保證 O(log n)。</li><li>(C) 錯。找前驅（next smallest）要走左子樹的最右邊，或往上找祖先，最差 O(h)，不是 O(1)。</li><li>(D) 對。三個已排序陣列兩兩合併，共 O(3n) = O(n)，順便去掉重複；再取中間當根、左右兩半遞迴建樹，每個元素處理一次，也是 O(n)。</li><li>(E) 錯。BFS 每個節點、每條邊各處理常數次，O(n) 就一定找得到，不需要 Ω(n lg n)。何況完全二元樹用陣列編號，從 v 一路除以 2 就能找到路徑，只要 O(log n)。</li></ul>"
+    },
+    {
+      "id": "ds-0094",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Let S be a stack containing n + 1 coefficients a<sub>0</sub>, a<sub>1</sub>, ..., a<sub>n</sub>, where n ≥ 1, a<sub>n</sub> is at the top of the stack, and a<sub>0</sub> is at the bottom. The following algorithm computes f(x) = Σ<sub>i=0</sub><sup>n</sup> a<sub>i</sub>x<sup>i</sup>. Identify the missing expression □ in the pseudocode.</p><pre class=\"code\">POLY(S, x)\n1  while S.size ≥ 2\n2      u = S.pop()\n3      v = S.pop()\n4      S.push(□)\n5  return S.pop()</pre>",
+      "choices": [
+        "(A) v · x + u",
+        "(B) u · x + v",
+        "(C) v · u + x",
+        "(D) u · u + v · x",
+        "(E) None of the other choices."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>這是用 stack 做 Horner 法：f(x) = (…((a<sub>n</sub>x + a<sub>n−1</sub>)x + a<sub>n−2</sub>)…)x + a<sub>0</sub>。</p><p>第一輪 u = a<sub>n</sub>（頂端）、v = a<sub>n−1</sub>，要算 a<sub>n</sub>x + a<sub>n−1</sub>，也就是 <b>u·x + v</b>，再 push 回去。下一輪 u 就是剛才的結果、v = a<sub>n−2</sub>，同一個式子繼續往下，最後 stack 只剩一個值就是 f(x)。</p><p>(A) 會把 x 乘到錯的係數上。以 f(x) = 3 − 2x + 5x² + 7x³、x = 2 代入，用 (B) 跑出 75，和直接計算相同（已用程式驗算）。</p>"
+    },
+    {
+      "id": "ds-0095",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Consider an array [4, 5, 1, 10, 2, 7]. What does the array look like after BUILD-MAX-HEAP (bottom-up heapify) is performed, a process that converts the array into a max-heap by adjusting subtrees starting from the bottom non-leaf nodes and working up to the root?</p>",
+      "choices": [
+        "(A) [10, 5, 7, 4, 2, 1]",
+        "(B) [10, 7, 5, 4, 2, 1]",
+        "(C) [1, 2, 4, 5, 7, 10]",
+        "(D) [10, 7, 1, 5, 2, 4]",
+        "(E) None of the other choices."
+      ],
+      "answer": "(A)",
+      "explanation": "<p>n = 6，最後一個非葉節點是第 3 個（1-based），由它往回做 heapify：</p><ol><li>第 3 個（1）：子節點 7 較大 → 交換，[4, 5, 7, 10, 2, 1]。</li><li>第 2 個（5）：子節點 10、2，10 較大 → 交換，[4, 10, 7, 5, 2, 1]。</li><li>第 1 個（4）：子節點 10、7，換 10 → [10, 4, 7, 5, 2, 1]；4 繼續往下，子節點 5、2，換 5 → [10, 5, 7, 4, 2, 1]。</li></ol><p>結果是 <b>(A)</b>（已用程式驗算）。(B) 是排序後的反序，不是 heapify 的結果；heap 只要求父 ≥ 子，不會整個排好。</p>"
+    },
+    {
+      "id": "ds-0096",
+      "topics": [
+        "stack",
+        "circular-queue"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) A queue Q is implemented using two stacks S<sub>in</sub> and S<sub>out</sub> as follows. If each PUSH or POP with the stack has a cost of Θ(1), what is the amortized cost per operation over a sequence of m legal queue operations, starting from an empty state with the first operation being ENQUEUE?</p><pre class=\"code\">ENQUEUE(Q, x)\n1  PUSH(Q.S_in, x)\n\nDEQUEUE(Q)\n1  if Q.S_out is not empty\n2      return POP(Q.S_out)\n3  while Q.S_in is not empty\n4      PUSH(Q.S_out, POP(Q.S_in))\n5  return POP(Q.S_out)</pre>",
+      "choices": [
+        "(A) Θ(1)",
+        "(B) Θ(lg m)",
+        "(C) Θ(m)",
+        "(D) Θ(m<sup>2</sup>)",
+        "(E) None of the other choices."
+      ],
+      "answer": "(A)",
+      "explanation": "<p>單一次 DEQUEUE 最差要把 S<sub>in</sub> 整個倒過去，是 Θ(m)；但每個元素一生只會經歷 4 個 stack 操作：push 進 S<sub>in</sub>、從 S<sub>in</sub> pop、push 進 S<sub>out</sub>、從 S<sub>out</sub> pop。m 個操作最多處理 m 個元素，總成本 ≤ 4m，平均每個操作 <b>Θ(1)</b>。</p><p>為什麼順序對：S<sub>in</sub> 倒進 S<sub>out</sub> 時順序反過來，最早進來的跑到 S<sub>out</sub> 頂端，正好先出去，符合 queue 的 FIFO。只有 S<sub>out</sub> 空了才倒，所以不會打亂順序。</p>"
     }
   ]
 }
