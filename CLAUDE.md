@@ -447,6 +447,7 @@ figure("bst-valid-invalid", () => ({
 ### 新增一個主題（最常見）
 
 1. 在 `data/<subject-id>.json` 找到主題（通常已是 `planned`，優先做 `priority: high`），可以先查參考書對應節次確認觀念，但頁面內容要自己寫、獨立完整。
+   動手前先用 `grep -o '<h2>[^<]*' subjects/<subject-id>/*/*.html` 看已完成的頁面有沒有講過同樣的內容（例如 Stack 頁已經有中序轉後序和後序求值）。有重疊時先告訴使用者，改做別的主題，或在新頁只簡短帶過、連到既有的頁面，不要重寫一份。
 2. 複製 `templates/topic.html` → `subjects/<subject-id>/<chapter-id>/<topic-id>.html`。
 3. 先規劃講解的骨架（第 6.1 節），再決定哪些地方配靜態圖、哪些地方做動畫，寫在 `assets/js/viz/<subject-id>/<topic-id>.js`（第 9 節）。
 4. 先寫好完整的 C 程式並實際編譯執行（第 6.3 節），再撰寫文字講解，把圖、動畫和程式碼片段放在對應的文字旁；片段和動畫右側程式碼都從完整程式取出；不提到參考書。
