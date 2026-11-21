@@ -2401,6 +2401,301 @@
       "question": "<p>（非選擇題）</p><p>5. (3%) In a heap of size n, what is the index range of the leaf nodes? Note that the index starts from 0.</p>",
       "answer": "⌊n/2⌋ 到 n − 1",
       "explanation": "<p>0-based 時節點 i 的左子是 2i + 1。節點 i 是葉子 ⇔ 它沒有左子 ⇔ 2i + 1 ≥ n ⇔ i ≥ (n − 1)/2，取整數就是 i ≥ ⌊n/2⌋。所以葉子的索引是 <b>⌊n/2⌋ ～ n − 1</b>，共 n − ⌊n/2⌋ = ⌈n/2⌉ 個（和完全二元樹「葉子有 ⌈n/2⌉ 個」一致）。</p><p>例：n = 7，葉子是 3～6；n = 8，葉子是 4～7（索引 3 的左子是 7 &lt; 8，所以 3 不是葉子）。若改成 1-based，範圍變成 ⌊n/2⌋ + 1 ～ n。</p>"
+    },
+    {
+      "id": "ds-0116",
+      "topics": [
+        "binary-search-tree",
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>1. (10 %) Please show the level of the binary search tree which constructed from given preorder traversal.</p><p>The preorder traversal: 50, 15, 11, 3, 2, 22, 84, 80, 77, 90, 95.</p><p><b>Note:</b> In a tree, each step from top to bottom is called as level of a tree. The level count starts with 1 and increments by 1 at each level or step.</p>",
+      "answer": "共 5 層（最深的節點 2 在第 5 層）",
+      "explanation": "<p>BST 的前序第一個是根，照順序插入就能還原：</p><pre class=\"formula\">            50\n          /    \\\n        15      84\n       /  \\    /  \\\n      11  22  80   90\n     /        /      \\\n    3        77       95\n   /\n  2</pre><ul><li>第 1 層：50</li><li>第 2 層：15、84</li><li>第 3 層：11、22、80、90</li><li>第 4 層：3、77、95</li><li>第 5 層：2</li></ul><p>所以這棵 BST 共有 <b>5 層</b>。（已用程式建樹驗算。）</p>"
+    },
+    {
+      "id": "ds-0117",
+      "topics": [
+        "stack",
+        "singly-linked-list"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>1) [4%] The following C program converts a preorder expression to its postorder form. For example, \"+AB++ABC\" is converted to \"AB+AB+C+\" with the program. Please fill in the missing parts of the program in C language.</p><pre class=\"code\">#include&lt;stdio.h&gt;\n#include&lt;stdlib.h&gt;\n\n#define MAX_INPUT 100000\n\ntypedef struct _Stack_node{\n    char val;\n    struct _Stack_node *prev;\n} Stack_node;\n\ntypedef struct _Stack{\n    Stack_node *top;\n} Stack;\n\nStack *new_stack(){\n    Stack *stk = malloc(sizeof(Stack));\n    stk-&gt;top = NULL;\n    return stk;\n}\n\nchar Stack_pop(Stack *stk){\n    char value = stk-&gt;top-&gt;val;\n    Stack_node *tmp = stk-&gt;top;\n    /** TODO (A) **/\n    free(tmp);\n    return value;\n}\n\nvoid Stack_push(Stack *stk, char value){\n    Stack_node *new_node = malloc(sizeof(Stack_node));\n    new_node-&gt;val = value;\n    /** TODO (B) **/\n    stk-&gt;top = new_node;\n    return;\n}\n\nint Stack_is_empty(Stack *stk){\n    return stk-&gt;top == NULL;\n}\n\nvoid pre_to_post(char *);\nvoid post_to_pre(char *);\n\nint main(){\n    char input[MAX_INPUT];\n    scanf(\"%s\", input);\n    pre_to_post(input);\n    return 0;\n}\n\nvoid pre_to_post(char *input){\n    Stack *stk = new_stack();\n    for (int i = 0; input[i] != '\\0'; ++i){\n        switch(input[i]){\n            case '+':\n            case '-':\n            case '*':\n            case '/':\n            case '^':\n            case '%':\n                Stack_push(stk, input[i]);\n                break;\n            default:\n                printf(\"%c\", input[i]);\n                while (!Stack_is_empty(stk) &amp;&amp; stk-&gt;top-&gt;val == 'A'){\n                    char top = Stack_pop(stk);\n                    printf(\"%c\", Stack_pop(stk));\n                }\n                if (!Stack_is_empty(stk)) Stack_push(stk, 'A');\n        }\n    }\n    printf(\"\\n\");\n}</pre>",
+      "answer": "TODO (A)：stk->top = tmp->prev;　TODO (B)：new_node->prev = stk->top;",
+      "explanation": "<p>這是用<b>鏈結串列實作的 stack</b>：每個節點的 prev 指向它下面那個節點，top 指向最上面。</p><ul><li>(A) pop：已經用 tmp 記住頂端，要把 top 往下移一個，<code>stk-&gt;top = tmp-&gt;prev;</code>，之後才能 free(tmp)。順序相反的話，free 之後就讀不到 tmp-&gt;prev 了。</li><li>(B) push：新節點要壓在原本的頂端上面，所以先讓它指向舊的 top：<code>new_node-&gt;prev = stk-&gt;top;</code>，下一行再把 top 改成新節點（先接後面、再改頭，和串列插在最前面一樣）。</li></ul><p><b>pre_to_post 怎麼運作</b>：遇到運算子就 push。遇到運算元就直接輸出，接著用 'A' 當標記：頂端是 'A' 代表這個運算子的左運算元已經輸出完了，現在右運算元也完成，就把 'A' 和運算子一起 pop 並輸出運算子，可能連續好幾層。最後如果 stack 還有東西，push 一個 'A'，表示目前頂端那個運算子的左邊已經完成。</p><p>把兩個 TODO 補上後實際編譯執行，\"+AB++ABC\" 輸出 AB+AB+C+，\"*+AB-CD\" 輸出 AB+CD-*，用 AddressSanitizer 檢查沒有記憶體錯誤。</p>"
+    },
+    {
+      "id": "ds-0118",
+      "topics": [
+        "binary-search-tree",
+        "binary-tree-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>1. [5%] Which of the following statements is (are) correct ?</p>",
+      "choices": [
+        "(A) Searching a particular data item in a binary search tree with n nodes requires at most log<sub>2</sub>(n+1) comparisons.",
+        "(B) A full binary tree of a given height h has 2<sup>h</sup>-1 nodes. (The root is at height of 1.)",
+        "(C) Represent a binary tree in an one-dimensional array (say, a[]). Assume the root is stored in a[1]. Then, the index of node i's parent is floor(i/2).",
+        "(D) AVL, red-black tree and compressed trie are binary trees."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<ul><li>(A) 錯。一般 BST 可能歪斜成一條鏈，最多要比較 n 次；log₂(n+1) 只在完全平衡時成立。</li><li>(B) 對。高度 h 的完滿二元樹每層都填滿：1 + 2 + … + 2<sup>h−1</sup> = 2<sup>h</sup> − 1。</li><li>(C) 對。根在 a[1] 時，節點 i 的子節點是 2i、2i + 1，父節點是 ⌊i/2⌋。</li><li>(D) 錯。AVL、紅黑樹是二元樹，但 compressed trie 每個節點可以依字元分出多個子節點，一般不是二元樹（只有二元 trie 壓縮成的 Patricia 才是）。</li></ul>"
+    },
+    {
+      "id": "ds-0119",
+      "topics": [
+        "heap",
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>2. [5%] The following graph is a maximum heap. After removing the maximum element, which of the followings is (are) true ?</p><p>（原題附圖：max heap 的陣列表示為 [85, 55, 25, 11, 42, 17, 19, 3, 1, 35, 30]，即 85 的子節點 55、25；55 的子節點 11、42；25 的子節點 17、19；11 的子節點 3、1；42 的子節點 35、30。）</p>",
+      "choices": [
+        "(A) 30 is a leaf node in the resultant heap after removal.",
+        "(B) Suppose we use an array to implement the heap. The 5<sup>th</sup> element in the array is 30.",
+        "(C) In the post-order traversal, 55 is before 42.",
+        "(D) 25 is at same indexing position in the array for the post-order and in-order traversals.",
+        "(E) The complexity of removal is O(log n), where n is the number of data items in the heap."
+      ],
+      "answer": "(A)(D)(E)",
+      "explanation": "<p><b>刪除 85</b>：把最後一個 30 搬到根，往下和較大的子節點交換：30 換 55 → 30 換 42 → 30 換 35，停在第 10 格。結果陣列 <b>[55, 42, 25, 11, 35, 17, 19, 3, 1, 30]</b>。</p><pre class=\"formula\">            55\n          /    \\\n        42      25\n       /  \\    /  \\\n     11    35 17   19\n    /  \\   /\n   3    1 30</pre><ul><li>(A) 對。30 在第 10 格，沒有子節點。</li><li>(B) 錯。第 5 個是 35。</li><li>(C) 錯。42 是 55 的子節點，後序中子節點先出，42 在 55 前面。</li><li>(D) 對。中序 3, 11, 1, 42, 30, 35, 55, 17, 25, 19；後序 3, 1, 11, 30, 35, 42, 17, 19, 25, 55。25 在兩個序列中都是第 9 個。</li><li>(E) 對。下移最多走樹高 ⌊log₂n⌋ 層。</li></ul><p>（刪除與兩種走訪都已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0120",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "1-i",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_software.pdf"
+      },
+      "question": "<p>1. [3%, 2%] You are given an empty binary search tree (BST).</p><p>i) [Step 1] Please successively insert the data pairs containing the following keys 15, 8, 13, 18, 17, 6, 11, 14, 5 into the tree. What is the level of the node containing 5 in the resultant BST?</p><p><b>Note:</b> In a tree, each step from top to bottom is called as level of a tree. The level count starts with 1 and increments by 1 at each level or step.</p>",
+      "choices": [
+        "(A) 1",
+        "(B) 2",
+        "(C) 3",
+        "(D) 4",
+        "(E) None of the above"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>依序插入 15, 8, 13, 18, 17, 6, 11, 14, 5：</p><pre class=\"formula\">          15\n        /    \\\n       8      18\n      / \\     /\n     6   13  17\n    /   /  \\\n   5  11    14</pre><p>5 的路徑是 15 → 8 → 6 → 5，在<b>第 4 層</b>。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0121",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "1-ii",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_software.pdf"
+      },
+      "question": "<p>1. [3%, 2%] You are given an empty binary search tree (BST).</p><p>ii) [Step 2] After Step 1 is executed, please delete the node containing 15 from the BST. To delete a nonleaf node, the pair to be deleted should be replaced by the largest pair in its left subtree or the smallest one in the right subtree. Which of the following keys is a suitable key to replace 15?</p>",
+      "choices": [
+        "(A) 8",
+        "(B) 13",
+        "(C) 17",
+        "(D) 18",
+        "(E) None of the above"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>依序插入 15, 8, 13, 18, 17, 6, 11, 14, 5：</p><pre class=\"formula\">          15\n        /    \\\n       8      18\n      / \\     /\n     6   13  17\n    /   /  \\\n   5  11    14</pre><p>可以用來替代 15 的只有兩個：左子樹最大（從 8 一路往右：8 → 13 → 14）是 <b>14</b>，右子樹最小（從 18 一路往左）是 <b>17</b>。選項中只有 17。8、13 雖然在左子樹，但不是最大的，拿來替代會讓 13、14 跑到它的右邊之外，破壞 BST 性質。</p>"
+    },
+    {
+      "id": "ds-0122",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "2-i",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_software.pdf"
+      },
+      "question": "<p>2. [1%, 1%, 3%] Considering the data pairs with keys in the given order: 20, 5, 10, 18, 4, 22, 11, 32, 21, as inputs to create a tree.</p><p>i) If you create a <u>max heap</u> for them, what is the level of the node containing 5?</p>",
+      "choices": [
+        "(A) 1",
+        "(B) 2",
+        "(C) 3",
+        "(D) 4",
+        "(E) None of the above"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>逐一插入並上移，得到陣列 [32, 22, 20, 21, 4, 10, 11, 5, 18]。5 在第 8 格（1-based），⌊log₂8⌋ + 1 = <b>第 4 層</b>。如果改用由下往上的 heapify，陣列是 [32, 21, 22, 20, 4, 10, 11, 18, 5]，5 在第 9 格，一樣是第 4 層。5 是第二小的數，本來就會沉到最下面。（兩種建法都已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0123",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "2-ii",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_software.pdf"
+      },
+      "question": "<p>2. [1%, 1%, 3%] Considering the data pairs with keys in the given order: 20, 5, 10, 18, 4, 22, 11, 32, 21, as inputs to create a tree.</p><p>ii) If you create a <u>min heap</u> for them, which of the following statements is true?</p>",
+      "choices": [
+        "(A) The node containing 11 is in the left subtree of the root.",
+        "(B) The node containing 18 is in the right subtree of the root.",
+        "(C) The node containing 20 is the root.",
+        "(D) The node containing 21 is at level 3.",
+        "(E) None of the above."
+      ],
+      "answer": "(E)",
+      "explanation": "<p>逐一插入得到 [4, 5, 10, 20, 18, 22, 11, 32, 21]：</p><pre class=\"formula\">          4\n        /   \\\n       5     10\n      / \\   /  \\\n    20  18 22   11\n   /  \\\n  32  21</pre><ul><li>(A) 錯：11 是 10 的子節點，在右子樹。</li><li>(B) 錯：18 是 5 的子節點，在左子樹。</li><li>(C) 錯：根是最小值 4。</li><li>(D) 錯：21 在第 4 層。</li></ul><p>所以選 <b>(E)</b>。用由下往上的 heapify 建，得到 [4, 5, 10, 18, 20, 22, 11, 32, 21]，四個選項一樣都不成立。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0124",
+      "topics": [
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "3-i",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_software.pdf"
+      },
+      "question": "<p>3. [2%, 3%] Given a binary tree with the following postfix and infix patterns.</p><p><i>postfix</i>: Z, P, C, L, Y, K, S, W, R, Q<br><i>infix</i>: Z, Y, P, L, C, Q, K, R, W, S</p><p>i) What is the result of level-order traversal for the tree?</p>",
+      "choices": [
+        "(A) C, S, R, Z, L, K, W, Q, Y, P",
+        "(B) Q, Y, R, Z, L, K, W, P, C, S",
+        "(C) Q, R, Y, W, K, L, Z, S, C, P",
+        "(D) Y, K, R, Z, Q, L, W, C, P, S",
+        "(E) None of the above"
+      ],
+      "answer": "(B)",
+      "explanation": "<p><b>重建</b>：後序最後的 Q 是根；中序切成 Z Y P L C | Q | K R W S。左邊的後序 Z P C L Y，根 Y，中序 Z | Y | P L C：Z 是左子；P L C 的後序 P C L，根 L，P、C 是它的左右子。右邊的後序 K S W R，根 R，中序 K | R | W S：K 是左子；W S 的後序 S W，根 W，S 是 W 的右子。</p><pre class=\"formula\">          Q\n        /   \\\n       Y     R\n      / \\   / \\\n     Z   L K   W\n        / \\     \\\n       P   C     S</pre><p>層序：Q｜Y R｜Z L K W｜P C S，選 <b>(B)</b>。（已用程式重建驗算。）</p>"
+    },
+    {
+      "id": "ds-0125",
+      "topics": [
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "3-ii",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_software.pdf"
+      },
+      "question": "<p>3. [2%, 3%] Given a binary tree with the following postfix and infix patterns.</p><p><i>postfix</i>: Z, P, C, L, Y, K, S, W, R, Q<br><i>infix</i>: Z, Y, P, L, C, Q, K, R, W, S</p><p>ii) What is the result of preorder traversal for the tree?</p>",
+      "choices": [
+        "(A) Q, Y, Z, L, P, C, R, K, W, S",
+        "(B) P, Z, C, Y, L, Q, K, R, W, S",
+        "(C) Q, Y, Z, L, P, C, R, K, S, W",
+        "(D) P, Z, C, Y, L, Q, K, R, S, W",
+        "(E) None of the above"
+      ],
+      "answer": "(A)",
+      "explanation": "<p><b>重建</b>：後序最後的 Q 是根；中序切成 Z Y P L C | Q | K R W S。左邊的後序 Z P C L Y，根 Y，中序 Z | Y | P L C：Z 是左子；P L C 的後序 P C L，根 L，P、C 是它的左右子。右邊的後序 K S W R，根 R，中序 K | R | W S：K 是左子；W S 的後序 S W，根 W，S 是 W 的右子。</p><pre class=\"formula\">          Q\n        /   \\\n       Y     R\n      / \\   / \\\n     Z   L K   W\n        / \\     \\\n       P   C     S</pre><p>前序（根、左、右）：Q Y Z L P C R K W S，選 <b>(A)</b>。(C) 把 W、S 的順序弄反了：S 是 W 的子節點，前序中 W 要先出現。</p>"
+    },
+    {
+      "id": "ds-0126",
+      "topics": [
+        "binary-tree-traversal",
+        "binary-tree-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_software.pdf"
+      },
+      "question": "<p>9. [4%] Considering the following two sequences, which are traversal results of a binary tree.</p><ul><li>Inorder-traversal result: H D I N B E J A O K P F L C G M</li><li>Postorder-traversal result: H N I D J E B O P K L F M G C A</li></ul><p>Please reconstruct the binary tree using the above two sequences. Which of the following descriptions are correct for the resultant binary tree?</p><p><b>Note: In a tree, each step from top to bottom is called the level of a tree. The level count starts with 1 and increments by 1 at each level or step.</b></p>",
+      "choices": [
+        "(A) The balance factor of the root is 0.",
+        "(B) The height of the tree is 4.",
+        "(C) The total number of leaf nodes is 7.",
+        "(D) After performing a depth-first search starting at node B of the resultant tree, the shortest path from vertex B to vertex O in the spanning tree has 5 edges.",
+        "(E) The last element in the result of level-order traversal of the tree is P."
+      ],
+      "answer": "(A)(C)(D)(E)",
+      "explanation": "<p>重建（後序最後是根，再用中序切左右）：</p><pre class=\"formula\">               A\n           /       \\\n          B         C\n        /   \\      /  \\\n       D     E    F    G\n      / \\     \\  / \\    \\\n     H   I     J K  L    M\n          \\     / \\\n           N   O   P</pre><ul><li>(A) 對。左子樹（B）高度 4，右子樹（C）高度 4，balance factor = 0。</li><li>(B) 錯。N、O、P 在第 5 層，高度是 5。</li><li>(C) 對。葉子有 H、N、J、O、P、L、M，共 7 個。</li><li>(D) 對。樹本身沒有環，從 B 做 DFS 得到的生成樹就是原本的樹，B 到 O 唯一的路徑是 B–A–C–F–K–O，5 條邊。</li><li>(E) 對。層序最後一層是 N、O、P，最後一個是 P。</li></ul><p>（已用程式重建並驗算高度、葉子數和層序。）</p>"
+    },
+    {
+      "id": "ds-0127",
+      "topics": [
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "II-3",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>3. [3%] A binary tree stores distinct keys. Based on the following postorder and inorder sequences, please list the keys of nodes at level 3 of the tree from left to right. Note that the root is at level 1.</p><ul><li>Postorder sequence: A B C K D I G J H F E</li><li>Inorder sequence: A C B D K E I G F H J</li></ul><p>Answer format: key1, key2, ...</p>",
+      "answer": "C, K, G, H",
+      "explanation": "<p>後序最後的 E 是根；中序切成 A C B D K | E | I G F H J。</p><ul><li>左邊：後序 A B C K D，根 D；中序 A C B | D | K，K 是 D 的右子；A C B 的後序 A B C，根 C，A、B 是它的左右子。</li><li>右邊：後序 I G J H F，根 F；中序 I G | F | H J；I G 的後序 I G，根 G、I 是左子；H J 的後序 J H，根 H、J 是右子。</li></ul><pre class=\"formula\">            E\n         /     \\\n        D       F\n       / \\     / \\\n      C   K   G   H\n     / \\     /     \\\n    A   B   I       J</pre><p>第 3 層由左到右：<b>C, K, G, H</b>。（已用程式重建驗算，並確認兩個序列可以一致地切分。）</p>"
     }
   ]
 }
