@@ -215,9 +215,17 @@
           "en": "Binary Tree Properties & Representation",
           "zh": "二元樹性質與表示法",
           "book": "5.2",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": false
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "n0 = n2 + 1",
+            "complete binary tree",
+            "array",
+            "Catalan"
+          ],
+          "updated": "2026-11-21"
         },
         {
           "id": "binary-tree-traversal",

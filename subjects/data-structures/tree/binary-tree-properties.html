@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Binary Tree Properties & Representation 二元樹性質與表示法 · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="二元樹的節點數公式、n0 = n2 + 1、完滿與完全二元樹，以及陣列與鏈結兩種表示法。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=bc92d517">
+  <script src="../../../assets/js/theme.js?v=bc92d517"></script>
+</head>
+<body data-subject="data-structures" data-chapter="tree" data-chno="5" data-topic="data-structures/tree/binary-tree-properties" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures 資料結構</a> › Ch5 Trees 樹 › Binary Tree Properties &amp; Representation 二元樹性質與表示法</nav>
+      <div class="topic-head">
+        <h1>Binary Tree Properties &amp; Representation 二元樹性質與表示法<small>幾個公式算出節點數，兩種方式存進記憶體</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch5 Trees</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">n0 = n2 + 1</span>
+          <span class="chip">complete binary tree</span>
+          <span class="chip">array</span>
+          <span class="chip">Catalan</span>
+        </div>
+      </div>
+
+      <section id="definition">
+        <h2>什麼是二元樹</h2>
+        <div class="panel prose">
+          <p>一般的 <span class="term">Tree<small>（樹）</small></span>每個節點可以有任意多個子節點，寫程式時不知道要預留幾個指標。<span class="term">Binary Tree<small>（二元樹）</small></span>把子節點限制成最多兩個，而且<b>分成左、右</b>，每個節點固定只需要兩個指標，結構規則、好處理；後面的 BST、heap、運算式樹都是二元樹。</p>
+          <p>精確的定義是遞迴的：二元樹是一個有限的節點集合，它<b>可以是空的</b>；不是空的話，由一個根，加上兩棵互不相交的二元樹（左子樹、右子樹）組成。這個定義和一般的樹有兩個差別，選擇題很愛考：</p>
+          <ul>
+            <li><b>二元樹可以是空的</b>，一般的樹至少要有一個節點（根）。</li>
+            <li><b>二元樹的左右是有區別的</b>：根只有一個子節點時，它是左子還是右子會被當成兩棵不同的二元樹；在一般的樹裡，這兩種是同一棵。</li>
+          </ul>
+          <p>常用術語：一個節點的子節點個數叫 <span class="term">Degree<small>（分支度）</small></span>，二元樹每個節點的分支度只會是 0、1、2；分支度 0 的節點是 <span class="term">Leaf<small>（葉子）</small></span>，其他的是內部節點。根在<b>第 1 層</b>，往下每層加 1；最大的層數就是樹的 <span class="term">Height<small>（高度，也叫 depth）</small></span>。本頁一律用「根在第 1 層、只有根時高度是 1」，有些題目從 0 開始算，公式要跟著減 1，作答前一定要先看清楚。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="btp-terms"></div>
+            <figcaption><b>圖 1</b>：一棵 8 個節點、高度 4 的二元樹。A 是根；綠色的 D、F、G、H 是葉子；C 只有右子 F，分支度是 1。</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="properties">
+        <h2>三個基本性質</h2>
+        <div class="panel prose">
+          <h3>性質 1：第 i 層最多 2<sup>i−1</sup> 個節點</h3>
+          <p>第 1 層只有根，1 個；每個節點最多兩個子節點，所以下一層最多是上一層的兩倍：1、2、4、8……，第 i 層最多 2<sup>i−1</sup> 個。</p>
+          <h3>性質 2：高度 k 的二元樹最多 2<sup>k</sup> − 1 個節點</h3>
+          <p>把每一層的最大值加起來：1 + 2 + 4 + … + 2<sup>k−1</sup> = 2<sup>k</sup> − 1。反過來說，n 個節點的二元樹，高度<b>至少</b>是 ⌈log₂(n + 1)⌉；最多則是 n（每層只有一個節點，排成一條鏈）。例如 n = 100，高度介於 ⌈log₂101⌉ = 7 和 100 之間。BST 的效能就取決於高度落在這個範圍的哪一端。</p>
+          <pre class="formula">第 i 層最多 2^(i−1) 個　　高度 k 最多 2^k − 1 個　　n 個節點的高度 ≥ ⌈log₂(n + 1)⌉</pre>
+          <h3>性質 3：葉子數 n0 = n2 + 1</h3>
+          <p>這是二元樹最重要、最常考的公式。設分支度 0、1、2 的節點各有 n0、n1、n2 個，則<b>不管樹長什麼樣子</b>，一定有 n0 = n2 + 1。證明只要從兩個角度數同一件事：</p>
+          <ol>
+            <li><b>數節點</b>：n = n0 + n1 + n2。</li>
+            <li><b>數邊</b>：除了根以外，每個節點都有一條邊連到父節點，所以邊數 = n − 1。換一個角度，每條邊都是從某個父節點往下長出來的，分支度 1 的節點長出 1 條、分支度 2 的長出 2 條，所以邊數 = n1 + 2·n2。</li>
+            <li>兩式相等：n0 + n1 + n2 − 1 = n1 + 2·n2，消掉 n1 就得到 <b>n0 = n2 + 1</b>。</li>
+          </ol>
+          <p>以圖 1 驗證：分支度 2 的有 A、B、E 三個，葉子有 D、F、G、H 四個，4 = 3 + 1。注意 n1 不影響結果：分支度 1 的節點不管有幾個，都不會改變葉子和分支度 2 節點的差。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 同樣的「數邊」方法可以推廣到任何樹：分支度 d 的節點有 n<sub>d</sub> 個，邊數 n − 1 = Σ d·n<sub>d</sub>，整理後得到 <b>n0 = 1 + Σ (d − 1)·n<sub>d</sub></b>。例如每個節點分支度都是 0 或 3 的樹，n0 = 2·n3 + 1。</p></div>
+        </div>
+      </section>
+
+      <section id="special-trees">
+        <h2>特殊的二元樹：歪斜、完滿、完全</h2>
+        <div class="panel prose">
+          <ul>
+            <li><span class="term">Skewed Binary Tree<small>（歪斜二元樹）</small></span>：每個節點只有左子（左歪斜）或只有右子（右歪斜），n 個節點高度就是 n，等於一條鏈結串列。這是 BST 退化的最差情況。</li>
+            <li><span class="term">Full Binary Tree<small>（完滿二元樹）</small></span>：高度 k、而且剛好有 2<sup>k</sup> − 1 個節點，也就是每一層都填滿。</li>
+            <li><span class="term">Complete Binary Tree<small>（完全二元樹）</small></span>：n 個節點、高度 k，而且這 n 個節點剛好對應到「高度 k 的完滿二元樹」中編號 1～n 的位置。直覺上就是除了最後一層之外都填滿，最後一層的節點全部靠左，中間不能有空洞。完滿二元樹一定是完全二元樹，反過來不一定。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="btp-special"></div>
+            <figcaption><b>圖 2</b>：(a) 右歪斜：3 個節點就有 3 層；(b) 完滿：高度 3 剛好 7 個節點；(c) 完全：編號 1～6 都有節點；(d) 編號 5 空著卻有編號 6，最後一層沒有靠左，不是完全二元樹。</figcaption>
+          </figure>
+          <p>完全二元樹的形狀只由 n 決定，所以可以直接算出很多數字：高度是 ⌊log₂n⌋ + 1；節點 i 是葉子若且唯若 2i &gt; n，所以葉子有 n − ⌊n / 2⌋ = ⌈n / 2⌉ 個；n 是偶數時恰好有 1 個節點分支度是 1（編號 n / 2，它只有左子），n 是奇數時沒有。例如 n = 100：高度 7、葉子 50 個、n1 = 1、n2 = 49，再用 n0 = n2 + 1 驗算，50 = 49 + 1。</p>
+          <p><b>名詞要小心</b>：「Full Binary Tree」在不同的書有兩種意思，一種是上面「每一層都填滿」的完滿，另一種是「每個節點都是 0 個或 2 個子節點」（也叫 strict 或 proper binary tree，圖 2(c) 的 C 只有一個子節點就不符合）。考題用的是中文「完滿」時通常是前者；看到英文 full 而題意不清楚時，寫出你採用的定義再作答。</p>
+          <h3>n 個節點有幾種不同的二元樹</h3>
+          <p>把 n 個節點的二元樹想成：根拿掉 1 個，剩下 n − 1 個分給左右子樹，左邊 i 個、右邊 n − 1 − i 個。設 b<sub>n</sub> 是 n 個節點的二元樹形狀數，b<sub>0</sub> = 1（空樹一種），則 b<sub>n</sub> = Σ b<sub>i</sub>·b<sub>n−1−i</sub>。這個數列就是 <span class="term">Catalan Number<small>（卡特蘭數）</small></span>，有封閉式：</p>
+          <pre class="formula">b(n) = C(2n, n) / (n + 1) = (2n)! / (n! · (n + 1)!)　　b(1..6) = 1, 2, 5, 14, 42, 132</pre>
+          <p>例如 3 個節點有 b<sub>3</sub> = 5 種（圖 3），其中 4 種高度 3、只有 1 種高度 2。高度剛好是 n 的形狀，每往下一層都可以選左或右，共 2<sup>n−1</sup> 種：n = 4 時 14 種裡有 8 種高度 4。同一個 Catalan 數也出現在「n 個元素依序 push 進 stack，可能的 pop 順序有幾種」，以及「給定前序走訪，對應幾種二元樹」，考題常常把它們串在一起。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="btp-shapes-3"></div>
+            <figcaption><b>圖 3</b>：3 個節點的 5 種二元樹。第 1、2 種只差在 C 是 B 的左子還是右子，在二元樹中算不同的兩種。</figcaption>
+          </figure>
+          <details class="code-fold">
+            <summary>看程式碼：countShapes()：算出 b(n)</summary>
+            <div class="code-block">
+              <div class="code-head">countShapes()：算出 b(n)</div>
+              <pre class="code">long long countShapes(int n) {
+  long long b[40] = {1};                       /* b[0] = 1：空樹只有一種 */
+  for (int k = 1; k &lt;= n; k++) {
+    b[k] = 0;
+    for (int i = 0; i &lt; k; i++)                /* 左子樹 i 個、右子樹 k - 1 - i 個 */
+      b[k] += b[i] * b[k - 1 - i];
+  }
+  return b[n];
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="array-representation">
+        <h2>陣列表示法：照編號放</h2>
+        <div class="panel prose">
+          <p>想像這棵樹是某棵完滿二元樹的一部分，把位置由上到下、由左到右編號 1、2、3……，編號 i 的節點就放在 a[i]。這樣不需要任何指標，父子關係直接用編號算出來（a[0] 不用）：</p>
+          <pre class="formula">父節點 = ⌊i / 2⌋（i ≠ 1）　　左子 = 2i（若 2i ≤ n）　　右子 = 2i + 1（若 2i + 1 ≤ n）</pre>
+          <p>為什麼是 2i？第 d 層第一個位置的編號是 2<sup>d−1</sup>，同一層往右數第 j 個是 2<sup>d−1</sup> + j；它的左子在下一層的第 2j 個，編號 2<sup>d</sup> + 2j = 2(2<sup>d−1</sup> + j)，剛好是 2 倍。如果陣列從 0 開始放根，公式變成父節點 (i − 1) / 2、左子 2i + 1、右子 2i + 2。</p>
+          <p>陣列表示法對<b>完全二元樹</b>最划算：n 個節點剛好用 a[1..n]，一格都不浪費，這也是 heap 用陣列存的原因。但對一般的二元樹，空位也要佔著一格，否則後面的編號會錯位。最差的是歪斜樹：高度 k 只有 k 個節點，卻要用到編號 2<sup>k</sup> − 1 的位置，k = 20 時只有 20 個節點卻要配置 1,048,575 格。另外插入、刪除節點時，整棵子樹的編號都會跟著變，要搬動很多元素。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="btp-array-waste"></div>
+            <figcaption><b>圖 4</b>：右歪斜樹用陣列存放，3 個節點分別在 [1]、[3]、[7]，中間 4 格都是空的。</figcaption>
+          </figure>
+          <details class="code-fold">
+            <summary>看程式碼：buildFromArray()：陣列轉成鏈結</summary>
+            <div class="code-block">
+              <div class="code-head">buildFromArray()：陣列轉成鏈結</div>
+              <pre class="code">treePointer buildFromArray(const char a[], int size, int i) {
+  if (i &gt; size || a[i] == '-') return NULL;    /* 超出陣列或空位：空樹 */
+  treePointer t = newNode(a[i]);
+  t-&gt;left = buildFromArray(a, size, 2 * i);    /* 左子在 2i */
+  t-&gt;right = buildFromArray(a, size, 2 * i + 1); /* 右子在 2i + 1 */
+  return t;
+}</pre>
+            </div>
+          </details>
+        </div>
+        <div class="viz" data-viz="bt-array"></div>
+      </section>
+
+      <section id="linked-representation">
+        <h2>鏈結表示法：每個節點兩個指標</h2>
+        <div class="panel prose">
+          <p>一般的二元樹多半用鏈結表示：每個節點有 left、data、right 三個欄位，left、right 分別指向左、右子樹的根，沒有子節點就是 <code>NULL</code>。用多少節點就配置多少，歪斜樹也不浪費；插入、刪除只要改指標。缺點是找不到父節點（需要的話要再多加一個 parent 欄位），而且每個節點都多花兩個指標的空間。</p>
+          <p>這裡有一個常考的數字：<b>n 個節點的鏈結二元樹，共有 2n 個指標欄位，其中只有 n − 1 個真的指向節點</b>（每個非根節點被它的父節點指一次），剩下 <b>n + 1 個是 NULL</b>。超過一半的指標是空的，引線二元樹就是把這些 NULL 拿來存走訪時的前後節點。</p>
+          <details class="code-fold">
+            <summary>看程式碼：節點結構與 newNode()</summary>
+            <div class="code-block">
+              <div class="code-head">節點結構與 newNode()</div>
+              <pre class="code">typedef struct treeNode *treePointer;
+typedef struct treeNode {
+  treePointer left;                            /* 左子樹 */
+  char data;
+  treePointer right;                           /* 右子樹 */
+} treeNode;
+
+treePointer newNode(char c) {
+  treePointer p = malloc(sizeof(treeNode));
+  if (p == NULL) { printf("Memory Full\n"); exit(1); }
+  p-&gt;data = c;
+  p-&gt;left = p-&gt;right = NULL;
+  return p;
+}</pre>
+            </div>
+          </details>
+          <p>樹的性質幾乎都能用同一個遞迴套路算出來：空樹回傳基本值，否則把左右子樹的結果合起來。節點數 = 1 + 左 + 右；高度 = 1 + max(左, 右)；分支度計數則是在每個節點看它有幾個非 NULL 的子節點。每個節點只拜訪一次，都是 <code>O(n)</code>。</p>
+          <details class="code-fold">
+            <summary>看程式碼：countNodes()、height()、countDegree()</summary>
+            <div class="code-block">
+              <div class="code-head">countNodes()、height()、countDegree()</div>
+              <pre class="code">int countNodes(treePointer t) {
+  if (t == NULL) return 0;
+  return 1 + countNodes(t-&gt;left) + countNodes(t-&gt;right);
+}
+
+int height(treePointer t) {                    /* 只有根時高度是 1，空樹是 0 */
+  if (t == NULL) return 0;
+  int hl = height(t-&gt;left), hr = height(t-&gt;right);
+  return 1 + (hl &gt; hr ? hl : hr);
+}
+
+void countDegree(treePointer t, int cnt[3]) {  /* cnt[d]：分支度為 d 的節點數 */
+  if (t == NULL) return;
+  int d = (t-&gt;left != NULL) + (t-&gt;right != NULL);
+  cnt[d]++;
+  countDegree(t-&gt;left, cnt);
+  countDegree(t-&gt;right, cnt);
+}</pre>
+            </div>
+          </details>
+          <p>判斷完全二元樹時，可以利用陣列表示法的編號：先算出 n，再從根開始幫每個節點標上它在陣列中的編號（左子 2i、右子 2i + 1），只要有任何節點的編號超過 n，就代表編號 1～n 之間有空洞，不是完全二元樹。判斷「每個節點都是 0 或 2 個子節點」則是檢查有沒有節點剛好只有一邊是 NULL。</p>
+          <details class="code-fold">
+            <summary>看程式碼：isComplete()、isStrict()</summary>
+            <div class="code-block">
+              <div class="code-head">isComplete()、isStrict()</div>
+              <pre class="code">int isComplete(treePointer t, int i, int n) {
+  if (t == NULL) return 1;
+  if (i &gt; n) return 0;                         /* 編號超過 n 代表中間有空洞 */
+  return isComplete(t-&gt;left, 2 * i, n) &amp;&amp; isComplete(t-&gt;right, 2 * i + 1, n);
+}
+
+int isStrict(treePointer t) {
+  if (t == NULL) return 1;
+  if ((t-&gt;left == NULL) != (t-&gt;right == NULL)) return 0; /* 只有一個子節點 */
+  return isStrict(t-&gt;left) &amp;&amp; isStrict(t-&gt;right);
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="compare">
+        <h2>兩種表示法比較</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較項目</th><th>陣列表示法</th><th>鏈結表示法</th></tr></thead>
+              <tbody>
+                <tr><td>找子節點</td><td><code>O(1)</code>，2i、2i + 1</td><td><code>O(1)</code>，left、right</td></tr>
+                <tr><td>找父節點</td><td><code>O(1)</code>，i / 2</td><td>沒有指標，要從根找；或多加 parent 欄位</td></tr>
+                <tr><td>空間</td><td>依最大編號配置；完全二元樹剛好 n 格，歪斜樹高度 k 要 2<sup>k</sup> − 1 格</td><td>剛好 n 個節點，但每個多 2 個指標，其中 n + 1 個是 NULL</td></tr>
+                <tr><td>插入、刪除</td><td>子樹編號改變，要搬資料</td><td>改指標即可</td></tr>
+                <tr><td>適合</td><td>完全二元樹，例如 heap</td><td>一般的二元樹，例如 BST、運算式樹</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="formulas">
+        <h2>公式整理</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>項目</th><th>公式（根在第 1 層）</th><th>例子</th></tr></thead>
+              <tbody>
+                <tr><td>第 i 層最多節點數</td><td>2<sup>i−1</sup></td><td>第 5 層最多 16 個</td></tr>
+                <tr><td>高度 k 最多節點數</td><td>2<sup>k</sup> − 1</td><td>高度 5 最多 31 個</td></tr>
+                <tr><td>n 個節點的最小高度</td><td>⌈log₂(n + 1)⌉</td><td>n = 100 至少 7 層</td></tr>
+                <tr><td>葉子數</td><td>n0 = n2 + 1</td><td>n2 = 9 → 10 個葉子</td></tr>
+                <tr><td>完全二元樹的高度</td><td>⌊log₂n⌋ + 1</td><td>n = 100 → 7</td></tr>
+                <tr><td>完全二元樹的葉子數</td><td>⌈n / 2⌉</td><td>n = 100 → 50</td></tr>
+                <tr><td>鏈結表示的 NULL 指標</td><td>n + 1</td><td>20 個節點 → 21 個 NULL</td></tr>
+                <tr><td>不同形狀的二元樹</td><td>(2n)! / (n! · (n + 1)!)</td><td>n = 4 → 14 種</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>n0、n1、n2 互推</td><td>很常考</td><td>n0 = n2 + 1，再配合 n = n0 + n1 + n2</td><td><a class="q-link" href="#q-ds-0049">例題</a></td></tr>
+                <tr><td>完全二元樹的高度、葉子數</td><td>很常考</td><td>高度 ⌊log₂n⌋ + 1；葉子 ⌈n / 2⌉；n 偶數時 n1 = 1</td><td><a class="q-link" href="#q-ds-0052">例題</a></td></tr>
+                <tr><td>陣列索引計算</td><td>很常考</td><td>先確認從 0 或 1 開始；父 i / 2、子 2i、2i + 1</td><td><a class="q-link" href="#q-ds-0051">例題</a></td></tr>
+                <tr><td>層數、節點數上下限</td><td>常考</td><td>先確認高度從 0 或 1 算；2<sup>i−1</sup>、2<sup>k</sup> − 1</td><td><a class="q-link" href="#q-ds-0050">例題</a></td></tr>
+                <tr><td>由陣列畫樹、判斷完全</td><td>常考</td><td>依編號放回樹上；檢查 1～n 有沒有空位</td><td><a class="q-link" href="#q-ds-0054">例題</a></td></tr>
+                <tr><td>不同形狀的二元樹個數</td><td>常考</td><td>Catalan 數；限定高度時另外數</td><td><a class="q-link" href="#q-ds-0055">例題</a></td></tr>
+                <tr><td>證明與推廣到 m 元樹</td><td>偶爾</td><td>從「節點數」與「邊數」兩個角度數同一件事</td><td><a class="q-link" href="#q-ds-0056">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 高度 k 最多 2<sup>k</sup> 個節點</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 是 2<sup>k</sup> − 1（根在第 1 層）；若題目讓根在第 0 層，要改成 2<sup>k+1</sup> − 1</span> <a class="q-link" href="#q-ds-0050">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 要知道 n1 才能算葉子數</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> n0 = n2 + 1 和 n1 無關</span> <a class="q-link" href="#q-ds-0049">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 最後一層有空位就不是完全二元樹</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 最後一層可以不滿，只要節點全部靠左、編號 1～n 沒有空洞</span> <a class="q-link" href="#q-ds-0054">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 只有左子和只有右子是同一棵二元樹</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 二元樹分左右，這是兩棵不同的樹；3 個節點有 5 種而不是 2 種</span> <a class="q-link" href="#q-ds-0055">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> n 個節點的鏈結二元樹有 n 個 NULL 指標</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 2n 個指標中有 n − 1 個指向節點，NULL 是 n + 1 個</span> <a class="q-link" href="#q-ds-0053">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="binary-tree-properties"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-21 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=bc92d517"></script>
+  <script src="../../../assets/js/viz-core.js?v=bc92d517"></script>
+  <script src="../../../assets/js/viz/data-structures/binary-tree-properties.js?v=bc92d517"></script>
+</body>
+</html>
