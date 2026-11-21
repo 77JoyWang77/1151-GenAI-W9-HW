@@ -923,6 +923,108 @@
       "question": "一棵樹中每個節點的分支度只會是 0 或 3（每個內部節點恰好有 3 個子節點）。若這棵樹有 21 個葉子，它有幾個內部節點？總共幾個節點？",
       "answer": "內部節點 10 個，總共 31 個",
       "explanation": "<p>把 n0 = n2 + 1 的證明推廣：設內部節點 n3 個，總節點 n = n0 + n3。邊數從下往上看是 n − 1，從上往下看是 3·n3，所以 n0 + n3 − 1 = 3·n3，得到 <b>n0 = 2·n3 + 1</b>。</p><p>代入 n0 = 21：2·n3 + 1 = 21，n3 = <b>10</b>，總共 21 + 10 = <b>31</b> 個節點。</p><p>一般式：分支度 d 的節點有 n<sub>d</sub> 個時，n0 = 1 + Σ (d − 1)·n<sub>d</sub>。二元樹時 d = 2 那項係數是 1，就是 n0 = n2 + 1；分支度 1 的節點係數是 0，所以永遠不影響葉子數。另一個看法：每把一個葉子展開成 3 個子節點，葉子數淨增 2，從只有根（1 個葉子）開始展開 10 次，葉子變成 1 + 2 × 10 = 21。</p>"
+    },
+    {
+      "id": "ds-0058",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 16,
+        "url": "https://ir.lib.ncu.edu.tw:444/cexamn/exam/EC02_115_01.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Which of the following statements are correct?",
+      "choices": [
+        "(A) The postfix of (a+b)/(c-d)+e is ab+cd-/+e.",
+        "(B) The postfix of infix expression b+a*c/d is bac*d/+.",
+        "(C) The infix of the postfix expression ab+c*d/ef-+ is (((a+b)*c)/d)+(e-f).",
+        "(D) The prefix of the postfix expression abc+d*/ is /a*+bcd."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯。(a+b)/(c-d) 的後序是 ab+cd-/，最後再加 e，<b>+ 要放在 e 之後</b>：ab+cd-/e+。選項把 + 放在 e 前面，ab+cd-/+e 讀到 + 時堆疊裡只有一個運算元，根本不是合法的後序式。</li><li>(B) 對。* 和 / 優先於 +，同級由左到右：先 a*c，再 (a*c)/d，最後 b + …，後序 b a c * d / +。</li><li>(C) 對。用 stack 由左到右掃：ab+ → (a+b)；c* → ((a+b)*c)；d/ → (((a+b)*c)/d)；ef- → (e-f)；最後 + 把兩邊接起來。</li><li>(D) 對。abc+d*/：b+c，再乘 d 得 (b+c)*d，最後 a / ((b+c)*d)，前序 / a * + b c d。</li></ul><p>（四個轉換都已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0059",
+      "topics": [
+        "stack",
+        "circular-queue",
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 17,
+        "url": "https://ir.lib.ncu.edu.tw:444/cexamn/exam/EC02_115_01.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Consider the code fragment below.<pre class=\"code\">container.push('I');\ncontainer.pop();\ncontainer.push('L');\ncontainer.push('O');\ncontainer.push('V');\ncontainer.pop();\ncontainer.push('E');\ncontainer.push('N');\ncontainer.pop();\ncontainer.push('C');\ncontainer.push('U');\ncontainer.pop();</pre>Which of the following statements is (are) true?",
+      "choices": [
+        "(A) If the \"container\" is an <b>empty standard stack.</b> The sequence of elements inside the \"container\" <b>from its top to the bottom</b> is LOEC.",
+        "(B) If the \"container\" is an <b>empty standard queue.</b> The sequence of elements inside the \"container\" <b>from its front to its rear</b> is ENCU.",
+        "(C) If the \"container\" is an <b>empty min heap</b>, the level order traversal of the heap is NVOU.",
+        "(D) If the \"container\" is an <b>empty max heap</b>, the level order traversal of the heap is NLEC."
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<p>同一串操作，pop 拿走的元素依容器而不同：stack 拿最後放的、queue 拿最先放的、heap 拿最小（最大）的。字母比大小用字母順序。</p><ul><li>(A) 錯。stack 依序 pop 掉 I、V、N、U，剩下由底到頂 L O E C，<b>由頂到底是 CEOL</b>；LOEC 是由底到頂。</li><li>(B) 對。queue 依序 pop 掉 I、L、O、V，剩下由 front 到 rear 是 <b>ENCU</b>。</li><li>(C) 錯。min heap 每次 pop 掉最小的：I、L、E、C。逐步追蹤陣列：[L,O,V] → pop L 後 [O,V] → 加 E、N 得 [E,N,O,V] → pop E 後 [N,V,O] → 加 C、U 得 [C,N,O,V,U] → pop C：U 移到根往下換，得 [N,U,O,V]，層序是 <b>NUOV</b>，不是 NVOU。</li><li>(D) 對。max heap 每次 pop 最大的：I、V、O、U，最後陣列（層序）是 <b>NLEC</b>。</li></ul><p>（四種容器都已用程式模擬驗算，heap 使用標準的上移插入與下移刪除。）</p>"
+    },
+    {
+      "id": "ds-0060",
+      "topics": [
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 18,
+        "url": "https://ir.lib.ncu.edu.tw:444/cexamn/exam/EC02_115_01.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Given a binary tree with inorder traversal, <b>ILOVENCU</b>, and postorder traversal, <b>LIVNUCEO</b>. Which of the following statements is (are) true?",
+      "choices": [
+        "(A) The fifth letter in the level-order traversal is V.",
+        "(B) The height of the binary tree is 5.",
+        "(C) C is a leaf node.",
+        "(D) The six letter in the level-order traversal is U."
+      ],
+      "answer": "(A)",
+      "explanation": "<p><b>重建</b>：後序最後一個 O 是根，中序以 O 切開：左子樹 IL、右子樹 VENCU。左子樹的後序 LI，根是 I，L 在 I 的右邊；右子樹的後序 VNUCE，根是 E，中序 V | E | NCU，所以 V 是 E 的左子；NCU 的後序是 NUC，根 C，N、U 分別是 C 的左右子。</p><pre class=\"formula\">        O\n      /   \\\n     I     E\n      \\   / \\\n       L V   C\n            / \\\n           N   U</pre><p>層序走訪：<b>O I E L V C N U</b>。</p><ul><li>(A) 對：第 5 個是 V。</li><li>(B) 錯：最深的 N、U 在第 4 層，高度是 4（根算第 1 層）。</li><li>(C) 錯：C 有 N、U 兩個子節點。</li><li>(D) 錯：第 6 個是 C，U 是第 8 個。</li></ul><p>（已用程式重建並驗算。）</p>"
+    },
+    {
+      "id": "ds-0061",
+      "topics": [
+        "binary-tree-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 20,
+        "url": "https://ir.lib.ncu.edu.tw:444/cexamn/exam/EC02_115_01.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Consider structurally unique binary trees with n nodes. For example, when n= 3, there are 5 structurally unique binary trees.<p>（原題附圖：n = 3 的 5 種二元樹，即本站 Binary Tree Properties 頁的圖 3。）</p>Which of the following statements is (are) true?",
+      "choices": [
+        "(A) The space complexity of determining structurally unique n-node binary trees is O(n).",
+        "(B) The time complexity of determining structurally unique n-node binary trees is O(n<sup>2</sup>).",
+        "(C) There are 429 structurally unique binary trees when n=7.",
+        "(D) There are 4862 structurally unique binary trees when n=9."
+      ],
+      "answer": "(A)(B)(C)(D)（A、B 的解讀待確認）",
+      "explanation": "<p>個數是 Catalan 數 b(n)，遞迴式 b(n) = Σ<sub>i=0..n−1</sub> b(i)·b(n−1−i)，b(0) = 1。依序算出 1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862：</p><ul><li>(C) 對：b(7) = 429。</li><li>(D) 對：b(9) = 4862。</li><li>(A)(B)：如果「determining」是指<b>算出有幾種</b>，用上面的 DP：要存 b(0..n) 共 n + 1 個值，空間 O(n)；算 b(k) 要加 k 項，總共 1 + 2 + … + n = n(n+1)/2 次，時間 O(n²)，兩個都對。如果解讀成<b>把每一棵樹都列出來</b>，輸出量就是 b(n) 棵、約 4<sup>n</sup> / n<sup>1.5</sup>，不可能是 O(n²)。題目沒有公布官方答案，這裡依題目只問「determining」的較常見解讀作答（待確認）。</li></ul><p>（b(0)～b(9) 已用程式驗算。）</p>"
     }
   ]
 }
