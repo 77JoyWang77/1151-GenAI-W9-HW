@@ -351,6 +351,22 @@
           "priority": "low"
         }
       ]
+    },
+    {
+      "id": "others",
+      "no": 13,
+      "en": "Others",
+      "zh": "其他",
+      "desc": "考卷上出現、但不屬於本科範圍的題目",
+      "topics": [
+        {
+          "id": "computer-networks",
+          "en": "Computer Networks",
+          "zh": "計算機網路",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
     }
   ]
 }

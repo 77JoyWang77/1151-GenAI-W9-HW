@@ -5380,6 +5380,84 @@
       ],
       "answer": "(A)(B)(C)(D)（(D)(E) 待確認）",
       "explanation": "<p>Virtual Memory（虛擬記憶體）把每個行程看到的邏輯位址空間和實體記憶體分開，靠 page table 一頁一頁對應過去。</p>\n<p><b>(A) 對</b>：每個行程都有自己獨立的虛擬位址空間，同一個虛擬位址在不同行程會對應到不同的實體 frame。<br>\n<b>(B) 對</b>：配合 demand paging（需求分頁），行程只要把正在用的頁面放進記憶體就能執行，同樣大小的記憶體可以放更多行程，提高 multiprogramming 程度。<br>\n<b>(C) 對</b>：兩個行程的 page table 可以指向同一個 frame，做到 shared library、shared memory、fork 後的 copy-on-write。<br>\n<b>(D) 對</b>、<b>(E) 錯</b>：只用一組 base/limit register 的是 contiguous allocation（連續配置），整個行程必須放在一段連續的實體記憶體。虛擬記憶體以 page（或 segment）為單位，每一頁都有自己的 frame 起始位址，等於用了很多個 base，所以行程在實體記憶體裡可以不連續。</p>\n<p>（待確認）(D)、(E) 的「base」題目沒有定義，這裡解讀成「位址轉換用的基底位址」；若出題者指的是每個行程只有一個 page-table base register（PTBR），判定可能不同。</p>"
+    },
+    {
+      "id": "os-0220",
+      "topics": [
+        "computer-networks"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(a) It is not allowed for routers to fragment IPv6 packets.",
+        "(b) DHCP allows a host to dynamically obtain its IP address from network server when it joins the network.",
+        "(c) NAT is used to translate IP addresses to hardware addresses.",
+        "(d) DNS is used to find the hardware address of a local device",
+        "(e) None of the above"
+      ],
+      "answer": "(a)(b)",
+      "explanation": "<p>這題考幾個常見協定「負責把什麼轉成什麼」，先把對應關係記清楚：</p><div class=\"table-scroll\"><table><tr><th>協定</th><th>做的事</th></tr><tr><td>DNS</td><td>網域名稱 → IP 位址</td></tr><tr><td>ARP</td><td>同一個區網內的 IP 位址 → MAC（硬體）位址</td></tr><tr><td>NAT</td><td>私有 IP（加 port）↔ 公有 IP（加 port）</td></tr><tr><td>DHCP</td><td>主機加入網路時，向伺服器要一個 IP 位址（以及 gateway、DNS 伺服器等設定）</td></tr></table></div><ul><li>(a) 對：<span class=\"term\">IPv6<small>（第 6 版網際網路協定）</small></span>拿掉了路由器的 fragmentation（分段）。封包太大時，路由器直接丟掉並回傳 ICMPv6 “Packet Too Big”，由來源端用 path MTU discovery 自己切小。這樣路由器不必做分段與重組，轉送比較快。只有來源主機能用 fragment extension header 分段。</li><li>(b) 對：這正是 <span class=\"term\">DHCP<small>（動態主機設定協定）</small></span>的用途，流程是 Discover → Offer → Request → ACK。</li><li>(c) 錯：<span class=\"term\">NAT<small>（網路位址轉譯）</small></span>是把內網的私有 IP 換成對外的公有 IP，換的還是 IP（第 3 層）；IP 轉成硬體位址是 ARP 的工作。</li><li>(d) 錯：<span class=\"term\">DNS<small>（網域名稱系統）</small></span>把名稱（如 www.ncu.edu.tw）轉成 IP，不負責找硬體位址；找區網裝置的 MAC 一樣是 ARP。</li></ul><p>常見錯誤：把 NAT、DNS、ARP 三個「轉換」搞混。記法是看轉換的兩端在哪一層：DNS 是名稱 → 第 3 層，ARP 是第 3 層 → 第 2 層，NAT 是第 3 層 → 第 3 層。</p>"
+    },
+    {
+      "id": "os-0221",
+      "topics": [
+        "computer-networks"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices regarding network protocols",
+      "choices": [
+        "(a) The BGP protocol is an intra-AS routing protocol.",
+        "(b) HTTP adopts TLS to encrypt messages.",
+        "(c) ARP requests are broadcast packets.",
+        "(d) The ARP spoofing attack is to associate IP addresses to the wrong MAC address.",
+        "(e) None of the above"
+      ],
+      "answer": "(c)(d)（待確認）",
+      "explanation": "<ul><li>(a) 錯：網際網路由很多個 <span class=\"term\">Autonomous System<small>（自治系統，AS）</small></span>組成。AS 內部的路由（intra-AS）用 OSPF、RIP 這類協定；<span class=\"term\">BGP<small>（邊界閘道協定）</small></span>負責 AS 和 AS 之間的路由，是 <b>inter-AS</b> 協定。</li><li>(b) 錯（取最合理的解讀）：HTTP 本身是明文傳送，沒有加密。加密的是 <b>HTTPS</b>，也就是把 HTTP 放在 <span class=\"term\">TLS<small>（傳輸層安全協定）</small></span>上面跑，是兩個協定疊在一起，不是 HTTP 規格自己採用 TLS。</li><li>(c) 對：主機只知道目的 IP、不知道對方 MAC，只能問整個區網「誰是這個 IP？」，所以 ARP request 送到廣播位址 FF:FF:FF:FF:FF:FF；ARP reply 則是 unicast 直接回給詢問者。</li><li>(d) 對：ARP 沒有驗證機制，主機收到 ARP reply 就會更新快取。攻擊者送出偽造的 reply，把別人的 IP（常是 gateway）對應到自己的 MAC，流量就會被導到攻擊者那裡，可以竊聽或做中間人攻擊。這就是「把 IP 對應到錯誤的 MAC」。</li></ul><p>（待確認）(b) 有另一種解讀：如果出題者把「HTTP 可以搭配 TLS（即 HTTPS）」也算對，答案會變成 (b)(c)(d)。這題沒有公布答案；照字面看，HTTP 協定本身不加密，所以這裡判 (b) 錯。</p>"
+    },
+    {
+      "id": "os-0222",
+      "topics": [
+        "computer-networks"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices regarding networking technologies",
+      "choices": [
+        "(A) The goal of Web 3.0 is to enable a more decentralized internet.",
+        "(B) The architecture of software-defined networking is decentralized.",
+        "(C) The Domain Name System is a distributed, hierarchical database.",
+        "(D) Internet standards are developed by the Internet Engineering Task Force.",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(C)(D)（待確認）",
+      "explanation": "<ul><li>(A) 對：現在一般說的 Web 3.0（Web3）是以 blockchain 為基礎的網路。資料和身分不再集中在少數大平台，而是分散在網路上的節點，目標就是更「去中心化」。</li><li>(B) 錯：<span class=\"term\">Software-Defined Networking<small>（軟體定義網路，SDN）</small></span>的核心是把 control plane（決定怎麼轉送）從交換器裡抽出來，交給一個<b>邏輯上集中</b>的 controller 統一管理，交換器只負責照 flow table 轉送（data plane）。所以 SDN 是 centralized，傳統路由器各自算路由才是分散式。</li><li>(C) 對：DNS 沒有一台存放所有名稱的伺服器，而是分層：root server → TLD server（.com、.tw）→ authoritative server（各組織自己的），每一層只管自己那一段。這種設計可以擴展，也沒有單點故障。</li><li>(D) 對：<span class=\"term\">IETF<small>（網際網路工程任務組）</small></span>負責制定網際網路標準，以 RFC 文件發布，例如 TCP、IP、HTTP。</li></ul><p>（待確認）(A) 的「Web 3.0」有兩種說法：早期 Tim Berners-Lee 用它稱呼 Semantic Web（語意網），目標是讓機器看得懂網頁內容，不是去中心化；近年多指以 blockchain 為基礎的 Web3。依題目的敘述，判斷出題者指的是後者，所以 (A) 算對。若照 Semantic Web 的說法，答案會是 (C)(D)。</p>"
     }
   ]
 }

@@ -159,13 +159,7 @@
         "data-structures",
         "algorithms"
       ],
-      "skipped": [
-        {
-          "no": 3,
-          "subject": "algorithms",
-          "reason": "不屬於六科：DNA 序列的 c-means 分群（機器學習）"
-        }
-      ]
+      "skipped": []
     },
     {
       "school": "國立臺灣大學",
@@ -454,13 +448,7 @@
         "computer-organization",
         "operating-systems"
       ],
-      "skipped": [
-        {
-          "no": 15,
-          "subject": "operating-systems",
-          "reason": "不屬於六科：計算機網路（IPv6、DHCP、NAT、DNS）"
-        }
-      ]
+      "skipped": []
     },
     {
       "school": "國立中央大學",
@@ -471,13 +459,7 @@
         "computer-organization",
         "operating-systems"
       ],
-      "skipped": [
-        {
-          "no": 18,
-          "subject": "operating-systems",
-          "reason": "不屬於六科：計算機網路（BGP、HTTP/TLS、ARP）"
-        }
-      ]
+      "skipped": []
     },
     {
       "school": "國立中央大學",
@@ -488,13 +470,7 @@
         "computer-organization",
         "operating-systems"
       ],
-      "skipped": [
-        {
-          "no": 13,
-          "subject": "operating-systems",
-          "reason": "不屬於六科：計算機網路（SDN、DNS、IETF）"
-        }
-      ]
+      "skipped": []
     },
     {
       "school": "國立中央大學",

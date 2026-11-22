@@ -36,6 +36,10 @@ for f in sys.argv[2:]:
             print("exam-log.json 沒有這份考卷，請先登錄：", m.SCHOOL, y, url_of(m, y)); continue
         if not any(str(x["no"]) == str(s["no"]) for x in paper["skipped"]):
             paper["skipped"].append({"no": s["no"], "subject": S, "reason": s["reason"]})
+# 已經收進題庫的題號，從不收清單移除（例如依新規則重新收錄）
+for paper in log["papers"]:
+    paper["skipped"] = [x for x in paper["skipped"]
+                        if x.get("subject") != S or (paper["school"], paper["year"], str(x["no"])) not in have]
 save_json(P, d); save_json(LOG, log)
 print(S, "added", added, "last", f"{pre}-{n:04d}")
 for b in bad: print("topic 不存在，沒有匯入：", b)

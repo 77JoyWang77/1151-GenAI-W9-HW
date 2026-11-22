@@ -455,6 +455,22 @@
           "priority": "low"
         }
       ]
+    },
+    {
+      "id": "others",
+      "no": 14,
+      "en": "Others",
+      "zh": "其他",
+      "desc": "考卷上出現、但不屬於本科範圍的題目",
+      "topics": [
+        {
+          "id": "clustering",
+          "en": "Clustering",
+          "zh": "分群演算法",
+          "status": "planned",
+          "priority": "low"
+        }
+      ]
     }
   ]
 }

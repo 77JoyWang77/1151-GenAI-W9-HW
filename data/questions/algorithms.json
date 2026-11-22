@@ -4483,6 +4483,32 @@
       ],
       "answer": "(C)（待確認：(B) 也可視為正確）",
       "explanation": "<p>這是 <span class=\"term\">Global Alignment<small>（全域序列比對）</small></span>，也就是 Needleman–Wunsch 演算法，本質和 <span class=\"term\">Edit Distance<small>（編輯距離）</small></span>同一套 DP，只是把「最小成本」換成「最大分數」。</p><p>S(i, j) 代表 A[1..i] 和 B[1..j] 的最佳比對分數，最後一欄只有三種可能：A[i] 對 B[j]（match +2 或 mismatch −1）、A[i] 對空格（−2）、B[j] 對空格（−2）。邊界 S(i, 0) = −2i、S(0, j) = −2j。</p><ul><li>(A) 錯：表格有 (m+1)(n+1) 格，每格 O(1)，時間 Θ(mn)，不是 O(m+n)。</li><li>(B) 標準做法要存整張表才能 traceback，空間 Θ(mn)，所以這句通常算對；但若只要分數，可以只留兩列做到 O(min(m, n))，Hirschberg 演算法甚至能在線性空間還原比對，因此這句是「看實作」的敘述。</li><li>(C) 對：正是上面三種情況取最大值，gap 每次 −2，與題目定義完全一致。</li><li>(D) 錯：global alignment 的 traceback 從<b>右下角</b> S(m, n) 往回走到左上角 S(0, 0)；從左上角出發是搞錯方向（local alignment 則是從表中最大值出發）。</li><li>(E) 錯：一般 traceback 只沿一條路徑回溯，得到<b>一個</b>最佳比對；要列出全部最佳比對得另外記錄所有並列的來源並列舉，而且數量可能是指數級。</li></ul><p>程式驗算：用這個遞迴式算 GATT 與 GCAT，S(4, 4) = 2，對應比對 G-ATT / GCAT-（2 − 2 + 2 + 2 − 2 = 2），遞迴式正確。</p><p>本題標示為單選，(C) 在任何情況下都成立，最符合題意，答 (C)；(B) 在「存整張表」的標準實作下也成立，官方答案（待確認）。</p>"
+    },
+    {
+      "id": "al-0192",
+      "topics": [
+        "clustering"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "資料結構與演算法",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_software.pdf"
+      },
+      "question": "<p>（單選）(5 points) Consider the following five DNA sequences:</p><pre>a) ATCGTA\nb) ATCGTT\nc) GCATAG\nd) GCATAC\ne) TTAGCG</pre><p>Which of the following statements is correct regarding the application of a c-means clustering algorithm to these sequences (c = 3)?</p>",
+      "choices": [
+        "(A) The algorithm will always halt with exactly three clusters regardless of the chosen distance metric.",
+        "(B) Using Hamming distance as the similarity measure, sequences a and b will always be in the same cluster.",
+        "(C) The algorithm guarantees finding the globally optimal clustering solution for these sequences.",
+        "(D) Using k-mer frequency vectors (k = 2) as features, sequences c and d will never be in the same cluster.",
+        "(E) The time complexity of the k-means algorithm for clustering these sequences is O(n), where n is the number of sequences."
+      ],
+      "answer": "(E)（待確認）",
+      "explanation": "<p><span class=\"term\">c-means<small>（又稱 k-means 分群）</small></span>要先指定群數 c，然後重複兩個步驟直到分組不再改變：</p><ol><li><b>指派</b>：每個資料點分到離它最近的中心。</li><li><b>更新</b>：每群的中心改成該群成員的平均。</li></ol><p>兩個步驟都會讓「每點到所屬中心的距離平方和」（SSE）不增加，而分組方式只有有限多種，所以在歐氏距離下一定會停。但停下來的只是<b>區域最佳解</b>，而且結果取決於初始中心怎麼選。</p><p>先算出五條序列兩兩的 <span class=\"term\">Hamming distance<small>（漢明距離，對應位置不同的字元數）</small></span>：</p><div class=\"table-scroll\"><table><tr><th></th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th></tr><tr><th>a</th><td>0</td><td>1</td><td>6</td><td>6</td><td>4</td></tr><tr><th>b</th><td>1</td><td>0</td><td>6</td><td>6</td><td>4</td></tr><tr><th>c</th><td>6</td><td>6</td><td>0</td><td>1</td><td>4</td></tr><tr><th>d</th><td>6</td><td>6</td><td>1</td><td>0</td><td>5</td></tr><tr><th>e</th><td>4</td><td>4</td><td>4</td><td>5</td><td>0</td></tr></table></div><p>可以看出 {a, b}、{c, d} 各自只差 1 個字元，e 和大家都差 4 以上。直覺上最好的分法是 {a, b}、{c, d}、{e}。</p><p>用程式把序列做 one-hot 編碼（每個位置用 4 維向量表示 A/C/G/T），跑 k-means，並把 C(5,3) = 10 種「從資料點挑 3 個當初始中心」的情況都試一遍。結果如下：</p><ul><li>(A) 錯：題目說「不論用什麼距離」。保證會停的論證要求「取平均」剛好是該距離下的最佳中心，這只對歐氏距離平方成立；換成其他距離又照樣取平均，SSE 不一定下降，可能來回震盪。另外，若初始中心離所有資料都很遠，某一群可能分不到任何點（empty cluster），最後就不是三群。</li><li>(B) 錯：雖然 a、b 只差 1，但如果初始中心剛好挑 a、b、c，第一輪 a 和 b 就各自當一群的中心，程式跑出 {a, e}、{b}、{c, d} 並停在那裡。a、b 被拆開，所以不是「always」。</li><li>(C) 錯：上面那組結果的 SSE = 5，而 {a, b}、{c, d}、{e} 的 SSE = 2。k-means 停在較差的區域最佳解，所以不保證全域最佳。事實上，k-means 的最佳化問題是 NP-hard。</li><li>(D) 錯：用 2-mer（長度 2 的子字串）出現次數當特徵，c = GCATAG 的 2-mer 是 {GC, CA, AT, TA, AG}，d = GCATAC 的是 {GC, CA, AT, TA, AC}，5 個裡有 4 個相同，兩者非常接近。程式驗算：初始中心挑 a、c、e 時，c 和 d 就分在同一群，所以「never」錯。</li><li>(E) 選這個：每一輪要算 n 個點到 c 個中心的距離，每次距離要看 d 維，所以一輪是 O(n·c·d)，總共 O(t·n·c·d)，t 是迭代次數。本題 c = 3，序列長度固定（d 是常數），迭代次數也視為常數，複雜度就是 O(n)，和序列數成正比。</li></ul><p>（待確認）(E) 要把迭代次數 t 當成常數才成立。嚴格來說，k-means 在最壞情況下的迭代次數可以是 n 的指數，所以 (E) 並不是無條件成立。這題沒有公布答案；因為 (A)～(D) 都能舉出明確的反例，而 (E) 符合一般「k-means 對 n 是線性時間」的說法，所以判 (E) 為出題者要的答案。</p>"
     }
   ]
 }
