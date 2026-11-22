@@ -1768,6 +1768,446 @@
       "question": "[Graph &amp; Tree] A (n, m)-dumbbell graph is constructed by the complete graph k<sub>n</sub> on n vertices, and k<sub>m</sub> on m vertices. These two graphs are connected by a single edge. Find the number of spanning tree of a dumbbell graph.<br>（原卷附圖：左邊是 K<sub>3</sub>（三角形），右邊是 K<sub>5</sub>，兩者之間由一條邊相連。）",
       "answer": "n<sup>n−2</sup> · m<sup>m−2</sup>",
       "explanation": "<p>中間那條連接邊是 <span class=\"term\">Bridge<small>（橋）</small></span>：拿掉它圖就斷成兩塊，所以每一棵生成樹都<b>必須</b>包含它。</p><p>包含橋之後，剩下的工作是在 K<sub>n</sub> 內部選一棵生成樹、在 K<sub>m</sub> 內部選一棵生成樹，兩邊互相獨立。由 <span class=\"term\">Cayley's formula<small>（Cayley 公式）</small></span>，K<sub>n</sub> 有 n<sup>n−2</sup> 棵生成樹，所以</p><pre class=\"formula\">τ(dumbbell) = n^(n-2) · m^(m-2)</pre><p>圖中的例子 (3, 5)：3<sup>1</sup> × 5<sup>3</sup> = 375。程式用 <span class=\"term\">Matrix-tree theorem<small>（矩陣樹定理）</small></span>（Laplacian 去掉一列一行取行列式）算 (3, 5)、(4, 4)、(2, 3) 分別得 375、256、3，和公式一致。</p><p>常見錯誤：把兩邊的生成樹數相加，或多乘一個「選不選橋」的 2。</p>"
+    },
+    {
+      "id": "dm-0088",
+      "topics": [
+        "propositional-logic",
+        "proof-methods"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
+      },
+      "question": "Solve the following puzzle.<br>一名醫護人員說：『醫院裡的醫護人員，包括我在內，總共是16名醫生與護士。並且下面四條狀況都成立。並且如果把我排除不計的話，下面四條狀況仍然都成立。』<br>一、護士多於醫生。<br>二、男醫生多於男護士。<br>三、男護士多於女護士。<br>四、至少有一位女醫生。<br>請問說話的人是甚麼性別和職務？<br>請注意，每個人要麼是男性，要麼是女性，不可以又是男又是女。每個人要麼是醫生，要麼是護士，不可以又是醫生又是護士。",
+      "answer": "說話的人是女護士（人員組成：男醫生 6、女醫生 1、男護士 5、女護士 4）",
+      "explanation": "<p>設男醫生 a、女醫生 b、男護士 c、女護士 d，a + b + c + d = 16，條件：(1) c + d &gt; a + b；(2) a &gt; c；(3) c &gt; d；(4) b ≥ 1。</p><p><b>先找出 16 人時的組成</b>：由 (1)，護士 ≥ 9、醫生 ≤ 7。由 (2)(3)，a &gt; c &gt; d。又 a ≤ 醫生數 − b ≤ 7 − 1 = 6，所以 c ≤ 5、d ≤ 4，護士 c + d ≤ 9；搭配護士 ≥ 9，只能 c + d = 9、c = 5、d = 4，進而 a = 6、b = 1。唯一解：男醫 6、女醫 1、男護 5、女護 4。</p><p><b>再看拿掉說話者</b>（剩 15 人，四條件仍要成立）：</p><ul><li>拿掉男醫生：a = 5，不滿足 a &gt; c = 5。</li><li>拿掉女醫生：b = 0，違反 (4)。</li><li>拿掉男護士：c = 4，不滿足 c &gt; d = 4。</li><li>拿掉女護士：(6, 1, 5, 3)：護士 8 &gt; 醫生 7、6 &gt; 5、5 &gt; 3、b = 1，全部成立。</li></ul><p>所以說話的人是 <b>女護士</b>。程式窮舉所有 a + b + c + d = 16 的組合與四種身分，也只得到這一組解。</p>"
+    },
+    {
+      "id": "dm-0089",
+      "topics": [
+        "functions",
+        "recursive-definitions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "2-a",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
+      },
+      "question": "Consider the following non-decreasing sequence of natural numbers a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>, ⋯: 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, ⋯. Note that there are exactly k² occurrence of k. Define a function f(n) as the largest integer m such that a<sub>m</sub> = n. For example, f(3) = 14 and f(4) = 30. What is f(f(n))?",
+      "answer": "令 N = f(n) = n(n+1)(2n+1)/6，則 f(f(n)) = N(N+1)(2N+1)/6",
+      "explanation": "<p>n 最後一次出現的位置 = 1, 2, …, n 各自出現次數的總和：</p><pre class=\"formula\">f(n) = 1^2 + 2^2 + ... + n^2 = n(n+1)(2n+1)/6</pre><p>檢查：f(3) = 3·4·7/6 = 14、f(4) = 4·5·9/6 = 30，和題目一致（程式產生數列確認 f(1..4) = 1, 5, 14, 30）。</p><p>f(f(n)) 就是把 N = f(n) 再代入同一個公式：</p><pre class=\"formula\">f(f(n)) = N(N+1)(2N+1)/6,   N = n(n+1)(2n+1)/6</pre><p>例如 f(f(2)) = f(5) = 55。常見錯誤：以為 f(f(n)) 是 f(n)²，函數合成要「整個代入」。</p>"
+    },
+    {
+      "id": "dm-0090",
+      "topics": [
+        "proof-methods"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "2-b",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
+      },
+      "question": "Find all non-negative integers a and b so that √a + √b = √2009.",
+      "answer": "(a, b) = (41i², 41(7 − i)²)，i = 0, 1, …, 7：(0, 2009), (41, 1476), (164, 1025), (369, 656), (656, 369), (1025, 164), (1476, 41), (2009, 0)",
+      "explanation": "<p>先分解 2009 = 7² × 41，所以 √2009 = 7√41。</p><p><b>證明 a、b 必為 41 乘平方數</b>：√a = √2009 − √b，平方得 a = 2009 + b − 2√(2009b)，所以 √(2009b) = (2009 + b − a)/2 是有理數，2009b 必須是完全平方數。2009b = 7² · 41 · b，要是平方數，b 必須是 41j² 的形式（41 是質數，指數要補成偶數）。同理 a = 41i²。</p><p>代回：i√41 + j√41 = 7√41 → i + j = 7，i、j 為非負整數，共 8 組：</p><pre class=\"formula\">i = 0..7:  a = 41 i^2,  b = 41 (7-i)^2</pre><p>(0, 2009)、(41, 1476)、(164, 1025)、(369, 656)、(656, 369)、(1025, 164)、(1476, 41)、(2009, 0)。程式窮舉 a = 0～2009 驗證剛好這 8 組。</p><p>常見錯誤：漏掉 a = 0 或 b = 0 的兩組（題目說 non-negative），或忘了 (a, b) 有順序要兩個方向都列。</p>"
+    },
+    {
+      "id": "dm-0091",
+      "topics": [
+        "predicate-logic"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "3-a",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
+      },
+      "question": "The <i>Goldbach's conjecture</i> says, “every even integer greater than 2 is a sum of two prime numbers.” Please translate Goldbach's conjecture into a logical formula using ∀, ∃, <i>and</i> (∧), <i>or</i> (∨), <i>not</i> (¬), <i>implies</i> (→) and <i>if-and-only-if</i> (↔), and the four basic integer arithmetic operators (+, −, *, /). Note that / is integer division, for example, 5/2 = 2.",
+      "answer": "∀n ( (n &gt; 2 ∧ (n/2)*2 = n) → ∃p ∃q ( P(p) ∧ P(q) ∧ n = p + q ) )，其中 P(x) ≡ x &gt; 1 ∧ ∀d ( (d &gt; 1 ∧ d &lt; x) → ¬((x/d)*d = x) )",
+      "explanation": "<p>論域取正整數。題目只給四則運算，所以「偶數」「質數」都要用運算自己定義：</p><ul><li><b>偶數</b>：n 是偶數 ⇔ (n/2)*2 = n（整數除法沒有餘數）。</li><li><b>整除</b>：d 整除 x ⇔ (x/d)*d = x。</li><li><b>質數</b>：P(x) ≡ x &gt; 1 ∧ ∀d((d &gt; 1 ∧ d &lt; x) → ¬((x/d)*d = x))，也就是大於 1 且沒有 1 和自己以外的因數。</li></ul><p>組合起來：</p><pre class=\"formula\">∀n ( (n &gt; 2 ∧ (n/2)*2 = n) → ∃p ∃q ( P(p) ∧ P(q) ∧ n = p + q ) )</pre><p>注意 &gt;、&lt; 若不允許使用，可以改寫：x &gt; y ⇔ ∃k(k ≠ 0 ∧ x = y + k)（在正整數論域中 k 為正）。</p><p>常見錯誤：寫成 ∃p∃q∀n(…)，量詞順序顛倒變成「有一組固定的 p、q 對所有 n 都成立」；或在全稱量詞裡用 ∧ 而不是 →，變成「所有整數都是大於 2 的偶數」。</p>"
+    },
+    {
+      "id": "dm-0092",
+      "topics": [
+        "inclusion-exclusion",
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "3-b",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
+      },
+      "question": "A <i>bit string</i> is a string of 0 and 1 digits. For instance, 0011101110 is a bit string of length 10. How many bit strings of length 10 contain either five consecutive 1's or five consecutive 0's?",
+      "answer": "222",
+      "explanation": "<p>先算「含 5 個連續 1」的個數 A。依「第一段 11111 出現的起點 i」分類（i = 1～6），讓每個字串只被算一次：</p><ul><li>i = 1：位置 1～5 是 1，後面 5 位任意：2<sup>5</sup> = 32。</li><li>i = 2～6：位置 i～i+4 是 1，位置 i − 1 必須是 0（否則更早就出現），前面 i − 2 位只要不含 11111（長度 ≤ 4 一定不含），後面 10 − (i + 4) 位任意：2<sup>i−2</sup> · 2<sup>6−i</sup> = 2<sup>4</sup> = 16，共 5 種起點 → 80。</li></ul><p>A = 32 + 80 = 112。由對稱性，含 5 個連續 0 的也是 112。</p><p><b>兩者同時出現</b>：長度 10 要放下 5 個 1 和 5 個 0 各自連續，只能是 0000011111 或 1111100000，共 2 個。</p><p>由 <span class=\"term\">Inclusion-exclusion<small>（排容原理）</small></span>：112 + 112 − 2 = <b>222</b>。程式窮舉 2<sup>10</sup> = 1024 個字串，符合條件的恰為 222 個。</p>"
+    },
+    {
+      "id": "dm-0093",
+      "topics": [
+        "permutations-combinations",
+        "partial-orders"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
+      },
+      "question": "We want to count the number of paths from vertices m to n in the following graph. Each path is made up of a series of steps, where each step is a move one unit to the right or a move one unit upward (No moves to the left or downward are allowed.)<br>（原卷附圖：6 格寬、4 格高的方格網；m 在左下角、n 在右上角；頂點 x 在 m 往右 3 格、往上 2 格的格點上。）<br>a. What is the number of paths from vertices m to n?<br>b. What is the number of paths from vertices m to n that do not go through vertex x?<br>c. Let P be the set of all vertices in the above graph. Define a binary relation R on P such that (p, q) ∈ R if we need either one unit to the right or one unit upward to move from vertices p to q. Is (P, R) a partially ordered set? Why or why not?",
+      "answer": "a. 210　b. 110　c. 不是 poset：R 不是反身的，也不是遞移的。",
+      "explanation": "<p><b>a.</b> 從 m 到 n 要往右 6 步、往上 4 步，共 10 步，選哪 4 步往上：C(10, 4) = <b>210</b>。</p><p><b>b.</b> 經過 x 的路徑：m → x 要右 3、上 2，C(5, 2) = 10；x → n 要右 3、上 2，C(5, 2) = 10；共 10 × 10 = 100。不經過 x：210 − 100 = <b>110</b>。</p><p><b>c.</b> <span class=\"term\">Partially ordered set<small>（偏序集）</small></span>要求反身、反對稱、遞移。R 的定義是「p 往右一格或往上一格恰好到 q」：</p><ul><li>不反身：(p, p) 要移動 0 格，不在 R 裡。</li><li>不遞移：(m, 右一格的點) 和 (右一格的點, 右兩格的點) 都在 R，但 m 到右兩格的點要走兩格，不在 R 裡。</li><li>反對稱倒是成立（p 到 q 往右或上，q 不可能再往右或上回到 p）。</li></ul><p>所以 (P, R) <b>不是</b>偏序集。它其實是 Hasse 圖的「覆蓋關係」；取它的反身遞移閉包（p ≤ q ⇔ q 在 p 的右上方或相同）才是偏序。</p>"
+    },
+    {
+      "id": "dm-0094",
+      "topics": [
+        "partial-orders"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
+      },
+      "question": "If we run topological sorting on the following Hasse diagrams, how many different results can we get?<br>(a) Hasse 圖：e &lt; g &lt; i，f &lt; h &lt; i（兩條長度 2 的鏈在頂端 i 會合；e、f 為極小元素）。<br>(b) Hasse 圖：九個元素排成 3×3 菱形格子：a 在最底；a &lt; b、a &lt; c；b &lt; e、b &lt; d、c &lt; d、c &lt; f；e &lt; g、d &lt; g、d &lt; h、f &lt; h；g &lt; i、h &lt; i（i 在最頂）。",
+      "answer": "(a) 6　(b) 42",
+      "explanation": "<p><span class=\"term\">Topological sorting<small>（拓撲排序）</small></span>的結果數 = 偏序的線性延伸（linear extension）個數。</p><p><b>(a)</b> i 一定排最後。前面是兩條鏈 e → g 與 f → h 交錯排列，各自內部順序固定：從 4 個位置中選 2 個給 e、g，C(4, 2) = <b>6</b>。</p><p><b>(b)</b> 這個 Hasse 圖是 3×3 的格子（兩條 3 元鏈的直積），每個元素可以標成座標 (列, 行)，順序要求「往右、往上都要變大」。線性延伸個數 = 3×3 <span class=\"term\">Standard Young tableau<small>（標準楊表）</small></span>的個數，用 hook length formula：</p><pre class=\"formula\">9! / (5·4·3·4·3·2·3·2·1) = 362880 / 8640 = 42</pre><p>也可以直接數：a 一定第一、i 一定最後，中間 7 個元素依偏序排列。程式用 networkx 列舉所有拓撲排序，(a) 得 6、(b) 得 42。</p><p>常見錯誤：(b) 只看層次（a；b, c；e, d, f；g, h；i），算成 1·2!·3!·2!·1 = 24，漏掉不同層之間可以交錯的排法（例如 e 可以排在 c 之前）。</p>"
+    },
+    {
+      "id": "dm-0095",
+      "topics": [
+        "planar-graphs"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
+      },
+      "question": "Suppose that we already have the following theorem.<br>If G is a connected planner simple graph with e edges and v vertices, where v ≥ 3, then e ≤ 3v − 6.<br>Using this theorem to prove that if G is a connected planner simple graph with at least three vertices, then G has a vertex of degree not exceeding five.",
+      "answer": "反證：若每個頂點度數 ≥ 6，則 2e = Σdeg ≥ 6v，e ≥ 3v &gt; 3v − 6，矛盾。",
+      "explanation": "<p>用反證法。假設 G 的每個頂點度數都 ≥ 6。</p><p>由 <span class=\"term\">Handshaking lemma<small>（握手定理）</small></span>：2e = Σ deg(v) ≥ 6v，所以 e ≥ 3v。</p><p>但定理說 e ≤ 3v − 6 &lt; 3v，和 e ≥ 3v 矛盾。所以假設錯誤，G 一定有某個頂點度數 ≤ 5。</p><p>這個結論是「平面圖 6 著色」與五色定理證明的基礎：每次拿掉一個度數 ≤ 5 的點做歸納。</p><p>常見錯誤：直接用平均度數 2e/v ≤ 6 − 12/v &lt; 6 也可以，但要說清楚「平均 &lt; 6 ⇒ 至少一個 ≤ 5」，因為度數是整數。</p>"
+    },
+    {
+      "id": "dm-0096",
+      "topics": [
+        "predicate-logic",
+        "propositional-logic"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
+      },
+      "question": "Consider the classic Connect Four game, where players choose a color and then take turns dropping colored tokens into a six-row, seven-column vertically suspended grid. The objective of the game is to be the first to form a horizontal, vertical, or diagonal line of four of one's own tokens. Suppose that two players, one with yellow and the other with red tokens, are playing the game. Propositional functions Y(i, j), R(i, j), and B(i, j) assert that the square in the i-th row and the j-th column (refer to the figure) contains a yellow, a red, and no token, respectively. <b>Please use these predicates together with the connectives permitted to translate the statements in (a) to (c) into logic expressions.</b> Permitted connectives are ∨, ∧, ¬, →, and the pair of parentheses “()”. For any propositional function f(x, y), you should use the notation ⋁<sub>i=m</sub><sup>n</sup> f(i, j) for f(m, j) ∨ f(m + 1, j) ∨ ⋯ ∨ f(n, j) and the notation ⋀<sub>i=m</sub><sup>n</sup> f(i, j) for f(m, j) ∧ f(m + 1, j) ∧ ⋯ ∧ f(n, j).<br>（原卷附圖：6 列 × 7 行的格子，列由上而下編號 1～6，行由左而右編號 1～7。）<br>(a) Four squares in the 2nd row contains four red tokens in a row.<br>(b) Each column contains at least a yellow token.<br>(c) If the square in the i-th row and the j-th column contains a token, the square contains either a red token or a yellow token but not both.",
+      "answer": "(a) ⋁<sub>j=1</sub><sup>4</sup> ( ⋀<sub>k=j</sub><sup>j+3</sup> R(2, k) )　(b) ⋀<sub>j=1</sub><sup>7</sup> ( ⋁<sub>i=1</sub><sup>6</sup> Y(i, j) )　(c) ¬B(i, j) → ( (R(i, j) ∨ Y(i, j)) ∧ ¬(R(i, j) ∧ Y(i, j)) )",
+      "explanation": "<p><b>(a)</b> 第 2 列要有「連續 4 格紅色」。7 行裡連續 4 格的起點 j 只能是 1、2、3、4（起點 4 時涵蓋第 4～7 行）。對每個起點，4 格都要是紅的（⋀），而只要有一個起點成立就行（⋁）：</p><pre class=\"formula\">⋁_{j=1}^{4} ( ⋀_{k=j}^{j+3} R(2, k) )</pre><p><b>(b)</b> 對每一行 j（⋀，7 行都要成立），那一行的 6 格中至少一格是黃的（⋁）：</p><pre class=\"formula\">⋀_{j=1}^{7} ( ⋁_{i=1}^{6} Y(i, j) )</pre><p>常見錯誤：把 ⋀ 和 ⋁ 的順序對調，變成「有某一列每一行都是黃的」，意思完全不同。</p><p><b>(c)</b>「有 token」就是 ¬B(i, j)；「紅或黃但不能兩者都是」是 <span class=\"term\">Exclusive or<small>（互斥或）</small></span>，但只能用 ∨、∧、¬ 表示：</p><pre class=\"formula\">¬B(i, j) → ( (R(i, j) ∨ Y(i, j)) ∧ ¬(R(i, j) ∧ Y(i, j)) )</pre><p>若要對棋盤上所有格子都成立，外面再套 ⋀<sub>i=1</sub><sup>6</sup> ⋀<sub>j=1</sub><sup>7</sup>。</p>"
+    },
+    {
+      "id": "dm-0097",
+      "topics": [
+        "predicate-logic",
+        "sets"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "2-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
+      },
+      "question": "（複選）Given a domain D and two predicates P and Q, let R be the truth set of P(x) and S be the truth set of Q(x). Pick up all the following statements that are always true?",
+      "choices": [
+        "① |R| ≤ |D|.",
+        "② If ∀x ∈ D, P(x) → Q(x), then R ⊆ S.",
+        "③ If R ∩ S = ∅, then P(x) ∨ Q(x) = T.",
+        "④ If |R| ≤ |S|, then ∀x ∈ D, P(x) → Q(x).",
+        "⑤ If R ⊆ S, then ∀x ∈ D, ¬P(x) ∨ Q(x)."
+      ],
+      "answer": "①②⑤",
+      "explanation": "<p><span class=\"term\">Truth set<small>（真值集合）</small></span>：R = {x ∈ D : P(x)}、S = {x ∈ D : Q(x)}。</p><ul><li><b>① 對</b>：R ⊆ D，所以 |R| ≤ |D|。</li><li><b>② 對</b>：任取 x ∈ R，P(x) 為真，由條件 Q(x) 為真，x ∈ S。</li><li><b>③ 錯</b>：R ∩ S = ∅ 只代表 P、Q 不會同時為真，不代表每個 x 都至少滿足一個。反例：D = {1}、P、Q 都恆假，R = S = ∅，但 P(1) ∨ Q(1) 為假。</li><li><b>④ 錯</b>：只比大小不能推出包含關係。反例：D = {1, 2}、P(x) ≡ x = 1、Q(x) ≡ x = 2，|R| = |S| = 1，但 P(1) → Q(1) 為假。</li><li><b>⑤ 對</b>：¬P(x) ∨ Q(x) 就是 P(x) → Q(x)，和 ② 是同一件事的反方向：R ⊆ S ⇔ ∀x(P(x) → Q(x))。</li></ul>"
+    },
+    {
+      "id": "dm-0098",
+      "topics": [
+        "cardinality",
+        "inclusion-exclusion"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "2-(b)",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
+      },
+      "question": "Let ℵ<sub>0</sub> denote the cardinality of a countable infinite set. Name two infinite sets and use the inclusion-exclusion principle to show that ℵ<sub>0</sub> + ℵ<sub>0</sub> = ℵ<sub>0</sub> (Disregard whether the principle holds for infinite sets)",
+      "answer": "取 A = 正偶數集、B = 正奇數集：|A ∪ B| = |A| + |B| − |A ∩ B|，即 ℵ<sub>0</sub> = ℵ<sub>0</sub> + ℵ<sub>0</sub> − 0，所以 ℵ<sub>0</sub> + ℵ<sub>0</sub> = ℵ<sub>0</sub>。",
+      "explanation": "<p>取 A = {2, 4, 6, …}（正偶數）、B = {1, 3, 5, …}（正奇數）。</p><ul><li>|A| = ℵ<sub>0</sub>：n ↦ 2n 是 Z<sup>+</sup> → A 的雙射。</li><li>|B| = ℵ<sub>0</sub>：n ↦ 2n − 1 是 Z<sup>+</sup> → B 的雙射。</li><li>A ∩ B = ∅，|A ∩ B| = 0。</li><li>A ∪ B = Z<sup>+</sup>，|A ∪ B| = ℵ<sub>0</sub>。</li></ul><p>套 <span class=\"term\">Inclusion-exclusion principle<small>（排容原理）</small></span>：|A ∪ B| = |A| + |B| − |A ∩ B|：</p><pre class=\"formula\">ℵ0 = ℵ0 + ℵ0 - 0   =&gt;   ℵ0 + ℵ0 = ℵ0</pre><p>重點是挑兩個<b>互斥</b>的可數無限集，讓交集為 0，才不會出現「ℵ<sub>0</sub> − ℵ<sub>0</sub>」這種無限基數相減沒有定義的情況。若挑 A = B = N，會得到 ℵ<sub>0</sub> = ℵ<sub>0</sub> + ℵ<sub>0</sub> − ℵ<sub>0</sub>，推不出結論。</p>"
+    },
+    {
+      "id": "dm-0099",
+      "topics": [
+        "permutations-combinations",
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
+      },
+      "question": "Assigning 8 distinct tasks to 3 identical servers, where every task must be assigned to exactly one server.<br>(a) Suppose each server can handle any number of tasks, including none. How many ways can the 8 tasks be assigned to the 3 servers with no restrictions?<br>(b) Suppose that each server must handle at least one task. How many ways can the tasks be assigned?<br>(c) Suppose that each server must handle at least one task, and no server can handle 5 tasks or more, how many valid task assignments are possible?<br>(d) Now, consider that the servers are labeled (i.e., no longer identical), and each server must handle at least one task. Additionally, no server can handle 5 tasks or more. How many valid task assignments are there in this case?",
+      "answer": "(a) 1094　(b) 966　(c) 770　(d) 4620",
+      "explanation": "<p>不同的工作分給相同的伺服器 = 把 8 個元素分割成若干個無序的組，用 <span class=\"term\">Stirling number of the second kind<small>（第二類 Stirling 數）</small></span> S(n, k)。</p><p><b>(b)</b> 每台至少 1 個：S(8, 3)。用公式 S(n, 3) = (3<sup>n</sup> − 3·2<sup>n</sup> + 3)/6 = (6561 − 768 + 3)/6 = <b>966</b>。</p><p><b>(a)</b> 可以有空的伺服器（伺服器相同，空幾台不用區分）：S(8, 1) + S(8, 2) + S(8, 3) = 1 + 127 + 966 = <b>1094</b>（S(8, 2) = 2<sup>7</sup> − 1 = 127）。</p><p><b>(c)</b> 三組都非空、每組 ≤ 4，大小組合只有 (4, 3, 1)、(4, 2, 2)、(3, 3, 2)：</p><ul><li>(4, 3, 1)：C(8, 4)·C(4, 3) = 70 × 4 = 280</li><li>(4, 2, 2)：C(8, 4)·C(4, 2)/2! = 70 × 6/2 = 210（兩個大小 2 的組不可區分）</li><li>(3, 3, 2)：C(8, 2)·C(6, 3)/2! = 28 × 20/2 = 280</li></ul><p>合計 <b>770</b>。</p><p><b>(d)</b> 伺服器有編號，且每組都非空，所以每一種無序分割恰好對應 3! 種把組分給伺服器的方法：770 × 6 = <b>4620</b>。</p><p>程式窮舉 3<sup>8</sup> 種有編號分配，篩選條件後得到 (d) 4620，除以 3! 得 (c) 770、無上限時得 (b) 966。常見錯誤：(c) 的 (4, 2, 2) 和 (3, 3, 2) 忘了除以 2!，或 (d) 只乘 3 而不是 3!。</p>"
+    },
+    {
+      "id": "dm-0100",
+      "topics": [
+        "relation-properties",
+        "partial-orders",
+        "closures"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
+      },
+      "question": "Consider the set A = {a, b, c, d, e} and the relation R on A defined as follows: R = {(a, b), (b, c), (c, d), (d, e), (a, e)}.<br>(a) Is R reflexive?<br>(b) Is R symmetric?<br>(c) Is R transitive?<br>(d) Does R define a partial ordering? If not, what is the minimal number of ordered pairs that must be added to R to make it a partial order?",
+      "answer": "(a) No　(b) No　(c) No　(d) 不是；至少要加 10 個有序對（5 個 (x, x) 與 (a, c), (a, d), (b, d), (b, e), (c, e)）",
+      "explanation": "<ul><li><b>(a) 否</b>：(a, a) 等 5 個 (x, x) 都不在 R 裡。</li><li><b>(b) 否</b>：(a, b) ∈ R 但 (b, a) ∉ R。</li><li><b>(c) 否</b>：(a, b)、(b, c) ∈ R 但 (a, c) ∉ R。</li></ul><p><b>(d)</b> 偏序要反身、反對稱、遞移。R 已經是反對稱的（沒有成對的 (x, y)、(y, x)），而且 R 的邊 a → b → c → d → e 形成一條鏈，不會產生循環，所以補成偏序是可行的。</p><ul><li><b>反身</b>：加 (a, a), (b, b), (c, c), (d, d), (e, e)，共 5 個。</li><li><b>遞移</b>：鏈 a &lt; b &lt; c &lt; d &lt; e 的所有 (x, y)（x 在 y 前面）共 C(5, 2) = 10 個，R 已有 (a, b), (b, c), (c, d), (d, e), (a, e) 這 5 個，還缺 (a, c), (a, d), (b, d), (b, e), (c, e) 共 5 個。</li></ul><p>最少要加 5 + 5 = <b>10</b> 個有序對，得到的就是全序 a ≤ b ≤ c ≤ d ≤ e（共 15 對）。因為 R 的 <span class=\"term\">Reflexive-transitive closure<small>（反身遞移閉包）</small></span>是包含 R 的最小反身遞移關係，任何偏序都必須包含它，所以 10 是最少。</p>"
+    },
+    {
+      "id": "dm-0101",
+      "topics": [
+        "graph-isomorphism"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
+      },
+      "question": "Consider the following two graphs G and H:<br>（原卷附圖，以邊列表描述）<br>G：頂點 a, b, c, d, e, f, g, h；邊 {h, g}, {h, a}, {g, f}, {f, e}, {a, c}, {a, b}, {c, e}, {e, b}, {e, d}, {b, d}。<br>H：頂點 1～8；邊 {7, 8}, {7, 6}, {8, 4}, {6, 1}, {4, 5}, {5, 1}, {4, 3}, {4, 2}, {3, 2}, {2, 1}。<br>(a) Are graphs G and H isomorphic?<br>(b) If they are isomorphic, please provide the isomorphism function (a mapping from the vertices of G to the vertices of H that preserves adjacency). If they are not, explain in detail why they are not isomorphic.",
+      "answer": "(a) 是，同構。(b) f(a) = 1, f(b) = 2, f(c) = 5, f(d) = 3, f(e) = 4, f(f) = 8, f(g) = 7, f(h) = 6",
+      "explanation": "<p><b>先比不變量</b>：兩圖都是 8 個點、10 條邊；度數序列 G：e = 4、a = b = 3、其餘 2；H：4 號 = 4、1 號 = 2 號 = 3、其餘 2，完全相同。</p><p><b>用結構配對</b>：</p><ul><li>唯一的度 4 點：e ↦ 4。</li><li>G 中 e、b、d 形成三角形（b 度 3、d 度 2）；H 中 4、2、3 形成三角形（2 度 3、3 度 2）：b ↦ 2、d ↦ 3。</li><li>剩下的度 3 點 a ↦ 1（a–b 對應 1–2，確實相鄰）。</li><li>e 與 a 之間經過 c（e–c–a）；4 與 1 之間經過 5（4–5–1）：c ↦ 5。</li><li>e 經 f、g、h 繞到 a（e–f–g–h–a）；4 經 8、7、6 繞到 1（4–8–7–6–1）：f ↦ 8、g ↦ 7、h ↦ 6。</li></ul><p>逐一檢查 G 的 10 條邊：hg→67、ha→61、gf→78、fe→84、ac→15、ab→12、ce→54、eb→42、ed→43、bd→23，全部是 H 的邊，所以這是 <span class=\"term\">Graph isomorphism<small>（圖同構）</small></span>。程式（networkx）確認兩圖同構，且這是唯一的同構映射。</p>"
+    },
+    {
+      "id": "dm-0102",
+      "topics": [
+        "predicate-logic",
+        "sets"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "6.1",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
+      },
+      "question": "Is the following statement a tautology, a contradiction, or neither? You need to provide a rigirous explanation or proof.<br>∄a.∀b(b ∈ a ↔ b ∉ b)",
+      "answer": "Tautology（恆真；在任何解釋下都成立）",
+      "explanation": "<p>這是 <span class=\"term\">Russell's paradox<small>（羅素悖論）</small></span>的邏輯版本：「不存在一個集合 a，恰好包含所有不屬於自己的集合」。</p><p><b>證明</b>（反證）：假設存在 a 使 ∀b(b ∈ a ↔ b ∉ b)。全稱語句對所有 b 成立，特別取 b = a（<span class=\"term\">Universal instantiation<small>（全稱例化）</small></span>）：</p><pre class=\"formula\">a ∈ a  ↔  a ∉ a</pre><p>形如 p ↔ ¬p 的命題在 p 真、p 假時都為假，矛盾。所以不存在這樣的 a，原式 ∄a∀b(b ∈ a ↔ b ∉ b) 為真。</p><p>上面的推導完全沒用到 ∈ 的意義，把 ∈ 換成任何二元關係 R，¬∃a∀b(R(b, a) ↔ ¬R(b, b)) 都成立，所以它在所有解釋下都為真，是 tautology（邏輯有效式）。例如「沒有一個理髮師恰好替所有不自己刮鬍子的人刮鬍子」也是同一個式子。</p>"
+    },
+    {
+      "id": "dm-0103",
+      "topics": [
+        "proof-methods"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "6.2",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
+      },
+      "question": "What is x in the following equation? (Assume the left-hand-side term of the equation converges.)<br>Σ<sub>r=2</sub><sup>∞</sup>(2<sup>x−r</sup>) = √(1 + 3 × 2<sup>x−2</sup>)<br>You need to show how to obtain your answer.",
+      "answer": "x = 2",
+      "explanation": "<p><b>左邊</b>：2<sup>x−r</sup> = 2<sup>x</sup> · (1/2)<sup>r</sup>，等比級數 Σ<sub>r=2</sub><sup>∞</sup>(1/2)<sup>r</sup> = (1/4)/(1 − 1/2) = 1/2，所以左邊 = 2<sup>x</sup>/2 = 2<sup>x−1</sup>。</p><p><b>令 t = 2<sup>x−2</sup> &gt; 0</b>，則 2<sup>x−1</sup> = 2t，方程變成：</p><pre class=\"formula\">2t = sqrt(1 + 3t)   =&gt;   4t^2 = 1 + 3t   =&gt;   4t^2 - 3t - 1 = 0   =&gt;   (4t + 1)(t - 1) = 0</pre><p>t = 1 或 t = −1/4，但 t = 2<sup>x−2</sup> &gt; 0，只取 t = 1，即 2<sup>x−2</sup> = 1，<b>x = 2</b>。</p><p>驗證：左邊 2<sup>1</sup> = 2，右邊 √(1 + 3) = 2。程式解方程也只得 x = 2。平方之後要記得檢查正負號，負根 t = −1/4 是平方產生的多餘解。</p>"
+    },
+    {
+      "id": "dm-0104",
+      "topics": [
+        "proof-methods"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "6.3",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
+      },
+      "question": "What is the integer part of √5 + √6 + √7 + √8 + √9 + √10 + √11 + √12 + √13? You need to show how to obtain your answer.",
+      "answer": "26",
+      "explanation": "<p>不能用計算機，所以每一項用兩位小數夾住（兩邊平方就能驗證），例如 2.23² = 4.9729 &lt; 5 &lt; 5.0176 = 2.24²：</p><div class=\"table-scroll\"><table><tr><th>項</th><th>下界</th><th>上界</th></tr><tr><td>√5</td><td>2.23</td><td>2.24</td></tr><tr><td>√6</td><td>2.44</td><td>2.45</td></tr><tr><td>√7</td><td>2.64</td><td>2.65</td></tr><tr><td>√8</td><td>2.82</td><td>2.83</td></tr><tr><td>√9</td><td>3</td><td>3</td></tr><tr><td>√10</td><td>3.16</td><td>3.17</td></tr><tr><td>√11</td><td>3.31</td><td>3.32</td></tr><tr><td>√12</td><td>3.46</td><td>3.47</td></tr><tr><td>√13</td><td>3.60</td><td>3.61</td></tr></table></div><p>下界總和 26.66、上界總和 26.74，所以 26 &lt; 總和 &lt; 27，整數部分是 <b>26</b>。程式算出總和 ≈ 26.708。</p><p>只用整數夾（2 &lt; √5 &lt; 3 之類）範圍太寬，判斷不出來；至少要精確到小數第一位的總誤差 &lt; 1 才行。</p>"
+    },
+    {
+      "id": "dm-0105",
+      "topics": [
+        "modular-arithmetic",
+        "mathematical-induction"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "6.4",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
+      },
+      "question": "Let T =<sub>def</sub> 11…11 (there are 243 1's). Is T divisible by 243? You need to explain your answer.",
+      "answer": "是。可證 3<sup>k</sup> 整除由 3<sup>k</sup> 個 1 組成的數，243 = 3<sup>5</sup>。",
+      "explanation": "<p>記 R<sub>n</sub> = 11…1（n 個 1）= (10<sup>n</sup> − 1)/9。關鍵恆等式：</p><pre class=\"formula\">R_{3n} = R_n × (10^{2n} + 10^n + 1)</pre><p>（把 3n 個 1 切成三段，每段 n 個 1。）後面那個因數各位數字和是 3，所以被 3 整除。</p><p><b>對 k 歸納</b>證明 3<sup>k</sup> | R<sub>3<sup>k</sup></sub>：</p><ul><li>k = 0：R<sub>1</sub> = 1，3<sup>0</sup> = 1 整除。</li><li>若 3<sup>k</sup> | R<sub>3<sup>k</sup></sub>，則 R<sub>3<sup>k+1</sup></sub> = R<sub>3<sup>k</sup></sub> × (10<sup>2·3<sup>k</sup></sup> + 10<sup>3<sup>k</sup></sup> + 1)，前者有 3<sup>k</sup>、後者有 3，所以 3<sup>k+1</sup> 整除。</li></ul><p>243 = 3<sup>5</sup>，T = R<sub>243</sub> = R<sub>3<sup>5</sup></sub>，所以 <b>243 | T</b>。例如 R<sub>3</sub> = 111 = 3 × 37、R<sub>9</sub> = 111111111 = 9 × 12345679。</p><p>程式直接算 T mod 243 = 0（而 T mod 729 = 243，表示恰好被 3<sup>5</sup> 整除、沒有 3<sup>6</sup>）。只用「各位數字和 243 被 3 整除」只能推出 3 | T，推不到 243，這是常見的錯誤推理。</p>"
+    },
+    {
+      "id": "dm-0106",
+      "topics": [
+        "functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "6.5",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
+      },
+      "question": "Given a strictly increasing function f : N → N so that f(f(x)) = 2x + 1, what is f(6)? Note that N denotes the set of natural numbers.",
+      "answer": "f(6) = 9（N 取正整數 {1, 2, 3, …}）",
+      "explanation": "<p><b>先確定 f(1)</b>：令 f(1) = a，則 f(a) = f(f(1)) = 3。</p><ul><li>a = 1：f(1) = 1，則 f(f(1)) = 1 ≠ 3，不行。</li><li>a ≥ 3：f 嚴格遞增，f(a) &gt; f(1) = a ≥ 3，但 f(a) = 3，矛盾。</li><li>所以 a = 2：f(1) = 2、f(2) = 3。</li></ul><p><b>往下推</b>：</p><ul><li>f(3) = f(f(2)) = 2·2 + 1 = 5</li><li>f(5) = f(f(3)) = 2·3 + 1 = 7</li><li>f(4) 必須介於 f(3) = 5 和 f(5) = 7 之間（嚴格遞增），只能是 6</li><li>f(6) = f(f(4)) = 2·4 + 1 = <b>9</b></li></ul><p>補充：若 N 包含 0，令 f(0) = a，f(a) = 1；a = 0 會得到 f(f(0)) = 0 ≠ 1，a ≥ 1 則 f(a) &gt; f(0) = a ≥ 1，與 f(a) = 1 矛盾，所以這樣的 f 不存在。因此題目的 N 應該是指正整數。</p>"
+    },
+    {
+      "id": "dm-0107",
+      "topics": [
+        "mathematical-induction",
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
+      },
+      "question": "For n ≥ 0, let {x<sub>n</sub>}, {y<sub>n</sub>}, {z<sub>n</sub>} be sequences defined by the initial conditions x<sub>0</sub> = 1, y<sub>0</sub> = 0, and z<sub>0</sub> = 0. For n ≥ 1, they satisfy x<sub>n</sub> = x<sub>n−1</sub> + y<sub>n−1</sub> + z<sub>n−1</sub>, y<sub>n</sub> = x<sub>n−1</sub> + z<sub>n−1</sub>, and z<sub>n</sub> = y<sub>n−1</sub>. You must show all necessary steps. <b>Answers without justification will receive no points.</b><br>(a) Let u<sub>n</sub> = x<sub>n</sub> + y<sub>n</sub> + z<sub>n</sub>. Use mathematical induction to prove that u<sub>n</sub> = 2<sup>n</sup> for all n ≥ 0.<br>(b) Using the result from part (a), derive a recurrence relation for y<sub>n</sub> in terms of y<sub>n−1</sub> and show that y<sub>n</sub> = 2<sup>n−1</sup> − y<sub>n−1</sub> for all n ≥ 1.<br>(c) Solve the recurrence in part (b) to obtain a closed-form expression for y<sub>n</sub>, and verify that your formula satisfies the initial condition.",
+      "answer": "(a) u<sub>n</sub> = 2u<sub>n−1</sub>，歸納得 2<sup>n</sup>　(b) y<sub>n</sub> = u<sub>n−1</sub> − y<sub>n−1</sub> = 2<sup>n−1</sup> − y<sub>n−1</sub>　(c) y<sub>n</sub> = (2<sup>n</sup> − (−1)<sup>n</sup>)/3",
+      "explanation": "<p><b>(a)</b> 把三式相加（n ≥ 1）：</p><pre class=\"formula\">u_n = (x+y+z)_{n-1} + (x+z)_{n-1} + y_{n-1} = 2(x_{n-1} + y_{n-1} + z_{n-1}) = 2u_{n-1}</pre><p><span class=\"term\">Mathematical induction<small>（數學歸納法）</small></span>：基底 u<sub>0</sub> = 1 + 0 + 0 = 1 = 2<sup>0</sup>。假設 u<sub>n−1</sub> = 2<sup>n−1</sup>，則 u<sub>n</sub> = 2u<sub>n−1</sub> = 2<sup>n</sup>。得證。</p><p><b>(b)</b> y<sub>n</sub> = x<sub>n−1</sub> + z<sub>n−1</sub> = (x<sub>n−1</sub> + y<sub>n−1</sub> + z<sub>n−1</sub>) − y<sub>n−1</sub> = u<sub>n−1</sub> − y<sub>n−1</sub> = 2<sup>n−1</sup> − y<sub>n−1</sub>。</p><p><b>(c)</b> 一階線性非齊次遞迴 y<sub>n</sub> + y<sub>n−1</sub> = 2<sup>n−1</sup>。</p><ul><li>齊次解：y<sub>n</sub> = −y<sub>n−1</sub> → A(−1)<sup>n</sup>。</li><li>特解：試 y<sub>n</sub> = B·2<sup>n</sup>：B·2<sup>n</sup> + B·2<sup>n−1</sup> = 2<sup>n−1</sup> → 3B = 1 → B = 1/3。</li><li>y<sub>n</sub> = 2<sup>n</sup>/3 + A(−1)<sup>n</sup>，代 y<sub>0</sub> = 0：1/3 + A = 0 → A = −1/3。</li></ul><pre class=\"formula\">y_n = (2^n - (-1)^n) / 3</pre><p>驗證：y<sub>0</sub> = (1 − 1)/3 = 0 符合初值；y<sub>1</sub> = (2 + 1)/3 = 1 = 2<sup>0</sup> − y<sub>0</sub>；y<sub>2</sub> = (4 − 1)/3 = 1。程式直接跑原本三條遞迴到 n = 9，y = 0, 1, 1, 3, 5, 11, 21, 43, 85, 171，和公式完全一致（這就是 Jacobsthal 數列）。</p>"
+    },
+    {
+      "id": "dm-0108",
+      "topics": [
+        "equivalence-relations",
+        "congruences"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
+      },
+      "question": "Define relations R and S on ℕ = {0, 1, 2, …} by (1) xRy if and only if x ≡ y mod 7, and (2) xSy if and only if x ≡ y mod 13. For each of the following relations on ℕ, determine whether it is an equivalence relation. If it is, give a proof. If it is not, explain which property of an equivalence relation fails. In each case, justify your answer. <b>Answers without justification will receive no points.</b><br>(a) R ∩ S<br>(b) R ∪ S",
+      "answer": "(a) 是等價關係（就是 x ≡ y mod 91）　(b) 不是：遞移性不成立，例如 0 R 7、7 S 20，但 0 與 20 不相關。",
+      "explanation": "<p><b>(a) R ∩ S 是等價關係</b>：</p><ul><li>反身：x ≡ x (mod 7) 且 x ≡ x (mod 13)。</li><li>對稱：x ≡ y 在兩個模數下都成立，則 y ≡ x 也都成立。</li><li>遞移：若 x ≡ y、y ≡ z 在 mod 7 和 mod 13 下都成立，由同餘的遞移性 x ≡ z 也都成立。</li></ul><p>（一般地，兩個等價關係的交集一定是等價關係。）更具體：7 | (x − y) 且 13 | (x − y)，7、13 互質，所以 91 | (x − y)，R ∩ S 就是 mod 91 同餘。</p><p><b>(b) R ∪ S 不是等價關係</b>：反身、對稱都成立（兩者各自都有），但<b>遞移性失敗</b>。反例：</p><ul><li>0 R 7（7 − 0 = 7，7 的倍數），所以 (0, 7) ∈ R ∪ S。</li><li>7 S 20（20 − 7 = 13），所以 (7, 20) ∈ R ∪ S。</li><li>但 20 − 0 = 20，20 mod 7 = 6、20 mod 13 = 7，都不為 0，(0, 20) ∉ R ∪ S。</li></ul><p>常見錯誤：只說「聯集通常不是等價關係」而沒有給具體反例，題目明說沒有理由不給分。</p>"
+    },
+    {
+      "id": "dm-0109",
+      "topics": [
+        "euler-hamilton",
+        "mathematical-induction"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
+      },
+      "question": "A fully connected communication network on n nodes is modeled by the complete graph K<sub>n</sub>, where n ≥ 5. Let S ⊆ V(K<sub>n</sub>) ∪ E(K<sub>n</sub>) be a set of failed nodes and links with |S| ≤ n − 3, such that no failed link is incident to a failed node. Let K<sub>n</sub> − S denote the network obtained after removing all failed nodes (and their incident links) and all failed links. Prove by induction on n that the remaining network K<sub>n</sub> − S contains a Hamiltonian cycle. <b>You may not assume any characterization theorem for Hamiltonian graphs.</b>",
+      "answer": "對 n ≥ 3 歸納證明更一般的敘述 P(n)：|S| ≤ n − 3 時 K<sub>n</sub> − S 有 Hamiltonian cycle。分「S 含節點」（刪掉該節點，套 P(n−1)）與「S 只含邊」（刪掉失效度數最小的端點 v，套 P(n−1) 得到 cycle，再把 v 插回去）兩種情況。",
+      "explanation": "<p>證明比題目更強的 P(n)：對所有 n ≥ 3，只要 |S| ≤ n − 3（且失效的邊不接到失效的點），K<sub>n</sub> − S 就有 <span class=\"term\">Hamiltonian cycle<small>（漢米爾頓迴路）</small></span>。n ≥ 5 是其中的特例。</p><p><b>基底 n = 3</b>：|S| ≤ 0，K<sub>3</sub> 本身就是三角形。</p><p><b>歸納步驟</b>（n ≥ 4，假設 P(n − 1) 成立）：</p><p><b>情況 0：S = ∅</b>。1 → 2 → ⋯ → n → 1 就是 Hamiltonian cycle。</p><p><b>情況 1：S 含某個失效節點 v</b>。令 S' = S \\ {v}。K<sub>n</sub> − S 等於「其餘 n − 1 個點構成的 K<sub>n−1</sub>」去掉 S'；|S'| ≤ n − 4 = (n − 1) − 3，且 S' 的失效邊仍不接到失效點。由 P(n − 1) 得到 Hamiltonian cycle。</p><p><b>情況 2：S 只含失效邊（至少一條）</b>。對每個點 u 令 d(u) = 接到 u 的失效邊數。在所有「至少接一條失效邊」的點中，取 d 值最小的 v，令 d = d(v) ≥ 1。</p><ul><li><b>d 不會太大</b>：v 的 d 個失效鄰居也都是失效邊的端點，所以 d 值都 ≥ d；這 d + 1 個點的 d 值總和 ≥ d(d + 1)，又每條失效邊貢獻 2，所以 d(d + 1) ≤ 2|S| ≤ 2(n − 3)。若 2d ≥ n − 1，則 d(d + 1) ≥ (n − 1)(n + 1)/4，而 (n² − 1)/4 &gt; 2(n − 3) ⇔ n² − 8n + 23 &gt; 0，判別式 64 − 92 &lt; 0 恆成立，矛盾。所以 2d ≤ n − 2，也就是 d &lt; (n − 1)/2。</li><li><b>拿掉 v</b>：剩下的點是 K<sub>n−1</sub>，其中的失效邊是 S 去掉 v 的 d 條，個數 ≤ (n − 3) − 1 = (n − 1) − 3。由 P(n − 1)，剩下的網路有 Hamiltonian cycle C（長度 n − 1）。</li><li><b>把 v 插回去</b>：v 的失效鄰居集合 F 有 d 個點，其餘 n − 1 − d 個點和 v 之間的邊都正常。因為 n − 1 − d &gt; (n − 1)/2，超過 C 上點數的一半，C 上一定有兩個「相鄰」的點 u、w 都不在 F（否則非 F 點在環上兩兩不相鄰，最多只能有 (n − 1)/2 個）。把 C 的邊 uw 換成 u – v – w，就得到包含全部 n 個點的 Hamiltonian cycle。</li></ul><p>兩種情況都成立，由歸納法 P(n) 對所有 n ≥ 3 成立，題目的 n ≥ 5 自然成立。全程只用到「在環中插入一點」的構造，沒有用 Dirac、Ore 等判定定理。</p><p>附註：n − 3 是緊的上界。若 |S| = n − 2，例如 n − 2 條失效邊都接在同一點 v，v 只剩 1 條邊，不可能在環上。程式對 n = 5、6 窮舉所有 |S| ≤ n − 3 的失效組合，全部都有 Hamiltonian cycle，而 K<sub>5</sub> 在同一點拿掉 3 條邊後就沒有。</p>"
     }
   ]
 }
