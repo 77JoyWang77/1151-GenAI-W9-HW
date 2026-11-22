@@ -88,7 +88,7 @@
     let W = 600;
     const player = new Player(root, {
       title: "Pipeline Timing 管線時序圖",
-      width: W, height: 300, code: CODE,
+      width: W, height: 300, code: CODE, wide: true,
       legend: [["compare", "這個週期正在做的階段"], ["active", "stall（被擋住）"], ["found", "資料來源與轉送"], ["new", "等暫存器檔寫回"], ["ghost", "還沒開始"]],
     });
 
@@ -158,7 +158,7 @@
       // 畫面寬度跟著週期數調整：週期少時格子放大，週期多（無 forwarding 的長相依鏈）時格子縮小、stall 簡寫
       CW = S.total <= 12 ? 54 : 40;
       W = Math.max(560, X0 + S.total * CW + 12);
-      player.svg.setAttribute("viewBox", `0 0 ${W} ${ry(ins.length - 1) + 70}`);
+      player.resize(W, ry(ins.length - 1) + 70);
       const n = ins.length, r = new Recorder();
       const nSt = S.d.reduce((a, d, j) => a + (d - S.f[j] - 1), 0);
       r.push(frame(0, `${n} 條指令，${fwd ? "<b>有 forwarding</b>：ALU 結果在 EX 結束就能轉送；只有 lw 後面馬上用到它的資料（load-use）才要停 1 個週期。" : "<b>沒有 forwarding</b>：要用前面指令的結果，只能等它在 WB 寫回暫存器檔（WB 前半週期寫、ID 後半週期讀，所以 ID 可以和 WB 同一個週期）。"}每一列是一條指令、每一行是一個時脈週期，按下一步逐個週期看。`, null));

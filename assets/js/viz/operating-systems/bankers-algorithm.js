@@ -347,8 +347,8 @@
       nodes.push({ id: P1, label: "P1", x: dx + 70, y: 80, state: "compare" }, { id: P2, label: "P2", x: dx + 250, y: 210, state: "compare" },
         box(R1, "R1", dx + 70, 210, 48, 40), box(R2, "R2", dx + 250, 80, 48, 40, granted ? "default" : "default"));
       edges.push({ from: R1, to: P1, directed: true, state: granted ? "active" : "default" });
-      edges.push({ from: P1, to: R2, directed: true, state: granted ? "active" : "muted" });
-      edges.push({ from: P2, to: R1, directed: true, state: granted ? "active" : "muted" });
+      edges.push({ from: P1, to: R2, directed: true, dashed: true, state: granted ? "active" : "muted" });
+      edges.push({ from: P2, to: R1, directed: true, dashed: true, state: granted ? "active" : "muted" });
       if (granted) edges.push({ from: R2, to: P2, directed: true, state: "removed" });
       else edges.push({ from: P2, to: R2, directed: true, state: "compare" });
       labels.push(
@@ -361,7 +361,7 @@
     panel("b", 360, true);
     labels.push({ id: "ta", x: 180, y: 24, text: "(a) P2 請求 R2（R2 目前空著）", cls: "strong" },
       { id: "tb", x: 520, y: 24, text: "(b) 如果配置：出現環", cls: "strong" },
-      { id: "ua", x: 180, y: 262, text: "淡灰：claim edge（將來可能要）" },
+      { id: "ua", x: 180, y: 262, text: "虛線：claim edge（將來可能要）" },
       { id: "ub", x: 520, y: 262, text: "P1 → R2 → P2 → R1 → P1，不給", cls: "warn" });
     return { width: 680, height: 280, nodes, edges, labels };
   });
