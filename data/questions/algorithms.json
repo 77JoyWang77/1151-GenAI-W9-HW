@@ -4448,6 +4448,33 @@
       ],
       "answer": "(a)",
       "explanation": "<p>組合邏輯電路沒有回授，是一個 DAG。DAG 上的 longest path 不必用一般圖的方法（一般圖的最長簡單路徑是 NP-hard），而是：</p><ol><li>先做 <span class=\"term\">Topological Sort<small>（拓撲排序）</small></span>：O(M + N)。</li><li>照拓撲順序，每個點 L(v) = 1 + max(L(u))，每條邊只看一次：O(M + N)。</li></ol><p>總共 O(M + N)，選 (a)。這也就是 static timing analysis（靜態時序分析）的基本做法。常見錯誤是想到 Dijkstra 而選 O(M lg N)：Dijkstra 是求最短路徑、需要非負權重和 priority queue，用在 DAG 上反而比較慢。</p>"
+    },
+    {
+      "id": "al-0191",
+      "topics": [
+        "edit-distance",
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "資料結構與演算法",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_software.pdf"
+      },
+      "question": "<p>（單選）(5 points) Consider two protein sequences <i>A</i> and <i>B</i> of lengths <i>m</i> and <i>n</i> respectively. You are tasked with implementing a dynamic programming algorithm to find the optimal global alignment between these sequences. Given the following definitions:</p><ul><li>A match score of +2 for identical amino acids.</li><li>A mismatch penalty of −1 for different amino acids.</li><li>A gap penalty of −2 for each gap introduced.</li></ul><p>Which of the following statements is correct regarding the dynamic programming solution for this alignment problem?</p>",
+      "choices": [
+        "(A) The time complexity of the algorithm is O(m + n).",
+        "(B) The space complexity of the algorithm is O(mn).",
+        "(C) The recurrence relation for the optimal alignment score S(i, j) at position (i, j) in the dynamic programming matrix is: S(i, j) = max{S(i−1, j−1)+match(A[i], B[j]), S(i−1, j)−2, S(i, j−1)−2}.",
+        "(D) The traceback procedure to reconstruct the optimal alignment always starts from the top-left corner of the dynamic programming matrix.",
+        "(E) The algorithm guarantees finding all possible optimal alignments between the two sequences."
+      ],
+      "answer": "(C)（待確認：(B) 也可視為正確）",
+      "explanation": "<p>這是 <span class=\"term\">Global Alignment<small>（全域序列比對）</small></span>，也就是 Needleman–Wunsch 演算法，本質和 <span class=\"term\">Edit Distance<small>（編輯距離）</small></span>同一套 DP，只是把「最小成本」換成「最大分數」。</p><p>S(i, j) 代表 A[1..i] 和 B[1..j] 的最佳比對分數，最後一欄只有三種可能：A[i] 對 B[j]（match +2 或 mismatch −1）、A[i] 對空格（−2）、B[j] 對空格（−2）。邊界 S(i, 0) = −2i、S(0, j) = −2j。</p><ul><li>(A) 錯：表格有 (m+1)(n+1) 格，每格 O(1)，時間 Θ(mn)，不是 O(m+n)。</li><li>(B) 標準做法要存整張表才能 traceback，空間 Θ(mn)，所以這句通常算對；但若只要分數，可以只留兩列做到 O(min(m, n))，Hirschberg 演算法甚至能在線性空間還原比對，因此這句是「看實作」的敘述。</li><li>(C) 對：正是上面三種情況取最大值，gap 每次 −2，與題目定義完全一致。</li><li>(D) 錯：global alignment 的 traceback 從<b>右下角</b> S(m, n) 往回走到左上角 S(0, 0)；從左上角出發是搞錯方向（local alignment 則是從表中最大值出發）。</li><li>(E) 錯：一般 traceback 只沿一條路徑回溯，得到<b>一個</b>最佳比對；要列出全部最佳比對得另外記錄所有並列的來源並列舉，而且數量可能是指數級。</li></ul><p>程式驗算：用這個遞迴式算 GATT 與 GCAT，S(4, 4) = 2，對應比對 G-ATT / GCAT-（2 − 2 + 2 + 2 − 2 = 2），遞迴式正確。</p><p>本題標示為單選，(C) 在任何情況下都成立，最符合題意，答 (C)；(B) 在「存整張表」的標準實作下也成立，官方答案（待確認）。</p>"
     }
   ]
 }
