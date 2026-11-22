@@ -2690,7 +2690,7 @@
         "school": "國立成功大學",
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（程式設計）",
-        "no": "II-3",
+        "no": "I-3",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
       },
       "question": "<p>3. [3%] A binary tree stores distinct keys. Based on the following postorder and inorder sequences, please list the keys of nodes at level 3 of the tree from left to right. Note that the root is at level 1.</p><ul><li>Postorder sequence: A B C K D I G J H F E</li><li>Inorder sequence: A C B D K E I G F H J</li></ul><p>Answer format: key1, key2, ...</p>",
@@ -7307,6 +7307,360 @@
       ],
       "answer": "(D)",
       "explanation": "<p>「safe for A」：把邊加進 A 之後，A 仍包含於某棵 MST。</p><ul><li>(D) 對：這正是 cut property 的定理（尊重 A 的切割上的最輕邊是 safe edge），也是 Prim、Kruskal 的正確性基礎。</li><li>(A) 錯：全圖最輕的邊若已在 A 裡，再加一次沒意義；更一般地「任何最輕邊」並不保證和 A 相容。</li><li>(B) 錯：切割若不尊重 A（A 中有邊跨過），最輕的跨越邊可能就是 A 外的某條，加進去和 A 形成環。</li><li>(C) 錯：環上最<b>輕</b>的邊不一定在 MST，例如它可能和其他更輕的邊（不在這個環上）組成另一個環並是那個環的最重邊。正確的 cycle property 是「環上最重的邊不在任何 MST」。</li><li>(E) 錯：Prim 選的邊只對 Prim 自己累積的 A 是 safe，不是對「任意子集 A」。</li></ul>"
+    },
+    {
+      "id": "ds-0314",
+      "topics": [
+        "trie"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "I-1",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>1. [3%] A campus system stores device IDs. Each ID is a 6-bit binary string. Given the following seven 6-bit keys: 000001, 000010, 000011, 001111, 100000, 101011, 111110. Please insert the 7 keys into an empty digital search tree in the order given above. When searching for key 001111, list the keys visited on the search path, in order.</p><p>Answer format: key1-&gt;key2-&gt;...</p>",
+      "answer": "000001-&gt;000010-&gt;000011-&gt;001111",
+      "explanation": "<p><b>Digital search tree（數位搜尋樹）</b>：每個節點都存一個 key；在第 d 層（根為第 0 層）往下走時，看 key 的第 d+1 個 bit，0 往左、1 往右，走到空位就放進去。</p><ol><li>000001 當根。</li><li>000010：第 1 bit 0 → 根的左子。</li><li>000011：第 1 bit 0 → 000010；第 2 bit 0 → 000010 的左子。</li><li>001111：第 1 bit 0 → 000010；第 2 bit 0 → 000011；第 3 bit 1 → 000011 的右子。</li><li>100000：第 1 bit 1 → 根的右子。101011：1 → 100000，第 2 bit 0 → 其左子。111110：1 → 100000，第 2 bit 1 → 其右子。</li></ol><p>搜尋 001111 會依序比較 <b>000001 → 000010 → 000011 → 001111</b>，共 4 次 key 比較。這正是 DST 和 trie 的差別：DST 路上每個節點都要拿整個 key 比一次。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0315",
+      "topics": [
+        "trie"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "I-2",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>2. [4%] (Continue Question 1) Build the compressed binary trie for the same seven 6-bit keys. For each branch node, define its <i>bitNumber</i> as the bit index used at that node to choose the left or right child. The leftmost bit is index 1 and the rightmost bit is index 6. Perform BFS starting from the root. When visiting a branch node, enqueue the left child before the right child. List the <i>bitNumber</i> of each visited branch node in BFS order.</p><p>Answer format: bitNum1, bitNum2, ...</p>",
+      "answer": "1, 3, 2, 5, 3, 6",
+      "explanation": "<p>Compressed trie 只在 key 真的分岔的 bit 放 branch node：</p><ul><li>根：七個 key 第 1 bit 有 0 有 1 → bitNumber <b>1</b>。左邊 {000001, 000010, 000011, 001111}、右邊 {100000, 101011, 111110}。</li><li>左邊：第 2 bit 全是 0，跳過；第 3 bit 分開 001111 → bitNumber <b>3</b>。左 {000001, 000010, 000011}，右 001111（葉）。</li><li>右邊：第 2 bit 分開 111110 → bitNumber <b>2</b>。左 {100000, 101011}，右 111110（葉）。</li><li>{000001, 000010, 000011}：第 4 bit 全 0，第 5 bit 分開 → <b>5</b>；左 000001，右 {000010, 000011} 由第 <b>6</b> bit 分開。</li><li>{100000, 101011}：第 3 bit 分開 → <b>3</b>。</li></ul><pre>               [1]\n            /       \\\n         [3]         [2]\n        /   \\       /    \\\n      [5]  001111  [3]   111110\n     /   \\        /   \\\n 000001  [6]   100000 101011\n        /   \\\n    000010 000011</pre><p>BFS（左先右後，只列 branch node）：第一層 1；第二層 3、2；第三層 5、3；第四層 6 → <b>1, 3, 2, 5, 3, 6</b>。（已用程式建樹驗證。）</p>"
+    },
+    {
+      "id": "ds-0316",
+      "topics": [
+        "avl-tree",
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "I-4",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>4. [4%] For the number of nodes n = 15, what is the maximum possible height of an AVL tree, and what is the maximum possible height of a red-black tree? Note that the root is at level 1.</p><p>Answer format: AVL max possible height=?, Red-black tree max possible height =?</p>",
+      "answer": "AVL max possible height=5, Red-black tree max possible height=6",
+      "explanation": "<p><b>AVL</b>：高度 h 的 AVL 樹最少節點數 N(h) = N(h−1) + N(h−2) + 1，N(1) = 1、N(2) = 2：</p><pre class=\"formula\">N: 1, 2, 4, 7, 12, 20, ...</pre><p>N(5) = 12 ≤ 15，但 N(6) = 20 &gt; 15，所以 15 個節點最高只能到 <b>5</b> 層。</p><p><b>紅黑樹</b>：最高的樹是讓最長路徑紅黑交替、其他路徑盡量全黑。高度 h 的紅黑樹最少節點數（用程式窮舉黑高度與顏色組合算出）：</p><pre class=\"formula\">h:      1  2  3  4  5   6   7\nmin n:  1  2  4  6  10  14  22</pre><p>（規律：h = 2k 時 2<sup>k+1</sup> − 2，h = 2k+1 時 3·2<sup>k</sup> − 2。）14 ≤ 15 &lt; 22，所以最高 <b>6</b> 層。</p><p>易錯：直接套上界 2·log<sub>2</sub>(n+1) = 8，那只是保證的上限，15 個節點實際做不到 8 層。對照完全平衡的 4 層，紅黑樹最多高出 50%，AVL 只多 1 層，反映 AVL 比紅黑樹更「平衡」。</p>"
+    },
+    {
+      "id": "ds-0317",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "A-1",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>A. A firewall uses a fast pre-check before running an exact check. All input integers are non-negative. You must answer Questions 1~4 based on the program below.</p><pre class=\"code\">static inline uint32_t f1(int x) { return (uint32_t)(x % 8); }\nstatic inline uint32_t f2(int x) { return (uint32_t)((x / 2) % 8); }\nstatic inline void set1(uint32_t *b, uint32_t p) { *b |= (1u &lt;&lt; p); }\nstatic inline int get1(uint32_t b, uint32_t p) { return (b &gt;&gt; p) &amp; 1u; }\nstatic int precheck(uint32_t bits, int x) {\n    return get1(bits, f1(x)) &amp;&amp; get1(bits, f2(x));\n}\nstatic int exact_check(int x) {\n    return (x == 10) || (x == 22);\n}\nint main(void) {\n    int base[] = {10, 22};\n    uint32_t bits = 0;\n    for (int i = 0; i &lt; (int)(sizeof(base)/sizeof(base[0])); i++) {\n        set1(&amp;bits, f1(base[i]));\n        set1(&amp;bits, f2(base[i]));\n    }\n    int n;\n    scanf(\"%d\", &amp;n);\n    int exact_checks = 0, blocked = 0;\n    for (int i = 0; i &lt; n; i++) {\n        int x;\n        scanf(\"%d\", &amp;x);\n        if (precheck(bits, x)) {\n            exact_checks++;\n            if (exact_check(x)) blocked++;\n        }\n    }\n    printf(\"%d %d\\n\", exact_checks, blocked);\n    return 0;\n}</pre><p>1. [3%] What is precheck(bits, x) mainly used for?</p>",
+      "choices": [
+        "(A) It is an exact membership test because checking two bit positions avoids collisions.",
+        "(B) It is a probabilistic membership test that may have false positives.",
+        "(C) It is a bitmask-based two-condition rule: it passes a value if either of the tested bit positions is 1.",
+        "(D) It is a compact counter test: the function treats the two bit checks as a \"count\" and passes x only if the count is at least 2.",
+        "(E) It is a direct index check: f1(x) and f2(x) map each value to two unique bit positions."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>先算出 bits：10 → f1 = 2、f2 = 5；22 → f1 = 6、f2 = 11 % 8 = 3。所以 bits 中第 2、3、5、6 位是 1。precheck(x) 要 f1(x) 和 f2(x) 兩個位置<b>都</b>是 1 才通過。這其實就是一個 16 位以內、2 個 hash function 的 <b>Bloom filter</b>。</p><ul><li>(A) 錯：不同的 x 可能剛好對到同樣兩個位置，不是精確判斷。</li><li><b>(B) 對</b>：沒通過就一定不在名單；通過只代表「可能在」，所以才需要後面的 exact_check。這就是 Bloom filter：可能有 false positive、不會有 false negative。</li><li>(C) 錯：用的是 &amp;&amp;，兩個都要是 1。</li><li>(D) 錯：不是計數器。</li><li>(E) 錯：位置不唯一，很多 x 共用同一組位置。</li></ul>"
+    },
+    {
+      "id": "ds-0318",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "A-2",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>A. A firewall uses a fast pre-check before running an exact check. All input integers are non-negative. You must answer Questions 1~4 based on the program below.</p><pre class=\"code\">static inline uint32_t f1(int x) { return (uint32_t)(x % 8); }\nstatic inline uint32_t f2(int x) { return (uint32_t)((x / 2) % 8); }\nstatic inline void set1(uint32_t *b, uint32_t p) { *b |= (1u &lt;&lt; p); }\nstatic inline int get1(uint32_t b, uint32_t p) { return (b &gt;&gt; p) &amp; 1u; }\nstatic int precheck(uint32_t bits, int x) {\n    return get1(bits, f1(x)) &amp;&amp; get1(bits, f2(x));\n}\nstatic int exact_check(int x) {\n    return (x == 10) || (x == 22);\n}\nint main(void) {\n    int base[] = {10, 22};\n    uint32_t bits = 0;\n    for (int i = 0; i &lt; (int)(sizeof(base)/sizeof(base[0])); i++) {\n        set1(&amp;bits, f1(base[i]));\n        set1(&amp;bits, f2(base[i]));\n    }\n    int n;\n    scanf(\"%d\", &amp;n);\n    int exact_checks = 0, blocked = 0;\n    for (int i = 0; i &lt; n; i++) {\n        int x;\n        scanf(\"%d\", &amp;x);\n        if (precheck(bits, x)) {\n            exact_checks++;\n            if (exact_check(x)) blocked++;\n        }\n    }\n    printf(\"%d %d\\n\", exact_checks, blocked);\n    return 0;\n}</pre><p>2. [3%] What is the program output for the following input?</p><pre>Input:\n5\n10 14 22 6 30</pre>",
+      "choices": [
+        "(A) 2 2",
+        "(B) 2 1",
+        "(C) 3 2",
+        "(D) 3 1",
+        "(E) None of the above"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>先算出 bits：10 → f1 = 2、f2 = 5；22 → f1 = 6、f2 = 11 % 8 = 3。所以 bits 中第 2、3、5、6 位是 1。precheck(x) 要 f1(x) 和 f2(x) 兩個位置<b>都</b>是 1 才通過。這其實就是一個 16 位以內、2 個 hash function 的 <b>Bloom filter</b>。</p><div class=\"table-scroll\"><table><tr><th>x</th><th>f1</th><th>f2</th><th>precheck</th><th>exact</th></tr><tr><td>10</td><td>2</td><td>5</td><td>通過</td><td>是</td></tr><tr><td>14</td><td>6</td><td>7</td><td>不通過（bit 7 是 0）</td><td>—</td></tr><tr><td>22</td><td>6</td><td>3</td><td>通過</td><td>是</td></tr><tr><td>6</td><td>6</td><td>3</td><td>通過</td><td>否（false positive）</td></tr><tr><td>30</td><td>6</td><td>7</td><td>不通過</td><td>—</td></tr></table></div><p>exact_checks = 3、blocked = 2，輸出 <b>3 2</b>。6 就是 false positive：它和 22 剛好對到同樣的 bit 6、bit 3。（已編譯執行驗證。）</p>"
+    },
+    {
+      "id": "ds-0319",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "A-3",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>A. A firewall uses a fast pre-check before running an exact check. All input integers are non-negative. You must answer Questions 1~4 based on the program below.</p><pre class=\"code\">static inline uint32_t f1(int x) { return (uint32_t)(x % 8); }\nstatic inline uint32_t f2(int x) { return (uint32_t)((x / 2) % 8); }\nstatic inline void set1(uint32_t *b, uint32_t p) { *b |= (1u &lt;&lt; p); }\nstatic inline int get1(uint32_t b, uint32_t p) { return (b &gt;&gt; p) &amp; 1u; }\nstatic int precheck(uint32_t bits, int x) {\n    return get1(bits, f1(x)) &amp;&amp; get1(bits, f2(x));\n}\nstatic int exact_check(int x) {\n    return (x == 10) || (x == 22);\n}\nint main(void) {\n    int base[] = {10, 22};\n    uint32_t bits = 0;\n    for (int i = 0; i &lt; (int)(sizeof(base)/sizeof(base[0])); i++) {\n        set1(&amp;bits, f1(base[i]));\n        set1(&amp;bits, f2(base[i]));\n    }\n    int n;\n    scanf(\"%d\", &amp;n);\n    int exact_checks = 0, blocked = 0;\n    for (int i = 0; i &lt; n; i++) {\n        int x;\n        scanf(\"%d\", &amp;x);\n        if (precheck(bits, x)) {\n            exact_checks++;\n            if (exact_check(x)) blocked++;\n        }\n    }\n    printf(\"%d %d\\n\", exact_checks, blocked);\n    return 0;\n}</pre><p>3. [3%] For the current program (base = {10, 22}), what is the smallest integer x such that precheck(bits, x) returns 1 and exact_check(x) returns 0?</p>",
+      "choices": [
+        "(A) 4",
+        "(B) 5",
+        "(C) 6",
+        "(D) 7",
+        "(E) 11"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>先算出 bits：10 → f1 = 2、f2 = 5；22 → f1 = 6、f2 = 11 % 8 = 3。所以 bits 中第 2、3、5、6 位是 1。precheck(x) 要 f1(x) 和 f2(x) 兩個位置<b>都</b>是 1 才通過。這其實就是一個 16 位以內、2 個 hash function 的 <b>Bloom filter</b>。</p><p>從小往上試：0～4 的 f1(x) 是 0、1、2、3、4，f2(x) 是 0、0、1、1、2。x = 2 時 f2 = 1、x = 3 時 f2 = 1、x = 4 時 f1 = 4，都不通過。x = 5：f1 = 5、f2 = 2，兩個都是 1，通過，而 5 不是 10 或 22 → 最小的 false positive 是 <b>5</b>。6 也是，但比 5 大。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0320",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "A-4",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>A. A firewall uses a fast pre-check before running an exact check. All input integers are non-negative. You must answer Questions 1~4 based on the program below.</p><pre class=\"code\">static inline uint32_t f1(int x) { return (uint32_t)(x % 8); }\nstatic inline uint32_t f2(int x) { return (uint32_t)((x / 2) % 8); }\nstatic inline void set1(uint32_t *b, uint32_t p) { *b |= (1u &lt;&lt; p); }\nstatic inline int get1(uint32_t b, uint32_t p) { return (b &gt;&gt; p) &amp; 1u; }\nstatic int precheck(uint32_t bits, int x) {\n    return get1(bits, f1(x)) &amp;&amp; get1(bits, f2(x));\n}\nstatic int exact_check(int x) {\n    return (x == 10) || (x == 22);\n}\nint main(void) {\n    int base[] = {10, 22};\n    uint32_t bits = 0;\n    for (int i = 0; i &lt; (int)(sizeof(base)/sizeof(base[0])); i++) {\n        set1(&amp;bits, f1(base[i]));\n        set1(&amp;bits, f2(base[i]));\n    }\n    int n;\n    scanf(\"%d\", &amp;n);\n    int exact_checks = 0, blocked = 0;\n    for (int i = 0; i &lt; n; i++) {\n        int x;\n        scanf(\"%d\", &amp;x);\n        if (precheck(bits, x)) {\n            exact_checks++;\n            if (exact_check(x)) blocked++;\n        }\n    }\n    printf(\"%d %d\\n\", exact_checks, blocked);\n    return 0;\n}</pre><p>4. [3%] Assume the blacklist policy of the firewall changes and the blacklist becomes {10, 14, 22}. To correctly apply the new policy, which parts of the program must be updated?</p>",
+      "choices": [
+        "(A) base and exact_check",
+        "(B) exact_check only",
+        "(C) precheck only",
+        "(D) precheck and base",
+        "(E) No change is needed."
+      ],
+      "answer": "(A)",
+      "explanation": "<p>先算出 bits：10 → f1 = 2、f2 = 5；22 → f1 = 6、f2 = 11 % 8 = 3。所以 bits 中第 2、3、5、6 位是 1。precheck(x) 要 f1(x) 和 f2(x) 兩個位置<b>都</b>是 1 才通過。這其實就是一個 16 位以內、2 個 hash function 的 <b>Bloom filter</b>。</p><p>14 的 f1 = 6、f2 = 7，目前 bit 7 是 0，所以 14 連 precheck 都過不了，根本不會被送去 exact_check。要正確擋下 14：</p><ul><li>把 14 加進 <b>base</b>，讓 bits 的第 6、7 位被設成 1（precheck 函式本身的邏輯不用改）；</li><li>把 <b>exact_check</b> 改成也接受 x == 14。</li></ul><p>只改 exact_check（B）不夠，14 會在 precheck 就被放行；只改 base 也不夠，14 通過 precheck 後 exact_check 會說不是。答案 (A)。</p>"
+    },
+    {
+      "id": "ds-0321",
+      "topics": [
+        "minimum-spanning-tree",
+        "union-find"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "B-5",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>B. A university plans to connect all campus buildings by fiber links. Each building is a vertex (ID = 0, 1, ..., n-1), and each possible fiber link is an undirected edge (a,b) with installation cost w. Assume the cost w is an integer and satisfies 0 ≤ w ≤ 10<sup>9</sup>. The following C program is designed to find the minimum cost of installing connections from the given links. When two edges have the same cost, the program orders them by (a,b) in increasing order (smaller a first; if a is the same, smaller b first). You must answer Questions 5~8 based on the C program below.</p><pre class=\"code\">typedef struct { int a, b, w; } E;\nstatic int *P, *S;\nstatic void f0(int n){\n    P = (int*)malloc(n * sizeof(int));\n    S = (int*)malloc(n * sizeof(int));\n    for(int i=0;i&lt;n;i++){ P[i]=i; S[i]=1; }\n}\nstatic int f1(int x){\n    while(P[x]!=x){ P[x]=P[P[x]]; x=P[x]; }\n    return x;\n}\nstatic int f2(int x, int y){\n    x=f1(x); y=f1(y);\n    if(x==y) return 0;\n    if(S[x]&lt;S[y]){ int t=x; x=y; y=t; }\n    P[y]=x; S[x]+=S[y];\n    return 1;\n}\nstatic int c0(const void *px, const void *py){\n    const E *x=(const E*)px, *y=(const E*)py;\n    if(x-&gt;w != y-&gt;w) return x-&gt;w - y-&gt;w;\n    if(x-&gt;a != y-&gt;a) return x-&gt;a - y-&gt;a;\n    return x-&gt;b - y-&gt;b;\n}\nint main(void){\n    int n, m;\n    if(scanf(\"%d %d\", &amp;n, &amp;m)!=2) return 0;\n\n    E *e = (E*)malloc(m * sizeof(E));\n    for(int i=0;i&lt;m;i++){\n        scanf(\"%d %d %d\", &amp;e[i].a, &amp;e[i].b, &amp;e[i].w);\n        if(e[i].a &gt; e[i].b){\n            int t=e[i].a; e[i].a=e[i].b; e[i].b=t;\n        }\n    }\n    qsort(e, m, sizeof(E), c0);\n    f0(n);\n    int *U = (int*)malloc((n-1) * sizeof(int));\n    int *V = (int*)malloc((n-1) * sizeof(int));\n    int k=0;\n    long long total=0;\n    for(int i=0;i&lt;m &amp;&amp; k&lt;n-1;i++){\n        if(f2(e[i].a, e[i].b)){\n            U[k]=e[i].a;\n            V[k]=e[i].b;\n            total += e[i].w;\n            k++;\n        }\n    }\n    printf(\"%lld %d\\n\", total, k);\n    free(e); free(U); free(V); free(P); free(S);\n    return 0;\n}</pre><p>5. [3%] Which description best matches what the program does to build the backbone?</p>",
+      "choices": [
+        "(A) It starts from one vertex and repeatedly adds the cheapest edge that leaves the visited vertices.",
+        "(B) It sorts all edges by cost, scans them in that order, and adds an edge only if it connects two different groups.",
+        "(C) It visits vertices level by level using a queue and records a tree of visits.",
+        "(D) It repeatedly selects the closest vertex based on a distance array and updates distances.",
+        "(E) It computes shortest paths between every pair of vertices, then selects edges from those paths."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>程式先用 qsort 把邊依成本排序，再依序掃描；f1 是帶 path halving（路徑減半）的 find，f2 是依集合大小合併的 union，回傳 1 代表兩端原本在不同集合。這就是 <b>Kruskal</b> → (B)。</p><p>(A) 是 Prim、(C) 是 BFS、(D) 是 Dijkstra（或用陣列實作的 Prim）、(E) 是 Floyd-Warshall 之類的全點對最短路徑。</p>"
+    },
+    {
+      "id": "ds-0322",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "B-6",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>B. A university plans to connect all campus buildings by fiber links. Each building is a vertex (ID = 0, 1, ..., n-1), and each possible fiber link is an undirected edge (a,b) with installation cost w. Assume the cost w is an integer and satisfies 0 ≤ w ≤ 10<sup>9</sup>. The following C program is designed to find the minimum cost of installing connections from the given links. When two edges have the same cost, the program orders them by (a,b) in increasing order (smaller a first; if a is the same, smaller b first). You must answer Questions 5~8 based on the C program below.</p><pre class=\"code\">typedef struct { int a, b, w; } E;\nstatic int *P, *S;\nstatic void f0(int n){\n    P = (int*)malloc(n * sizeof(int));\n    S = (int*)malloc(n * sizeof(int));\n    for(int i=0;i&lt;n;i++){ P[i]=i; S[i]=1; }\n}\nstatic int f1(int x){\n    while(P[x]!=x){ P[x]=P[P[x]]; x=P[x]; }\n    return x;\n}\nstatic int f2(int x, int y){\n    x=f1(x); y=f1(y);\n    if(x==y) return 0;\n    if(S[x]&lt;S[y]){ int t=x; x=y; y=t; }\n    P[y]=x; S[x]+=S[y];\n    return 1;\n}\nstatic int c0(const void *px, const void *py){\n    const E *x=(const E*)px, *y=(const E*)py;\n    if(x-&gt;w != y-&gt;w) return x-&gt;w - y-&gt;w;\n    if(x-&gt;a != y-&gt;a) return x-&gt;a - y-&gt;a;\n    return x-&gt;b - y-&gt;b;\n}\nint main(void){\n    int n, m;\n    if(scanf(\"%d %d\", &amp;n, &amp;m)!=2) return 0;\n\n    E *e = (E*)malloc(m * sizeof(E));\n    for(int i=0;i&lt;m;i++){\n        scanf(\"%d %d %d\", &amp;e[i].a, &amp;e[i].b, &amp;e[i].w);\n        if(e[i].a &gt; e[i].b){\n            int t=e[i].a; e[i].a=e[i].b; e[i].b=t;\n        }\n    }\n    qsort(e, m, sizeof(E), c0);\n    f0(n);\n    int *U = (int*)malloc((n-1) * sizeof(int));\n    int *V = (int*)malloc((n-1) * sizeof(int));\n    int k=0;\n    long long total=0;\n    for(int i=0;i&lt;m &amp;&amp; k&lt;n-1;i++){\n        if(f2(e[i].a, e[i].b)){\n            U[k]=e[i].a;\n            V[k]=e[i].b;\n            total += e[i].w;\n            k++;\n        }\n    }\n    printf(\"%lld %d\\n\", total, k);\n    free(e); free(U); free(V); free(P); free(S);\n    return 0;\n}</pre><p>6. [3%] What is the program output for the following input?</p><pre>Input:\n6 11\n0 1 4\n0 2 3\n0 3 6\n1 2 5\n1 4 2\n2 3 7\n2 5 8\n3 5 1\n4 5 9\n1 3 10\n0 4 11</pre>",
+      "choices": [
+        "(A) 16 5",
+        "(B) 16 4",
+        "(C) 15 5",
+        "(D) 15 4",
+        "(E) 14 4"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>排序後依序處理：</p><pre>(3,5)1 選   (1,4)2 選   (0,2)3 選   (0,1)4 選\n(1,2)5 跳過（0、1、2 已同組）   (0,3)6 選 → k = 5 = n−1，迴圈結束</pre><p>total = 1 + 2 + 3 + 4 + 6 = 16，k = 5，輸出 <b>16 5</b>。6 個點的生成樹一定是 5 條邊，所以 (B)(D)(E) 的 k = 4 可以直接刪掉。（已編譯執行驗證。）</p>"
+    },
+    {
+      "id": "ds-0323",
+      "topics": [
+        "articulation-point",
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "B-7",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>B. A university plans to connect all campus buildings by fiber links. Each building is a vertex (ID = 0, 1, ..., n-1), and each possible fiber link is an undirected edge (a,b) with installation cost w. Assume the cost w is an integer and satisfies 0 ≤ w ≤ 10<sup>9</sup>. The following C program is designed to find the minimum cost of installing connections from the given links. When two edges have the same cost, the program orders them by (a,b) in increasing order (smaller a first; if a is the same, smaller b first). You must answer Questions 5~8 based on the C program below.</p><pre class=\"code\">typedef struct { int a, b, w; } E;\nstatic int *P, *S;\nstatic void f0(int n){\n    P = (int*)malloc(n * sizeof(int));\n    S = (int*)malloc(n * sizeof(int));\n    for(int i=0;i&lt;n;i++){ P[i]=i; S[i]=1; }\n}\nstatic int f1(int x){\n    while(P[x]!=x){ P[x]=P[P[x]]; x=P[x]; }\n    return x;\n}\nstatic int f2(int x, int y){\n    x=f1(x); y=f1(y);\n    if(x==y) return 0;\n    if(S[x]&lt;S[y]){ int t=x; x=y; y=t; }\n    P[y]=x; S[x]+=S[y];\n    return 1;\n}\nstatic int c0(const void *px, const void *py){\n    const E *x=(const E*)px, *y=(const E*)py;\n    if(x-&gt;w != y-&gt;w) return x-&gt;w - y-&gt;w;\n    if(x-&gt;a != y-&gt;a) return x-&gt;a - y-&gt;a;\n    return x-&gt;b - y-&gt;b;\n}\nint main(void){\n    int n, m;\n    if(scanf(\"%d %d\", &amp;n, &amp;m)!=2) return 0;\n\n    E *e = (E*)malloc(m * sizeof(E));\n    for(int i=0;i&lt;m;i++){\n        scanf(\"%d %d %d\", &amp;e[i].a, &amp;e[i].b, &amp;e[i].w);\n        if(e[i].a &gt; e[i].b){\n            int t=e[i].a; e[i].a=e[i].b; e[i].b=t;\n        }\n    }\n    qsort(e, m, sizeof(E), c0);\n    f0(n);\n    int *U = (int*)malloc((n-1) * sizeof(int));\n    int *V = (int*)malloc((n-1) * sizeof(int));\n    int k=0;\n    long long total=0;\n    for(int i=0;i&lt;m &amp;&amp; k&lt;n-1;i++){\n        if(f2(e[i].a, e[i].b)){\n            U[k]=e[i].a;\n            V[k]=e[i].b;\n            total += e[i].w;\n            k++;\n        }\n    }\n    printf(\"%lld %d\\n\", total, k);\n    free(e); free(U); free(V); free(P); free(S);\n    return 0;\n}</pre><pre>Input:\n6 11\n0 1 4\n0 2 3\n0 3 6\n1 2 5\n1 4 2\n2 3 7\n2 5 8\n3 5 1\n4 5 9\n1 3 10\n0 4 11</pre><p>7. [3%] The backbone is the graph formed by the k chosen edges. A vertex is an articulation point if removing it (and its incident backbone edges) disconnects the backbone. For the dataset in Question 6, which set of vertices are articulation points in the backbone?</p>",
+      "choices": [
+        "(A) {0, 1, 4}",
+        "(B) {0, 2, 3}",
+        "(C) {1, 3, 5}",
+        "(D) {0, 1, 3}",
+        "(E) No articulation point"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>backbone 的邊：3-5、1-4、0-2、0-1、0-3。這是一棵樹：</p><pre>      0\n    / | \\\n   2  1  3\n      |  |\n      4  5</pre><p>在樹裡，<b>degree ≥ 2 的點都是 articulation point</b>（拿掉它，原本接在它兩側的部分就斷開），葉子都不是。degree：0 是 3、1 是 2、3 是 2，其他都是 1 → <b>{0, 1, 3}</b>。</p>"
+    },
+    {
+      "id": "ds-0324",
+      "topics": [
+        "union-find"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "B-8",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>B. A university plans to connect all campus buildings by fiber links. Each building is a vertex (ID = 0, 1, ..., n-1), and each possible fiber link is an undirected edge (a,b) with installation cost w. Assume the cost w is an integer and satisfies 0 ≤ w ≤ 10<sup>9</sup>. The following C program is designed to find the minimum cost of installing connections from the given links. When two edges have the same cost, the program orders them by (a,b) in increasing order (smaller a first; if a is the same, smaller b first). You must answer Questions 5~8 based on the C program below.</p><pre class=\"code\">typedef struct { int a, b, w; } E;\nstatic int *P, *S;\nstatic void f0(int n){\n    P = (int*)malloc(n * sizeof(int));\n    S = (int*)malloc(n * sizeof(int));\n    for(int i=0;i&lt;n;i++){ P[i]=i; S[i]=1; }\n}\nstatic int f1(int x){\n    while(P[x]!=x){ P[x]=P[P[x]]; x=P[x]; }\n    return x;\n}\nstatic int f2(int x, int y){\n    x=f1(x); y=f1(y);\n    if(x==y) return 0;\n    if(S[x]&lt;S[y]){ int t=x; x=y; y=t; }\n    P[y]=x; S[x]+=S[y];\n    return 1;\n}\nstatic int c0(const void *px, const void *py){\n    const E *x=(const E*)px, *y=(const E*)py;\n    if(x-&gt;w != y-&gt;w) return x-&gt;w - y-&gt;w;\n    if(x-&gt;a != y-&gt;a) return x-&gt;a - y-&gt;a;\n    return x-&gt;b - y-&gt;b;\n}\nint main(void){\n    int n, m;\n    if(scanf(\"%d %d\", &amp;n, &amp;m)!=2) return 0;\n\n    E *e = (E*)malloc(m * sizeof(E));\n    for(int i=0;i&lt;m;i++){\n        scanf(\"%d %d %d\", &amp;e[i].a, &amp;e[i].b, &amp;e[i].w);\n        if(e[i].a &gt; e[i].b){\n            int t=e[i].a; e[i].a=e[i].b; e[i].b=t;\n        }\n    }\n    qsort(e, m, sizeof(E), c0);\n    f0(n);\n    int *U = (int*)malloc((n-1) * sizeof(int));\n    int *V = (int*)malloc((n-1) * sizeof(int));\n    int k=0;\n    long long total=0;\n    for(int i=0;i&lt;m &amp;&amp; k&lt;n-1;i++){\n        if(f2(e[i].a, e[i].b)){\n            U[k]=e[i].a;\n            V[k]=e[i].b;\n            total += e[i].w;\n            k++;\n        }\n    }\n    printf(\"%lld %d\\n\", total, k);\n    free(e); free(U); free(V); free(P); free(S);\n    return 0;\n}</pre><p>8. [3%] The operator wants one more feature: besides the current output, also print the number of connected components in the input graph (using all m edges). Print three integers in one line:</p><pre>total k c</pre><p>where c is the number of connected components. Which modification is correct?</p><p>(A) Add the following code right before printf(...), and change the printf format:</p><pre class=\"code\">int c = 0;\nfor(int i=0;i&lt;n;i++){\n    if(f1(i) == i) c++;\n}\nprintf(\"%lld %d %d\\n\", total, k, c);</pre><p>(B) Add the following code right before printf(...), and change the printf format:</p><pre class=\"code\">int c = 0;\nfor(int i=0;i&lt;n;i++){\n    if(P[i] == -1) c++;\n}\nprintf(\"%lld %d %d\\n\", total, k, c);</pre><p>(C) Add the following code right before printf(...), and change the printf format:</p><pre class=\"code\">int c = 0;\nfor(int i=0;i&lt;n;i++){\n    if(S[i] == 1) c++;\n}\nprintf(\"%lld %d %d\\n\", total, k, c);</pre><p>(D) Add the following code right before printf(...), and change the printf format:</p><pre class=\"code\">int c = 0;\nfor(int i=0;i&lt;n;i++){\n    c += (P[i] == i);\n}\nprintf(\"%lld %d %d\\n\", total, k, c);</pre><p>(E) None of the above.</p>",
+      "choices": [
+        "(A)",
+        "(B)",
+        "(C)",
+        "(D)",
+        "(E) None of the above."
+      ],
+      "answer": "(A)（(D) 同樣正確，題目可能有兩個答案，待確認）",
+      "explanation": "<p>連通元件數 = union-find 中「根」的數量。這個實作的根滿足 P[x] == x（f0 初始化為 P[i] = i，沒有用 −1 表示根）。</p><p>那「用所有 m 條邊」有沒有問題？迴圈在 k == n−1 時提早停止，但此時已經有 n−1 條邊把所有點連成一棵樹，整張圖本來就是 1 個元件；沒提早停的話就是所有邊都處理過了。所以 DSU 的狀態一定反映整張輸入圖的連通性。</p><ul><li><b>(A) 對</b>：f1(i) == i 只有 i 是根時成立（f1 會順便壓縮路徑，不影響結果）。</li><li>(B) 錯：P 裡沒有 −1，c 永遠是 0。</li><li>(C) 錯：S[i] 只在根上有意義，非根節點的 S 值不會被更新，一個大小 1 的非根舊值也會被算進去；而且大小 &gt; 1 的根反而不算。</li><li>(D) 也對：P[i] == i 等價於 i 是根，和 (A) 數到的一樣。</li></ul><p>(A) 和 (D) 都會印出正確的 c，但題目是單選。可能命題者認為 (D) 沒有先做 find 而不保險，但根的判定本來就只需要 P[i] == i（待確認）。</p>"
+    },
+    {
+      "id": "ds-0325",
+      "topics": [
+        "red-black-tree",
+        "avl-tree",
+        "b-plus-tree",
+        "hash-functions",
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "III-9",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>9. [4%] You need operations: insert(<i>x</i>), delete(<i>x</i>), find(<i>x</i>), and also \"find predecessor/successor of <i>x</i>\". Please select all that are correct for the predecessor/successor queries.（複選）</p>",
+      "choices": [
+        "(A) A red-black tree supports the queries in O(log n) worst case when the input is a key x.",
+        "(B) A binary heap supports the queries in O(log n) worst case when the input is a key x.",
+        "(C) A B+ tree supports the queries in O(1) average time when the input is a key x.",
+        "(D) An AVL tree supports the queries in O(log n) worst case when the input is a key x.",
+        "(E) Hashing supports the queries in O(1) average time when the input is a key x."
+      ],
+      "answer": "(A)、(D)",
+      "explanation": "<p>找前驅／後繼需要資料<b>保持排序</b>的結構。</p><ul><li><b>(A)(D) 對</b>：紅黑樹、AVL 都是平衡 BST，從根往下找一次，邊走邊記下最後一個比 x 小（或大）的節點，O(log n)。</li><li>(B) 錯：binary heap 只保證父子大小關係，找任意 key 的前驅要 O(n)。</li><li>(C) 錯：B+ tree 要先從根走到葉，O(log n)（以 fan-out 為底），不是 O(1)。</li><li>(E) 錯：hashing 把 key 打散，完全不保留順序，找前驅只能全部掃一遍。</li></ul>"
+    },
+    {
+      "id": "ds-0326",
+      "topics": [
+        "advanced-heaps-overview",
+        "leftist-tree",
+        "min-max-heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "III-10",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>10. [4%] A system needs a priority queue with: frequent meld(A, B), frequent delete-min, and occasional find-max. Please select all that are correct.（複選）</p>",
+      "choices": [
+        "(A) A Fibonacci heap is a good match for frequent meld and delete-min.",
+        "(B) A leftist heap is a good match for frequent meld and delete-min.",
+        "(C) An SMMH directly supports find-max and find-min efficiently.",
+        "(D) A Fibonacci heap supports find-max in O(1) without any extra structure.",
+        "(E) A leftist heap supports find-max in O(1) without extra structure."
+      ],
+      "answer": "(A)、(B)、(C)",
+      "explanation": "<ul><li><b>(A) 對</b>：Fibonacci heap 的 meld 是 O(1)（串接 root list），delete-min 攤銷 O(log n)。</li><li><b>(B) 對</b>：leftist heap 的 meld 只沿右路徑走，O(log n)；delete-min 就是拿掉根再 meld 左右子樹，也是 O(log n)。</li><li><b>(C) 對</b>：SMMH（symmetric min-max heap，對稱最小最大堆積）的根的左子是最小、右子是最大，find-min、find-max 都 O(1)。</li><li>(D)(E) 錯：這兩者都是 min 結構，最大值可能藏在任何葉子，找最大要 O(n)，除非額外維護。</li></ul>"
+    },
+    {
+      "id": "ds-0327",
+      "topics": [
+        "b-tree",
+        "b-plus-tree",
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "III-11",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf"
+      },
+      "question": "<p>11. [4%] A database index is stored on disk. Minimizing disk I/O is important. Fan-out means the maximum number of children of a node. Please select all that are correct.（複選）</p>",
+      "choices": [
+        "(A) A B-tree is suitable for disk because a node can store many keys and child pointers in one disk page/block. This gives high fan-out and small height (few page reads).",
+        "(B) A red-black tree is suitable for disk because its fan-out is 2, which reduces the number of disk page reads.",
+        "(C) A B+ tree is suitable for disk indexes for the same reason as a B-tree (high fan-out, small height).",
+        "(D) A B+ tree is often used when range queries are common, because its leaves can be linked for fast sequential scan on disk.",
+        "(E) For disk-based indexes, a red-black tree usually needs more page reads than a B-tree/B+ tree when searching for a key, because the tree is taller."
+      ],
+      "answer": "(A)、(C)、(D)、(E)",
+      "explanation": "<p>磁碟上的成本主要是「讀幾個 page」，大約等於樹高。</p><ul><li><b>(A) 對</b>：一個 page 塞滿 key 和指標，fan-out 可以上百，樹高 = log<sub>fan-out</sub> n 很小。例如 fan-out 100、一億筆資料只要約 4 層。</li><li>(B) 錯：fan-out 只有 2 正是缺點，樹高約 2 log<sub>2</sub> n，一億筆可能要 50 次以上的讀取。</li><li><b>(C) 對</b>：B+ tree 內部節點只放 key，fan-out 甚至比 B-tree 更高。</li><li><b>(D) 對</b>：資料都在葉子，而且葉子串成 linked list，範圍查詢找到起點後順著掃就好。</li><li><b>(E) 對</b>：理由同 (B)。</li></ul>"
     }
   ]
 }
