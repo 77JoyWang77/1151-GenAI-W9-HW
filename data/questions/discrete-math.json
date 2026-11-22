@@ -3459,6 +3459,59 @@
       ],
       "answer": "(a)、(b)、(e)",
       "explanation": "<ul><li>(a) 對：簡單圖每個面至少 3 條邊，2m ≥ 3f；代入 Euler 公式 n − m + f = 2 得 m ≤ 3n − 6（n ≥ 3）。</li><li>(b) 對：同樣推導，每面至少 4 條邊 ⇒ 2m ≥ 4f ⇒ f ≤ m/2，代入 n − m + m/2 ≥ 2 得 m ≤ 2n − 4。這就是 K<sub>3,3</sub>（m = 9 &gt; 2·6 − 4 = 8）不是平面圖的證明。</li><li>(c) 錯：<b>Kuratowski's theorem</b>：平面圖 ⇔ 不含 K<sub>5</sub> 或 K<sub>3,3</sub> 的 subdivision。</li><li>(d) 錯：例如星形圖 K<sub>1,3</sub>（一棵樹）是平面圖，但沒有任何圈。</li><li>(e) 對：<b>Four color theorem（四色定理）</b>。</li></ul>"
+    },
+    {
+      "id": "dm-0157",
+      "topics": [
+        "closures",
+        "equivalence-relations",
+        "propositional-logic"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）For question 1~4, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [0 0 0 0 0 1]\n    [0 0 1 1 1 0]\nA = [0 0 0 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 0 0]\n    [0 0 0 0 0 1]</pre>4. Let <b>S</b> be the symmetric and reflexive closure of <b>R</b> and each element is a proposition. If <b>S</b> reflects Boolean operators’ behavior, what are possible operators?",
+      "choices": [
+        "A) ∧",
+        "B) ∨",
+        "C) ¬",
+        "D) →",
+        "E) ↔"
+      ],
+      "answer": "E（待確認：題意的解讀）",
+      "explanation": "<p><b>第一步：算出 S。</b>R = {(1,6), (2,3), (2,4), (2,5), (3,4), (3,5), (4,4), (4,5), (6,6)}。先補對稱（每個 (i,j) 補上 (j,i)），再補自反（對角線全部補 1）：</p><pre>    [1 0 0 0 0 1]\n    [0 1 1 1 1 0]\nS = [0 1 1 1 1 0]\n    [0 1 1 1 1 0]\n    [0 1 1 1 1 0]\n    [1 0 0 0 0 1]</pre><p>檢查會發現 S 剛好也是遞移的（程式驗算），所以 S 是一個 <span class=\"term\">Equivalence Relation<small>（等價關係）</small></span>，把 6 個元素分成兩個等價類：{1, 6} 和 {2, 3, 4, 5}。</p><p><b>第二步：題意。</b>把每個元素看成一個命題，「xSy」看成「x op y 為真」。要問的是：哪個二元運算子的「為真」關係會長得像 S，也就是同時滿足自反、對稱、遞移。把每個運算子在真值 {T, F} 上為真的配對列出來：</p><div class=\"table-scroll\"><table><tr><th>運算子</th><th>使 p op q 為真的 (p, q)</th><th>自反</th><th>對稱</th><th>遞移</th></tr><tr><td>∧</td><td>(T,T)</td><td>否（F∧F 為假）</td><td>是</td><td>是</td></tr><tr><td>∨</td><td>(T,T)、(T,F)、(F,T)</td><td>否（F∨F 為假）</td><td>是</td><td>否</td></tr><tr><td>→</td><td>(T,T)、(F,F)、(F,T)</td><td>是</td><td>否（F→T 真、T→F 假）</td><td>是</td></tr><tr><td>↔</td><td>(T,T)、(F,F)</td><td>是</td><td>是</td><td>是</td></tr></table></div><p>¬ 是一元運算子，沒辦法描述兩個命題之間的關係，直接排除。</p><p>只有 ↔ 三個性質都成立。而且 ↔ 的意思正是「兩個命題真值相同」，它會把命題分成「真的一群」和「假的一群」兩個等價類，和 S 的 {1, 6}、{2, 3, 4, 5} 兩個類別完全對得上：例如 1、6 同真（或同假），2~5 是另一個真值。所以答案是 E。</p><p>常見錯誤：只看「對稱」就選 ∧、∨（它們確實可交換），但忘了 S 是自反的，p ∧ p、p ∨ p 在 p 為假時都是假，對不上 S 對角線全是 1。</p><p>（待確認）原題沒有說明「reflects Boolean operators’ behavior」的精確意思，這裡採用「xSy ⇔ x op y 為真」的解讀；用這個解讀答案唯一是 E。</p>"
+    },
+    {
+      "id": "dm-0158",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "Which one is the solution of the recurrence relation<br>a<sub>n</sub> −3a<sub>n</sub> −1=5(3<sup>n</sup>), where n≥1 and a<sub>0</sub>=2?<br>（原卷印刷如此，依選項與初始條件判斷應為 a<sub>n</sub> − 3a<sub>n−1</sub> = 5(3<sup>n</sup>)，下標 n−1 印成了 n −1。）",
+      "choices": [
+        "(a) (1+3n)(3<sup>n</sup>).",
+        "(b) (2+4n)(4<sup>n</sup>).",
+        "(c) (2+6n)(5<sup>n</sup>).",
+        "(d) (2+5n)(3<sup>n</sup>)."
+      ],
+      "answer": "(d)",
+      "explanation": "<p>先說印刷問題：如果照字面讀成 a<sub>n</sub> − 3a<sub>n</sub> − 1 = 5·3<sup>n</sup>，會得到 a<sub>n</sub> = −(5·3<sup>n</sup> + 1)/2，代 n = 0 是 −3，和 a<sub>0</sub> = 2 矛盾，所以原意一定是 a<sub>n</sub> − 3a<sub>n−1</sub> = 5·3<sup>n</sup>。</p><p><b>齊次解：</b>特徵方程式 r − 3 = 0，r = 3，齊次解是 A·3<sup>n</sup>。</p><p><b>特解：</b>右邊是 5·3<sup>n</sup>，而 3 剛好是特徵根（重數 1），所以特解要多乘一個 n，猜 a<sub>n</sub><sup>(p)</sup> = Bn·3<sup>n</sup>。代回去：</p><pre class=\"formula\">Bn·3^n − 3·B(n−1)·3^(n−1) = Bn·3^n − B(n−1)·3^n = B·3^n = 5·3^n  ⇒  B = 5</pre><p><b>通解與初始條件：</b>a<sub>n</sub> = A·3<sup>n</sup> + 5n·3<sup>n</sup>，代 a<sub>0</sub> = 2 得 A = 2，所以 a<sub>n</sub> = (2 + 5n)(3<sup>n</sup>)，選 (d)。</p><p>驗算（程式跑過）：照遞迴算 a<sub>0</sub>~a<sub>4</sub> = 2, 21, 108, 459, 1782；(2+5n)3<sup>n</sup> 在 n = 1 時是 7·3 = 21、n = 2 時是 12·9 = 108，完全吻合。</p><p>快速刪去法：(a) 在 n = 0 是 1，不等於 a<sub>0</sub> = 2；(b)、(c) 的底數是 4、5，但齊次部分的特徵根只有 3，不可能出現 4<sup>n</sup>、5<sup>n</sup>。常見錯誤是忘了「右邊的底數等於特徵根時特解要乘 n」，直接猜 B·3<sup>n</sup>，代進去會變成 0 = 5·3<sup>n</sup> 而卡住。</p>"
     }
   ]
 }
