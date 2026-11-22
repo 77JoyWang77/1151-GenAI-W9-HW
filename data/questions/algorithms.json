@@ -559,7 +559,8 @@
     {
       "id": "al-0030",
       "topics": [
-        "bellman-ford"
+        "bellman-ford",
+        "dijkstra"
       ],
       "level": "exam",
       "type": "選擇",
@@ -585,7 +586,8 @@
     {
       "id": "al-0031",
       "topics": [
-        "bellman-ford"
+        "bellman-ford",
+        "dijkstra"
       ],
       "level": "exam",
       "type": "選擇",
@@ -1593,7 +1595,8 @@
       "id": "al-0070",
       "topics": [
         "floyd-warshall",
-        "longest-common-subsequence"
+        "longest-common-subsequence",
+        "dijkstra"
       ],
       "level": "exam",
       "type": "選擇",
@@ -1850,7 +1853,8 @@
       "id": "al-0080",
       "topics": [
         "floyd-warshall",
-        "longest-common-subsequence"
+        "longest-common-subsequence",
+        "dijkstra"
       ],
       "level": "exam",
       "type": "選擇",
@@ -2719,7 +2723,8 @@
       "id": "al-0119",
       "topics": [
         "activity-selection",
-        "knapsack"
+        "knapsack",
+        "dijkstra"
       ],
       "level": "exam",
       "type": "選擇",
@@ -2827,7 +2832,8 @@
       "topics": [
         "bellman-ford",
         "floyd-warshall",
-        "johnson"
+        "johnson",
+        "dijkstra"
       ],
       "level": "exam",
       "type": "選擇",
@@ -2853,7 +2859,7 @@
     {
       "id": "al-0124",
       "topics": [
-        "p-np"
+        "backtracking-branch-and-bound"
       ],
       "level": "exam",
       "type": "選擇",
@@ -3551,6 +3557,7 @@
     {
       "id": "al-0153",
       "topics": [
+        "fft",
         "recurrence-methods"
       ],
       "level": "exam",
@@ -3836,7 +3843,8 @@
       "id": "al-0165",
       "topics": [
         "floyd-warshall",
-        "bellman-ford"
+        "bellman-ford",
+        "dijkstra"
       ],
       "level": "exam",
       "type": "計算",
@@ -3855,7 +3863,7 @@
     {
       "id": "al-0166",
       "topics": [
-        "bellman-ford"
+        "dijkstra"
       ],
       "level": "exam",
       "type": "計算",

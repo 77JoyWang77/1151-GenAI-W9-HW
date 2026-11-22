@@ -90,6 +90,14 @@
           "book": "33.4",
           "status": "planned",
           "priority": "low"
+        },
+        {
+          "id": "fft",
+          "en": "Fast Fourier Transform",
+          "zh": "快速傅立葉轉換",
+          "book": "30",
+          "status": "planned",
+          "priority": "low"
         }
       ]
     },
@@ -283,6 +291,14 @@
           "priority": "high"
         },
         {
+          "id": "dijkstra",
+          "en": "Dijkstra's Algorithm",
+          "zh": "Dijkstra 演算法",
+          "book": "22.3",
+          "status": "planned",
+          "priority": "high"
+        },
+        {
           "id": "floyd-warshall",
           "en": "Floyd-Warshall Algorithm",
           "zh": "Floyd-Warshall 演算法",
@@ -405,6 +421,13 @@
           "book": "34.4–34.5",
           "status": "planned",
           "priority": "high"
+        },
+        {
+          "id": "backtracking-branch-and-bound",
+          "en": "Backtracking and Branch-and-Bound",
+          "zh": "回溯與分支限界",
+          "status": "planned",
+          "priority": "mid"
         }
       ]
     },

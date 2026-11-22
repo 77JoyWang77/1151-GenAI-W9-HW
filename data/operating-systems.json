@@ -281,7 +281,7 @@
           "zh": "檔案系統介面與目錄結構",
           "book": "13.1–13.3",
           "status": "planned",
-          "priority": "low"
+          "priority": "mid"
         },
         {
           "id": "file-allocation",
@@ -306,7 +306,7 @@
           "zh": "I/O 硬體與 DMA",
           "book": "12.2–12.4",
           "status": "planned",
-          "priority": "low"
+          "priority": "mid"
         }
       ]
     },
