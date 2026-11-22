@@ -2141,6 +2141,130 @@
     {
       "id": "al-0091",
       "topics": [
+        "master-theorem"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某分治演算法把大小 n 的問題分成 4 個大小 n/2 的子問題，分割與合併共花 Θ(n)。它的時間複雜度是？",
+      "choices": [
+        "(A) Θ(n)",
+        "(B) Θ(n lg n)",
+        "(C) Θ(n²)",
+        "(D) Θ(n² lg n)"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>遞迴式是 T(n) = 4T(n/2) + n，a = 4、b = 2、f(n) = n。臨界指數 e = log₂4 = 2，葉子總共 n² 片。</p><p>f(n) = n = O(n<sup>2 − 1</sup>)，比 n² 小了一個多項式倍（ε = 1），是 <b>case 1</b>：葉子主導，T(n) = Θ(n²)。遞迴樹上每層成本是上一層的 a/b<sup>k</sup> = 4/2 = 2 倍，越往下越大。（已用程式驗證：T(n)/n² 收斂到 2。）</p><p>常見錯誤是看到 f(n) = n 就答 (A) 或 (B)：主定理要比的是 f(n) 和 n<sup>log<sub>b</sub> a</sup>，不是只看 f(n)。另一個錯誤是把「分成 4 個」和「大小除以 2」搞混；a 和 b 分別是子問題個數與縮小倍數，題目刻意讓它們不同。</p>"
+    },
+    {
+      "id": "al-0092",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "T(n) = 9T(n/3) + n²。(1) log<sub>b</sub> a = ＿＿；(2) 遞迴樹第 i 層的總成本 = ＿＿；(3) 落在哪個 case？T(n) = ＿＿。",
+      "answer": "(1) 2；(2) n²；(3) case 2，Θ(n² lg n)",
+      "explanation": "<p>(1) a = 9、b = 3，log₃9 = 2，葉子有 n² 片。</p><p>(2) 第 i 層有 9<sup>i</sup> 個節點，每個大小 n/3<sup>i</sup>，成本 (n/3<sup>i</sup>)² = n²/9<sup>i</sup>，相乘得 9<sup>i</sup> · n²/9<sup>i</sup> = <b>n²</b>，每層都一樣大。例如 n = 81 時，四層內部節點各是 6561 = 81²，葉子層 9⁴ = 6561 也一樣。</p><p>(3) f(n) = n² = Θ(n<sup>log₃9</sup>)，是 <b>case 2</b>。每層 n²、共 log₃ n + 1 層，所以 T(n) = Θ(n² lg n)。（已用程式驗證：T(n)/(n² lg n) 穩定在 0.63 附近，約等於 1/lg 3，因為層數是 log₃ n = lg n / lg 3。）</p><p>常見錯誤：case 2 寫成 Θ(n²)，忘了乘上層數 lg n。</p>"
+    },
+    {
+      "id": "al-0093",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "用主定理求 T(n) = 3T(n/4) + n lg n，並寫出正則條件的驗證過程（要寫出 c 的值）。",
+      "answer": "case 3，c = 3/4，T(n) = Θ(n lg n)",
+      "explanation": "<p>a = 3、b = 4，e = log₄3 ≈ 0.792，葉子約 n<sup>0.792</sup> 片。</p><p>f(n) = n lg n ≥ n = n<sup>0.792 + 0.208</sup>，所以取 ε = 0.2 就有 f(n) = Ω(n<sup>e + ε</sup>)，f 比葉子大一個多項式倍，往 case 3 走。</p><p>正則條件：a·f(n/b) = 3 · (n/4) · lg(n/4) = (3/4) · n · (lg n − 2) ≤ (3/4) · n lg n = c · f(n)，<b>c = 3/4 &lt; 1</b>，對所有 n ≥ 4 成立。也就是遞迴樹每往下一層，總成本至少縮成 3/4，是遞減的等比級數。</p><p>所以 T(n) = Θ(f(n)) = <b>Θ(n lg n)</b>。（已用程式驗證：T(n)/(n lg n) 隨 n 增大往 1/(1 − 3/4) = 4 收斂，n = 4⁶⁴ 時約 3.81。）</p><p>常見錯誤：只說「n lg n 比 n<sup>0.792</sup> 大」就下結論，沒有寫出 ε 和 c；考試要求驗證時這兩個都要寫。</p>"
+    },
+    {
+      "id": "al-0094",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列哪一個遞迴式<b>可以</b>直接用主定理（三種標準情況）求解？",
+      "choices": [
+        "(A) T(n) = 2T(n/2) + n / lg n",
+        "(B) T(n) = T(n/3) + T(2n/3) + n",
+        "(C) T(n) = n · T(n/2) + n",
+        "(D) T(n) = 16T(n/4) + n²"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>逐一檢查主定理的前提（a ≥ 1、b &gt; 1 是常數，子問題大小相同，f 不落在空隙）：</p><ul><li>(A) e = 1，n/lg n 比 n 小但只小 lg n 倍，不是 O(n<sup>1−ε</sup>)，也不是 Θ(n)，落在 case 1 和 case 2 之間的空隙。實際答案 Θ(n lg lg n)。</li><li>(B) 兩個子問題大小不同（n/3 和 2n/3），沒有單一的 b；用遞迴樹可得 Θ(n lg n)。</li><li>(C) a = n 不是常數。</li><li>(D) a = 16、b = 4，log₄16 = 2，f = n² = Θ(n²)，<b>case 2</b>，T(n) = Θ(n² lg n)。（已用程式驗證：T(n)/(n² lg n) 收斂到 1/2，因為層數 log₄ n = (lg n)/2。）</li></ul>"
+    },
+    {
+      "id": "al-0095",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "求 T(n) = 2T(√n) + lg n 的漸近解。（提示：主定理不能直接用，先做變數代換。）",
+      "answer": "T(n) = Θ(lg n · lg lg n)",
+      "explanation": "<p>子問題大小是 √n，不是 n/b，不能直接套。令 m = lg n，也就是 n = 2<sup>m</sup>，則 √n = 2<sup>m/2</sup>：</p><pre class=\"formula\">T(2^m) = 2T(2^(m/2)) + m</pre><p>定義 S(m) = T(2<sup>m</sup>)，就得到 S(m) = 2S(m/2) + m。這是 a = 2、b = 2、f = m 的遞迴式，log₂2 = 1，f = Θ(m¹)，case 2，S(m) = Θ(m lg m)。</p><p>換回 n：T(n) = S(lg n) = <b>Θ(lg n · lg lg n)</b>。（已用程式驗證：n = 2<sup>2<sup>j</sup></sup> 時 T(n)/(lg n · lg lg n) 從 1.25 降到 1.125，往 1 收斂。）</p><p>常見錯誤：代換後忘記把 S(m) 換回 T(n)，答成 Θ(m lg m) 或 Θ(n lg n)。</p>"
+    },
+    {
+      "id": "al-0096",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "T(n) = 2T(n/2) + n / lg n（n 是 2 的次方，T(1) = 1）。(1) 說明為什麼不能用主定理；(2) 用遞迴樹求出 T(n) 的緊漸近界。",
+      "answer": "(1) n/lg n 不是 O(n<sup>1−ε</sup>) 也不是 Θ(n)；(2) Θ(n lg lg n)",
+      "explanation": "<p>(1) a = b = 2，e = 1。case 1 需要 f(n) = O(n<sup>1−ε</sup>)，也就是 (n/lg n) / n<sup>1−ε</sup> = n<sup>ε</sup>/lg n 有界；但對任何 ε &gt; 0，n<sup>ε</sup>/lg n → ∞，不成立。case 2 需要 f = Θ(n)，但 (n/lg n)/n = 1/lg n → 0，也不成立。case 3 更不可能（f 比 n 小）。所以 f 落在 case 1 與 case 2 之間的空隙。</p><p>(2) 令 L = lg n。第 i 層（0 ≤ i ≤ L − 1）有 2<sup>i</sup> 個大小 n/2<sup>i</sup> 的節點，總成本</p><pre class=\"formula\">2^i · (n/2^i) / lg(n/2^i) = n / (L − i)</pre><p>令 j = L − i，j 從 L 跑到 1：內部節點總和 = n · (1 + 1/2 + … + 1/L) = n · H<sub>L</sub>。葉子層有 n 片，成本 n。調和數 H<sub>L</sub> = ln L + O(1) = Θ(lg L)，所以</p><pre class=\"formula\">T(n) = n · H_(lg n) + n = Θ(n lg lg n)</pre><p>（已用程式驗證：T(n)/(n lg lg n) 在 n = 2⁸、2¹⁶、2³²、2⁶⁴ 時分別是 1.24、1.10、1.01、0.96，逐漸穩定，趨近 ln 2 ≈ 0.69，因為 H<sub>L</sub> ≈ ln L = ln 2 · lg L。）</p><p>常見錯誤：看到 f 比 n 小就套 case 1 答 Θ(n)；這比真正的答案少了 lg lg n 倍。</p>"
+    },
+    {
+      "id": "al-0097",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "演算法 X 的執行時間 T<sub>X</sub>(n) = 5T<sub>X</sub>(n/2) + n。演算法 Y 的執行時間 T<sub>Y</sub>(n) = a · T<sub>Y</sub>(n/3) + n，a 是正整數。要讓 Y 在漸近意義上<b>比 X 快</b>（T<sub>Y</sub> = o(T<sub>X</sub>)），a 最大可以是多少？",
+      "answer": "a = 12",
+      "explanation": "<p>X：log₂5 ≈ 2.322 &gt; 1，f = n 是 case 1，T<sub>X</sub> = Θ(n<sup>log₂5</sup>) ≈ Θ(n<sup>2.322</sup>)。</p><p>Y：只要 log₃a &gt; 1（a ≥ 4），也是 case 1，T<sub>Y</sub> = Θ(n<sup>log₃a</sup>)。a ≤ 3 時 T<sub>Y</sub> 只有 O(n lg n)，一定比 X 快，所以要找的是大的 a。</p><p>Y 比 X 快 ⇔ log₃a &lt; log₂5 ⇔ a &lt; 3<sup>log₂5</sup> = 5<sup>log₂3</sup> ≈ 12.82。所以 a 最大是 <b>12</b>：log₃12 ≈ 2.262 &lt; 2.322；而 a = 13 時 log₃13 ≈ 2.335 &gt; 2.322，Y 反而比較慢。（已用程式驗證這三個對數值與 3<sup>log₂5</sup>。）</p><p>a = 12 時兩者指數只差約 0.06，n = 2<sup>20</sup> 時 n<sup>0.06</sup> ≈ 2.3，差距要在很大的 n 才明顯。常見錯誤：把 a &lt; 12.82 誤寫成 a ≤ 13，或直接比較 a/b（5/2 vs a/3）得到 a &lt; 7.5。</p>"
+    },
+    {
+      "id": "al-0098",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "求下列三個遞迴式的緊漸近界：(1) T(n) = 8T(n/2) + n³ lg² n；(2) T(n) = 8T(n/2) + n³ / lg n；(3) T(n) = 8T(n/2) + n³ / lg² n。",
+      "answer": "(1) Θ(n³ lg³ n)；(2) Θ(n³ lg lg n)；(3) Θ(n³)",
+      "explanation": "<p>三題都是 a = 8、b = 2，log₂8 = 3，f = n³ lg<sup>p</sup> n 和 n³ 只差 lg 的次方，標準的三種情況都套不上，要用遞迴樹（或延伸版 case 2）。第 i 層的成本是</p><pre class=\"formula\">8^i · (n/2^i)^3 · lg^p(n/2^i) = n^3 · (lg n − i)^p</pre><p>令 j = lg n − i（j = 1 … lg n），總和 ≈ n³ · Σ j<sup>p</sup>：</p><ul><li>(1) p = 2：Σ j² ≈ (lg n)³/3，T(n) = <b>Θ(n³ lg³ n)</b>（延伸 case 2：p ≥ 0 時答案是 lg<sup>p+1</sup>）。</li><li>(2) p = −1：Σ 1/j 是調和數 ≈ ln lg n，T(n) = <b>Θ(n³ lg lg n)</b>。</li><li>(3) p = −2：Σ 1/j² 收斂到 π²/6，內部節點總和是 Θ(n³)，葉子也是 n³，T(n) = <b>Θ(n³)</b>。</li></ul><p>（已用程式驗證：三者除以各自答案的比值分別往 1/3、ln 2、1 + π²/6 收斂，n = 2⁶⁴ 時為 0.341、0.957、2.629。）</p><p>常見錯誤：(1) 答 Θ(n³ lg² n)，忘了再乘一個 lg n；(3) 以為 f 比 n³ 小就一定還有 lg 因子，其實 p &lt; −1 時答案和 case 1 一樣。</p>"
+    },
+    {
+      "id": "al-0099",
+      "topics": [
         "strassen",
         "master-theorem"
       ],
@@ -2159,7 +2283,7 @@
       "explanation": "<p>數遞迴呼叫：C<sub>11</sub>、C<sub>12</sub>、C<sub>21</sub> 各呼叫 2 次，C<sub>22</sub> 只呼叫 1 次，總共 <b>7 次</b>大小 n/2 的子問題。另外有 3 次 n/2 × n/2 的矩陣加法，每次 Θ(n²/4)，切割與組合也是 Θ(n²)（用 index 計算切割的話只要 Θ(1)，不影響結果）。</p><pre class=\"formula\">T(n) = 7T(n/2) + Θ(n²)</pre><p>a = 7、b = 2，n<sup>log<sub>2</sub>7</sup> ≈ n<sup>2.807</sup>，f(n) = n² = O(n<sup>2.807−ε</sup>) → master theorem case 1，<b>T(n) = Θ(n<sup>lg 7</sup>)</b>。</p><p>這個遞迴式和 Strassen 演算法一樣（Strassen 也是 7 次乘法），但這個程序算出來的 C<sub>22</sub> 少了 A<sub>22</sub>B<sub>22</sub> 那一項，並不是正確的矩陣乘法；題目只問執行時間，所以照呼叫次數分析即可。易錯：看到 8 個子矩陣就寫 8T(n/2) 得 Θ(n³)。</p>"
     },
     {
-      "id": "al-0092",
+      "id": "al-0100",
       "topics": [
         "matrix-chain"
       ],
@@ -2178,7 +2302,7 @@
       "explanation": "<p>第 i 層到第 i+1 層的計算可以寫成矩陣乘法 v<sup>i+1</sup> = W<sub>i</sub> v<sup>i</sup>，W<sub>i</sub> 是 P<sub>i+1</sub> × P<sub>i</sub>。所以輸出是 W<sub>5</sub> W<sub>4</sub> W<sub>3</sub> W<sub>2</sub> W<sub>1</sub> v<sup>1</sup>，這是一個 <b>matrix-chain multiplication</b> 問題，維度序列為</p><pre class=\"formula\">3×50, 50×5, 5×12, 12×6, 6×10, 10×1   →   p = ⟨3, 50, 5, 12, 6, 10, 1⟩</pre><p>用 matrix-chain DP 求最少乘法次數，得 <b>592</b>，最佳括號是 W<sub>5</sub>(W<sub>4</sub>(W<sub>3</sub>(W<sub>2</sub>(W<sub>1</sub>v<sup>1</sup>))))，也就是一層一層往前算：</p><pre class=\"formula\">10·6 + 6·12 + 12·5 + 5·50 + 50·3 = 60 + 72 + 60 + 250 + 150 = 592</pre><p>直覺：最右邊是一個「向量」（寬度 1），每次和向量相乘的成本只有 P<sub>i</sub>·P<sub>i+1</sub>；如果先把權重矩陣兩兩乘起來（例如 W<sub>5</sub>W<sub>4</sub> 要 3·50·5 = 750 次），反而大很多。所以前向傳播逐層計算本來就是最省的。（已用 matrix-chain DP 程式驗算。）</p>"
     },
     {
-      "id": "al-0093",
+      "id": "al-0101",
       "topics": [
         "longest-common-subsequence"
       ],
@@ -2197,7 +2321,7 @@
       "explanation": "<pre class=\"formula\">          ⎧ 0                              if i = 0 or j = 0\nc[i, j] = ⎨ c[i−1, j−1] + 1                if i, j &gt; 0 and x_i = y_j\n          ⎩ max( c[i, j−1], c[i−1, j] )   if i, j &gt; 0 and x_i ≠ y_j</pre><p><b>為什麼</b>（optimal substructure）：</p><ul><li>其中一個序列是空的，LCS 長度當然是 0。</li><li>最後一個字元相同（x<sub>i</sub> = y<sub>j</sub>）：這個字元一定可以放在某個 LCS 的最後，剩下的是 X<sub>i−1</sub> 和 Y<sub>j−1</sub> 的 LCS，所以 +1。</li><li>最後一個字元不同：LCS 不可能同時用到 x<sub>i</sub> 和 y<sub>j</sub>，所以至少丟掉其中一個，取兩種情況的較大者。</li></ul><p>用 (m+1) × (n+1) 的表由上到下、由左到右填，時間與空間都是 Θ(mn)。易錯：字元不同時寫成 c[i−1, j−1]，那會漏掉只丟一邊的情況。</p>"
     },
     {
-      "id": "al-0094",
+      "id": "al-0102",
       "topics": [
         "linear-time-sorting"
       ],
@@ -2216,7 +2340,7 @@
       "explanation": "<p>用 <b>decision tree（決策樹）</b>證明：任何只靠比較的排序演算法，都可以畫成一棵二元決策樹，每個內部節點是一次比較 a<sub>i</sub> ≤ a<sub>j</sub>?，每片葉子是一種輸出的排列。</p><ul><li>n 個相異數字有 n! 種排列，演算法必須能區分每一種，所以葉子至少 n! 片。</li><li>高度 h 的二元樹最多 2<sup>h</sup> 片葉子，所以 2<sup>h</sup> ≥ n!，h ≥ lg(n!)。</li><li>由 Stirling 公式（或 n! ≥ (n/2)<sup>n/2</sup>），lg(n!) ≥ (n/2)lg(n/2) = Ω(n lg n)。</li></ul><p>樹高就是最壞情況的比較次數，所以比較式排序最壞情況需要 <b>Ω(n lg n)</b> 次比較；heap sort、merge sort 達到這個下界，是漸近最佳的。例如 n = 4 時 lg(4!) = lg 24 ≈ 4.58，至少要 5 次比較。counting sort、radix sort 不是靠比較，所以能突破這個下界做到線性時間。</p>"
     },
     {
-      "id": "al-0095",
+      "id": "al-0103",
       "topics": [
         "bellman-ford"
       ],
@@ -2235,7 +2359,7 @@
       "explanation": "<p><b>建 constraint graph</b>：x<sub>i</sub> − x<sub>j</sub> ≤ b 對應邊 v<sub>j</sub> → v<sub>i</sub>、權重 b，另加 v<sub>0</sub> 到每個點權重 0 的邊，從 v<sub>0</sub> 跑 Bellman-Ford。</p><pre>v3→v1 (1)   v3→v2 (4)   v5→v4 (−2)   v4→v3 (4)\nv1→v5 (3)   v2→v4 (−7)  v2→v1 (−2)   v3→v5 (1)</pre><p><b>最短距離</b>：</p><ul><li>δ(v2) = 0（v0 直接到；v3 繞過去更大）</li><li>δ(v4) = v0→v2→v4 = −7</li><li>δ(v3) = v0→v2→v4→v3 = −7 + 4 = −3</li><li>δ(v1) = min(v0→v2→v1 = −2, v3→v1 = −3 + 1 = −2) = −2</li><li>δ(v5) = min(v3→v5 = −2, v1→v5 = 1, 0) = −2</li></ul><p>再鬆弛一次都不會變小 → <b>沒有負環，有解</b>：x = (−2, 0, −3, −7, −2)。</p><p>逐條檢查：x1−x3 = 1 ≤ 1；x2−x3 = 3 ≤ 4；x4−x5 = −5 ≤ −2；x3−x4 = 4 ≤ 4；x5−x1 = 0 ≤ 3；x4−x2 = −7 ≤ −7；x1−x2 = −2 ≤ −2；x5−x3 = 1 ≤ 1，全部成立（已用程式驗算）。</p><p>題目問「the set of feasible solutions」：差分約束只限制變數之間的差，所以只要 x 是解，x + (d, d, d, d, d) 也一定是解，解集合至少包含上面那一整族。（Bellman-Ford 給的是其中各分量 ≤ 0 且總和最大的那一組。）</p>"
     },
     {
-      "id": "al-0096",
+      "id": "al-0104",
       "topics": [
         "recurrence-methods"
       ],
@@ -2254,7 +2378,7 @@
       "explanation": "<p>S<sub>3</sub> 不再遞迴，所以 T(n) = 2T(√n) + Θ(lg n)。</p><p><b>變數變換</b>：令 n = 2<sup>k</sup>（k = lg n），S(k) = T(2<sup>k</sup>)，因為 √n = 2<sup>k/2</sup>：</p><pre class=\"formula\">S(k) = 2S(k/2) + Θ(k)</pre><p>這是 merge sort 的遞迴，master theorem case 2 → S(k) = Θ(k lg k)。換回來 <b>T(n) = Θ(lg n · lg lg n)</b>。</p><p>題目設 n = 2<sup>2<sup>m</sup></sup>，就是為了讓每次開根號後仍是整數，一路到 |S| = 2 停止：k = 2<sup>m</sup> → 2<sup>m−1</sup> → … → 1，共 m = lg lg n 層，每層總成本 Θ(k) = Θ(lg n)，乘起來同樣是 Θ(lg n lg lg n)。易錯：把 T(√n) 當成 T(n/2) 去套 master theorem。</p>"
     },
     {
-      "id": "al-0097",
+      "id": "al-0105",
       "topics": [
         "activity-selection"
       ],
@@ -2273,7 +2397,7 @@
       "explanation": "<p>這是 <b>weighted interval scheduling（加權區間排程）</b>。考慮第 i 門課（finish time 最晚的那門）在不在最佳解裡：</p><ul><li><b>選 i</b>：得到 w<sub>i</sub>，和 i 重疊的課都不能選；因為依 finish time 排序，和 i 不重疊的前面那些課剛好是 {1, ..., p(i)}，剩下的子問題是 F(p(i))。</li><li><b>不選 i</b>：答案就是 F(i − 1)。</li></ul><pre class=\"formula\">F(i) = max( w_i + F(p(i)), F(i − 1) )</pre><p>直接遞迴會重複計算，最壞情況指數時間；加上 memoization 或由小到大填表 M[0..n]，每格 O(1)，總共 O(n)（加上排序與算 p(j) 的 O(n lg n)）。和不加權的 activity selection 不同，這裡不能用 greedy 只挑最早結束的，因為權重可能很不平均。</p>"
     },
     {
-      "id": "al-0098",
+      "id": "al-0106",
       "topics": [
         "knapsack"
       ],
@@ -2292,7 +2416,7 @@
       "explanation": "<p>這就是 <b>0/1 knapsack（0/1 背包）</b>：時長是重量、權重是價值、C 是容量。</p><pre class=\"formula\">          ⎧ 0                                          if i = 0\nT[i, j] = ⎨ T[i−1, j]                                  if p_i &gt; j\n          ⎩ max( T[i−1, j], w_i + T[i−1, j − p_i] )   if p_i ≤ j</pre><p>想法：第 i 門課要嘛不選（剩下的時間 j 全給前 i − 1 門），要嘛選（花掉 p<sub>i</sub> 的時間、拿到 w<sub>i</sub>，前 i − 1 門只剩 j − p<sub>i</sub>）。放不下（p<sub>i</sub> &gt; j）時只能不選。答案在 T[n, C]，時間 Θ(nC)。</p><p>注意這是 pseudo-polynomial：C 是數值不是輸入長度，C 很大時表格會很大。易錯：寫成 T[i, j − p<sub>i</sub>]（同一門課可重複選），那是 unbounded knapsack。</p>"
     },
     {
-      "id": "al-0099",
+      "id": "al-0107",
       "topics": [
         "activity-selection"
       ],
@@ -2311,7 +2435,7 @@
       "explanation": "<p><b>Greedy：Smith's rule</b>（依 p<sub>i</sub>/w<sub>i</sub> 由小到大排）。理由是 exchange argument：相鄰的 i、j 若 i 在前，交換後總和變化為 w<sub>i</sub>p<sub>j</sub> − w<sub>j</sub>p<sub>i</sub>，所以 p<sub>i</sub>/w<sub>i</sub> ≤ p<sub>j</sub>/w<sub>j</sub> 時 i 放前面不會更差。</p><p>題目文字說 finish time 是「之前所有課的時長<b>加上自己的時長</b>」（公式中的 &lt; 應為 ≤），這裡照文字計算。</p><div class=\"table-scroll\"><table><tr><th>順序</th><th>p</th><th>w</th><th>p/w</th><th>f</th><th>w·f</th></tr><tr><td>1</td><td>15</td><td>15</td><td>1.00</td><td>15</td><td>225</td></tr><tr><td>2</td><td>6</td><td>4</td><td>1.50</td><td>21</td><td>84</td></tr><tr><td>3</td><td>19</td><td>11</td><td>1.73</td><td>40</td><td>440</td></tr><tr><td>4</td><td>9</td><td>4</td><td>2.25</td><td>49</td><td>196</td></tr><tr><td>5</td><td>6</td><td>2</td><td>3.00</td><td>55</td><td>110</td></tr><tr><td>6</td><td>38</td><td>10</td><td>3.80</td><td>93</td><td>930</td></tr><tr><td>7</td><td>34</td><td>7</td><td>4.86</td><td>127</td><td>889</td></tr><tr><td>8</td><td>44</td><td>7</td><td>6.29</td><td>171</td><td>1197</td></tr><tr><td>9</td><td>82</td><td>10</td><td>8.20</td><td>253</td><td>2530</td></tr><tr><td>10</td><td>128</td><td>12</td><td>10.67</td><td>381</td><td>4572</td></tr><tr><td>11</td><td>83</td><td>6</td><td>13.83</td><td>464</td><td>2784</td></tr><tr><td>12</td><td>180</td><td>10</td><td>18.00</td><td>644</td><td>6440</td></tr><tr><td>13</td><td>164</td><td>7</td><td>23.43</td><td>808</td><td>5656</td></tr><tr><td>14</td><td>394</td><td>13</td><td>30.31</td><td>1202</td><td>15626</td></tr><tr><td>15</td><td>512</td><td>13</td><td>39.38</td><td>1714</td><td>22282</td></tr></table></div><p>總和 = <b>63961</b>。另外用 2<sup>15</sup> 個子集合的 DP 窮舉最佳順序，也得到 63961，確認 Smith's rule 的結果是最佳解。直覺：「單位時間的權重」越高越該先做，權重 13 但時長 512 的課就該排最後。</p>"
     },
     {
-      "id": "al-0100",
+      "id": "al-0108",
       "topics": [
         "floyd-warshall"
       ],
@@ -2330,7 +2454,7 @@
       "explanation": "<pre class=\"formula\">d_ij^(k) = w_ij                                         , k = 0\nd_ij^(k) = min( d_ij^(k-1), d_ik^(k-1) + d_kj^(k-1) )   , k ≥ 1</pre><p>只允許中間點在 {1..k} 的最短路徑只有兩種可能：</p><ul><li><b>不經過 k</b>：中間點其實只用到 {1..k−1}，長度 d<sub>ij</sub><sup>(k−1)</sup>。</li><li><b>經過 k</b>（最短路徑不會經過同一點兩次，假設沒有負環）：拆成 i ⇝ k 和 k ⇝ j，兩段的中間點都在 {1..k−1}，長度 d<sub>ik</sub><sup>(k−1)</sup> + d<sub>kj</sub><sup>(k−1)</sup>。</li></ul><p>取兩者較小值。k 從 1 跑到 n，每輪更新 n² 個值，總時間 Θ(n³)、可以只用一個 n × n 陣列原地更新。D<sup>(n)</sup> 就是所有點對的最短距離；若最後某個 d<sub>ii</sub> &lt; 0，表示圖中有負環。</p>"
     },
     {
-      "id": "al-0101",
+      "id": "al-0109",
       "topics": [
         "floyd-warshall"
       ],
@@ -2355,7 +2479,7 @@
       "explanation": "<p>這是 Floyd-Warshall algorithm（原卷外層迴圈條件印成 <code>i&lt;= n</code>，應是 <code>k&lt;= n</code> 的筆誤）。D<sup>(k)</sup>[i, j] 是「中間點只能用 1～k」時 i 到 j 的最短距離。這裡的「shortest path」指的是中間點限制在 1～k 的那條最短路徑。</p><ul><li>(b) 對。若 k 在 i→j 的最短路徑上，這條路徑可以拆成 i→k 和 k→j 兩段，每段的中間點都只用 1～k−1，而且各自都是最短，所以 D<sup>(k)</sup>[i, j] = D<sup>(k-1)</sup>[i, k] + D<sup>(k-1)</sup>[k, j]。</li><li>(d) 對。經過 k 嚴格比不經過 k 短，代表所有最短路徑都必須經過 k。</li><li>(c) 錯。k 在某條最短路徑上時，可能還有另一條不經過 k、長度<b>一樣</b>的路徑，這時是相等而不是嚴格大於。</li><li>(a) 視為錯（待確認）。等號成立時，可能是 D<sup>(k-1)</sup>[i, j] 本來就等於這個和（平手）：演算法走 else，記錄的路徑不經過 k。所以只能說「有一條最短路徑經過 k」，不能斷定 k 就在（演算法所找到的）最短路徑上。若把題意解讀成「k 在某一條最短路徑上」，(a) 也算對。</li></ul><p>重點：判斷 k 「一定」在最短路徑上要看嚴格不等式（d）；平手時路徑不唯一。</p>"
     },
     {
-      "id": "al-0102",
+      "id": "al-0110",
       "topics": [
         "longest-common-subsequence"
       ],
@@ -2381,7 +2505,7 @@
       "explanation": "<p>題目問「錯的」。</p><ul><li>(a) 正確。x 有 2<sup>m</sup> 個子序列，每個用一次 O(n) 的掃描檢查是不是 y 的子序列，共 O(n·2<sup>m</sup>)。</li><li>(b) 正確。這就是 DP 表格的定義，右下角 c[m, n] 是整個問題的答案。</li><li>(c) 錯（要選）。x[i] ≠ y[j] 時，LCS 不能同時用到這兩個字元，所以取 <b>max</b>(c[i−1, j], c[i, j−1])，不是相加。相加會重複計算共同部分，例如 x = y = “ab” 時 c[2,1] 和 c[1,2] 都是 1，若某格用加法就會超過真正的長度。</li><li>(d) 錯（要選）。直接照遞迴式遞迴才會因為子問題重疊而變成指數時間；dynamic programming 把 (m+1)(n+1) 個子問題各算一次，每格 O(1)，是 O(mn) 的多項式時間。</li><li>(e) 正確。z 的前 k 個字元，取它們在 x、y 中最後一個字元所在的位置 i、j，z[1..k] 就是 x[1..i] 和 y[1..j] 的 LCS；若那兩個 prefix 有更長的共同子序列，接上 z 剩下的部分就會得到比 z 更長的 LCS，矛盾。</li></ul>"
     },
     {
-      "id": "al-0103",
+      "id": "al-0111",
       "topics": [
         "maximum-flow"
       ],
@@ -2407,7 +2531,7 @@
       "explanation": "<p>題目問「錯的」。</p><ul><li>(a) 視為正確（待確認）。一般的 flow network 模型假設沒有邊進入 source、沒有邊離開 sink，所以 source 沒有流入、sink 沒有流出。但若允許那樣的邊存在，敘述就不一定成立。</li><li>(b) 視為正確（待確認）。這是 skew symmetry 的寫法：f(u, v) = −f(v, u)，正向流量和反向流量互為相反數；殘餘網路中的反向邊（backflow）也就是用來「退回」正向的流量。若用另一套不採 skew symmetry 的定義，這句話的說法就不精確。</li><li>(c) 正確。容量為整數時，每找一條 augmenting path 流量至少加 1，最多 f 次，每次用 DFS/BFS 找路徑 O(E)，共 O(E·f)。</li><li>(d) 錯（要選）。Max-flow min-cut theorem：最大流量等於所有 cut 中<b>最小</b>的容量，不是最大的。直觀理解：每個 cut 都是瓶頸，流量不可能超過任何一個 cut，所以被最窄的那個限制住。</li><li>(e) 正確。有 u→v 和 v→u 兩條邊時，在其中一條中間插入一個新節點 x（u→x→v，兩段容量都等於原本的容量），就消除了 antiparallel edges，最大流不變。</li></ul>"
     },
     {
-      "id": "al-0104",
+      "id": "al-0112",
       "topics": [
         "p-np",
         "np-reductions"
@@ -2434,7 +2558,7 @@
       "explanation": "<p>NP-complete = 屬於 NP ＋ 是 NP-hard，所以要證兩件事：</p><ul><li>(c) 需要。D ∈ NP：給出一個多項式時間的非確定性演算法（等價於：答案為 yes 時有多項式時間可驗證的證據）。</li><li>(e) 需要。D 是 NP-hard：找一個已知的 NP-hard（通常用 NP-complete）問題 X，證明 X ∝ D。因為所有 NP 問題都 ∝ X，再遞移就都 ∝ D。</li><li>(a) 不對。方向反了：D ∝ NPC 問題只說明 D 不比它難（D ∈ NP 也能這樣得到），證明不了 D 很難。這是最常見的錯誤。</li><li>(b) 不對。指數時間的非確定性演算法證明不了 D ∈ NP。</li><li>(d) 不對。若真的找到 NP-complete 問題的確定性多項式時間演算法，就證明了 P = NP，這不是證明 NPC 的步驟。</li></ul>"
     },
     {
-      "id": "al-0105",
+      "id": "al-0113",
       "topics": [
         "p-np",
         "np-reductions"
@@ -2461,7 +2585,7 @@
       "explanation": "<ul><li>(a) 錯。X ∝ Y 只表示 X 不比 Y 難。任何簡單的問題（例如排序）都能 reduce 到 NP-hard 問題，但它不是 NP-hard。方向要反過來：NP-hard 問題 ∝ X 才能推出 X 是 NP-hard。</li><li>(b) 對。NPC 問題 Y ∝ X：所有 NP 問題 ∝ Y ∝ X，由遞移性 X 是 NP-hard。</li><li>(c) 錯。NP-hard 問題不一定在 NP 裡，有些難得多。例如 halting problem 是 NP-hard，但它不可判定，不可能 reduce 到 SAT 這種可判定的 NP-hard 問題（不然 halting problem 就能解了）。</li><li>(d) 對。這就是 NP-complete（屬於 NP-hard）的定義的一部分。</li><li>(e) 對。這就是 NP-hard 的定義：所有 NP 問題都能多項式時間 reduce 到它。</li></ul>"
     },
     {
-      "id": "al-0106",
+      "id": "al-0114",
       "topics": [
         "asymptotic-notation"
       ],
@@ -2487,7 +2611,7 @@
       "explanation": "<p>f(n) = 3n⁴ + 8n − 1666 的最高次項是 3n⁴，所以 f(n) = Θ(n⁴)：n 夠大時（例如 n ≥ 6，此時 n⁴ = 1296 已足以壓過 1666 − 8n），n⁴ ≤ f(n) ≤ 4n⁴。</p><ul><li>(a) 對。O 是上界，n⁴ ≤ n⁵，比較鬆的上界也成立。</li><li>(b) 對。Ω 是下界，f(n) ≥ n⁴ ≥ n³。</li><li>(c) 對。任何多項式都是 O(2<sup>n</sup>)，指數函數長得比多項式快。</li><li>(d) 對。緊的上界。</li><li>(e) 對。緊的下界。</li></ul><p>常見錯誤：把 O 當成「剛好等於」，以為 (a)(c) 錯。O 只是上界，Θ 才是剛好。</p>"
     },
     {
-      "id": "al-0107",
+      "id": "al-0115",
       "topics": [
         "longest-common-subsequence",
         "rod-cutting"
@@ -2514,7 +2638,7 @@
       "explanation": "<ul><li>(a) 對。子問題重疊是 DP 值得用的原因。</li><li>(b) 錯。LCS 的表格有 (m+1)(n+1) 格，每格 O(1)，是 O(mn)，不是 O(m+n)。</li><li>(c) 錯。表格維度依子問題的參數個數而定：rod cutting、Fibonacci 用一維陣列，LCS、matrix-chain 用二維，有些問題要三維以上。</li><li>(d) 對。memoization 是 top-down 的 DP：遞迴時先查表，算過就直接回傳。</li><li>(e) 錯。剛好相反：問題有 greedy-choice property 時用 greedy 就夠了；DP 用在<b>沒有</b> greedy-choice property、必須比較所有子問題選擇的情況，例如 0/1 knapsack。</li></ul>"
     },
     {
-      "id": "al-0108",
+      "id": "al-0116",
       "topics": [
         "randomized-quicksort"
       ],
@@ -2540,7 +2664,7 @@
       "explanation": "<ul><li>A. 對。pivot 每次都切成 0 和 n−1（例如已排序資料取第一個當 pivot），T(n) = T(n−1) + Θ(n) = Θ(n²)。</li><li>B. 對。每次都用真正的中位數當 pivot，兩邊各約 n/2，T(n) = 2T(n/2) + Θ(n) = Θ(n log n)；中位數可以用 median-of-medians 在最差 O(n) 找到，不影響這個複雜度。</li><li>C. 錯。partition 時遠距離交換會打亂相同 key 的先後順序，例如 [2a, 2b, 1] 以 2a 為 pivot，可能變成 1, 2b, 2a。</li><li>D. 對。隨機選 pivot 後，對任何輸入期望的比較次數都是 O(n log n)（約 2n ln n）。</li><li>E. 對。額外空間主要是遞迴堆疊：平均遞迴深度 O(log n)。實作時先遞迴較小的一邊、較大的一邊用迴圈處理（tail recursion），連最差情況都能壓在 O(log n)。</li></ul>"
     },
     {
-      "id": "al-0109",
+      "id": "al-0117",
       "topics": [
         "amortized-analysis"
       ],
@@ -2566,7 +2690,7 @@
       "explanation": "<ul><li>A. 對。amortized analysis（攤銷分析）保證任何一串 n 個操作的總成本 ≤ 攤銷成本總和，所以是最差情況下「每個操作平均」的上界，不需要機率假設。</li><li>B. 錯。單一操作可以很貴。例如 dynamic array 的 push 攤銷 O(1)，但剛好要擴充那一次要複製全部元素，是 O(n)。</li><li>C. 對。potential method 定義位能 Φ(D)，攤銷成本 = 實際成本 + ΔΦ；便宜的操作讓位能上升，存起來給之後昂貴的操作用。</li><li>D. 對。accounting method 讓某些操作多收費，多的部分當作 credit 存在資料結構上，之後付昂貴操作的帳；要求 credit 永遠不能是負的。</li><li>E. 錯。average-case analysis 是對「輸入的機率分布」取期望值；amortized 是對「一串操作」的最差總和取平均，不需要機率，兩者不同。</li></ul>"
     },
     {
-      "id": "al-0110",
+      "id": "al-0118",
       "topics": [
         "longest-common-subsequence"
       ],
@@ -2592,7 +2716,7 @@
       "explanation": "<ul><li>A. 對。最後一個字元相同，一定可以把它接在 X[1..i−1]、Y[1..j−1] 的 LCS 後面。</li><li>B. 錯。不相等時要取 max(dp[i−1][j], dp[i][j−1])。只看 dp[i−1][j−1] 會少算：X = “ba”、Y = “b” 時 X[2] = a ≠ Y[1] = b，正確答案是 1（“b”），但 dp[1][0] = 0。</li><li>C. 對。表格 (m+1)(n+1) 格，每格 O(1)。</li><li>D. 對。dp[i][·] 只用到第 i 列和第 i−1 列，所以只保留兩列就能算出 LCS 的<b>長度</b>，空間 O(min(m, n))。（若還要還原出 LCS 字串本身，就需要完整表格或 Hirschberg 這類額外技巧。）</li><li>E. 錯。反例 X = “cab”、Y = “abc”：從 X 開頭盡早配對，c 先配到 Y 的最後一個字元，後面的 a、b 就都配不到了，只得到長度 1；但真正的 LCS 是 “ab”，長度 2。盡早配對可能搶走後面更長的配對機會，必須用 DP 比較所有選擇。（已用程式比對。）</li></ul>"
     },
     {
-      "id": "al-0111",
+      "id": "al-0119",
       "topics": [
         "activity-selection",
         "knapsack"
@@ -2619,7 +2743,7 @@
       "explanation": "<ul><li>A. 對。greedy 要正確，需要 greedy-choice property（局部最佳選擇會包含在某個全域最佳解中）和 optimal substructure（選完之後剩下的子問題的最佳解，加上這個選擇仍是最佳解）。</li><li>B. 對。fractional knapsack 依「價值/重量」由大到小拿，可以切開物品，greedy 最佳。0/1 knapsack 不行，例如容量 50，物品 (重 10, 值 60)、(20, 100)、(30, 120)：依單位價值先拿前兩個得 160，但拿後兩個得 220。</li><li>C. 視為對（待確認）。Dijkstra 假設點被取出時距離已定，負權重的邊會破壞這個假設，結果可能錯誤。嚴格說是「可能」失敗：有些含負邊的圖剛好還是算對，所以「fails」若解讀成「一定失敗」就不成立。</li><li>D. 錯。0/1 knapsack、LCS、matrix-chain 都能用 DP 解，但沒有 greedy-choice property，greedy 不保證最佳。</li><li>E. 對。兩者每步都選目前可用的最輕邊。</li></ul>"
     },
     {
-      "id": "al-0112",
+      "id": "al-0120",
       "topics": [
         "p-np",
         "np-reductions",
@@ -2647,7 +2771,7 @@
       "explanation": "<ul><li>A. 對。decision 版本是「最佳值是否 ≤ k（或 ≥ k）」，算出最佳解後和 k 比較一次就知道，所以至少一樣容易。</li><li>B. 對。L 是 NP-hard：任何 A ∈ NP 都有 A ≤<sub>p</sub> L；L ∈ coNP，而 coNP 對多項式 reduction 封閉，所以 A ∈ coNP，得 NP ⊆ coNP。對兩邊取補集又得 coNP ⊆ NP，所以 NP = coNP。</li><li>C. 不一定。若某 NPC 問題的補集也是 NPC，則該補集 ∈ NP 又是 coNP-complete 問題的補… 推出 NP = coNP，這是未解問題，所以不是「必然」成立。</li><li>D. 錯。A ≤<sub>p</sub> B 只推得 B 是 NP-hard；B 不一定在 NP 裡（例如 B 可能是 halting problem），所以不一定是 NP-complete。</li><li>E. 錯。knapsack 的最佳化版本是 NP-hard（decision 版本是 NPC），但它有 FPTAS（比 PTAS 更強），並不會推出 P = NP。真正會推出 P = NP 的是「某些問題（例如一般 TSP）有常數倍近似」這類結果。</li></ul>"
     },
     {
-      "id": "al-0113",
+      "id": "al-0121",
       "topics": [
         "asymptotic-notation"
       ],
@@ -2673,7 +2797,7 @@
       "explanation": "<ul><li>A. 對。f ≤ c·g 等價於 g ≥ (1/c)·f，O 和 Ω 互為對稱（transpose symmetry）。</li><li>B. 對。Θ 同時包含 O 和 Ω。</li><li>C. 對。n / (n log n) = 1 / log n → 0，所以 n 是 n log n 的嚴格小（little-o）。</li><li>D. 對。g = O(f) 就是 f = Ω(g)，加上 f = O(g) 就是 Θ。</li><li>E. 錯。20000000² = 4×10<sup>14</sup> 雖然很大，但仍是常數；n² 終究會超過 4×10<sup>14</sup>·n（n &gt; 4×10<sup>14</sup> 之後），所以整體是 Θ(n²)。常數再大都不影響漸近階數。</li></ul>"
     },
     {
-      "id": "al-0114",
+      "id": "al-0122",
       "topics": [
         "linear-time-sorting"
       ],
@@ -2699,7 +2823,7 @@
       "explanation": "<ul><li>A. 對。比較式排序的 decision tree 至少要有 n! 個葉子（每種排列一個），高度 ≥ log<sub>2</sub>(n!) = Θ(n log n)，最差情況至少要比較這麼多次。</li><li>B. 錯。這個下界只限比較式排序。counting sort、radix sort 利用 key 的數值當索引，不靠比較，key 範圍有限時可以 O(n)。</li><li>C. 對。這正是 A 的證明方法。</li><li>D. 對。n 個相異元素有 n! 種排列，每次比較最多把可能性分成兩半，所以至少要 log<sub>2</sub>(n!) 次。</li><li>E. 錯。下界都是在某個計算模型下證明的（例如比較模型），換了模型（例如可以直接用數值當索引、或平行計算）結論可能不同，B 就是例子。</li></ul>"
     },
     {
-      "id": "al-0115",
+      "id": "al-0123",
       "topics": [
         "bellman-ford",
         "floyd-warshall",
@@ -2727,7 +2851,7 @@
       "explanation": "<ul><li>A. 對。Dijkstra 假設點被取出時距離已定，負邊可能在之後給出更短的路徑。</li><li>B. 對。做完 |V|−1 輪 relax 後再掃一輪，還能被 relax 的邊就代表有從起點走得到的負 cycle。</li><li>C. 對。從起點走得到負 cycle、再從 cycle 走得到的點，可以無限繞圈讓路徑越來越短，最短路徑沒有定義（−∞）。</li><li>D. 對。跑完後若某個 D[i][i] &lt; 0，代表 i 在一個負 cycle 上。</li><li>E. 錯。目前一般圖（含負權重）的作法：Johnson's algorithm 是 O(VE + V² log V)，Floyd-Warshall 是 O(V³)，跑 V 次 Bellman-Ford 是 O(V²E)。V² log V 那一項在稀疏圖（E 和 V 同級）時比 VE 大，所以不能保證 O(V·E)；而且輸出就有 V² 個距離，E &lt; V 時 O(VE) 連寫出答案都不夠。</li></ul>"
     },
     {
-      "id": "al-0116",
+      "id": "al-0124",
       "topics": [
         "p-np"
       ],
@@ -2753,7 +2877,7 @@
       "explanation": "<ul><li>A. 對。branch-and-bound 把解空間展開成搜尋樹，對每個分支估計它最好可能得到的值（bound），比目前已知的最佳解還差就整支剪掉。</li><li>B. 對。A* 用 f(n) = g(n) + h(n) 當作「經過 n 的解至少要花多少」的下界，永遠先展開 f 最小的節點，可以看成用 best-first 策略的 branch-and-bound。</li><li>C. 對。h 是 admissible（不高估剩餘成本）時，A* 第一次取出目標時就是最佳解。（若是圖搜尋、會重複走到同一節點，通常還要求 h consistent，或允許重新展開。）</li><li>D. 對。heuristic 很差時（例如 h ≡ 0），A* 退化成 uniform-cost search，最差情況仍要看遍整個解空間。</li><li>E. 對。bound 只是讓「實際上」常常剪掉很多，最差情況可能一支都剪不掉，仍然是指數時間；這也是它常被用在 NP-hard 最佳化問題的原因。</li></ul>"
     },
     {
-      "id": "al-0117",
+      "id": "al-0125",
       "topics": [
         "order-statistics"
       ],
@@ -2779,7 +2903,7 @@
       "explanation": "<ul><li>A. 對（取近似值）。約 n/5 組的中位數裡，有一半 ≤ m；每個這樣的組至少有 3 個元素（含它的中位數）≤ m，所以 ≤ m 的元素至少約 3·(n/10) = 3n/10 個。（精確寫法要扣掉被忽略的最後一組，是 3n/10 − O(1)，這是常見的近似敘述。）</li><li>B. 視為錯（待確認）。1/5 + 7/10 = 9/10 &lt; 1，每層遞迴的總工作量以 0.9 倍遞減，是等比級數，T(n) = O(n)，線性時間。出題意圖是「這個遞迴式代表 O(n log n)」是錯的；不過 O 是上界，O(n) 的東西嚴格說也是 O(n log n)。</li><li>C. 錯。分 3 個一組時只能保證約 n/3 被剪掉，遞迴式變成 T(n) = T(n/3) + T(2n/3) + O(n)，1/3 + 2/3 = 1，每層都是 Θ(n)、共 Θ(log n) 層，是 Θ(n log n)，不是線性。</li><li>D. 錯。不管 pivot 是什麼，依 |L| 和 k 的關係只往正確的那一邊遞迴，答案都是對的（正確性）。pivot 是近似中位數只是為了保證每次至少剪掉固定比例，讓時間是線性（效率）。</li><li>E. 對。中位數就是 k = ⌈n/2⌉ 的 selection，用這個演算法最差 O(n)。</li></ul>"
     },
     {
-      "id": "al-0118",
+      "id": "al-0126",
       "topics": [
         "activity-selection"
       ],
@@ -2804,7 +2928,7 @@
       "explanation": "<p>標準 greedy 解法：</p><ol><li>依 lastDay 由小到大排序（截止日早的先考慮）。</li><li>依序把課加進去，累計總天數 t，並把 duration 放進 <b>max-heap</b>。</li><li>若 t &gt; lastDay，就從 heap 拿掉 duration 最大的那門課（t 減掉它）。這樣課數不變，但總天數最小，留給後面最多空間。</li></ol><ul><li>A. 對。排序 O(n log n)，每門課最多進出 heap 一次 O(log n)，共 O(n log n)。</li><li>B. 錯。依「最晚開始時間」排序不保證最佳。反例：[5,7]、[1,2]、[2,10]、[1,5]，最晚開始時間分別是 2、1、8、4，照這個順序能放就放：[1,2] → t=1，[5,7] → t=6，[1,5] 放不下（7 &gt; 5），[2,10] → t=8，只有 3 門；但依截止日排 [1,2]、[1,5]、[5,7]、[2,10]，t = 1、2、7、9，4 門全上得了。（已用窮舉驗算。）</li><li>C. 錯。要被丟掉的是 duration <b>最大</b>的課，所以用的是 max-heap，不是 min-heap。</li><li>D. 對。截止日早的先處理（再配合 max-heap 修正），這是 exchange argument 可以證明的順序。</li></ul><p>（greedy＋max-heap 已和窮舉法在 20000 組隨機資料上比對過，結果都相同。）</p>"
     },
     {
-      "id": "al-0119",
+      "id": "al-0127",
       "topics": [
         "randomized-quicksort",
         "indicator-random-variables"
@@ -2831,7 +2955,7 @@
       "explanation": "<ul><li><b>!</b>：p ∈ {1, …, n−1} 保證兩半都非空，所以遞迴一直切到每段剩 1 個元素為止，葉子剛好 n 個，每個葉子印一個 !，<b>固定</b>印 n 個（n ≥ 1 時），O(n)。</li><li><b>*</b>：每層印出目前長度個 *，期望次數滿足 E[T(n)] = n + (1/(n−1)) Σ<sub>p=1</sub><sup>n−1</sup>(E[T(p)] + E[T(n−p)])，和 randomized quicksort 的比較次數同型，解為 Θ(n log n)。直觀理解：隨機切點讓遞迴樹期望深度 O(log n)，每層總共印 n 個。</li></ul><p>選 (C)。(D) 的 O(n²) 是最差情況（每次都切成 1 和 n−1），不是期望值。</p>"
     },
     {
-      "id": "al-0120",
+      "id": "al-0128",
       "topics": [
         "recurrence-methods",
         "master-theorem"
@@ -2858,7 +2982,7 @@
       "explanation": "<p><span class=\"term\">Akra-Bazzi Theorem<small>（Akra-Bazzi 定理）</small></span>處理 T(n) = Σ a<sub>i</sub>T(b<sub>i</sub>n) + g(n)。先解出 p 使 Σ a<sub>i</sub>b<sub>i</sub><sup>p</sup> = 1，答案是 T(n) = Θ(n<sup>p</sup>(1 + ∫<sub>1</sub><sup>n</sup> g(u)/u<sup>p+1</sup> du))。</p><ul><li>(A) 錯：它的賣點正是子問題可以大小不同，例如 T(n) = T(n/3) + T(2n/3) + n。</li><li>(B) 對：要求 g(n) 滿足 polynomial-growth condition（g 不能長得太劇烈，例如指數函數就不行）。</li><li>(C) 錯：積分不一定有封閉形式，p 也常常只能用數值求出。</li><li>(D) 錯：它比主定理更一般，主定理是它的特例。</li><li>(E) 錯：p 是實數，例如 T(n) = T(n/2) + T(n/3) + n 的 p 約 0.79。</li></ul>"
     },
     {
-      "id": "al-0121",
+      "id": "al-0129",
       "topics": [
         "knapsack"
       ],
@@ -2884,7 +3008,7 @@
       "explanation": "<p><span class=\"term\">Unbounded Knapsack<small>（無限背包）</small></span>：dp[c] = max<sub>i</sub>(dp[c − size<sub>i</sub>] + value<sub>i</sub>)，dp[0] = 0。</p><p>單位價值：A 1.33、B 1.25、C 1.43、D 1.375、E 1.33，C 最划算。17 = 7 + 7 + 3，價值 10 + 10 + 4 = 24；其他組合如 8 + 9（23）、7 + 7 + ... 剩 3 只能放 A，3 + 3 + 3 + 8（23）都比較小。程式填表得 dp[17] = 24。</p><p>24 = 10·2 + 4，a = 2、b = 4，a + b = 6，選 (D)。</p>"
     },
     {
-      "id": "al-0122",
+      "id": "al-0130",
       "topics": [
         "maximum-flow"
       ],
@@ -2910,7 +3034,7 @@
       "explanation": "<p>建圖：s → 比賽節點（容量 = 兩隊剩餘對戰數），比賽節點 → 兩隊（容量 ∞），球隊 i → t（容量 76 − w<sub>i</sub>，代表最多還能贏幾場而不超過 E）。</p><ul><li>s 端：AB 5、AC 7、AD 4、BC 2、BD 4、CD 4，合計 26。</li><li>t 端：A 1、B 5、C 7、D 13，合計 26。</li></ul><p>看起來兩端都是 26，但取割 S = {s, AB, AC, A, B, C}：割到 AD 4 + BD 4 + CD 4 = 12（這三場一定會流向 D 或 A、B、C）、A→t 1、B→t 5、C→t 7，共 12 + 13 = 25。直觀地說：A、B、C 三隊之間還有 5 + 7 + 2 = 14 場，但三隊合計最多只能再贏 1 + 5 + 7 = 13 場，一定有一場會讓某隊超過 76。</p><p>程式跑 max-flow 得到 25，選 (D)。最大流 25 &lt; 26 場比賽，代表無論怎麼分配勝負，都有隊伍會超過 E，所以 E 已經被淘汰。</p>"
     },
     {
-      "id": "al-0123",
+      "id": "al-0131",
       "topics": [
         "asymptotic-notation"
       ],
@@ -2936,7 +3060,7 @@
       "explanation": "<p>全部寫成 2 的次方比較指數（log 以 2 為底）：</p><ul><li>f<sub>3</sub> = C(n, n−4) = C(n, 4) = Θ(n⁴) = 2<sup>Θ(4 log n)</sup></li><li>f<sub>1</sub> = C(n, 5) = Θ(n⁵) = 2<sup>Θ(5 log n)</sup></li><li>f<sub>5</sub> = n<sup>5 log² n</sup> = 2<sup>5 log³ n</sup></li><li>f<sub>2</sub> = 2<sup>log⁴ n</sup></li><li>f<sub>4</sub> = (√2)<sup>√n</sup> = 2<sup>√n / 2</sup></li></ul><p>指數 4 log n &lt; 5 log n &lt; 5 log³ n &lt; log⁴ n &lt; √n/2，所以 f<sub>3</sub> ≺ f<sub>1</sub> ≺ f<sub>5</sub> ≺ f<sub>2</sub> ≺ f<sub>4</sub>。</p><ul><li>(A) f<sub>3</sub> 比 f<sub>1</sub> 慢，順序反了。</li><li>(B) f<sub>5</sub> 比 f<sub>2</sub> 慢，反了。</li><li>(C) 對：任何 polylog 的次方都比 √n 小。</li><li>(D) 反了。</li><li>(E) 對。</li></ul>"
     },
     {
-      "id": "al-0124",
+      "id": "al-0132",
       "topics": [
         "recurrence-methods",
         "master-theorem"
@@ -2963,7 +3087,7 @@
       "explanation": "<ul><li>(A) 錯：主定理 case 2，Θ(n log n)。</li><li>(B) 對：n<sup>log₂7</sup> ≈ n<sup>2.81</sup> 比 n² 多項式地大，case 1，Θ(n<sup>lg 7</sup>)（Strassen）。</li><li>(C) 對：令 m = log n、S(m) = T(2<sup>m</sup>)，得 S(m) = S(m/2) + m = Θ(m)，即 Θ(log n)。</li><li>(D) 對：展開 T(n) = 2<sup>n</sup>·2<sup>n−1</sup>⋯2<sup>c</sup>·1 = 2<sup>n(n+1)/2 − 常數</sup>，而 (√2)<sup>n²+n</sup> = 2<sup>(n²+n)/2</sup>，兩者只差常數倍，所以 Θ 成立。</li><li>(E) 對：1/6 + 7/9 = 17/18 &lt; 1，遞迴樹每往下一層總工作量乘上 17/18，等比級數收斂，O(n)。</li></ul>"
     },
     {
-      "id": "al-0125",
+      "id": "al-0133",
       "topics": [
         "maximum-flow"
       ],
@@ -2989,7 +3113,7 @@
       "explanation": "<ul><li>(A) 錯：最小割的邊數沒有 2n 的上限。在格子圖上，割邊對應到對偶圖上的一條路徑，這條路徑可以蜿蜒很長；只要把其他邊設成很重、沿一條 S 形蛇道的邊設成很輕，最小割就要切 Θ(n²) 條邊。</li><li>(B) 錯：理由同上，最小割的對偶路徑不一定是單調的，也不一定剛好 2n − 2 條邊。</li><li>(C) 對：無向邊拆成兩條反向的有向邊、容量都等於權重，是處理無向圖 max-flow 的標準做法。V = n²、E = O(n²)，Dinic 的 O(V²E) = O(n⁶)。由 <span class=\"term\">Max-Flow Min-Cut Theorem<small>（最大流最小割定理）</small></span>，最大流值等於最小割值。</li><li>(D) 錯：割邊在原圖上通常不會連成一條「頂點路徑」（例如只隔開 (1, 1) 的割就是它的 2 條鄰邊，根本不成路徑），在原圖的頂點之間跑最短路徑算出的是路徑長，不是割。正確的做法要在<b>平面對偶圖</b>上找最短路徑，題目描述的是原圖。</li><li>(E) 錯：(C) 正確。</li></ul>"
     },
     {
-      "id": "al-0126",
+      "id": "al-0134",
       "topics": [
         "vertex-cover-approx"
       ],
@@ -3015,7 +3139,7 @@
       "explanation": "<p>程式枚舉 2⁴ = 16 組 0/1 解：</p><ul><li>(A) 對：可行解共 8 組，α = 8。</li><li>(B) 對：整數最佳值 7，由 (0, 0, 1, 1) 和 (1, 0, 0, 1) 兩組達到，β = 2 ≠ 1。</li><li>(C) 錯：LP 放寬（0 ≤ x<sub>i</sub> ≤ 1）的最佳解是 x = (8/9, 0, 8/9, 8/9)，三條限制式剛好都等於 8，目標值 16/9 + 16/9 + 40/9 = 8。<span class=\"term\">Integrality Gap<small>（整數間隙）</small></span> γ = 8/7 ≠ 1。</li><li>(D) 對：可行區域包含在單位超立方體 [0, 1]⁴（體積 1）中，而 (1, 1, 1, 1) 附近違反限制式的部分有正體積被切掉，所以 ν<sub>4</sub> &lt; 1（Monte Carlo 估計約 0.44）。</li><li>(E) 對：在目標值 = 8 的條件下，分別最大化、最小化每個變數，得到的都是同一點，LP 最佳解唯一，是一個點，三維體積 ν<sub>3</sub> = 0。</li></ul>"
     },
     {
-      "id": "al-0127",
+      "id": "al-0135",
       "topics": [
         "np-reductions",
         "p-np"
@@ -3042,7 +3166,7 @@
       "explanation": "<p>記住方向：X ≤<sub>p</sub> Y 代表「Y 至少和 X 一樣難」；困難度往右傳、「在 NP / 在 P」往左傳。</p><ul><li>(A) 對：A ∈ P 又是 NP-hard，推得 P = NP，所以 B ∈ NP = P。</li><li>(B) 對：B ∈ NP 且 NP-hard，所以 B 是 NP-complete。C ≥ B 所以 C 是 NP-hard；C ≤<sub>p</sub> E ≤<sub>p</sub> B ∈ NP，歸約可以串接，所以 C ∈ NP，C 是 NP-complete。D ≥ C，D 是 NP-hard。</li><li>(C) 錯：D、E 一定是 NP-hard，但不一定在 NP（例如可能是 halting problem 這類更難的問題）。</li><li>(D) 對：C ≤<sub>p</sub> D 且 D ∈ NP，NP 對多項式歸約封閉，C ∈ NP。</li><li>(E) 錯：C ≤<sub>p</sub> E 只說 E 比 C 難，E 很難推不出 C 很難。</li></ul>"
     },
     {
-      "id": "al-0128",
+      "id": "al-0136",
       "topics": [
         "amortized-analysis"
       ],
@@ -3061,7 +3185,7 @@
       "explanation": "<p>先定義寫入成本：c(i) = 3<sup>i/3</sup>（3 | i 且 5 ∤ i）、c(i) = 5<sup>i/5</sup>（5 | i 且 3 ∤ i）、其他 c(i) = 1。注意 c(i) ≤ max(3<sup>1/3</sup>, 5<sup>1/5</sup>)<sup>i</sup> ≈ 1.443<sup>i</sup>，成長得比 2<sup>i</sup> 慢，這就是均攤能成立的原因。</p><p><b>Φ 的設計</b>：每次 INCREMENT 對第 i 位（i ≥ 1）只有兩種情況：</p><ul><li>沒碰到第 i 位：低 i 位的值 N<sub>i</sub> 加 1。</li><li>碰到第 i 位（讀 1 次、寫 1 次，成本 c(i) + 1）：剛好是低 i 位從 2<sup>i</sup> − 1（全 1）變成 0 的時候。</li></ul><p>所以讓第 i 位的位能 φ<sub>i</sub> = (c(i) + 1) · N<sub>i</sub> / (2<sup>i</sup> − 1)：平常每次存 (c(i) + 1)/(2<sup>i</sup> − 1)，存到 N<sub>i</sub> = 2<sup>i</sup> − 1 時剛好存滿 c(i) + 1，碰到第 i 位的那一次 N<sub>i</sub> 歸零、位能全部釋放，剛好付掉實際成本。</p><p><b>均攤成本</b>：第 0 位每次都會被讀寫，成本 c(0) + 1 = 2（0 同時是 3 和 5 的倍數，屬於「其他」，寫入 1）。</p><pre>amortized = 2 + Σ_{i≥1, 沒碰到} (c(i)+1)/(2^i − 1)\n          ≤ 2 + Σ_{i≥1} (c(i)+1)/(2^i − 1) ≈ 5.85</pre><p>級數收斂（各項約 (1.443/2)<sup>i</sup>），與 k 無關，所以是 O(1)。Φ(全 0) = 0 且 Φ ≥ 0，滿足位能函數的要求。用程式模擬 k = 20 的全部 2<sup>20</sup> − 1 次 INCREMENT，每次的均攤成本最大值約 5.85，與上界一致。</p><p>常見錯誤：直接套一般計數器的 Φ = Σ<sub>A[i]=1</sub>(c(i) + 1)，那樣在把第 t 位設成 1 時，均攤成本是 2c(t) + 2，t 很大時不是 O(1)。必須讓位能「提早」為昂貴的高位累積。</p>"
     },
     {
-      "id": "al-0129",
+      "id": "al-0137",
       "topics": [
         "np-reductions"
       ],
@@ -3080,7 +3204,7 @@
       "explanation": "<p><b>1. ODDNUMBERSUM ∈ NP</b>：證書是一個子集 T，檢查 |T| 是奇數、Σ T = k，多項式時間。</p><p><b>2. NP-hard：從 SUBSET-SUM 歸約</b>。給定 SUBSET-SUM 實例：正整數集合 {s<sub>1</sub>, …, s<sub>n</sub>} 與目標 t。若 n 是偶數，先加一個新的 s<sub>n+1</sub> 並在下面讓它「一定選 skip」（等價於不影響答案），使元素個數 n′ 為奇數。</p><p>取基數 B = 4n′（偶數，且大於任何位可能的總和），對每個 i 建立兩個奇數：</p><pre>take_i = 2·B^(n′+1)·s_i + 2·B^i + 1\nskip_i =                  2·B^i + 1</pre><p>目標 k = 2·B<sup>n′+1</sup>·t + Σ<sub>i</sub> 2·B<sup>i</sup> + n′（n′ 為奇數，所以 k 為奇數）。所有數都是正奇數、彼此相異（不同 i 的 B<sup>i</sup> 位不同；take 和 skip 差在 s<sub>i</sub> ≥ 1）。</p><p><b>正確性</b>：</p><ul><li>(⇒) 若 SUBSET-SUM 有解 I，選 {take<sub>i</sub> : i ∈ I} ∪ {skip<sub>i</sub> : i ∉ I}，共 n′ 個（奇數），總和恰為 k。</li><li>(⇐) 若選了奇數個元素總和為 k：每個數的「2·B<sup>i</sup>」位上，第 i 位只有 take<sub>i</sub>、skip<sub>i</sub> 貢獻，最多 4 &lt; B，加上最低位 +1 的總數最多 2n′ &lt; B，不會進位；比較第 i 位得「take<sub>i</sub> 和 skip<sub>i</sub> 恰選一個」，最低位就自動是 n′，再比較最高段得 Σ<sub>i∈I</sub> s<sub>i</sub> = t，SUBSET-SUM 有解。</li></ul><p>建構的數字位數是輸入大小的多項式，歸約為多項式時間。SUBSET-SUM 是 NP-complete，所以 ODDNUMBERSUM 是 NP-hard，再加上 ∈ NP，得證 NP-complete。（n 為偶數時新增的元素取 s<sub>n+1</sub> = 1 並把它的 take 位改成需要額外一位、目標該位設 0 即可強迫 skip；細節照同一套「每位計數」論證。）</p>"
     },
     {
-      "id": "al-0130",
+      "id": "al-0138",
       "topics": [
         "np-reductions",
         "knapsack"
@@ -3100,7 +3224,7 @@
       "explanation": "<pre>APPROX(S = {x1, …, xn}, k, ε):\n  L0 = ⟨0⟩\n  for i = 1 to n:\n      Li = MERGE(L(i−1), L(i−1) + xi)          // 排序合併、去重\n      Li = TRIM(Li, ε / (2n))\n      remove from Li every element &gt; k\n  return the largest element of Ln\n\nTRIM(L = ⟨y1 &lt; y2 &lt; … &lt; ym⟩, δ):\n  L′ = ⟨y1⟩;  last = y1\n  for j = 2 to m:\n      if yj &gt; last · (1 + δ):\n          append yj to L′;  last = yj\n  return L′</pre><p>說明（給讀者，不是答題內容）：每次 trim 只丟掉和保留值相差不到 (1 + δ) 倍的數，n 輪後誤差至多 (1 + ε/(2n))<sup>n</sup> ≤ e<sup>ε/2</sup> ≤ 1 + ε，所以 k<sub>ALG</sub> ≥ k*/(1 + ε) ≥ (1 − ε)k*；又因為輸出的是某個子集的真實和且 ≤ k，k<sub>ALG</sub> ≤ k*。每個 L<sub>i</sub> 的長度是 O((n ln k)/ε)，但若先把 0 以外的值依 log<sub>1+δ</sub> 分桶，長度可壓到 O(n/ε · log k)，總時間對 n、1/ε 是多項式。這是一個 <span class=\"term\">FPTAS<small>（完全多項式時間近似機制）</small></span>。</p>"
     },
     {
-      "id": "al-0131",
+      "id": "al-0139",
       "topics": [
         "recurrence-methods",
         "master-theorem"
@@ -3126,7 +3250,7 @@
       "explanation": "<ul><li>(A) 對：展開成遞迴樹，第 i 層有 2<sup>i</sup> 個 O(1)，共 n 層，總和 1 + 2 + … + 2<sup>n−1</sup> = O(2<sup>n</sup>)（例如河內塔）。</li><li>(B) 對：每次減半、做常數工作，共 log n 層，就是二分搜尋。</li><li>(C) 對：n + (n−1) + … + 1 = n(n+1)/2 = O(n²)（例如插入排序最差情況）。</li><li>(D) 對：Master Theorem 第二種情況，merge sort 的遞迴式，O(n log n)。</li></ul>"
     },
     {
-      "id": "al-0132",
+      "id": "al-0140",
       "topics": [
         "bellman-ford"
       ],
@@ -3151,7 +3275,7 @@
       "explanation": "<p>先確認沒有負環：唯一的小環是 3→4→3，權重 18 − 17 = 1 &gt; 0；3→2→5→3 是 14 − 16 + 8 = 6 &gt; 0。所以 <span class=\"term\">Bellman-Ford<small>（Bellman-Ford 演算法）</small></span>會收斂。</p><div class=\"table-scroll\"><table><tr><th>點</th><th>最短距離</th><th>路徑</th></tr><tr><td>1</td><td>−12</td><td>0→1</td></tr><tr><td>2</td><td>10</td><td>0→3→2</td></tr><tr><td>3</td><td>−4</td><td>0→3</td></tr><tr><td>4</td><td>14</td><td>0→3→4</td></tr><tr><td>5</td><td>−6</td><td>0→3→2→5</td></tr><tr><td>6</td><td>−20</td><td>0→1→6</td></tr><tr><td>7</td><td>−31</td><td>0→1→6→7</td></tr></table></div><ul><li>(A) 對：最小的是到 7 的 −31。</li><li>(B) 錯：最大的是到 4 的 14，不是 10（10 是第二大）。</li><li>(C) 對：−12 + 10 − 4 + 14 − 6 − 20 − 31 = −49。</li><li>(D) 對：第二小是到 6 的 −20。</li></ul><p>以上距離用程式跑 Bellman-Ford 驗證。</p>"
     },
     {
-      "id": "al-0133",
+      "id": "al-0141",
       "topics": [
         "asymptotic-notation"
       ],
@@ -3170,7 +3294,7 @@
       "explanation": "<p>設第一部分花 f(n) = O(n log n)，第二部分花 g(n) = Θ(n log n)。</p><ul><li>上界：f(n) ≤ c<sub>1</sub> n log n、g(n) ≤ c<sub>2</sub> n log n，相加 ≤ (c<sub>1</sub> + c<sub>2</sub>) n log n，所以總和是 O(n log n)。</li><li>下界：時間非負，f(n) ≥ 0，而 g(n) ≥ c<sub>3</sub> n log n，所以總和 ≥ c<sub>3</sub> n log n，是 Ω(n log n)。</li></ul><p>上下界同階，最精確的寫法是 <b>Θ(n log n)</b>。常見錯誤：只寫 O(n log n)，那只是上界，不是「最精確」。</p>"
     },
     {
-      "id": "al-0134",
+      "id": "al-0142",
       "topics": [
         "order-statistics"
       ],
@@ -3189,7 +3313,7 @@
       "explanation": "<p><b>(a)</b> 設 x 是 medians of medians。</p><ul><li>⌈n/5⌉ 個組中位數裡，至少一半（⌈⌈n/5⌉/2⌉ 組）的中位數 ≥ x。</li><li>這些組裡，中位數本身和比它大的 2 個，共 3 個數都 ≥ x。扣掉 x 所在的組和最後一個可能不滿 5 個的組，至少有 3(⌈⌈n/5⌉/2⌉ − 2) ≥ 3n/10 − 6 個數 ≥ x。</li><li>同理至少 3n/10 − 6 個數 ≤ x。</li></ul><p>和 x 比完以後，若答案在 x 的較小側，就可以把「≥ x 的那一批」整批丟掉（反之亦然），所以 |S| ≥ 3n/10 − 6。當 n ≥ 120 時，3n/10 − 6 ≥ n/4（因為 3n/10 − n/4 = n/20 ≥ 6）；n 小時直接排序即可，所以 |S| ≥ n/4。剩下的遞迴大小 ≤ 3n/4，這就是 T(n) ≤ T(n/5) + T(3n/4) + Θ(n)，而 1/5 + 3/4 = 19/20 &lt; 1，所以是線性。</p><p><b>(b) 可以。</b>分成 7 個一組時，至少一半的組各有 4 個數 ≥ x，可丟掉約 4 · n/14 = 2n/7 個，剩下 ≤ 5n/7。遞迴式 T(n) ≤ T(n/7) + T(5n/7) + O(n)，比例和 1/7 + 5/7 = 6/7 &lt; 1，遞迴樹每層成本以 6/7 等比遞減，總和仍是 O(n)。</p><p>對照：分成 3 個一組時是 T(n/3) + T(2n/3) + O(n)，比例和剛好 1，會變成 Θ(n log n)，所以組大小至少要 5（任何 ≥ 5 的奇數都可以）。</p>"
     },
     {
-      "id": "al-0135",
+      "id": "al-0143",
       "topics": [
         "bipartite-matching",
         "vertex-cover-approx"
@@ -3209,7 +3333,7 @@
       "explanation": "<p><b>(a) 成立。</b>M 是 <span class=\"term\">Matching<small>（匹配）</small></span>：M 裡的邊兩兩沒有共同端點。U 是 vertex cover，所以 M 的每條邊至少有一個端點在 U 裡。替 M 的每條邊挑一個在 U 裡的端點，因為邊兩兩不共用端點，挑出來的點全都不同，得到一個從 M 到 U 的一對一函數，所以 |M| ≤ |U|。</p><p><b>(b)</b></p><ul><li>u1 和 u4 都只連到 v3，兩者最多只有一個能配對，所以匹配最多 3。例子：u1–v3、u2–v1、u3–v4，大小 3。</li><li>Vertex cover：{u2, v3, v4}。u2 蓋住 u2 的 4 條邊，v3 蓋住 u1–v3、u3–v3、u4–v3，v4 蓋住 u3–v4，全部 8 條都蓋到了，大小 3。</li><li>由 (a)，任何 vertex cover ≥ 3（因為有大小 3 的匹配），所以 3 就是最小；反過來任何匹配 ≤ 3，所以 3 是最大。兩者相等也符合二分圖的 König 定理。</li></ul><p>程式窮舉確認：最大匹配 3、最小覆蓋 3（大小 3 的覆蓋只有 {u2, v3, v4} 與 {u2, u3, v3}）。</p>"
     },
     {
-      "id": "al-0136",
+      "id": "al-0144",
       "topics": [
         "maximum-flow"
       ],
@@ -3228,7 +3352,7 @@
       "explanation": "<p>先確認目前的流是合法的：A 進 7+2 = 9、出 9；D 進 7+2 = 9、出 2+7 = 9；C 進 9+6 = 15、出 2+11+2 = 15；B 進 7+11 = 18、出 6+12 = 18。目前流量 = 7 + 7 = 14。</p><p><b>(a)</b> 在 residual network 上找增廣路徑（以 BFS 找最短路徑為例，路徑不唯一）：</p><ol><li>S→A→C→T：剩餘容量 5, 1, 1 → 增加 1。C→T 滿了。</li><li>S→D→B→T：剩餘 4, 1, 8 → 增加 1。D→B 滿了。</li><li>S→D→C→B→T：D→C 是 C→D 那 2 單位流量的反向邊，剩餘 3, 2, 1+6(B→C 的反向) …，瓶頸是 D→C 的 2 → 增加 2。</li></ol><p>之後從 S 在 residual 上只能走到 A、D（A→C、D→B 已滿，D→C 反向已用完），找不到路徑，最大流 = 14 + 1 + 1 + 2 = 18（程式驗證）。</p><p><b>(b)</b> 最小割取 S 側 = residual 上 S 能走到的點 {S, A, D}，T 側 {B, C, T}。跨過去的正向邊：A→C（10）、D→B（8），容量 18 = 最大流，符合 max-flow min-cut 定理。C→D 是從 T 側指回 S 側的邊，不算在 cut 容量裡。</p>"
     },
     {
-      "id": "al-0137",
+      "id": "al-0145",
       "topics": [
         "knapsack"
       ],
@@ -3247,7 +3371,7 @@
       "explanation": "<p><b>(a)</b> 不正確。依單位價值挑的 greedy 只對 fractional knapsack 最佳，0/1 版本可能因為先放了高比值的小東西，把大而更值錢的東西擠掉。</p><p>只有 1 個物品時 greedy 一定最佳（放得下就放），所以最小反例要 2 個物品：W = 2，物品 1 = (1, 2)（比值 2）、物品 2 = (2, 3)（比值 1.5）。greedy 先放物品 1，剩 1 放不下物品 2，得 2；最佳是只放物品 2，得 3。</p><p><b>(b)</b> 依遞迴式逐列填表（程式驗證）：</p><div class=\"table-scroll\"><table><tr><th></th><th>w=0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr><tr><td>i=0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>i=1 (4,20)</td><td>0</td><td>0</td><td>0</td><td>0</td><td>20</td><td>20</td></tr><tr><td>i=2 (2,8)</td><td>0</td><td>0</td><td>8</td><td>8</td><td>20</td><td>20</td></tr><tr><td>i=3 (3,14)</td><td>0</td><td>0</td><td>8</td><td>14</td><td>20</td><td>22</td></tr></table></div><p>例如 A(3, 5) = max(A(2, 5), A(2, 2) + 14) = max(20, 8 + 14) = 22，選物品 2 和 3（大小 2 + 3 = 5）。最佳利潤 <b>22</b>。注意 greedy 會先選比值最高的 (4, 20)（比值 5），只能得 20，又是一個反例。</p>"
     },
     {
-      "id": "al-0138",
+      "id": "al-0146",
       "topics": [
         "knapsack"
       ],

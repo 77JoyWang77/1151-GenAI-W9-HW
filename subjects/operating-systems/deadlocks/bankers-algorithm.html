@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deadlock Avoidance and Banker's Algorithm 死結避免與銀行家演算法 · 作業系統 | 資工考研互動學習站</title>
+  <meta name="description" content="safe 與 unsafe state、claim edge、銀行家演算法的安全演算法與資源請求演算法，逐步找安全序列。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=7f68026e">
+  <script src="../../../assets/js/theme.js?v=7f68026e"></script>
+</head>
+<body data-subject="operating-systems" data-chapter="deadlocks" data-chno="5" data-topic="operating-systems/deadlocks/bankers-algorithm" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Operating Systems 作業系統</a> › Ch5 Deadlocks 死結 › Deadlock Avoidance and Banker's Algorithm 死結避免與銀行家演算法</nav>
+      <div class="topic-head">
+        <h1>Deadlock Avoidance and Banker's Algorithm 死結避免與銀行家演算法<small>先試算再發資源，只讓系統停在安全狀態</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch5 Deadlocks</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">Banker's algorithm</span>
+          <span class="chip">safe state</span>
+          <span class="chip">safe sequence</span>
+          <span class="chip">claim edge</span>
+        </div>
+      </div>
+      <section id="why-avoidance">
+        <h2>為什麼要「避免」死結</h2>
+        <div class="panel prose">
+          <p>一組行程裡，每個行程都在等「另一個行程手上的資源」，而大家都不放手，結果誰都跑不下去，這就是 <span class="term">Deadlock<small>（死結）</small></span>。死結要同時滿足四個條件才會發生：<span class="term">Mutual Exclusion<small>（互斥）</small></span>、<span class="term">Hold and Wait<small>（持有並等待）</small></span>、<span class="term">No Preemption<small>（不可搶奪）</small></span>、<span class="term">Circular Wait<small>（循環等待）</small></span>。這四個條件和怎麼一條一條破壞它們，會在「Deadlock Characterization and Prevention 死結的條件與預防」那一頁詳細講（籌備中），這裡只需要記得：四個條件缺一個，死結就不會發生。</p>
+          <p>作業系統面對死結，大致有四種態度：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>策略</th><th>做法</th><th>什麼時候出手</th><th>代價</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Deadlock Prevention<small>（死結預防）</small></span></td><td>設計規則，讓四個條件中至少一個<b>永遠不成立</b>（例如規定資源要照編號由小到大申請，就不可能循環等待）</td><td>寫程式、設計系統的時候</td><td>規則很死板，資源使用率低，可能飢餓</td></tr>
+                <tr><td><span class="term">Deadlock Avoidance<small>（死結避免）</small></span></td><td>四個條件都允許，但每次有人申請資源時先<b>試算</b>：給了之後系統還安不安全，不安全就不給</td><td>每一次資源請求</td><td>要事先知道每個行程的最大需求；每次請求都要跑演算法</td></tr>
+                <tr><td><span class="term">Deadlock Detection and Recovery<small>（死結偵測與復原）</small></span></td><td>平常想給就給，定期（或 CPU 使用率突然下降時）檢查有沒有死結，有就砍行程或搶資源</td><td>死結發生之後</td><td>偵測要花時間；復原時被砍掉的行程要重做</td></tr>
+                <tr><td>忽略（鴕鳥演算法）</td><td>假設死結很少發生，真的發生就讓使用者或管理員重開</td><td>不處理</td><td>一般桌上型作業系統多半這樣做，成本最低</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>這一頁的主角是「避免」。它和「預防」最大的差別是：預防是<b>從結構上</b>讓死結不可能；避免則不限制行程怎麼要資源，而是<b>每次發資源之前都先看一下未來</b>，只要有任何可能走進死結的風險就先擋下來。這就像銀行放款：銀行手上的現金有限，它不會因為「現在金庫裡錢夠」就借，而是要確定借了之後，所有客戶最壞情況下要提的錢都還有辦法依序滿足。這也是這個演算法叫 <span class="term">Banker's Algorithm<small>（銀行家演算法）</small></span>的原因。</p>
+          <div class="callout"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 一句話記：預防是「改規則讓死結不可能」，避免是「每次發資源前先試算，只停在安全的狀態」，偵測是「先發再說，出事再救」。</div>
+        </div>
+      </section>
+
+      <section id="safe-state">
+        <h2>Safe State 與 Unsafe State</h2>
+        <div class="panel prose">
+          <p>避免的核心是一個定義：系統處於 <span class="term">Safe State<small>（安全狀態）</small></span>，意思是存在某個行程的排列 &lt;P<sub>a</sub>, P<sub>b</sub>, …&gt;，讓每個行程<b>依照這個順序</b>都能拿到它最多可能要的資源、跑完、再把資源還回來。這個排列叫 <span class="term">Safe Sequence<small>（安全序列）</small></span>。更精確地說，序列中第 k 個行程還需要的資源，必須 ≤「目前剩下的資源」加上「排在它前面的行程全部歸還的資源」。</p>
+          <p>找不到任何安全序列的狀態叫 <span class="term">Unsafe State<small>（不安全狀態）</small></span>。這裡最容易誤會的一點是：<b>unsafe 不等於已經死結</b>。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bankers-state-space"></div>
+            <figcaption><b>圖 1</b>：所有狀態分成 safe 與 unsafe 兩塊；deadlock 只是 unsafe 裡的一小塊。safe 一定不會死結；unsafe 只是「有可能」死結。銀行家演算法的做法是讓系統永遠停在 safe 那一塊。</figcaption>
+          </figure>
+          <h3>例子：unsafe 但還沒死結</h3>
+          <p>只有一種資源、總共 10 個。三個行程宣告的最大需求和目前已拿到的數量如下，剩下 Available = 10 − 4 − 2 − 2 = 2 個。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>行程</th><th>Max</th><th>Allocation</th><th>Need</th></tr></thead>
+              <tbody>
+                <tr><td>P0</td><td>8</td><td>4</td><td>4</td></tr>
+                <tr><td>P1</td><td>3</td><td>2</td><td>1</td></tr>
+                <tr><td>P2</td><td>7</td><td>2</td><td>5</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>這是 safe：先給 P1 它要的 1 個，它跑完歸還 3 個，手上變 4 個；再滿足 P0 的 4 個，P0 歸還 8 個；最後 P2 要 5 個也沒問題。安全序列是 &lt;P1, P0, P2&gt;。</p>
+          <p>如果這時 P2 再要 1 個、系統也給了，剩下 1 個：P1 要 1 個還是能跑完，歸還後剩 3 個，但 P0 還要 4 個、P2 還要 4 個，都不夠，找不到安全序列，進入 unsafe。可是現在<b>還沒有死結</b>：Max 只是「最多可能要」，如果 P0 其實只再要 2 個就做完並歸還，大家都能順利結束。unsafe 的意思是「系統已經沒辦法保證」，最壞情況（每個人都真的要到 Max）一出現就會死結。銀行家演算法保守地把這種風險擋掉，所以剛才 P2 那 1 個的請求，會被要求先等一等。</p>
+          <div class="callout"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 三者的關係：safe ⇒ 不會死結；deadlock ⇒ unsafe；但 unsafe 不一定 deadlock。寫成集合：deadlock ⊂ unsafe，safe ∩ deadlock = ∅。</div>
+        </div>
+      </section>
+
+      <section id="claim-edge">
+        <h2>單一資源：Resource-Allocation Graph 與 Claim Edge</h2>
+        <div class="panel prose">
+          <p>如果每種資源都<b>只有一個</b>（例如一台印表機、一台掃描器），可以不用銀行家演算法，直接在 <span class="term">Resource-Allocation Graph<small>（資源配置圖，RAG）</small></span>上判斷。RAG 裡圓形是行程、方形是資源，原本有兩種邊：</p>
+          <ul>
+            <li><b>Request edge</b>（請求邊）P → R：行程正在等這個資源。</li>
+            <li><b>Assignment edge</b>（配置邊）R → P：資源已經配給這個行程。</li>
+          </ul>
+          <p>為了「避免」，再多加一種 <span class="term">Claim Edge<small>（宣告邊）</small></span>P ⇢ R：行程<b>將來可能</b>會要這個資源，通常畫成虛線（本站圖中用淡灰色）。所有 claim edge 必須在行程開始執行前就宣告好。之後狀態會這樣轉換：</p>
+          <ul>
+            <li>行程真的提出請求：claim edge → request edge。</li>
+            <li>資源配給它：request edge → assignment edge。</li>
+            <li>行程釋放資源：assignment edge → 變回 claim edge（以後還可能再要）。</li>
+          </ul>
+          <p>判斷規則只有一條：<b>P 請求 R 時，假設把這條邊改成 assignment edge R → P，如果圖中（連同 claim edge 一起看）出現環，就不給</b>，P 等待；沒有環才配置。因為環代表「將來有可能形成循環等待」，而單一資源時，有環就等於 unsafe。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bankers-claim-edge"></div>
+            <figcaption><b>圖 2</b>：(a) P1 持有 R1，P1、P2 將來都可能要 R2，P2 將來也可能要 R1。現在 P2 請求空著的 R2。(b) 如果配置，紅色的 R2 → P2 會和其他三條邊形成環：P1 將來要 R2（在 P2 手上），P2 將來要 R1（在 P1 手上），所以不給，P2 等待。</figcaption>
+          </figure>
+          <p>反過來，如果是 P1 請求 R2，配置後 P1 同時握有 R1、R2，P1 沒有任何往外的邊，不會有環，可以給。P1 做完把兩個都還回來，P2 再拿。</p>
+          <p>偵測環用 DFS，圖上有 n 個行程時，邊數是 O(n²) 級，所以檢查一次是 <b>O(n²)</b>。這個方法的限制也很明顯：只要某種資源有多個（例如 3 台印表機），「有環」就不一定代表 unsafe，必須改用銀行家演算法。</p>
+        </div>
+      </section>
+
+      <section id="data-structures">
+        <h2>銀行家演算法的資料結構</h2>
+        <div class="panel prose">
+          <p>設系統有 n 個行程、m 種資源，每種資源可以有很多個。銀行家演算法用四個陣列記錄狀態：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>名稱</th><th>大小</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>Available</td><td>m</td><td>Available[j] = 資源 j 現在還剩幾個</td></tr>
+                <tr><td>Max</td><td>n × m</td><td>Max[i][j] = P<sub>i</sub> 宣告最多會要幾個資源 j（執行前就要宣告）</td></tr>
+                <tr><td>Allocation</td><td>n × m</td><td>Allocation[i][j] = P<sub>i</sub> 現在已經拿到幾個資源 j</td></tr>
+                <tr><td>Need</td><td>n × m</td><td>Need[i][j] = P<sub>i</sub> 最多還會再要幾個資源 j</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <pre class="formula">Need[i][j] = Max[i][j] − Allocation[i][j]
+資源 j 的總量 = Available[j] + Σ Allocation[i][j]（對所有行程 i 加總）</pre>
+          <p>比較向量時用「每一項都 ≤」：X ≤ Y 代表 X[j] ≤ Y[j] 對所有 j 都成立。例如 (1 2 1) ≤ (2 2 2) 成立，但 (3 0 0) ≤ (2 2 2) 不成立（A 那一項 3 &gt; 2），就算另外兩項很小也一樣。</p>
+          <h3>本頁的例子</h3>
+          <p>5 個行程 P0～P4、3 種資源 A、B、C，總量是 A = 9、B = 6、C = 7。目前已配置出去的加總是 (7 4 5)，所以 Available = (9 6 7) − (7 4 5) = (2 2 2)。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>行程</th><th>Allocation（A B C）</th><th>Max（A B C）</th><th>Need = Max − Allocation</th></tr></thead>
+              <tbody>
+                <tr><td>P0</td><td>1 1 0</td><td>5 3 2</td><td>4 2 2</td></tr>
+                <tr><td>P1</td><td>2 0 1</td><td>3 2 2</td><td>1 2 1</td></tr>
+                <tr><td>P2</td><td>0 2 1</td><td>2 4 3</td><td>2 2 2</td></tr>
+                <tr><td>P3</td><td>3 0 2</td><td>4 1 4</td><td>1 1 2</td></tr>
+                <tr><td>P4</td><td>1 1 1</td><td>6 3 3</td><td>5 2 2</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>考題通常只給 Allocation 和 Max（有時給總量而不給 Available），第一步一定是自己算出 Need 和 Available。算錯 Need 後面全錯，所以寫完可以用「Available + 所有 Allocation = 總量」驗算一次。</p>
+          <details class="code-fold">
+            <summary>看程式碼：資料結構、Need 與向量比較</summary>
+            <div class="code-block">
+              <div class="code-head">全域陣列、computeNeed()、lessEq()</div>
+              <pre class="code">#define N 10                                   /* 最多行程數 */
+#define M 10                                   /* 最多資源種類數 */
+
+int n, m;                                      /* n 個行程、m 種資源 */
+int Available[M];                              /* 每種資源目前還剩幾個 */
+int Max[N][M];                                 /* 每個行程宣告的最大需求 */
+int Allocation[N][M];                          /* 每個行程目前已經拿到的 */
+int Need[N][M];                                /* 還可能再要的 = Max - Allocation */
+
+void computeNeed(void) {
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; m; j++)
+      Need[i][j] = Max[i][j] - Allocation[i][j];
+}
+
+/* 向量比較：a 的每一項都 &lt;= b 才算 a &lt;= b */
+int lessEq(const int a[], const int b[]) {
+  for (int j = 0; j &lt; m; j++)
+    if (a[j] &gt; b[j]) return 0;
+  return 1;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="safety-algorithm">
+        <h2>安全演算法：找出安全序列</h2>
+        <div class="panel prose">
+          <p><span class="term">Safety Algorithm<small>（安全演算法）</small></span>回答「現在這個狀態安不安全」。它模擬「讓行程一個一個跑完」：手上先有 Available 這麼多資源，找一個「就算把剩下的需求全部要滿也給得起」的行程，假設它跑完歸還資源，手上的資源就變多，再找下一個。</p>
+          <ol>
+            <li>Work = Available；所有 Finish[i] = false。Work 代表「模擬過程中手上有多少資源」。</li>
+            <li>找一個 i，滿足 Finish[i] == false 且 <b>Need[i] ≤ Work</b>。找不到就跳到第 4 步。</li>
+            <li>Work = Work + <b>Allocation[i]</b>，Finish[i] = true，把 P<sub>i</sub> 接到安全序列後面，回到第 2 步。</li>
+            <li>如果所有 Finish[i] 都是 true，狀態是 safe；否則是 unsafe。</li>
+          </ol>
+          <p>第 3 步加回的是 Allocation 而不是 Need：P<sub>i</sub> 從 Work 借走 Need[i]、跑完後把原本的 Allocation[i] 加上借走的 Need[i] 一起歸還，淨效果就是 Work 多了 Allocation[i]。為什麼「只要找到一個能跑完的就先讓它跑」不會錯過答案？因為讓任何一個行程跑完都只會讓 Work 變大，原本做得完的行程之後一定還做得完，所以選誰先都不會把自己逼進死路，只會影響序列長什麼樣子。</p>
+          <h3>例子：每輪從 P0 開始找</h3>
+          <p>用上面的例子，Work 從 (2 2 2) 開始。考研題目常要求「多個行程都可以時，編號小的優先」，等於每一輪都從 P0 開始往下找第一個做得完的：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>輪</th><th>檢查（Need vs Work）</th><th>選中</th><th>Work 變成</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>P0 (4 2 2) vs (2 2 2)：A 不夠；P1 (1 2 1) ≤ (2 2 2)</td><td>P1</td><td>(2 2 2) + (2 0 1) = (4 2 3)</td></tr>
+                <tr><td>2</td><td>P0 (4 2 2) ≤ (4 2 3)</td><td>P0</td><td>(4 2 3) + (1 1 0) = (5 3 3)</td></tr>
+                <tr><td>3</td><td>P2 (2 2 2) ≤ (5 3 3)</td><td>P2</td><td>(5 3 3) + (0 2 1) = (5 5 4)</td></tr>
+                <tr><td>4</td><td>P3 (1 1 2) ≤ (5 5 4)</td><td>P3</td><td>(5 5 4) + (3 0 2) = (8 5 6)</td></tr>
+                <tr><td>5</td><td>P4 (5 2 2) ≤ (8 5 6)</td><td>P4</td><td>(8 5 6) + (1 1 1) = (9 6 7)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>5 個行程都完成，狀態是 safe，安全序列 &lt;P1, P0, P2, P3, P4&gt;。最後的 Work = (9 6 7) 正好是資源總量，這是一個很好用的驗算：所有人都把資源還回來了，手上當然是全部。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bankers-work-chain"></div>
+            <figcaption><b>圖 3</b>：安全演算法中 Work 的變化。每完成一個行程，就加上它的 Allocation；Work 只會變大，所以越後面越容易找到做得完的行程。</figcaption>
+          </figure>
+          <h3>如果是 unsafe</h3>
+          <p>同樣的 Max 和 Allocation，如果 Available 只有 (1 1 2)：P0、P1、P2 都至少有一項不夠，只有 P3 的 Need (1 1 2) ≤ (1 1 2)，跑完 Work = (4 1 4)。這時 P0、P1、P2、P4 的 Need 在 B 那一項都是 2，而 Work 的 B 只有 1，再也找不到人，狀態是 unsafe。只差了 A、B 各 1 個，結果就完全不同，這也說明為什麼每次配置前都要重新試算。</p>
+          <h3>時間複雜度：O(m · n²)</h3>
+          <p>最壞情況每一輪只完成一個行程，總共 n 輪；每一輪最多要檢查 n 個行程；每次檢查是比較兩個長度 m 的向量。所以是 n × n × m = <b>O(m · n²)</b>。以 n = 5、m = 3 來說，最壞大約是 (5 + 4 + 3 + 2 + 1) × 3 = 45 次數字比較，量很小；但真實系統有上百個行程，而且<b>每一次資源請求</b>都要跑一次，這就是銀行家演算法在實務上很少直接使用的原因之一。</p>
+          <details class="code-fold">
+            <summary>看程式碼：安全演算法（每輪從 P0／接著往下掃）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="每輪從 P0">
+                <div class="code-head">isSafe()：每輪從 P0 開始找第一個做得完的</div>
+                <pre class="code">/* 安全演算法：安全回傳 1，並把安全序列放進 seq[]；不安全回傳 0 */
+int isSafe(int seq[]) {
+  int Work[M], Finish[N] = {0}, count = 0;
+  for (int j = 0; j &lt; m; j++) Work[j] = Available[j];
+  while (count &lt; n) {
+    int found = -1;
+    for (int i = 0; i &lt; n &amp;&amp; found == -1; i++)   /* 每輪從 P0 開始，找第一個做得完的 */
+      if (!Finish[i] &amp;&amp; lessEq(Need[i], Work)) found = i;
+    if (found == -1) return 0;                    /* 沒有人做得完：unsafe */
+    for (int j = 0; j &lt; m; j++)
+      Work[j] += Allocation[found][j];            /* 它做完會歸還全部資源 */
+    Finish[found] = 1;
+    seq[count++] = found;
+  }
+  return 1;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="接著往下掃">
+                <div class="code-head">isSafeSweep()：找到後不回頭，掃到底再從頭</div>
+                <pre class="code">int isSafeSweep(int seq[]) {
+  int Work[M], Finish[N] = {0}, count = 0, progress = 1;
+  for (int j = 0; j &lt; m; j++) Work[j] = Available[j];
+  while (progress) {                              /* 整輪都沒人做得完才停 */
+    progress = 0;
+    for (int i = 0; i &lt; n; i++)
+      if (!Finish[i] &amp;&amp; lessEq(Need[i], Work)) {
+        for (int j = 0; j &lt; m; j++) Work[j] += Allocation[i][j];
+        Finish[i] = 1;
+        seq[count++] = i;
+        progress = 1;
+      }
+  }
+  return count == n;
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="not-unique">
+        <h2>安全序列不唯一</h2>
+        <div class="panel prose">
+          <p>第 2 步只說「找一個」，沒有規定找哪一個，所以同一個狀態可能有很多安全序列。上面的例子如果改成「找到一個之後不回頭，接著往下掃，掃到底再從 P0 開始」（上一節程式碼的第二個頁籤），結果是：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>掃描方式</th><th>過程</th><th>安全序列</th></tr></thead>
+              <tbody>
+                <tr><td>每輪從 P0 開始（編號小的優先）</td><td>P1 完成後回頭，P0 這時做得完</td><td>&lt;P1, P0, P2, P3, P4&gt;</td></tr>
+                <tr><td>接著往下掃</td><td>P1 完成後繼續看 P2、P3、P4，都做得完；第二輪才輪到 P0</td><td>&lt;P1, P2, P3, P4, P0&gt;</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩個都是正確的安全序列。實際上這個狀態總共有 50 種安全序列（已用程式枚舉 5! = 120 種排列驗證）：第一個只能是 P1 或 P2，因為一開始只有它們的 Need ≤ (2 2 2)；之後 Work 夠大，大部分順序都行。</p>
+          <p>這帶來兩個考試重點：</p>
+          <ul>
+            <li><b>題目有規定挑選規則就照規則</b>（最常見是「編號小的優先」），否則答案可能和標準答案不同，但只要每一步都滿足 Need ≤ Work 就是對的。</li>
+            <li>判斷 safe／unsafe 的<b>結論</b>和掃描方式無關：只要存在任何一個安全序列就是 safe。前面說過，先讓誰跑完都只會讓 Work 變大，所以用哪種掃描方式都不會誤判。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="resource-request">
+        <h2>資源請求演算法</h2>
+        <div class="panel prose">
+          <p>安全演算法只是「檢查」。真正在系統裡運作的是 <span class="term">Resource-Request Algorithm<small>（資源請求演算法）</small></span>：P<sub>i</sub> 提出請求向量 Request<sub>i</sub> 時，依序做：</p>
+          <ol>
+            <li>如果 Request<sub>i</sub> ≤ Need[i] 不成立：<b>錯誤</b>。行程要的比它當初宣告的最大需求還多，違反約定，直接報錯（不是等待）。</li>
+            <li>如果 Request<sub>i</sub> ≤ Available 不成立：資源現在不夠，P<sub>i</sub> <b>等待</b>。</li>
+            <li><b>假裝配置</b>：Available −= Request<sub>i</sub>；Allocation[i] += Request<sub>i</sub>；Need[i] −= Request<sub>i</sub>。</li>
+            <li>對這個假想的新狀態跑安全演算法：safe 就真的配置；unsafe 就把第 3 步復原，P<sub>i</sub> 等待。</li>
+          </ol>
+          <p>前兩步的順序與結果要分清楚：超過 Need 是「錯誤」，超過 Available 是「等待」。第 4 步才是銀行家演算法的精神：<b>就算資源現在拿得出來，也可能不給</b>。</p>
+          <h3>例子一：P3 請求 (1 0 1)，可以配置</h3>
+          <ol>
+            <li>(1 0 1) ≤ Need[P3] = (1 1 2)，通過。</li>
+            <li>(1 0 1) ≤ Available = (2 2 2)，通過。</li>
+            <li>假裝配置：Available = (1 2 1)，Allocation[P3] = (4 0 3)，Need[P3] = (0 1 1)。</li>
+            <li>試算：Work = (1 2 1)，P0 不夠，P1 (1 2 1) 可以 → (3 2 2)；P0 的 A 要 4 還不夠，P2 (2 2 2) 可以 → (3 4 3)；P0 還不夠，P3 (0 1 1) 可以 → (7 4 6)；P0 (4 2 2) 可以 → (8 5 6)；P4 (5 2 2) 可以 → (9 6 7)。safe，安全序列 &lt;P1, P2, P3, P0, P4&gt;，<b>配置</b>。</li>
+          </ol>
+          <h3>例子二：P4 請求 (2 0 0)，資源夠但不給</h3>
+          <ol>
+            <li>(2 0 0) ≤ Need[P4] = (5 2 2)，通過。</li>
+            <li>(2 0 0) ≤ Available = (2 2 2)，通過，資源拿得出來。</li>
+            <li>假裝配置：Available = (0 2 2)，Allocation[P4] = (3 1 1)，Need[P4] = (3 2 2)。</li>
+            <li>試算：Work = (0 2 2)，A 一個都不剩，而 5 個行程的 Need 在 A 那一項都至少是 1（4、1、2、1、3），誰都跑不完：unsafe。<b>復原</b>，P4 等待。</li>
+          </ol>
+          <p>例子二是考題最愛的陷阱：只檢查前兩步就會回答「可以配置」。P4 一口氣把 A 全拿走，萬一大家都要到 Max，沒有人能先做完歸還 A，就會死結。</p>
+          <h3>另外兩種結果</h3>
+          <ul>
+            <li>P1 請求 (0 3 0)：Need[P1] = (1 2 1)，B 要 3 &gt; 2，超過宣告的最大需求，<b>錯誤</b>。</li>
+            <li>P0 請求 (3 0 0)：沒超過 Need[P0] = (4 2 2)，但 A 要 3 &gt; Available 的 2，<b>等待</b>。</li>
+          </ul>
+          <p>資源請求演算法的成本是前兩步 O(m)，加上一次安全演算法 O(m · n²)，所以每次請求是 <b>O(m · n²)</b>。</p>
+          <details class="code-fold">
+            <summary>看程式碼：資源請求演算法</summary>
+            <div class="code-block">
+              <div class="code-head">request()：先檢查、假裝配置、試算安全性</div>
+              <pre class="code">/* 資源請求演算法：P[p] 要求 Request[]
+   回傳 1 = 配置成功、0 = 會變 unsafe 要等、-1 = 超過宣告的最大需求、-2 = 資源不夠要等 */
+int request(int p, const int Request[], int seq[]) {
+  if (!lessEq(Request, Need[p])) return -1;      /* 要的比當初宣告的還多：錯誤 */
+  if (!lessEq(Request, Available)) return -2;    /* 現在的資源不夠：只能等 */
+  for (int j = 0; j &lt; m; j++) {                  /* 先假裝配置給它 */
+    Available[j] -= Request[j];
+    Allocation[p][j] += Request[j];
+    Need[p][j] -= Request[j];
+  }
+  if (isSafe(seq)) return 1;                     /* 配置後仍安全：真的給 */
+  for (int j = 0; j &lt; m; j++) {                  /* 不安全：復原，P[p] 等待 */
+    Available[j] += Request[j];
+    Allocation[p][j] -= Request[j];
+    Need[p][j] += Request[j];
+  }
+  return 0;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>上面三個輸入框依序是 Available、Max、Allocation：同一列的數字用空白隔開，不同行程用分號隔開，第一列是 P0（最多 6 個行程、4 種資源，每個數字 0～20）。Need 會自動算出來。按「安全檢查」逐步看安全演算法：藍色是正在比較的 Need，紅色是不夠的那一項，紫色是剛加回 Work 的 Allocation；「掃描：每輪從 P0」可以切換成「接著往下」，比較兩種安全序列。</p>
+          <p>最後兩個輸入框是請求：行程編號（例如 3 代表 P3）和請求向量，按「提出請求」會先做兩個檢查，再假裝配置、試算安全性（請求的試算固定用「每輪從 P0」）。「請求被拒」是上面的例子二，「請求超過 Need」是報錯的情況。</p>
+        </div>
+        <div class="viz" data-viz="bankers-sim"></div>
+      </section>
+
+      <section id="detection-compare">
+        <h2>優缺點與死結偵測的比較</h2>
+        <div class="panel prose">
+          <h3>銀行家演算法的優缺點</h3>
+          <ul>
+            <li><b>優點</b>：不需要像預防那樣限制行程申請資源的方式（不用一次要齊、不用照編號），資源使用率比預防高，又保證不會死結。</li>
+            <li><b>缺點一：要事先知道 Max</b>。大部分程式執行前根本不知道自己最多會要多少資源，宣告太大又會讓演算法過度保守。</li>
+            <li><b>缺點二：行程數、資源數要固定</b>。行程隨時建立、結束，資源也可能故障，演算法假設的條件在真實系統中常常不成立。</li>
+            <li><b>缺點三：太保守、太花時間</b>。unsafe 不一定死結，卻一律擋下，行程常常要等；每次請求都要跑 O(m · n²)。</li>
+            <li><b>缺點四：要求行程在有限時間內歸還資源</b>，否則序列中的後續行程永遠等不到。</li>
+          </ul>
+          <h3>和死結偵測的比較</h3>
+          <p>死結偵測在資源有多個時用的演算法，長得幾乎和安全演算法一樣，只有兩處不同：比較時用的是每個行程<b>現在正在等的 Request</b>，而不是最壞情況的 Need；而且 Allocation 全是 0 的行程一開始就當作 Finish = true（它手上沒資源，不可能卡住別人）。跑完之後 Finish 仍是 false 的行程，就是<b>已經</b>陷入死結的行程。換句話說，避免問的是「最壞情況下會不會出事」，偵測問的是「現在是不是已經出事了」。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>死結避免（銀行家）</th><th>死結偵測</th></tr></thead>
+              <tbody>
+                <tr><td>比較的對象</td><td>Need（最多還會要多少）</td><td>Request（現在正在等多少）</td></tr>
+                <tr><td>需要事先知道 Max</td><td>需要</td><td>不需要</td></tr>
+                <tr><td>什麼時候執行</td><td>每一次資源請求</td><td>定期，或 CPU 使用率下降時</td></tr>
+                <tr><td>結果代表</td><td>unsafe：可能死結，先不給</td><td>Finish = false：已經死結，要復原</td></tr>
+                <tr><td>複雜度</td><td>O(m · n²)</td><td>O(m · n²)</td></tr>
+                <tr><td>單一資源的簡化</td><td>RAG 加 claim edge，有環就不給</td><td>wait-for graph，有環就是死結</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>實務上，資料庫系統的交易常用偵測（等待圖有環就讓某個交易回滾），一般作業系統則多半選擇忽略；銀行家演算法在考試中的地位遠高於實務，但它提供的「試算後只停在安全狀態」想法，在資源預留、批次排程等場合仍然看得到。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>算 Need、判斷是否安全、寫出安全序列</td><td>很常考</td><td>Need = Max − Allocation；Available = 總量 − ΣAllocation；Work 從 Available 開始，每輪找 Need ≤ Work 的行程，加回 Allocation；最後 Work 應等於總量</td><td><a class="q-link" href="#q-os-0009">例題</a> <a class="q-link" href="#q-os-0011">例題</a></td></tr>
+                <tr><td>某個請求能不能立刻配置</td><td>很常考</td><td>依序檢查 Request ≤ Need（否則錯誤）、Request ≤ Available（否則等待），再假裝配置跑安全演算法</td><td><a class="q-link" href="#q-os-0012">例題</a> <a class="q-link" href="#q-os-0010">例題</a></td></tr>
+                <tr><td>safe／unsafe／deadlock 的關係</td><td>常考</td><td>safe ⇒ 不會死結；deadlock ⊂ unsafe；unsafe 不一定死結</td><td><a class="q-link" href="#q-os-0008">例題</a></td></tr>
+                <tr><td>單一資源 RAG 與 claim edge</td><td>常考</td><td>假設把請求改成 assignment edge，連同 claim edge 找環，有環就不給</td><td><a class="q-link" href="#q-os-0013">例題</a></td></tr>
+                <tr><td>保證不死結的最少資源數</td><td>常考</td><td>n 個行程各最多要 k 個：最壞每人卡在 k − 1 個，再多 1 個就有人能完成，答案 n(k − 1) + 1</td><td><a class="q-link" href="#q-os-0015">例題</a></td></tr>
+                <tr><td>安全序列計數、複雜度</td><td>偶爾</td><td>先找出每一步可以選的行程，Work 夠大後剩下的任意排；複雜度 O(m · n²)</td><td><a class="q-link" href="#q-os-0014">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 系統進入 unsafe state 就已經死結了</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> unsafe 只是「無法保證」不死結；行程實際要的可能比 Max 少，仍可能全部做完</span> <a class="q-link" href="#q-os-0008">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Request ≤ Available 就可以直接配置</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 還要假裝配置、跑安全演算法，unsafe 就不給</span> <a class="q-link" href="#q-os-0012">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Request 超過 Need 時讓行程等待</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 超過 Need 是違反宣告，屬於錯誤；超過 Available 才是等待</span> <a class="q-link" href="#q-os-0010">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 行程完成後 Work 加上它的 Need（或 Max）</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 加上的是 Allocation：它借走的 Need 跑完會連同原本的 Allocation 一起還，淨增加就是 Allocation</span> <a class="q-link" href="#q-os-0011">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 拿 Max 直接和 Work 比較</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要先算 Need = Max − Allocation，比較的是 Need ≤ Work</span> <a class="q-link" href="#q-os-0009">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 安全序列只有一個，和標準答案不同就是錯</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 安全序列通常很多個；題目規定「編號小的優先」時才有唯一答案</span> <a class="q-link" href="#q-os-0014">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 單一資源時，請求的資源空著就可以給</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要連同 claim edge 一起找環，會形成環就不給</span> <a class="q-link" href="#q-os-0013">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="bankers-algorithm"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-21 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz-core.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz/operating-systems/bankers-algorithm.js?v=7f68026e"></script>
+</body>
+</html>

@@ -115,6 +115,136 @@
       "question": "用指數平均預測 CPU burst：τ(n+1) = α·t(n) + (1 − α)·τ(n)，α = 0.5，初始預測 τ(0) = 10。若接下來實際的 burst 依序為 6、4、6、4，求 τ(1)、τ(2)、τ(3)、τ(4)。",
       "answer": "τ(1) = 8、τ(2) = 6、τ(3) = 6、τ(4) = 5",
       "explanation": "<pre class=\"formula\">τ(1) = 0.5·6 + 0.5·10 = 8\nτ(2) = 0.5·4 + 0.5·8  = 6\nτ(3) = 0.5·6 + 0.5·6  = 6\nτ(4) = 0.5·4 + 0.5·6  = 5</pre><p>初始猜 10 明顯偏高，經過兩次實際值就拉到 6，之後在實際值 4～6 之間擺動：α = 0.5 時，舊預測每過一次影響就減半，所以 τ(0) 對 τ(4) 的權重只剩 (0.5)<sup>4</sup> = 1/16。</p><p>常見錯誤：把 t(n) 和 τ(n) 的位置對調，或用 τ(n+1) 去算 τ(n+1)。</p>"
+    },
+    {
+      "id": "os-0008",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "關於 safe state、unsafe state 與 deadlock，下列敘述何者正確？",
+      "choices": [
+        "(A) 系統一旦進入 unsafe state，就表示已經發生死結",
+        "(B) 死結狀態一定是 unsafe state，但 unsafe state 不一定會死結",
+        "(C) 只要目前沒有死結，系統就處於 safe state",
+        "(D) 銀行家演算法不需要知道各行程的最大需求，就能判斷是否安全"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>safe 的定義是「存在安全序列」，存在安全序列就能讓每個行程依序跑完，所以 safe ⇒ 不會死結；反過來，已經死結的狀態當然找不到安全序列，所以 deadlock ⊂ unsafe。</p><p>(A) 錯：unsafe 只是「沒辦法保證」，行程實際要的資源可能比宣告的 Max 少，仍可能全部做完。(C) 錯：沒有死結的狀態也可能是 unsafe，例如資源已經分配到「最壞情況一定卡住」的地步，只是還沒有人真的提出那些請求。(D) 錯：Need = Max − Allocation，沒有 Max 就算不出 Need，這正是銀行家演算法最大的實務限制。</p>"
+    },
+    {
+      "id": "os-0009",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "basic",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "系統有兩種資源 X、Y，總量為 X = 7、Y = 5。三個行程的狀態如下：<br><div class=\"table-scroll\"><table><thead><tr><th>行程</th><th>Allocation（X Y）</th><th>Max（X Y）</th></tr></thead><tbody><tr><td>P0</td><td>2 1</td><td>4 3</td></tr><tr><td>P1</td><td>1 2</td><td>2 4</td></tr><tr><td>P2</td><td>3 0</td><td>5 2</td></tr></tbody></table></div>(1) 求 Available 與 Need。(2) 這個狀態是否安全？若安全，寫出「編號小的優先」的安全序列。",
+      "answer": "Available = (1 2)；Need：P0 (2 2)、P1 (1 2)、P2 (2 2)；safe，安全序列 &lt;P1, P0, P2&gt;",
+      "explanation": "<p>(1) 已配置的加總 = (2+1+3, 1+2+0) = (6 3)，Available = (7 5) − (6 3) = (1 2)。Need = Max − Allocation：P0 = (4 3) − (2 1) = (2 2)，P1 = (2 4) − (1 2) = (1 2)，P2 = (5 2) − (3 0) = (2 2)。</p><p>(2) Work = (1 2)。P0 的 Need (2 2) 在 X 不夠（2 &gt; 1）；P1 的 Need (1 2) ≤ (1 2)，選 P1，Work = (1 2) + (1 2) = (2 4)。回頭看 P0：(2 2) ≤ (2 4)，Work = (2 4) + (2 1) = (4 5)。P2：(2 2) ≤ (4 5)，Work = (4 5) + (3 0) = (7 5)，等於總量，驗算正確。安全序列 &lt;P1, P0, P2&gt;（已用程式驗證；這個狀態另一個安全序列是 &lt;P1, P2, P0&gt;）。</p><p>常見錯誤：直接拿 Max 和 Available 比，會以為誰都做不完而誤判 unsafe。</p>"
+    },
+    {
+      "id": "os-0010",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "在資源請求演算法中，行程 P<sub>i</sub> 提出 Request<sub>i</sub>，若發現 Request<sub>i</sub> ≤ Need[i] <b>不成立</b>，系統應該怎麼處理？",
+      "choices": [
+        "(A) 讓 P<sub>i</sub> 等待，直到其他行程釋放資源",
+        "(B) 視為錯誤，因為 P<sub>i</sub> 要求的超過它宣告的最大需求",
+        "(C) 只要 Request<sub>i</sub> ≤ Available 就照樣配置",
+        "(D) 先假裝配置，再用安全演算法決定"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>Need[i] 是 P<sub>i</sub> 依照當初宣告的 Max「最多還能再要」的量。要求超過 Need 代表行程違反了自己的宣告，銀行家演算法所有的保證都建立在 Max 正確的前提上，所以這是錯誤（程式中回傳 -1），不是單純的等待。</p><p>(A) 是 Request &gt; Available 時的處理；(D) 是前兩項檢查都通過之後才做的事。常見錯誤是把「超過 Need」和「超過 Available」的結果記反。</p>"
+    },
+    {
+      "id": "os-0011",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "系統有 A、B、C 三種資源，目前 Available = (3 1 2)，四個行程的狀態如下：<br><div class=\"table-scroll\"><table><thead><tr><th>行程</th><th>Allocation（A B C）</th><th>Max（A B C）</th></tr></thead><tbody><tr><td>P0</td><td>1 0 1</td><td>5 2 3</td></tr><tr><td>P1</td><td>2 1 0</td><td>3 2 2</td></tr><tr><td>P2</td><td>0 1 1</td><td>2 3 3</td></tr><tr><td>P3</td><td>1 2 0</td><td>4 3 1</td></tr></tbody></table></div>(1) 求 Need 矩陣與三種資源的總量。(2) 用安全演算法判斷是否安全；多個行程可以選時，編號小的優先，寫出每一步的 Work。",
+      "answer": "Need：P0 (4 2 2)、P1 (1 1 2)、P2 (2 2 2)、P3 (3 1 1)；總量 (7 5 4)；safe，安全序列 &lt;P1, P0, P2, P3&gt;",
+      "explanation": "<p>(1) Need = Max − Allocation：P0 = (4 2 2)、P1 = (1 1 2)、P2 = (2 2 2)、P3 = (3 1 1)。總量 = Available + ΣAllocation = (3 1 2) + (4 4 2) = (7 5 4)。</p><p>(2) 每輪從 P0 開始找：</p><pre class=\"formula\">Work = (3 1 2)\n第 1 輪：P0 (4 2 2) A、B 不夠；P1 (1 1 2) ≤ (3 1 2) → Work = (3 1 2) + (2 1 0) = (5 2 2)\n第 2 輪：P0 (4 2 2) ≤ (5 2 2) → Work = (5 2 2) + (1 0 1) = (6 2 3)\n第 3 輪：P2 (2 2 2) ≤ (6 2 3) → Work = (6 2 3) + (0 1 1) = (6 3 4)\n第 4 輪：P3 (3 1 1) ≤ (6 3 4) → Work = (6 3 4) + (1 2 0) = (7 5 4)</pre><p>全部完成，safe，安全序列 &lt;P1, P0, P2, P3&gt;，最後 Work = (7 5 4) 等於總量（已用程式驗證）。</p><p>常見錯誤：行程完成時把 Need 加回 Work。例如第 1 輪若錯加 P1 的 Need (1 1 2)，Work 會變成 (4 2 4)，之後的每一步都會跟著錯。</p>"
+    },
+    {
+      "id": "os-0012",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "承 os-0011 的狀態（Available = (3 1 2)，Allocation、Max 同該題表格），分別判斷下列請求能否立即配置（各小題獨立，都從原狀態出發）：<br>(1) P0 請求 (1 0 1)　(2) P3 請求 (0 1 0)　(3) P2 請求 (3 0 0)",
+      "answer": "(1) 不能，配置後 unsafe，P0 等待　(2) 可以，安全序列 &lt;P3, P0, P1, P2&gt;　(3) 錯誤，超過 Need",
+      "explanation": "<p>(1) (1 0 1) ≤ Need[P0] = (4 2 2)，(1 0 1) ≤ Available = (3 1 2)，兩個檢查都通過。假裝配置：Available = (2 1 1)，Need[P0] = (3 2 1)。試算：Work = (2 1 1)，P0 (3 2 1) A 不夠；P1 (1 1 2) C 不夠；P2 (2 2 2) B、C 不夠；P3 (3 1 1) A 不夠，誰都做不完，unsafe，復原，P0 等待。資源明明拿得出來卻不能給，這是最常見的陷阱。</p><p>(2) (0 1 0) ≤ Need[P3] = (3 1 1)，(0 1 0) ≤ (3 1 2)。假裝配置：Available = (3 0 2)，Allocation[P3] = (1 3 0)，Need[P3] = (3 0 1)。試算：Work = (3 0 2)，P0、P1、P2 的 B 都不夠，P3 (3 0 1) 可以 → (4 3 2)；P0 (4 2 2) → (5 3 3)；P1 (1 1 2) → (7 4 3)；P2 (2 2 2) → (7 5 4)。safe，可以配置，安全序列 &lt;P3, P0, P1, P2&gt;。</p><p>(3) Need[P2] = (2 2 2)，A 要 3 &gt; 2，超過宣告的最大需求，是錯誤，不必再看 Available。</p><p>三小題的結果都已用程式驗證。</p>"
+    },
+    {
+      "id": "os-0013",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "系統中每種資源都只有一個。P1 目前持有 R2，並宣告將來可能要 R1（claim edge P1 ⇢ R1）；P2 沒有持有資源，宣告將來可能要 R1 和 R2。現在 P2 提出請求 R1，而 R1 正好空著。依照 resource-allocation graph 的避免演算法，系統應該：",
+      "choices": [
+        "(A) 配置，因為 R1 目前沒有被任何行程持有",
+        "(B) 配置，因為圖中目前沒有任何 request edge",
+        "(C) 不配置，因為把請求改成 R1 → P2 之後，連同 claim edge 會形成環",
+        "(D) 不配置，因為 P2 沒有持有任何資源，不能先申請"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>假設配置，圖中會有：R1 → P2（配置邊）、P2 ⇢ R2（claim）、R2 → P1（P1 持有 R2）、P1 ⇢ R1（claim），形成環 P2 → R2 → P1 → R1 → P2。這表示將來 P2 要 R2、P1 要 R1 時，兩個人會互等，所以這是 unsafe，P2 必須等待。</p><p>(A) 只看「現在有沒有空」，正是避免要防止的想法。如果改成 P1 請求 R1，配置後 P1 同時握有 R1、R2，沒有往外的邊，不會有環，就可以配置。</p>"
+    },
+    {
+      "id": "os-0014",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "承 os-0011 的狀態（Available = (3 1 2)，Need：P0 (4 2 2)、P1 (1 1 2)、P2 (2 2 2)、P3 (3 1 1)，Allocation：P0 (1 0 1)、P1 (2 1 0)、P2 (0 1 1)、P3 (1 2 0)）。<br>(1) 這個狀態總共有幾種不同的安全序列？請說明理由。<br>(2) 用「每輪從 P0 開始找」的安全演算法，n 個行程、m 種資源時，最壞情況要做幾次「行程的 Need 與 Work 的比較」？以 n = 4、m = 3 而言最多要比較幾個數字？由此說明時間複雜度。",
+      "answer": "(1) 12 種　(2) n(n+1)/2 次向量比較；n = 4、m = 3 時最多 10 × 3 = 30 次數字比較；O(m · n²)",
+      "explanation": "<p>(1) 一開始 Work = (3 1 2)，只有 P1 (1 1 2) 和 P3 (3 1 1) 做得完（P0 的 A、B 不夠，P2 的 B 不夠），所以第一個只能是 P1 或 P3。</p><ul><li>先做 P1：Work = (5 2 2)。</li><li>先做 P3：Work = (4 3 2)。</li></ul><p>兩種情況的 Work 都已經 ≥ (4 2 2)，而四個行程 Need 的每一項最大值也正是 A 4、B 2、C 2，所以剩下三個行程每一個都做得完；Work 只會越來越大，剩下的三個怎麼排都可以，有 3! = 6 種。總共 2 × 6 = 12 種（已用程式枚舉 4! = 24 種排列驗證，恰好 12 種合法）。</p><p>(2) 最壞情況每一輪要找的行程都排在最後：第 1 輪看 n 個、第 2 輪看 n − 1 個……共 n + (n − 1) + … + 1 = n(n+1)/2 次向量比較，每次比較 m 個數字。n = 4、m = 3 時是 10 × 3 = 30 次。n(n+1)/2 · m 的最高次項是 m · n²/2，所以時間複雜度是 O(m · n²)。</p><p>常見錯誤：以為安全序列是唯一的，或把「每輪最多看 n 個」誤算成總共只看 n 個，得到 O(m · n)。</p>"
+    },
+    {
+      "id": "os-0015",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "系統只有一種資源，共 R 個。有 n 個行程，每個行程執行期間最多同時需要 k 個（k ≥ 1），用完一定會歸還。<br>(1) 若 n = 4、k = 3，R 至少要多少，才能保證無論怎麼配置都不會死結？<br>(2) 若 R = 7、k = 3，最多可以有幾個行程而保證不會死結？請說明推導。",
+      "answer": "(1) R ≥ n(k − 1) + 1 = 9　(2) 最多 3 個行程",
+      "explanation": "<p>最壞的情況是每個行程都拿到 k − 1 個，差一個才能完成，而且資源剛好發完：這時所有人都在等，死結。這個情況用掉 n(k − 1) 個資源。只要再多 1 個，也就是 R ≥ n(k − 1) + 1，無論怎麼配置，總會有某個行程能拿到第 k 個而完成，完成後歸還的資源又能讓其他人完成，所以不會死結。反過來，R ≤ n(k − 1) 時就能構造出全部卡住的配置。</p><p>(1) n = 4、k = 3：R ≥ 4 × 2 + 1 = 9。R = 8 時，四個行程各拿 2 個，剩 0 個，大家都還差 1 個，死結。</p><p>(2) 要 n(k − 1) + 1 ≤ 7，也就是 2n + 1 ≤ 7，n ≤ 3。n = 4 時可以讓 7 個全部發完、每人都還沒到 3 個（例如 2、2、2、1），全部等待，死結。</p><p>以上結論已用程式窮舉所有配置驗證。常見錯誤：寫成 nk 或 n(k − 1)，少了「再多 1 個」那一步。</p>"
     }
   ]
 }

@@ -336,9 +336,18 @@
           "en": "BFS & DFS",
           "zh": "廣度與深度優先搜尋",
           "book": "6.2",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": true
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "BFS",
+            "DFS",
+            "queue",
+            "stack",
+            "spanning tree"
+          ],
+          "updated": "2026-11-21"
         },
         {
           "id": "articulation-point",

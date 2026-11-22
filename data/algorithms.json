@@ -55,8 +55,17 @@
           "en": "Master Theorem",
           "zh": "主定理",
           "book": "4.5–4.6",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "master theorem",
+            "recurrence",
+            "recursion tree",
+            "divide and conquer"
+          ],
+          "updated": "2026-11-21"
         },
         {
           "id": "maximum-subarray",

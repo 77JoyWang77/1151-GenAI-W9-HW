@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Elementary Matrices and Inverses 基本矩陣與反矩陣 · 線性代數 | 資工考研互動學習站</title>
+  <meta name="description" content="三型基本矩陣、用 [A | I] 求反矩陣、可逆的等價條件與 (AB)⁻¹ 等性質。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=7f68026e">
+  <script src="../../../assets/js/theme.js?v=7f68026e"></script>
+</head>
+<body data-subject="linear-algebra" data-chapter="linear-systems" data-chno="1" data-topic="linear-algebra/linear-systems/matrix-inverse" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Linear Algebra 線性代數</a> › Ch1 Matrices and Systems of Equations 矩陣與線性方程組 › Elementary Matrices and Inverses 基本矩陣與反矩陣</nav>
+      <div class="topic-head">
+        <h1>Elementary Matrices and Inverses 基本矩陣與反矩陣<small>每個列運算都是左乘一個基本矩陣，把 [A | I] 化成 [I | A⁻¹]</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch1 Matrices and Systems of Equations</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">inverse</span>
+          <span class="chip">elementary matrix</span>
+          <span class="chip">Gauss–Jordan</span>
+          <span class="chip">nonsingular</span>
+        </div>
+      </div>
+      <section id="motivation">
+        <h2>為什麼需要反矩陣</h2>
+        <div class="panel prose">
+          <p>解一元一次方程式 3x = 6 時，我們會兩邊同乘 3 的倒數 1/3，得到 x = 2。倒數的關鍵性質是 (1/3)·3 = 1，乘上去就把係數「抵銷」掉。方程組寫成矩陣形式 Ax = b 之後，很自然會想問：有沒有一個矩陣能扮演 A 的「倒數」，讓我們兩邊左乘它就得到 x？</p>
+          <p>這個矩陣就是 <span class="term">Inverse Matrix<small>（反矩陣）</small></span> A<sup>−1</sup>。有了它，Ax = b 的解可以直接寫成 x = A<sup>−1</sup>b，而且這個公式對<b>每一個</b> b 都成立，等於一次把「所有右邊常數」的情況都解決了。</p>
+          <p>不過矩陣和數字有兩個很大的差別：第一，數字只有 0 沒有倒數，但很多<b>不是零矩陣</b>的矩陣也沒有反矩陣；第二，矩陣乘法不能交換，所以「左乘」和「右乘」要分清楚。這一頁要回答三件事：</p>
+          <ul>
+            <li>什麼樣的矩陣有反矩陣？要怎麼判斷？（答案是一長串等價條件，考試最愛出判斷題）</li>
+            <li>怎麼求反矩陣？（用 [A | I] 做列運算，背後的道理是 <span class="term">Elementary Matrix<small>（基本矩陣）</small></span>）</li>
+            <li>解方程組時，先求反矩陣划不划算？（通常不划算，後面會算給你看）</li>
+          </ul>
+          <p>三種列運算、REF／RREF 和 Gauss–Jordan 消去法在 <a href="gaussian-elimination.html">Gaussian Elimination 高斯消去法與列梯形</a> 已經講過，這裡只簡短帶過，重點放在「把列運算寫成矩陣」之後能推出的東西。</p>
+        </div>
+      </section>
+
+      <section id="definition">
+        <h2>反矩陣的定義與基本性質</h2>
+        <div class="panel prose">
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>定義</b>：n×n 矩陣 A，如果存在 n×n 矩陣 B 使得 <b>AB = BA = I</b>，就說 A 是 <span class="term">Invertible<small>（可逆的）</small></span>，也叫 <span class="term">Nonsingular<small>（非奇異）</small></span>，B 稱為 A 的反矩陣，記作 A<sup>−1</sup>。找不到這樣的 B 就叫 <span class="term">Singular<small>（奇異、不可逆）</small></span>。</p></div>
+          <p>幾個要特別注意的地方：</p>
+          <ul>
+            <li><b>只有方陣才談反矩陣</b>。2×3 的矩陣可能有「左反」或「右反」，但不會有同時滿足兩邊的反矩陣。</li>
+            <li>定義要求兩邊都成立，但對方陣來說，<b>只要 AB = I 一邊成立，BA = I 就自動成立</b>（等價條件那一節會證明）。考試寫證明時可以用，但要知道它是定理，不是定義。</li>
+            <li>不是零矩陣也可能不可逆：例如 [1 2; 2 4]，第二列是第一列的 2 倍，後面會看到這種矩陣一定不可逆。</li>
+          </ul>
+          <h3>反矩陣是唯一的</h3>
+          <p>假設 B 和 C 都是 A 的反矩陣，那麼 B = BI = B(AC) = (BA)C = IC = C。關鍵只用到矩陣乘法的<b>結合律</b>，所以 A<sup>−1</sup> 這個寫法才有意義：可逆矩陣的反矩陣只有一個。</p>
+          <h3>常用性質</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>性質（A、B 都是 n×n 可逆）</th><th>為什麼</th></tr></thead>
+              <tbody>
+                <tr><td>(A<sup>−1</sup>)<sup>−1</sup> = A</td><td>A<sup>−1</sup>A = AA<sup>−1</sup> = I，換個角度看就是 A 是 A<sup>−1</sup> 的反矩陣</td></tr>
+                <tr><td>(AB)<sup>−1</sup> = B<sup>−1</sup>A<sup>−1</sup>（<b>順序顛倒</b>）</td><td>(AB)(B<sup>−1</sup>A<sup>−1</sup>) = A(BB<sup>−1</sup>)A<sup>−1</sup> = AA<sup>−1</sup> = I，另一邊同理</td></tr>
+                <tr><td>(A<sup>T</sup>)<sup>−1</sup> = (A<sup>−1</sup>)<sup>T</sup></td><td>A<sup>T</sup>(A<sup>−1</sup>)<sup>T</sup> = (A<sup>−1</sup>A)<sup>T</sup> = I<sup>T</sup> = I，用的是 (XY)<sup>T</sup> = Y<sup>T</sup>X<sup>T</sup></td></tr>
+                <tr><td>(cA)<sup>−1</sup> = (1/c)A<sup>−1</sup>，c ≠ 0</td><td>(cA)((1/c)A<sup>−1</sup>) = (c/c)AA<sup>−1</sup> = I</td></tr>
+                <tr><td>(A<sup>k</sup>)<sup>−1</sup> = (A<sup>−1</sup>)<sup>k</sup></td><td>(AB)<sup>−1</sup> 的規則重複用 k 次</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>(AB)<sup>−1</sup> = B<sup>−1</sup>A<sup>−1</sup> 可以用「先穿襪子再穿鞋」來記：AB 是先做 B 再做 A（對向量 x 來說 ABx 是先乘 B），要還原就得<b>先脫鞋（A<sup>−1</sup>）再脫襪子（B<sup>−1</sup>）</b>，寫成矩陣就是 B<sup>−1</sup>A<sup>−1</sup>。因為矩陣乘法不能交換，A<sup>−1</sup>B<sup>−1</sup> 一般來說是錯的（已用程式對本頁的兩個 3×3 例子驗證，兩者確實不相等）。推廣到多個：(A<sub>1</sub>A<sub>2</sub>⋯A<sub>k</sub>)<sup>−1</sup> = A<sub>k</sub><sup>−1</sup>⋯A<sub>2</sub><sup>−1</sup>A<sub>1</sub><sup>−1</sup>。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 沒有「(A + B)<sup>−1</sup> = A<sup>−1</sup> + B<sup>−1</sup>」這種性質，甚至 A、B 都可逆時 A + B 也可能不可逆：取 B = −A，A + B 是零矩陣。</p></div>
+        </div>
+      </section>
+
+      <section id="elementary-matrices">
+        <h2>基本矩陣：把列運算寫成矩陣</h2>
+        <div class="panel prose">
+          <p>三種基本列運算是：列交換、列乘以非零常數、列加上另一列的倍數（詳細見 <a href="gaussian-elimination.html#augmented-matrix">增廣矩陣與三種列運算</a>）。<b>對單位矩陣 I 做一次基本列運算</b>得到的矩陣，就叫做基本矩陣。所以基本矩陣也分三型：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>型</th><th>對 I 做的列運算</th><th>長相</th><th>反矩陣</th><th>行列式</th></tr></thead>
+              <tbody>
+                <tr><td>第 1 型</td><td>R<sub>i</sub> ↔ R<sub>j</sub></td><td>I 的第 i、j 列對調</td><td>自己（再換一次就回來）</td><td>−1</td></tr>
+                <tr><td>第 2 型</td><td>R<sub>i</sub> ← cR<sub>i</sub>，c ≠ 0</td><td>I 的 (i, i) 換成 c</td><td>(i, i) 換成 1/c</td><td>c</td></tr>
+                <tr><td>第 3 型</td><td>R<sub>i</sub> ← R<sub>i</sub> + cR<sub>j</sub>，i ≠ j</td><td>I 的 (i, j) 放 c</td><td>(i, j) 改成 −c</td><td>1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="matrix-inverse-elementary"></div>
+            <figcaption><b>圖 1</b>：3×3 的三型基本矩陣，橘色是和 I 不同的位置。每一型的反矩陣都是「做相反的列運算」，所以基本矩陣<b>一定可逆</b>，而且反矩陣還是同一型的基本矩陣。</figcaption>
+          </figure>
+          <p>判斷題常考「這是不是基本矩陣」：它必須<b>恰好</b>是 I 做<b>一次</b>列運算的結果。像 diag(2, 3) 要兩次第 2 型才做得出來，就不是基本矩陣；把 (i, i) 換成 0 也不是，因為乘以 0 不是合法的列運算。行列式那一欄是之後學行列式時會用到的事實，先記著：三型分別讓行列式乘上 −1、c、1。</p>
+          <h3>關鍵性質：左乘 E 就是做列運算</h3>
+          <p>如果 E 是對 I 做某個列運算得到的基本矩陣，那麼對任意 n×m 矩陣 A，<b>EA 就等於對 A 做同一個列運算</b>。原因是矩陣乘法「列的觀點」：EA 的第 i 列 = (E 的第 i 列) 乘以 A，也就是 A 各列的線性組合，係數就是 E 第 i 列的數字。E 只有改過的那一列不是 e<sub>i</sub>，其他列都和 I 一樣，所以 EA 只有那一列被改，其他列照抄 A。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="matrix-inverse-left-multiply"></div>
+            <figcaption><b>圖 2</b>：E 是 R<sub>2</sub> ← R<sub>2</sub> − 2R<sub>1</sub> 的基本矩陣。EA 的第 2 列（紫色）是 −2 倍的 A 第 1 列（青色）加上 A 第 2 列（藍色），正好就是對 A 做 R<sub>2</sub> ← R<sub>2</sub> − 2R<sub>1</sub>。</figcaption>
+          </figure>
+          <p>反過來，<b>右乘</b> E（AE）做的是<b>行運算</b>：例如右乘第 3 型 E（(i, j) 放 c），是把第 i 行的 c 倍加到第 j 行，方向和列運算剛好相反，考試偶爾會考這個陷阱。</p>
+          <p>有了這個性質，「對 A 依序做 k 次列運算」就可以寫成一個乘積 E<sub>k</sub>⋯E<sub>2</sub>E<sub>1</sub>A。注意<b>先做的在右邊</b>，因為最靠近 A 的 E<sub>1</sub> 最先作用。</p>
+          <details class="code-fold">
+            <summary>看程式碼：三型基本矩陣</summary>
+            <div class="code-block">
+              <div class="code-head">elemSwap() / elemScale() / elemAdd()：對 I 做一次列運算</div>
+              <pre class="code">void identity(Frac E[MAXN][MAXN]) {
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) E[i][j] = frac(i == j, 1);
+}
+void elemSwap(Frac E[MAXN][MAXN], int i, int j) {          /* 第 1 型：R_i ↔ R_j */
+  identity(E);
+  E[i][i] = E[j][j] = frac(0, 1);
+  E[i][j] = E[j][i] = frac(1, 1);
+}
+void elemScale(Frac E[MAXN][MAXN], int i, Frac c) {        /* 第 2 型：R_i ← cR_i（c ≠ 0） */
+  identity(E);
+  E[i][i] = c;
+}
+void elemAdd(Frac E[MAXN][MAXN], int i, int j, Frac c) {   /* 第 3 型：R_i ← R_i + cR_j */
+  identity(E);
+  E[i][j] = c;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="gauss-jordan-inverse">
+        <h2>用 [A | I] 求反矩陣</h2>
+        <div class="panel prose">
+          <h3>做法</h3>
+          <p>把 A 和同樣大小的單位矩陣並排，組成 n×2n 的 [A | I]，然後對<b>整列</b>做 Gauss–Jordan 消去：每一行找 pivot、把 pivot 化成 1、再把同一行其他位置消成 0。如果左半能變成 I，右半就是 A<sup>−1</sup>：</p>
+          <pre class="formula">[ A | I ]  ── 列運算 ──→  [ I | A⁻¹ ]</pre>
+          <h3>為什麼這樣做是對的</h3>
+          <p>假設總共用了 k 次列運算把 A 化成 I，每一次對應一個基本矩陣，所以</p>
+          <pre class="formula">E_k ⋯ E_2 E_1 A = I    ⇒    E_k ⋯ E_2 E_1 = A⁻¹</pre>
+          <p>（右式由左式兩邊右乘 A<sup>−1</sup> 得到；或者說 P = E<sub>k</sub>⋯E<sub>1</sub> 滿足 PA = I，方陣一邊成立就夠。）右半一開始是 I，跟著左半做了<b>完全相同</b>的 k 次列運算，結果就是 E<sub>k</sub>⋯E<sub>1</sub>I = E<sub>k</sub>⋯E<sub>1</sub> = A<sup>−1</sup>。換句話說，右半就像一本「帳簿」，把所有基本矩陣的乘積記下來了。</p>
+          <p>這也說明了一件事：<b>只能用列運算，不能混用行運算</b>。行運算是右乘基本矩陣，混在一起就不再是 P·A 的形式，右半就不是 A<sup>−1</sup>了。</p>
+          <h3>例子：A = [1 2 0; 2 5 1; 0 1 3]</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>列運算（基本矩陣型）</th><th>做完後的 [左半 | 右半]</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>起點</td><td>[1 2 0 | 1 0 0]、[2 5 1 | 0 1 0]、[0 1 3 | 0 0 1]</td></tr>
+                <tr><td>1</td><td>R<sub>2</sub> ← R<sub>2</sub> − 2R<sub>1</sub>（第 3 型）</td><td>R<sub>2</sub> = [0 1 1 | −2 1 0]，第 1 行完成</td></tr>
+                <tr><td>2</td><td>R<sub>1</sub> ← R<sub>1</sub> − 2R<sub>2</sub>（第 3 型）</td><td>R<sub>1</sub> = [1 0 −2 | 5 −2 0]</td></tr>
+                <tr><td>3</td><td>R<sub>3</sub> ← R<sub>3</sub> − R<sub>2</sub>（第 3 型）</td><td>R<sub>3</sub> = [0 0 2 | 2 −1 1]，第 2 行完成</td></tr>
+                <tr><td>4</td><td>R<sub>3</sub> ← (1/2)R<sub>3</sub>（第 2 型）</td><td>R<sub>3</sub> = [0 0 1 | 1 −1/2 1/2]</td></tr>
+                <tr><td>5</td><td>R<sub>1</sub> ← R<sub>1</sub> + 2R<sub>3</sub>（第 3 型）</td><td>R<sub>1</sub> = [1 0 0 | 7 −3 1]</td></tr>
+                <tr><td>6</td><td>R<sub>2</sub> ← R<sub>2</sub> − R<sub>3</sub>（第 3 型）</td><td>R<sub>2</sub> = [0 1 0 | −3 3/2 −1/2]，左半變成 I</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>所以 A<sup>−1</sup> = [7 −3 1; −3 3/2 −1/2; 1 −1/2 1/2]。驗算第一列乘第一行：1·7 + 2·(−3) + 0·1 = 1；第一列乘第二行：1·(−3) + 2·(3/2) + 0 = 0，都對得上 I（程式已驗證 AA<sup>−1</sup> 和 A<sup>−1</sup>A 都等於 I，也驗證了 6 個基本矩陣的乘積 E<sub>6</sub>⋯E<sub>1</sub> 恰好等於 A<sup>−1</sup>）。這 6 步也代表 A 可以寫成 A = E<sub>1</sub><sup>−1</sup>E<sub>2</sub><sup>−1</sup>⋯E<sub>6</sub><sup>−1</sup>，是 6 個基本矩陣的乘積。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 手算時養成習慣：算完一定挑一兩個位置驗算 AA<sup>−1</sup>。分數一多很容易抄錯，驗算只要 n 次乘法就能抓到錯誤。</p></div>
+          <details class="code-fold">
+            <summary>看程式碼：inverse()：Gauss–Jordan 求反矩陣（精確分數）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="inverse()">
+                <div class="code-head">inverse()：[A | I] → [I | A⁻¹]</div>
+                <pre class="code">#define MAXN 4
+Frac aug[MAXN][2 * MAXN];                      /* 增廣矩陣 [A | I]，左半 n 行、右半 n 行 */
+int n;
+
+void swapRows(int r1, int r2) {
+  for (int j = 0; j &lt; 2 * n; j++) { Frac t = aug[r1][j]; aug[r1][j] = aug[r2][j]; aug[r2][j] = t; }
+}
+
+int inverse(Frac A[MAXN][MAXN], Frac inv[MAXN][MAXN]) {   /* 可逆回傳 1，不可逆回傳 0 */
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) {
+      aug[i][j] = A[i][j];                     /* 左半放 A */
+      aug[i][n + j] = frac(i == j, 1);         /* 右半放單位矩陣 I */
+    }
+  int r = 0;
+  for (int c = 0; c &lt; n; c++) {
+    int p = r;
+    while (p &lt; n &amp;&amp; isZero(aug[p][c])) p++;    /* 往下找第一個非零的當 pivot */
+    if (p == n) continue;                      /* 這一行沒有 pivot：A 不可逆 */
+    if (p != r) swapRows(r, p);                /* 第 1 型：列交換 */
+    Frac piv = aug[r][c];
+    for (int j = 0; j &lt; 2 * n; j++) aug[r][j] = fdiv(aug[r][j], piv);   /* 第 2 型：pivot 變成 1 */
+    for (int i = 0; i &lt; n; i++)                /* 第 3 型：同一行其他列消成 0 */
+      if (i != r &amp;&amp; !isZero(aug[i][c])) {
+        Frac f = aug[i][c];
+        for (int j = 0; j &lt; 2 * n; j++) aug[i][j] = fsub(aug[i][j], fmul(f, aug[r][j]));
+      }
+    r++;
+  }
+  if (r &lt; n) return 0;                         /* pivot 不到 n 個：左半最後會有零列 */
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) inv[i][j] = aug[i][n + j];   /* 右半就是 A⁻¹ */
+  return 1;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="分數運算">
+                <div class="code-head">Frac：分子分母都是整數，隨時約分</div>
+                <pre class="code">typedef struct { long long n, d; } Frac;
+
+long long gcdll(long long a, long long b) {
+  if (a &lt; 0) a = -a;
+  if (b &lt; 0) b = -b;
+  while (b) { long long t = a % b; a = b; b = t; }
+  return a ? a : 1;
+}
+
+Frac frac(long long n, long long d) {          /* 建立分數並約分 */
+  if (d &lt; 0) { n = -n; d = -d; }
+  long long g = gcdll(n, d);
+  Frac f = { n / g, d / g };
+  return f;
+}
+Frac fadd(Frac x, Frac y) { return frac(x.n * y.d + y.n * x.d, x.d * y.d); }
+Frac fsub(Frac x, Frac y) { return frac(x.n * y.d - y.n * x.d, x.d * y.d); }
+Frac fmul(Frac x, Frac y) { return frac(x.n * y.n, x.d * y.d); }
+Frac fdiv(Frac x, Frac y) { return frac(x.n * y.d, x.d * y.n); }   /* 呼叫前要確定 y 不是 0 */
+int isZero(Frac x) { return x.n == 0; }
+int isOne(Frac x) { return x.n == 1 &amp;&amp; x.d == 1; }</pre>
+              </div>
+              <div class="code-block" data-tab="驗算 A·A⁻¹">
+                <div class="code-head">matMul() / isIdentity()：驗證乘起來是 I</div>
+                <pre class="code">void matMul(Frac X[MAXN][MAXN], Frac Y[MAXN][MAXN], Frac Z[MAXN][MAXN]) {
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) {
+      Frac s = frac(0, 1);
+      for (int k = 0; k &lt; n; k++) s = fadd(s, fmul(X[i][k], Y[k][j]));
+      Z[i][j] = s;
+    }
+}
+
+int isIdentity(Frac Z[MAXN][MAXN]) {
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++)
+      if (Z[i][j].n != (i == j) || Z[i][j].d != 1) return 0;
+  return 1;
+}</pre>
+              </div>
+            </div>
+          </details>
+          <p>下面的動畫跑的就是這個 inverse()。每做一次列運算，右上角會畫出對應的基本矩陣 E，下方寫出它是第幾型；最後一步把右半標成綠色，就是 A<sup>−1</sup>。</p>
+        </div>
+        <div class="viz" data-viz="inverse-gj"></div>
+      </section>
+
+      <section id="singular">
+        <h2>不可逆時會發生什麼</h2>
+        <div class="panel prose">
+          <p>如果 A 不可逆，[A | I] 的左半<b>不可能</b>化成 I。在 Gauss–Jordan 的過程中，你會在某一行往下找不到非零的 pivot；繼續把其他行做完，左半最後一定會出現<b>全是 0 的列</b>。這時候就可以停手，宣告 A 不可逆，不需要再算右半。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="matrix-inverse-singular"></div>
+            <figcaption><b>圖 3</b>：A = [1 2 3; 2 1 4; 3 3 7] 做完 Gauss–Jordan 的 [A | I]。左半第 3 列變成零列（紅色），rank A 只有 2；右半那一列（橘色）是 (−1, −1, 1)，代表 −R<sub>1</sub> − R<sub>2</sub> + R<sub>3</sub> = 0。</figcaption>
+          </figure>
+          <p>為什麼零列代表不可逆？如果 A 可逆，那麼 PA 也可逆（P 是基本矩陣的乘積，可逆矩陣相乘還是可逆），但一個有零列的矩陣 PA 乘上任何矩陣 B，(PA)B 的那一列還是 0，不可能等於 I，矛盾。</p>
+          <p>右半那一列也很有意思：零列 = (右半那一列的係數) 乘上 A 的各列，也就是說右半記錄了「A 的哪幾列組合起來會變成 0」。圖 3 的例子讀出 R<sub>3</sub> = R<sub>1</sub> + R<sub>2</sub>，確實 (1, 2, 3) + (2, 1, 4) = (3, 3, 7)，A 的列<b>線性相依</b>（程式已驗證這個係數向量 y 滿足 yA = 0）。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 手算時一旦看到兩列成比例、某一列是其他列的組合，或某一行（左半）全部是 0，就可以直接說 A 不可逆。</p></div>
+        </div>
+      </section>
+
+      <section id="invertible-theorem">
+        <h2>可逆的等價條件</h2>
+        <div class="panel prose">
+          <p>線性代數最重要的定理之一：對 n×n 矩陣 A，下面這些敘述<b>全部等價</b>（一個成立，全部成立）。考研的是非題、選擇題很大一部分都在考這張表。</p>
+          <ol>
+            <li>A 可逆。</li>
+            <li>Ax = 0 只有零解（trivial solution）。</li>
+            <li>A 列等價於 I（A 的 RREF 是 I），也就是 A 有 n 個 pivot、rank A = n。</li>
+            <li>A 可以寫成基本矩陣的乘積。</li>
+            <li>對每一個 b，Ax = b 都有<b>唯一</b>解。</li>
+            <li>存在 B 使 AB = I（只要右反）；或存在 C 使 CA = I（只要左反）。</li>
+            <li>det A ≠ 0（行列式那一章會證明）。</li>
+          </ol>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="matrix-inverse-equivalent"></div>
+            <figcaption><b>圖 4</b>：可逆的等價條件。中間的「A 可逆」和周圍任何一個條件都可以互推；反過來，只要其中一個不成立（例如 Ax = 0 有非零解），A 就不可逆。</figcaption>
+          </figure>
+          <h3>證明的骨架：(1) ⇒ (2) ⇒ (3) ⇒ (4) ⇒ (1)</h3>
+          <ul>
+            <li><b>(1) ⇒ (2)</b>：若 Ax = 0，兩邊左乘 A<sup>−1</sup> 得 x = A<sup>−1</sup>0 = 0。</li>
+            <li><b>(2) ⇒ (3)</b>：Ax = 0 只有零解，代表化簡後沒有自由變數，每一行都有 pivot；方陣有 n 個 pivot，RREF 只能是 I。</li>
+            <li><b>(3) ⇒ (4)</b>：A 列等價於 I，表示 E<sub>k</sub>⋯E<sub>1</sub>A = I。基本矩陣都可逆，所以 A = E<sub>1</sub><sup>−1</sup>⋯E<sub>k</sub><sup>−1</sup>，而 E<sub>i</sub><sup>−1</sup> 也是基本矩陣。</li>
+            <li><b>(4) ⇒ (1)</b>：基本矩陣都可逆，可逆矩陣的乘積還是可逆。</li>
+          </ul>
+          <p>(5) 和 (1) 的關係：A 可逆時 x = A<sup>−1</sup>b 就是解，而且若 Ax = Ay，則 A(x − y) = 0，由 (2) 得 x = y，所以唯一。反過來，若每個 b 都有唯一解，取 b = 0 就得到 (2)。</p>
+          <h3>只要一邊：AB = I 就夠了</h3>
+          <p>設 A、B 都是 n×n 而且 AB = I。看 Bx = 0：兩邊左乘 A 得 x = ABx = A0 = 0，所以 Bx = 0 只有零解，由 (2) ⇒ (1) 知 B 可逆。於是 A = A(BB<sup>−1</sup>) = (AB)B<sup>−1</sup> = B<sup>−1</sup>，所以 A 可逆、反矩陣就是 B，而且 BA = BB<sup>−1</sup> = I。這個結論<b>只對方陣成立</b>；非方陣可能有一邊的反矩陣卻沒有另一邊。</p>
+          <h3>不可逆的常見訊號</h3>
+          <ul>
+            <li>有一列（或一行）全是 0，或兩列（兩行）成比例。</li>
+            <li>某一列是其他列的線性組合（列線性相依）。</li>
+            <li>找得到非零的 x 使 Ax = 0，例如各行加起來是零向量，就取 x = (1, 1, …, 1)。</li>
+            <li>A<sup>2</sup> = 0 這類條件：若 A 可逆，左乘 A<sup>−1</sup> 得 A = 0，矛盾（n ≥ 1 時零矩陣不可逆）。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="two-by-two">
+        <h2>2×2 反矩陣公式</h2>
+        <div class="panel prose">
+          <p>2×2 的情況太常用，值得直接背公式。對 A = [a b; c d]，令 det A = ad − bc：</p>
+          <pre class="formula">A⁻¹ = 1/(ad − bc) · [  d  −b ]        （ad − bc ≠ 0 時才有）
+                     [ −c   a ]</pre>
+          <p>口訣是「<b>主對角對調、副對角變號、除以 ad − bc</b>」。推導可以直接驗算：[a b; c d]·[d −b; −c a] = [ad − bc, 0; 0, ad − bc] = (ad − bc)I，所以除以 ad − bc 就得到 I。ad − bc = 0 時兩列成比例，A 不可逆。</p>
+          <p>例：A = [3 1; 5 2]，ad − bc = 6 − 5 = 1，所以 A<sup>−1</sup> = [2 −1; −5 3]。驗算 3·2 + 1·(−5) = 1、3·(−1) + 1·3 = 0，正確（程式也確認這個公式和 Gauss–Jordan 算出來的一樣）。</p>
+          <p>3×3 以上也有類似的公式 A<sup>−1</sup> = adj(A)/det A（伴隨矩陣），在行列式那一章介紹；但手算 3×3 時，[A | I] 通常比較快也比較不容易錯。</p>
+          <details class="code-fold">
+            <summary>看程式碼：inverse2()：2×2 公式</summary>
+            <div class="code-block">
+              <div class="code-head">inverse2()：交換對角、非對角變號、除以 det</div>
+              <pre class="code">int inverse2(Frac A[MAXN][MAXN], Frac inv[MAXN][MAXN]) {
+  Frac det = fsub(fmul(A[0][0], A[1][1]), fmul(A[0][1], A[1][0]));   /* ad − bc */
+  if (isZero(det)) return 0;
+  inv[0][0] = fdiv(A[1][1], det);
+  inv[0][1] = fdiv(frac(-A[0][1].n, A[0][1].d), det);
+  inv[1][0] = fdiv(frac(-A[1][0].n, A[1][0].d), det);
+  inv[1][1] = fdiv(A[0][0], det);
+  return 1;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="cost">
+        <h2>用反矩陣解方程組划算嗎</h2>
+        <div class="panel prose">
+          <p>x = A<sup>−1</sup>b 寫起來很漂亮，但真的計算時，<b>先求反矩陣幾乎都比直接消去慢</b>。以 n×n、算乘除法次數為例：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>做法</th><th>乘除法次數</th><th>n = 10</th><th>n = 100</th></tr></thead>
+              <tbody>
+                <tr><td>高斯消去＋回代（解一次）</td><td>n³/3 + n² − n/3</td><td>430</td><td>343,300</td></tr>
+                <tr><td>先求 A<sup>−1</sup>，再算 A<sup>−1</sup>b</td><td>n³ + n²</td><td>1,100</td><td>1,010,000，約是消去法的 2.9 倍</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>求反矩陣的 n³ 是這樣來的：處理第 k 行時，pivot 那一列真正需要更新的位置是「左半 pivot 右邊的 n − k 格」加上「右半已經不是 0 的 k 格」（其餘右半位置還是 I 的 0），一共 n 格；除以 pivot 要 n 次，其他 n − 1 列各要 n 次乘法，所以每一行 n² 次，n 行就是 n³（程式逐格計數，n = 10、100 時都剛好是 n³）。這已經利用了右半的零；如果傻傻地每次都更新整列 2n 格，會變成約 2n³。</p>
+          <p>就算要解很多個右邊 b，也有更好的做法：把消去過程記下來（也就是之後的 LU 分解），分解一次約 n³/3，之後每個 b 只要 n² 次，比求反矩陣省下大約 2n³/3。除此之外，浮點數計算時，先算 A<sup>−1</sup> 再相乘的捨入誤差通常也比直接消去大。</p>
+          <p>那反矩陣什麼時候有用？(1) 理論推導與證明，例如 x = A<sup>−1</sup>b 說明解唯一、(AB)<sup>−1</sup> 的公式；(2) 2×2 這種公式一眼就寫得出來的小矩陣；(3) 真的需要 A<sup>−1</sup> 本身的時候，例如題目問 A<sup>−1</sup> 的某個元素、或要算 A<sup>−1</sup>B 這類式子。</p>
+          <details class="code-fold">
+            <summary>看程式碼：countInverseOps()：求反矩陣的乘除法次數</summary>
+            <div class="code-block">
+              <div class="code-head">countInverseOps()：利用右半 I 的零結構計數</div>
+              <pre class="code">long long countInverseOps(long long size) {
+  long long cnt = 0;
+  for (long long k = 0; k &lt; size; k++) {
+    long long live = (size - k - 1) + (k + 1);   /* 左半 pivot 右邊的格子 + 右半已經非零的 k+1 行 */
+    cnt += live;                                 /* 第 2 型：整列除以 pivot */
+    cnt += (size - 1) * live;                    /* 第 3 型：其他 n−1 列各做一次 */
+  }
+  return cnt;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>求 3×3 反矩陣</td><td>很常考</td><td>寫 [A | I]，逐行 Gauss–Jordan；算完挑幾個位置驗算 AA<sup>−1</sup> = I</td><td><a class="q-link" href="#q-la-0011">例題</a></td></tr>
+                <tr><td>含參數 k：何時可逆、求反矩陣</td><td>很常考</td><td>化簡到最後一個 pivot 含 k（或算 det），令它為 0 找出不可逆的 k；其餘 k 代入求 A<sup>−1</sup></td><td><a class="q-link" href="#q-la-0013">例題</a></td></tr>
+                <tr><td>反矩陣性質的是非題</td><td>常考</td><td>(AB)<sup>−1</sup> 順序顛倒、轉置與反矩陣可交換、和沒有公式；找反例用 B = −A 或對角矩陣</td><td><a class="q-link" href="#q-la-0015">例題</a></td></tr>
+                <tr><td>可逆的等價條件、證明</td><td>常考</td><td>從「Ax = 0 只有零解」切入最好用；方陣只需一邊的反矩陣</td><td><a class="q-link" href="#q-la-0014">例題</a></td></tr>
+                <tr><td>寫成基本矩陣的乘積</td><td>常考</td><td>記下化成 I 的每一步 E<sub>i</sub>，A = E<sub>1</sub><sup>−1</sup>E<sub>2</sub><sup>−1</sup>⋯E<sub>k</sub><sup>−1</sup>（順序和做的順序相同）</td><td><a class="q-link" href="#q-la-0012">例題</a></td></tr>
+                <tr><td>辨認基本矩陣、2×2 公式</td><td>偶爾</td><td>基本矩陣恰好是 I 做一次列運算；2×2 主對角對調、副對角變號、除以 ad − bc</td><td><a class="q-link" href="#q-la-0009">例題</a> <a class="q-link" href="#q-la-0010">例題</a></td></tr>
+                <tr><td>運算量比較</td><td>偶爾</td><td>求反矩陣約 n³，消去法約 n³/3，多個 b 時分解一次再每個 n²</td><td><a class="q-link" href="#q-la-0016">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> (AB)<sup>−1</sup> = A<sup>−1</sup>B<sup>−1</sup></span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 順序要顛倒：(AB)<sup>−1</sup> = B<sup>−1</sup>A<sup>−1</sup>；(A + B)<sup>−1</sup> 則沒有公式，A + B 甚至可能不可逆</span> <a class="q-link" href="#q-la-0015">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 第 3 型基本矩陣的反矩陣是它自己，或把 c 改成 1/c</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 第 3 型的反矩陣是把 c 變號（−c）；改成 1/c 的是第 2 型，反矩陣是自己的是第 1 型</span> <a class="q-link" href="#q-la-0010">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 2×2 公式是把 b、c 對調</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 對調的是主對角 a、d，b、c 只變號，最後除以 ad − bc</span> <a class="q-link" href="#q-la-0010">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 對角線上有兩個數不是 1 也算基本矩陣</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 基本矩陣只能和 I 差「一次」列運算；diag(2, 3) 是兩個基本矩陣的乘積</span> <a class="q-link" href="#q-la-0009">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> E<sub>3</sub>E<sub>2</sub>E<sub>1</sub>A = I，所以 A = E<sub>3</sub>E<sub>2</sub>E<sub>1</sub></span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> E<sub>3</sub>E<sub>2</sub>E<sub>1</sub> 是 A<sup>−1</sup>；A = E<sub>1</sub><sup>−1</sup>E<sub>2</sub><sup>−1</sup>E<sub>3</sub><sup>−1</sup>，每個都要取反矩陣、順序也要反過來</span> <a class="q-link" href="#q-la-0012">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 證明 A 可逆一定要同時驗證 AB = I 和 BA = I</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 方陣只要一邊成立就夠，但這是需要證明的定理（用 Bx = 0 只有零解）；非方陣不適用</span> <a class="q-link" href="#q-la-0014">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> [A | I] 左半化不成 I 時，換個順序再試或做行運算</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只要某一行找不到 pivot、左半出現零列，A 就不可逆；中途做行運算會讓右半不再是 A<sup>−1</sup></span> <a class="q-link" href="#q-la-0013">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 解 Ax = b 先求 A<sup>−1</sup> 最快</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 求反矩陣約 n³，是消去法 n³/3 的 3 倍；多個 b 也是分解一次再逐個代入比較省</span> <a class="q-link" href="#q-la-0016">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="matrix-inverse"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-21 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz-core.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz/linear-algebra/matrix-inverse.js?v=7f68026e"></script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pipelining 管線化 · 計算機組織 | 資工考研互動學習站</title>
+  <meta name="description" content="MIPS 五階段管線、時脈與加速比、throughput 與 latency、三種危障與 stall、forwarding。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=7f68026e">
+  <script src="../../../assets/js/theme.js?v=7f68026e"></script>
+</head>
+<body data-subject="computer-organization" data-chapter="processor" data-chno="4" data-topic="computer-organization/processor/pipelining" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Computer Organization 計算機組織</a> › Ch4 The Processor 處理器 › Pipelining 管線化</nav>
+      <div class="topic-head">
+        <h1>Pipelining 管線化<small>讓指令像生產線一樣重疊執行</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch4 The Processor</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">pipeline</span>
+          <span class="chip">hazard</span>
+          <span class="chip">forwarding</span>
+          <span class="chip">stall</span>
+          <span class="chip">speedup</span>
+        </div>
+      </div>
+
+      <section id="why-pipelining">
+        <h2>洗衣服的比喻：為什麼要管線化</h2>
+        <div class="panel prose">
+          <p>單一週期的處理器有個很浪費的地方：一條指令從取指令、解碼、運算、存取記憶體到寫回，全部塞在<b>同一個</b>時脈週期裡做完，所以時脈週期要長到夠最慢的指令（通常是 lw）走完整條路。更糟的是，當指令在做 ALU 運算時，取指令的硬體閒著；在讀資料記憶體時，ALU 又閒著——任何時刻都只有一小部分硬體在工作。</p>
+          <p>先想一個生活例子。宿舍有洗衣機、烘衣機、摺衣服的桌子，各要 30、40、20 分鐘，現在有 4 籃衣服：</p>
+          <ul>
+            <li><b>一籃做完再做下一籃</b>：每籃 30 + 40 + 20 = 90 分鐘，4 籃要 360 分鐘。洗第二籃的時候，烘衣機和桌子都空著。</li>
+            <li><b>管線化</b>：第一籃一洗完就去烘，洗衣機馬上開始洗第二籃。三台機器可以同時處理三籃不同的衣服。</li>
+          </ul>
+          <p>不過「交棒」要有固定節奏：如果規定每 40 分鐘大家一起往下一站移動（就像 CPU 每個時脈邊緣一起移動），那每一步都得配合最慢的烘衣機。洗衣服 30 分鐘做完，要空等 10 分鐘；摺衣服 20 分鐘做完，要空等 20 分鐘。這樣第一籃要 3 步 × 40 = 120 分鐘才完成（比原本的 90 分鐘還慢！），之後每 40 分鐘再完成一籃，4 籃共 (3 + 4 − 1) × 40 = 240 分鐘。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="pipelining-laundry"></div>
+            <figcaption><b>圖 1</b>：(a) 一籃做完再做下一籃，同一時間只有一台機器在動；(b) 管線化後最多三台機器同時工作，但每一步都固定 40 分鐘，洗和摺做完要空等，所以第一籃反而比較晚完成。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>情況</th><th>4 籃總時間</th><th>和依序做相比</th><th>說明</th></tr></thead>
+              <tbody>
+                <tr><td>依序做（30 / 40 / 20）</td><td>360 分鐘</td><td>1 倍</td><td>同一時間只用一台機器</td></tr>
+                <tr><td>管線，每步 40 分鐘</td><td>240 分鐘</td><td>1.5 倍</td><td>被最慢的烘衣機拖累</td></tr>
+                <tr><td>管線，三步都 30 分鐘（平衡）</td><td>180 分鐘</td><td>2 倍</td><td>每台機器都沒有空等</td></tr>
+                <tr><td>平衡的管線，100 籃</td><td>3060 分鐘 vs 依序 9000 分鐘</td><td>約 2.94 倍</td><td>籃數越多越接近 3 倍（階段數）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>這張表已經把整頁的重點都帶出來了：</p>
+          <ol>
+            <li>管線化<b>不會讓單一工作變快</b>（第一籃還變慢了），它讓「每單位時間完成的工作量」變多。</li>
+            <li>節奏由<b>最慢的階段</b>決定，階段越不平衡，效果越差。</li>
+            <li>一開始要先<b>填滿</b>管線、最後要<b>排空</b>，工作量越多，這段額外時間佔的比例越小，加速比越接近階段數。</li>
+          </ol>
+          <p>把這個想法用在 CPU 上就是 <span class="term">Pipelining<small>（管線化）</small></span>：把執行一條指令的過程切成幾個<b>階段</b>，每個時脈週期每個階段處理不同的指令，讓好幾條指令像生產線一樣重疊執行。</p>
+        </div>
+      </section>
+
+      <section id="five-stages">
+        <h2>MIPS 的五個階段與管線暫存器</h2>
+        <div class="panel prose">
+          <p>MIPS 的指令格式很規律（長度固定 32 位元、暫存器欄位位置固定、只有 lw / sw 會存取記憶體），所以很自然地切成五個 <span class="term">Pipeline Stage<small>（管線階段）</small></span>：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>階段</th><th>全名</th><th>做什麼</th></tr></thead>
+              <tbody>
+                <tr><td>IF</td><td>Instruction Fetch（取指令）</td><td>用 PC 從指令記憶體讀出指令，PC + 4</td></tr>
+                <tr><td>ID</td><td>Instruction Decode（解碼）</td><td>解讀指令、從暫存器檔讀出 rs、rt，把立即值做符號擴充</td></tr>
+                <tr><td>EX</td><td>Execute（執行）</td><td>ALU 做運算；lw / sw 算出記憶體位址；beq 比較兩個暫存器、算分支目標</td></tr>
+                <tr><td>MEM</td><td>Memory Access（存取記憶體）</td><td>lw 讀資料記憶體、sw 寫資料記憶體；其他指令什麼都不做</td></tr>
+                <tr><td>WB</td><td>Write Back（寫回）</td><td>把 ALU 結果或讀到的資料寫回暫存器檔</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>不是每種指令都真的需要五個階段：R 型指令不碰資料記憶體，MEM 是空的；sw 不寫暫存器，WB 是空的。但在管線裡<b>每條指令都走完五個階段</b>，空的階段就讓它「路過」。這樣每個階段每個週期只服務一條指令，不會有兩條指令同時要用同一個階段的硬體（例如 R 型提早在第 4 個週期寫回，就會和前一條 lw 的 WB 搶暫存器檔的寫入埠）。</p>
+          <h3>管線暫存器：階段之間的交棒區</h3>
+          <p>同一個週期裡，五個階段處理的是五條不同的指令，所以每一階段算出來的東西（指令本身、讀出的暫存器值、ALU 結果、目標暫存器編號、控制訊號……）不能直接傳給下一階段的硬體，否則下一條指令一進來就把它蓋掉了。解法是在相鄰兩個階段之間放一組 <span class="term">Pipeline Register<small>（管線暫存器）</small></span>，用它兩邊的階段命名：IF/ID、ID/EX、EX/MEM、MEM/WB。每個時脈邊緣，所有管線暫存器同時把這一階段的結果存起來，下一個週期給下一階段使用。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="pipelining-stages"></div>
+            <figcaption><b>圖 2</b>：五個階段之間夾著四組管線暫存器（橘色）。WB 後面不需要管線暫存器，因為結果直接寫進暫存器檔；PC 本身就扮演 IF 前面那一組。</figcaption>
+          </figure>
+          <p>一個容易忽略的細節：目標暫存器的編號（例如 lw 的 rt）也要一路跟著指令經過 ID/EX、EX/MEM、MEM/WB 傳到 WB，否則 WB 時拿到的會是<b>當時正在 ID 的那條指令</b>的欄位，寫錯暫存器。同理，控制訊號在 ID 產生後也要放進管線暫存器，跟著指令往後走。</p>
+          <p>模擬程式只需要知道每條指令「寫哪個暫存器、讀哪些暫存器、是不是 lw」：</p>
+          <details class="code-fold">
+            <summary>看程式碼：Inst 結構與 parse() 拆解指令</summary>
+            <div class="code-block"><div class="code-head">Inst 與 parse()：找出每條指令讀寫哪些暫存器</div><pre class="code">typedef struct {
+  char op[8];
+  char dst[8];        /* 寫入的暫存器；sw 沒有，存空字串 */
+  char src[2][8];     /* 讀取的暫存器，最多兩個；沒有就是空字串 */
+  int isLoad;         /* 1：lw，資料要到 MEM 結束才拿得到 */
+} Inst;
+
+int parse(const char *line, Inst *x) {
+  char buf[64], a[8] = "", b[8] = "", c[8] = "";
+  strncpy(buf, line, sizeof buf - 1);
+  buf[sizeof buf - 1] = '\0';
+  for (char *p = buf; *p; p++)
+    if (*p == ',' || *p == '(' || *p == ')') *p = ' ';
+  if (sscanf(buf, "%7s %7s %7s %7s", x-&gt;op, a, b, c) != 4) return 0;
+  x-&gt;isLoad = strcmp(x-&gt;op, "lw") == 0;
+  if (x-&gt;isLoad) {                          /* lw rt, off(rs)：讀 rs、寫 rt */
+    strcpy(x-&gt;dst, a); strcpy(x-&gt;src[0], c); x-&gt;src[1][0] = '\0';
+  } else if (strcmp(x-&gt;op, "sw") == 0) {    /* sw rt, off(rs)：讀 rt 和 rs、不寫暫存器 */
+    x-&gt;dst[0] = '\0'; strcpy(x-&gt;src[0], a); strcpy(x-&gt;src[1], c);
+  } else if (x-&gt;op[strlen(x-&gt;op) - 1] == 'i') { /* addi rt, rs, imm */
+    strcpy(x-&gt;dst, a); strcpy(x-&gt;src[0], b); x-&gt;src[1][0] = '\0';
+  } else {                                  /* add rd, rs, rt */
+    strcpy(x-&gt;dst, a); strcpy(x-&gt;src[0], b); strcpy(x-&gt;src[1], c);
+  }
+  return 1;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="clock-and-speedup">
+        <h2>時脈週期與加速比</h2>
+        <div class="panel prose">
+          <h3>時脈由最慢的階段決定</h3>
+          <p>管線的每個階段都必須在一個時脈週期內做完，而所有階段共用同一個時脈，所以：</p>
+          <pre class="formula">管線時脈週期 = max(各階段延遲) + 管線暫存器的額外延遲
+單週期時脈週期 = 各階段延遲的總和（最慢那條指令走完全程）</pre>
+          <p>來算一個例子。假設各階段延遲是 IF 250 ps、ID 150 ps、EX 200 ps、MEM 300 ps、WB 100 ps，管線暫存器每級多 20 ps：</p>
+          <ul>
+            <li>單週期：時脈 = 250 + 150 + 200 + 300 + 100 = <b>1000 ps</b>，每條指令 1000 ps。</li>
+            <li>管線：時脈 = max = 300（MEM）+ 20 = <b>320 ps</b>。注意不是 1000 ÷ 5 = 200 ps：ID 和 WB 只要 100～150 ps 就做完，剩下的時間都在空等 MEM。</li>
+          </ul>
+          <h3>加速比：理想是階段數，實際比較少</h3>
+          <p>k 個階段的管線跑 n 條指令（先不管危障）：第一條要 k 個週期才走完，之後每個週期完成一條，所以總共</p>
+          <pre class="formula">管線總時間 = (k + n − 1) × 管線時脈
+加速比 = 單週期總時間 ÷ 管線總時間 = n × T<sub>單週期</sub> ÷ ((k + n − 1) × T<sub>管線</sub>)</pre>
+          <p>用上面的數字代進去：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>n（指令數）</th><th>單週期</th><th>管線</th><th>加速比</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>1000 ps</td><td>5 × 320 = 1600 ps</td><td>0.625</td><td>只跑一條指令時管線反而比較慢</td></tr>
+                <tr><td>100</td><td>100,000 ps</td><td>104 × 320 = 33,280 ps</td><td>3.005</td><td>填滿／排空的 4 個週期佔約 4%</td></tr>
+                <tr><td>1,000,000</td><td>10<sup>9</sup> ps</td><td>約 3.2 × 10<sup>8</sup> ps</td><td>3.125</td><td>n 很大時趨近 1000 ÷ 320</td></tr>
+                <tr><td>100（五階段都 200 ps、沒有額外延遲）</td><td>100,000 ps</td><td>104 × 200 = 20,800 ps</td><td>4.808</td><td>平衡時才接近理想的 5 倍</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>所以「k 階段管線快 k 倍」只是理想值，要同時滿足三個條件：<b>階段完全平衡</b>（每一階段剛好 T<sub>單週期</sub> ÷ k）、<b>沒有管線暫存器的額外延遲</b>、<b>指令夠多</b>讓填滿與排空可以忽略。再加上下面要講的危障會插入 stall，實際的加速比還會更低。這個例子裡，階段不平衡和暫存器延遲兩項就讓加速比從 5 掉到 3.125，只剩理想值的 62.5%。</p>
+          <h3>Throughput 和 latency</h3>
+          <p>兩個常被混在一起的指標：</p>
+          <ul>
+            <li><span class="term">Latency<small>（延遲）</small></span>：<b>一條</b>指令從開始到結束花多久。例子裡單週期是 1000 ps，管線是 5 × 320 = 1600 ps——管線化讓單一指令變慢了 60%，因為每一階段都要湊滿 320 ps，還多了管線暫存器的延遲。</li>
+            <li><span class="term">Throughput<small>（產出率）</small></span>：<b>每單位時間</b>完成幾條指令。單週期每 1000 ps 完成一條；管線填滿之後每 320 ps 就完成一條，throughput 是原本的 3.125 倍。</li>
+          </ul>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 一句話記：管線化提高 throughput，不降低（甚至增加）單一指令的 latency。程式由大量指令組成，看的是 throughput，所以整體變快。</p></div>
+          <details class="code-fold">
+            <summary>看程式碼：pipeTime() 時脈、總時間與加速比</summary>
+            <div class="code-block"><div class="code-head">pipeTime()：單週期與管線的時間比較</div><pre class="code">void pipeTime(const int stage[], int k, int reg, long n) {
+  int sum = 0, mx = 0;
+  for (int s = 0; s &lt; k; s++) {
+    sum += stage[s];
+    if (stage[s] &gt; mx) mx = stage[s];
+  }
+  int cycle = mx + reg;                       /* 時脈由最慢的階段決定 */
+  long single = n * sum;                      /* 單週期：每條指令都花 sum */
+  long piped = (k + n - 1) * cycle;           /* 管線：填滿 k 個週期，之後每週期完成一條 */
+  printf("各階段總和 %d ps、最慢階段 %d ps、管線時脈 %d ps\n", sum, mx, cycle);
+  printf("  n = %ld：單週期 %ld ps、管線 %ld ps，加速比 %.3f（理想 %d）\n",
+         n, single, piped, (double)single / piped, k);
+  printf("  單一指令 latency：單週期 %d ps、管線 %d ps\n", sum, k * cycle);
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="timing-diagram">
+        <h2>管線時序圖怎麼看</h2>
+        <div class="panel prose">
+          <p>分析管線最常用的工具是 <span class="term">Pipeline Diagram<small>（管線時序圖）</small></span>：每一<b>列</b>是一條指令，每一<b>行</b>是一個時脈週期，格子裡寫這條指令在這個週期位於哪個階段。沒有任何危障時，每條指令比前一條晚一個週期開始，畫出來是整齊的階梯：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="pipelining-ideal"></div>
+            <figcaption><b>圖 3</b>：5 條指令、沒有危障，共 5 + 5 − 1 = 9 個週期。直著看週期 5（橘色）：五條指令分別在五個不同的階段，硬體全部在工作；週期 1～4 管線還沒滿，週期 6～9 後面沒有新指令，正在排空。</figcaption>
+          </figure>
+          <p>讀圖的兩個方向：</p>
+          <ul>
+            <li><b>橫著看一列</b>：一條指令經過的五個階段，長度就是 latency（5 個週期）。</li>
+            <li><b>直著看一行</b>：同一個週期裡同時有哪些指令在執行、各在哪個階段。危障就是在直著看的時候發現兩條指令「衝突」或「資料還沒準備好」。</li>
+          </ul>
+          <p>圖裡 9 個週期完成 5 條指令，平均 CPI = 9 ÷ 5 = 1.8，並不是 1。原因是那 4 個填滿週期；指令越多，CPI 越接近 1（1000 條指令時是 1004 ÷ 1000 = 1.004）。所以題目說「理想管線 CPI = 1」，指的是<b>穩態</b>：管線填滿後每個週期完成一條。考試要算「總週期數」時，記得 = k + n − 1 + stall 數。</p>
+        </div>
+      </section>
+
+      <section id="hazards">
+        <h2>三種危障與最基本的處理</h2>
+        <div class="panel prose">
+          <p>理想的階梯圖假設下一條指令永遠可以在下一個週期開始，但實際上有些情況會讓它不能開始，這叫 <span class="term">Hazard<small>（危障）</small></span>。分成三種：</p>
+          <h3>Structural hazard（結構危障）：硬體不夠用</h3>
+          <p>兩條指令在同一個週期要用<b>同一個硬體</b>。最典型的是只有一個記憶體：lw 在 MEM 讀資料的同一個週期，三條之後的指令正好在 IF 要讀指令，兩者搶同一個記憶體，只好讓其中一個等。MIPS 管線用<b>分開的指令記憶體和資料記憶體</b>（實際上是分開的 instruction cache 和 data cache）避免這個問題；暫存器檔則讓 WB 在<b>前半週期寫、ID 在後半週期讀</b>，同一個週期可以一寫一讀。也因為每條指令都固定走完五個階段，每個階段的硬體每個週期只被一條指令使用，MIPS 五階段管線本身沒有結構危障。</p>
+          <h3>Data hazard（資料危障）：資料還沒算好</h3>
+          <p>後面的指令要讀的暫存器，是前面還沒做完的指令要寫的，這種「先寫後讀」的相依叫 <span class="term">RAW<small>（Read After Write）</small></span>。例如：</p>
+          <pre class="formula">add $t1, $s1, $s2     # 第 5 個週期 WB 才把 $t1 寫回
+sub $t3, $t1, $s3     # 第 3 個週期就想在 ID 讀 $t1</pre>
+          <p>sub 讀到的會是舊的 $t1。最基本的兩種處理：</p>
+          <ul>
+            <li><span class="term">Stall<small>（暫停，又叫插入 bubble）</small></span>：讓 sub 停下來等，直到 add 寫回。暫存器檔前半寫後半讀，所以 sub 的 ID 可以和 add 的 WB 在<b>同一個</b>週期，相鄰兩條相依要停 2 個週期，中間隔一條停 1 個，隔兩條就不用停。</li>
+            <li><span class="term">Forwarding<small>（轉送，又叫 bypassing）</small></span>：add 的結果其實在 EX 結束時就算出來了，存在 EX/MEM 管線暫存器裡，只是還沒寫回。加一條「捷徑」直接把它送到下一條指令的 ALU 輸入，sub 就完全不用等。來源可以是 EX/MEM（上一條的結果）或 MEM/WB（上上一條的結果）。</li>
+          </ul>
+          <p>Forwarding 有一個救不了的情況：<span class="term">Load-Use Hazard<small>（載入使用危障）</small></span>。lw 的資料要到 <b>MEM 結束</b>才從記憶體讀出來，下一條指令卻在同一個時間點就要在 EX 使用它——資料不能往過去送，所以一定要 <b>stall 1 個週期</b>，再從 MEM/WB 轉送。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="pipelining-hazard-cases"></div>
+            <figcaption><b>圖 4</b>：同樣是相鄰的相依，三種情況要等的週期不同。綠色是資料的來源與使用的格子，箭頭是資料怎麼過去的。(a) 沒有 forwarding 要等 WB，ID 和 WB 同一個週期，stall 2；(b) 有 forwarding，EX 結果直接送到下一條的 EX，不用停；(c) lw 的資料 MEM 結束才有，即使轉送也要 stall 1。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>相依（生產者 → 相鄰的下一條）</th><th>無 forwarding</th><th>有 forwarding</th><th>原因</th></tr></thead>
+              <tbody>
+                <tr><td>ALU 指令 → 使用者</td><td>stall 2</td><td>0</td><td>EX 結束就有結果，從 EX/MEM 轉送</td></tr>
+                <tr><td>lw → 使用者</td><td>stall 2</td><td>stall 1</td><td>MEM 結束才有資料，從 MEM/WB 轉送</td></tr>
+                <tr><td>中間隔一條的 lw → 使用者</td><td>stall 1</td><td>0</td><td>多隔一條，時間剛好夠</td></tr>
+                <tr><td>中間隔兩條以上</td><td>0</td><td>0</td><td>已經寫回暫存器檔</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>編譯器也能幫忙：只要把一條不相關的指令搬到 lw 和使用者之間，load-use 的 stall 就不見了（練習題有一題重排的例子）。forwarding 單元怎麼判斷該轉送哪一個、hazard detection unit 怎麼插入 bubble，在 Data Hazards and Forwarding 資料危障與轉送主題（籌備中）會詳細講。</p>
+          <h3>Control hazard（控制危障）：還不知道下一條是誰</h3>
+          <p>遇到分支指令（例如 beq）時，要比較完兩個暫存器才知道下一條該取 PC + 4 還是分支目標，但 IF 每個週期都要取一條新指令。最簡單的做法是 stall 到結果出來：如果分支到 MEM 階段才決定，每個分支要停 3 個週期；把比較和目標位址計算提早到 ID，可以降到 1 個。更好的做法是<b>先猜</b>（例如一律猜不跳，照常取 PC + 4），猜對就沒有損失，猜錯再把取錯的指令清掉；或是用 delayed branch 讓分支後面那一格一定執行。分支預測的各種方法在 Control Hazards and Branch Prediction 控制危障與分支預測主題（籌備中）介紹，這一頁的模擬只處理資料危障。</p>
+          <h3>模擬程式怎麼排時序</h3>
+          <p>把上面的規則寫成程式：對每條指令 j，先假設它可以在 IF 的下一個週期完成 ID；再找它讀的每個暫存器最近是誰寫的（lastWriter），依有沒有 forwarding 算出它<b>最早</b>可以完成 ID 的週期 need，取最大值。多等的週期就是 stall。沒有 forwarding 時 need = 生產者的 ID + 3（就是它的 WB 週期）；有 forwarding 時 ALU 指令是 ID + 1（下一條照常進行）、lw 是 ID + 2（多停一格）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：lastWriter() 與 schedule() 排出時序</summary>
+            <div class="code-block"><div class="code-head">lastWriter()、schedule()：偵測 RAW、插入 stall、算總週期</div><pre class="code">int lastWriter(const Inst *in, int j, const char *reg) {
+  if (reg[0] == '\0' || strcmp(reg, "$zero") == 0 || strcmp(reg, "$0") == 0) return -1;
+  for (int i = j - 1; i &gt;= 0; i--)
+    if (strcmp(in[i].dst, reg) == 0) return i;
+  return -1;
+}
+
+int schedule(const Inst *in, int n, int forwarding) {
+  for (int j = 0; j &lt; n; j++) {
+    fetch[j] = (j == 0) ? 1 : decode[j - 1];   /* 前一條離開 IF/ID，這一條才完成 IF */
+    int d = fetch[j] + 1;                      /* 沒有危障：下一個週期就 ID */
+    for (int s = 0; s &lt; 2; s++) {
+      int i = lastWriter(in, j, in[j].src[s]); /* RAW：我要讀的暫存器是誰寫的 */
+      if (i &lt; 0) continue;
+      int need;
+      if (!forwarding) need = decode[i] + 3;          /* 等它 WB：前半週期寫、後半週期讀 */
+      else if (in[i].isLoad) need = decode[i] + 2;    /* load-use：MEM 結束才有資料 */
+      else need = decode[i] + 1;                      /* EX 結束就能轉送給下一條 */
+      if (need &gt; d) d = need;
+    }
+    decode[j] = d;
+    stalls[j] = d - fetch[j] - 1;              /* 多等的週期就是 stall */
+  }
+  return decode[n - 1] + 3;                    /* 最後一條：EX、MEM、WB 還要 3 個週期 */
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作：管線時序圖</h2>
+        <div class="panel prose">
+          <p>輸入 2～6 條指令（用分號隔開），支援 add / sub / and / or / slt、addi / andi / ori / slti、lw / sw。按「有 forwarding」或「無 forwarding」，逐個週期看每條指令走到哪個階段、在哪裡被擋住、資料從哪裡轉送過來。stall 畫在 IF 和 ID 之間，表示指令被擋在 IF/ID 管線暫存器裡；有些題目寫成「IF ID ID EX」或「IF ID stall EX」，意思一樣，總週期數不變。</p>
+          <p>預設的例子是 lw $t0 → add 用 $t0 → sub 用 $t1：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>指令</th><th>無 forwarding</th><th>有 forwarding</th></tr></thead>
+              <tbody>
+                <tr><td>lw $t0,0($s0)</td><td>IF ID EX MEM WB（週期 1～5）</td><td>IF ID EX MEM WB（週期 1～5）</td></tr>
+                <tr><td>add $t1,$t0,$t2</td><td>stall 2，ID 在週期 5（和 lw 的 WB 同時）</td><td>stall 1，EX 在週期 5 接 lw 的 MEM/WB</td></tr>
+                <tr><td>sub $t3,$t1,$t4</td><td>stall 2，ID 在週期 8</td><td>不用停，EX 在週期 6 接 add 的 EX/MEM</td></tr>
+                <tr><td>總週期 / CPI</td><td>11 / 3.67</td><td>8 / 2.67</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>3 條指令理想上只要 3 + 4 = 7 個週期。有 forwarding 時只多了 load-use 的 1 個週期；沒有 forwarding 時多了 4 個，總時間比理想多了 57%（11 ÷ 7 ≈ 1.57）。</p>
+        </div>
+        <div class="viz" data-viz="pipeline-timing"></div>
+      </section>
+
+      <section id="hazard-performance">
+        <h2>把 stall 算進效能</h2>
+        <div class="panel prose">
+          <p>指令數很大時，填滿與排空可以忽略，每條指令平均花 1 個週期，再加上平均分攤到的 stall：</p>
+          <pre class="formula">CPI = 1 + 平均每條指令的 stall 週期數
+     = 1 + Σ（該情況出現的比例 × 每次 stall 的週期數）
+管線相對於「同一個管線但沒有 stall」的速度 = 1 ÷ CPI</pre>
+          <p>例子：有 forwarding 的五階段管線，30% 的指令是 lw，其中一半的下一條馬上用到它的結果（各 stall 1）；10% 是分支，每個分支 stall 1 個週期：</p>
+          <ul>
+            <li>load-use：0.3 × 0.5 × 1 = 0.15</li>
+            <li>分支：0.1 × 1 = 0.10</li>
+            <li>CPI = 1 + 0.15 + 0.10 = <b>1.25</b>：比理想慢 25%，等於每 4 條指令就浪費 1 個週期。</li>
+          </ul>
+          <p>要和單週期比的話，記得兩邊的時脈不一樣：加速比 = (CPI<sub>單</sub> × T<sub>單</sub>) ÷ (CPI<sub>管線</sub> × T<sub>管線</sub>)，單週期的 CPI 是 1。延續前面 1000 ps 對 320 ps 的例子，加速比 = 1000 ÷ (1.25 × 320) = 2.5，比沒有 stall 的 3.125 又少了 20%。</p>
+          <p>這也說明了為什麼管線不能無限加深：階段越多，每個階段越短，時脈可以越快；但管線暫存器的額外延遲會佔越來越大的比例，而且 load-use、分支要停的週期數也會變多。現代處理器的管線深度大約落在十幾級，是在這些因素之間取平衡的結果。</p>
+          <details class="code-fold">
+            <summary>看程式碼：effectiveCPI() 有 stall 時的平均 CPI</summary>
+            <div class="code-block"><div class="code-head">effectiveCPI()：1 + 各種 stall 的平均</div><pre class="code">double effectiveCPI(double loadFrac, double useFrac, double branchFrac, int branchPenalty) {
+  return 1 + loadFrac * useFrac * 1 + branchFrac * branchPenalty;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>算管線時脈、總時間、加速比</td><td>很常考</td><td>時脈 = 最慢階段 + 暫存器延遲；總時間 = (k + n − 1) × 時脈；加速比 = 單週期總時間 ÷ 管線總時間</td><td><a class="q-link" href="#q-co-0008">例題</a> <a class="q-link" href="#q-co-0009">例題</a></td></tr>
+                <tr><td>畫時序圖、算總週期數</td><td>很常考</td><td>逐條找 RAW 相依；無 forwarding：ID 對齊生產者的 WB；有 forwarding：只有 load-use 停 1；總週期 = k + n − 1 + stall</td><td><a class="q-link" href="#q-co-0010">例題</a></td></tr>
+                <tr><td>重排指令消除 load-use</td><td>常考</td><td>找出 lw 後面馬上使用的指令，把不相關的指令（通常是下一個 lw）搬到中間，確認沒有破壞原本的相依</td><td><a class="q-link" href="#q-co-0011">例題</a></td></tr>
+                <tr><td>有危障時的 CPI 與加速比</td><td>常考</td><td>CPI = 1 + Σ 比例 × stall；和單週期比時要乘上各自的時脈</td><td><a class="q-link" href="#q-co-0012">例題</a></td></tr>
+                <tr><td>危障分類、throughput 與 latency 觀念</td><td>常考</td><td>搶硬體 → structural；資料沒好 → data；不知道下一條 → control；管線提高 throughput 不降低 latency</td><td><a class="q-link" href="#q-co-0007">例題</a> <a class="q-link" href="#q-co-0013">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 管線化讓每條指令執行得更快</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 單一指令的 latency 不變甚至變長，變快的是 throughput</span> <a class="q-link" href="#q-co-0007">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 管線時脈 = 單週期時脈 ÷ 階段數</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 時脈由最慢的階段決定，再加上管線暫存器的延遲</span> <a class="q-link" href="#q-co-0008">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> k 階段管線一定快 k 倍</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要階段平衡、沒有額外延遲、指令夠多、沒有 stall 才是 k 倍；n 條指令要 k + n − 1 個週期</span> <a class="q-link" href="#q-co-0009">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 沒有 forwarding 時，要等生產者 WB 的下一個週期才能 ID</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 暫存器檔前半週期寫、後半週期讀，ID 可以和 WB 同一個週期，相鄰相依停 2 個週期就好</span> <a class="q-link" href="#q-co-0010">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 有了 forwarding 就沒有 stall</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> lw 後面馬上使用它的結果（load-use）仍要 stall 1 個週期</span> <a class="q-link" href="#q-co-0011">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 和單週期比加速比時只比 CPI</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 兩者時脈不同，要比 CPI × 時脈</span> <a class="q-link" href="#q-co-0012">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 只有一個記憶體也沒關係</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> IF 和 lw / sw 的 MEM 同一個週期都要用記憶體，是 structural hazard，所以要分開指令與資料記憶體</span> <a class="q-link" href="#q-co-0013">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="pipelining"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-21 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz-core.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz/computer-organization/pipelining.js?v=7f68026e"></script>
+</body>
+</html>
