@@ -4433,6 +4433,926 @@
       ],
       "answer": "24 (a)；25 (d)；26 (a)；27 (b)（26 待確認）",
       "explanation": "<p><b>24</b>：send、receive 直接寫出對方 process 的名字（Q、R、P），是 <b>direct</b> communication（直接命名）→ (a)。</p>\n<p><b>25</b>：direct communication 是 process 之間直接建立連結，不需要 mailbox 或 port（那是 indirect communication 用的）→ (d)。</p>\n<p><b>26</b>：三個 process 都是先 send 再 receive。若 send 是 blocking（要等對方 receive 才返回），P 等 Q 收、Q 等 R 收、R 等 P 收，但三個人都卡在 send，沒有人走到 receive，形成循環等待 → <b>BS</b> 造成 deadlock → (a)。若只有 receive 是 blocking，send 會先把訊息放出去，之後每個 receive 都收得到，不會 deadlock。（「BS 與 BR 同時成立」也會 deadlock，但造成 deadlock 的關鍵是 BS，選 (a)；若出題者要的是 (c)，待確認。）</p>\n<p><b>27</b>：要保證每個 process 收到訊息後才繼續，receive 必須是 <b>blocking</b>（沒收到就等）→ (b)。</p>"
+    },
+    {
+      "id": "os-0183",
+      "topics": [
+        "os-basics",
+        "protection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following x86 instructions cannot be executed in Ring 3 privilege level?</p>",
+      "choices": [
+        "(a) MOV CR0, EAX.",
+        "(b) HLT.",
+        "(c) LGDT.",
+        "(d) LIDT."
+      ],
+      "answer": "(a)(b)(c)(d)",
+      "explanation": "<p>Ring 3 是 user mode，以下都是 privileged instruction（特權指令），只能在 Ring 0 執行，否則觸發 general protection fault：</p>\n<p><b>(a)</b> 寫 CR0 會改變分頁、保護模式等核心設定；<b>(b)</b> HLT 讓 CPU 停機，user 程式能用就能癱瘓系統；<b>(c)</b> LGDT 載入全域描述表，掌控記憶體分段與權限；<b>(d)</b> LIDT 載入中斷描述表，等於能改寫所有中斷處理常式。四個都是特權指令。</p>"
+    },
+    {
+      "id": "os-0184",
+      "topics": [
+        "os-structures"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following x86 instructions are position-independent (i.e., the code can be executed at any memory address)?</p>",
+      "choices": [
+        "(a) MOV EAX, 1.",
+        "(b) XOR EBX, EBX.",
+        "(c) INT 0x80.",
+        "(d) ADD EAX, 1."
+      ],
+      "answer": "(a)(b)(c)(d)",
+      "explanation": "<p>position-independent（與位置無關）的意思是指令裡沒有用到絕對記憶體位址，不管被載入到哪裡執行結果都一樣。四條指令都只用到暫存器、立即值或中斷向量編號：(a) 把常數 1 放進 EAX；(b) 把 EBX 清 0；(c) 觸發 0x80 號軟體中斷（跳到 IDT 指定的位置，與程式所在位址無關）；(d) EAX 加 1。都沒有引用程式本身的位址，所以都是位置無關的。</p>"
+    },
+    {
+      "id": "os-0185",
+      "topics": [
+        "process-concept",
+        "protection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider the following C program on x86_64 Linux.</p>\n<pre class=\"code\">01  #include &lt;stdio.h&gt;\n02  #include &lt;stdlib.h&gt;\n03  #include &lt;sys/mman.h&gt;\n04  #include &lt;unistd.h&gt;\n05\n06  int main() {\n07\n08    size_t pagesize = sysconf(_SC_PAGESIZE);\n09\n10    void *buffer = aligned_alloc(pagesize, pagesize);\n11    if (!buffer) {\n12        perror(\"Failed to allocate memory\");\n13        return EXIT_FAILURE;\n14    }\n15\n16\n17    if (mprotect(buffer, pagesize, PROT_READ | PROT_WRITE | PROT_EXEC) == -1) {\n18        perror(\"mprotect - error 1\");\n19        free(buffer);\n20        return EXIT_FAILURE;\n21    }\n22\n23    sprintf((char *)buffer, \"This is a test.\\n\");\n24\n25    if (mprotect(buffer, pagesize, 0 ) == -1) {\n26        perror(\"mprotect - error2\");\n27        free(buffer);\n28        return EXIT_FAILURE;\n29    }\n30\n31    printf(\"%s\", (char *)buffer);\n32    free(buffer);\n33\n34    return EXIT_SUCCESS;\n35  }</pre>\n<p>Which of the following statement(s) are true?</p>",
+      "choices": [
+        "(a) The program will output \"This is a test.\" on the screen.",
+        "(b) The memory block pointed to by buffer will be allocated on the stack.",
+        "(c) The variable pagesize will be allocated on the stack.",
+        "(d) After a successful memory allocation, the value of the buffer pointer will be a multiple of pagesize."
+      ],
+      "answer": "(c)(d)（(c) 待確認）",
+      "explanation": "<p><b>(a) 錯</b>：第 25 行把那一頁的權限設成 0（PROT_NONE，不能讀寫執行），第 31 行 printf 讀 buffer 時就會觸發 segmentation fault，程式當掉，不會印出字串。<br>\n<b>(b) 錯</b>：aligned_alloc 跟 malloc 一樣從 <b>heap</b> 配置。<br>\n<b>(c) 對</b>：pagesize 是 main 的區域變數，放在 stack（最佳化時可能只存在暫存器裡，所以待確認）。<br>\n<b>(d) 對</b>：aligned_alloc(pagesize, …) 保證回傳的位址對齊到 pagesize，也就是 pagesize 的倍數；這也是 mprotect 要求位址必須頁對齊的原因。</p>"
+    },
+    {
+      "id": "os-0186",
+      "topics": [
+        "realtime-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which statement(s) best describes the Earliest Deadline First (EDF) scheduling algorithm?</p>",
+      "choices": [
+        "(a) EDF prioritizes tasks based on their computational complexity, scheduling the most complex tasks first.",
+        "(b) EDF is a preemptive scheduling algorithm that prioritizes tasks based on their proximity to a fixed deadline.",
+        "(c) EDF assigns priority to tasks based on the order of their arrival, with the earliest arrivals being processed first.",
+        "(d) EDF is a non-preemptive scheduling algorithm that schedules tasks in a round-robin fashion, regardless of their deadlines."
+      ],
+      "answer": "(b)",
+      "explanation": "<p>EDF（最早截止時間優先）是動態優先權、可搶占的即時排程：deadline 越近優先權越高，新到的工作 deadline 更早就搶占 → (b)。(a) 看的不是計算量；(c) 依到達順序是 FCFS；(d) 和 deadline 無關、輪流執行是 RR。</p>"
+    },
+    {
+      "id": "os-0187",
+      "topics": [
+        "os-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）On x86_64 systems, the Linux system calls are made using the <code>syscall</code> instruction with the following calling conventions</p>\n<ul><li>RAX: Contains the system call number.</li><li>RDI, RSI, RDX, R10, R8, and R9: Are used to pass up to six arguments to the system call.</li><li>RCX and R11: Are clobbered after the syscall instruction.</li><li>Return Value: The return value of the system call is placed in the RAX register.</li></ul>\n<p>The implementation of the sys_write (write) system call in the Linux kernel is as follows.</p>\n<pre class=\"code\">/ fs / read_write.c\n643         return ret;\n644 }\n645\n646 SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf,\n647                 size_t, count)\n648 {\n649         return ksys_write(fd, buf, count);\n650 }</pre>\n<p>And, the man pages description for sys_write is as follows.</p>\n<pre class=\"code\">write(2)                System Calls Manual                write(2)\n\nNAME\n       write - write to a file descriptor\nLIBRARY\n       Standard C library (libc, -lc)\nSYNOPSIS\n       #include &lt;unistd.h&gt;\n\n       ssize_t write(int fd, const void buf[.count], size_t count);\nDESCRIPTION\n       write() writes up to count bytes from the buffer starting at buf\n       to the file referred to by the file descriptor fd.\n\n       The number of bytes written may be less than count if, for\n       example, there is insufficient space on the underlying physical\n       medium, or the RLIMIT_FSIZE resource limit is encountered (see\n       setrlimit(2)), or the call was interrupted by a signal handler\n       after having written less than count bytes.  (See also pipe(7).)</pre>\n<p>Which of the following statement(s) is true for invoking the sys_write system call?</p>",
+      "choices": [
+        "(a) Need to assign fd to RAX.",
+        "(b) Need to assign the address value of buf to RSI.",
+        "(c) The actual number of bytes written may be less than the number specified by count.",
+        "(d) User-level programs can use syscall to call any function in the kernel."
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<p>依呼叫慣例：RAX 放 system call 編號，參數依序放 RDI、RSI、RDX。write 的三個參數是 fd、buf、count，所以 fd → RDI、buf → <b>RSI</b>、count → RDX。</p>\n<p><b>(a) 錯</b>：RAX 放的是 write 的系統呼叫編號，不是 fd。<br>\n<b>(b) 對</b>。<br>\n<b>(c) 對</b>：man page 明確寫了可能少於 count（空間不足、資源限制、被 signal 中斷），所以程式要檢查回傳值、必要時繼續寫。<br>\n<b>(d) 錯</b>：syscall 只能透過系統呼叫表進入 kernel 事先定義好的入口，不能任意呼叫 kernel 函式，這正是 user／kernel 分離的保護機制。</p>"
+    },
+    {
+      "id": "os-0188",
+      "topics": [
+        "process-concept",
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on process are true?</p>",
+      "choices": [
+        "(a) In UNIX, a new process is created by the fork() system call. The new process consists of a copy of the address space of the original process.",
+        "(b) A thread shares with other threads belonging to the same process its code section, data section, stack, and other operating-system resources, such as open files and signals.",
+        "(c) With using standard C library, user program can easily read or write a file from storage devices without the help from operating systems.",
+        "(d) When a context switch occurs, the kernel saves the context of the old process in its PCB and loads the saved context of the new process scheduled to run. The context includes the value of the CPU registers, the process state, and memory-management information."
+      ],
+      "answer": "(a)(d)",
+      "explanation": "<p><b>(a) 對</b>：fork 產生的子行程擁有父行程位址空間的複本（實作上用 copy-on-write）。<br>\n<b>(b) 錯</b>：同一 process 的 thread 共用 code、data、開啟的檔案、signal，但每個 thread 有<b>自己的 stack</b>（以及暫存器、PC）。<br>\n<b>(c) 錯</b>：fopen、fread 等標準 C 函式庫內部最後都要呼叫 open、read 等系統呼叫，由 OS 存取儲存裝置。<br>\n<b>(d) 對</b>：這正是 context switch 的過程與 PCB 內容。</p>"
+    },
+    {
+      "id": "os-0189",
+      "topics": [
+        "io-systems",
+        "demand-paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on I/O system are true?</p>",
+      "choices": [
+        "(a) NAND-flash based SSDs suffer from limited lifetime. The SSD controller runs a software layer to alleviate this issue by leveling writes without the help from the operating system.",
+        "(b) When the CPU detects that a controller has asserted a signal on the interrupt-request line, the CPU performs a state save and jumps to the interrupt-handler routine at a fixed address in memory.",
+        "(c) When DRAM generates an interrupt, CPU saves the state of the user code, switches to kernel mode, and dispatches to the kernel routine or thread that implements the requested service.",
+        "(d) In Linux, the swap space is now used only for anonymous memory. That is, Linux will not swap out storage-backed files."
+      ],
+      "answer": "(a)(b)(d)",
+      "explanation": "<p><b>(a) 對</b>：NAND flash 的每個 block 寫入／抹除次數有限，SSD 控制器上的 FTL（flash translation layer）自己做 wear leveling（平均抹寫），OS 不必介入。<br>\n<b>(b) 對</b>：這是中斷處理的基本流程：偵測到 interrupt-request line 被拉起，保存狀態後跳到固定位址的中斷處理常式（實際上經由中斷向量表）。<br>\n<b>(c) 錯</b>：DRAM 是被動的記憶體，不會產生中斷；「切到 kernel、派送到提供服務的常式」描述的是 system call（trap）。<br>\n<b>(d) 對</b>：Linux 的 swap 只放 anonymous memory（heap、stack 等沒有檔案對應的頁）；有檔案對應的頁被回收時，乾淨的直接丟掉、髒的寫回原檔案即可，不需要 swap。</p>"
+    },
+    {
+      "id": "os-0190",
+      "topics": [
+        "paging",
+        "contiguous-allocation",
+        "demand-paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on memory management are true?</p>",
+      "choices": [
+        "(a) When a CPU needs to access data in DRAM, the DRAM controller verifies the existence of the data. If the data is not found in the main memory, the DRAM controller generates a page fault.",
+        "(b) In the system adopting paging, when a process is to be executed, its pages are loaded into <u>any</u> available memory frames from their source (a file system or the backing store).",
+        "(c) In Linux and Solaris, the slab-allocation algorithm uses caches to store kernel objects. When a new object for a kernel data structure is needed, the allocator can assign any free object from the cache to satisfy the request.",
+        "(d) On Linux which adopts paging, multiple processes can share one page table to save memory consumption."
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<p><b>(a) 錯</b>：page fault 是 <b>MMU</b> 查 page table 發現 valid bit 為 0 時觸發的，DRAM controller 只負責讀寫實體記憶體，不知道哪些頁在不在。<br>\n<b>(b) 對</b>：paging 的好處就是頁可以放進任何空閒的 frame，不必連續。<br>\n<b>(c) 對</b>：slab 為每種 kernel 物件建一個 cache，裡面的物件大小都一樣，任何一個空閒物件都能直接拿來用。<br>\n<b>(d) 錯</b>：每個 process 有自己的 page table（同一 process 的多個 thread 才共用）；不同 process 可以共享某些頁或某些下層表格，但不會整個共用一張 page table。</p>"
+    },
+    {
+      "id": "os-0191",
+      "topics": [
+        "demand-paging",
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on virtual memory management are true?</p>",
+      "choices": [
+        "(a) After enabling virtual memory, CPUs operating in <u>user</u> mode can decide to access either physical or virtual addresses based on the compiler configurations.",
+        "(b) If a required data is not in physical memory, the user process raises a page fault and runs the page fault handler to transfer the data from storage to memory, possibly relying on DMA for efficiency.",
+        "(c) When a process forks a child by using Copy-on-Write (CoW), the process and its child share all memory pages until one of them writes to the page.",
+        "(d) When a logical address is generated by an x86 CPU, the MMU first checks if its page number is present in the TLB. If not, CPU walks the page table to get the physical address without the help from the operating system."
+      ],
+      "answer": "(c)(d)（(b) 待確認）",
+      "explanation": "<p><b>(a) 錯</b>：開啟虛擬記憶體後，user mode 的程式一律使用虛擬位址，不能自行選擇存取實體位址，否則就沒有保護可言。<br>\n<b>(b) 錯</b>：page fault 是硬體 trap 進 kernel，由 <b>OS</b> 的 page fault handler 處理（在 kernel mode 執行），不是 user process 自己跑 handler。不過若把「process 陷入 kernel 執行 handler」也算是「process 執行」，可能被判為對，待確認。<br>\n<b>(c) 對</b>：CoW 一開始父子共用所有頁（標成唯讀），有人寫入時才複製那一頁。<br>\n<b>(d) 對</b>：x86 由硬體做 page table walk，TLB miss 時 MMU 自己走頁表，不需要 OS 介入；只有頁不在記憶體時才 page fault 給 OS。</p>"
+    },
+    {
+      "id": "os-0192",
+      "topics": [
+        "file-system-interface"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on file system are true?</p>",
+      "choices": [
+        "(a) A file control block (FCB) (an inode in UNIX file systems) contains information about the file, including ownership, permissions, and location of the file contents.",
+        "(b) File-name extensions (e.g., .txt, .jpeg) on UNIX systems are necessary and critical, as they guide the operating system to run the right application (e.g., text editor or gallery) for opening files.",
+        "(c) Multiple processes may be allowed to map the same file concurrently and to allow sharing of data. Writes by any of the processes modify the data in virtual memory and can be seen by all others that map the same section of the file.",
+        "(d) A disk can be sliced into multiple partitions and each partition is not functionable without containing a file system. That is, each partition must contain one file system (e.g., NTFS, Ext4)."
+      ],
+      "answer": "(a)(c)",
+      "explanation": "<p><b>(a) 對</b>：FCB／inode 記錄擁有者、權限、大小、時間戳、資料 block 的位置等。<br>\n<b>(b) 錯</b>：UNIX kernel 不看副檔名，副檔名只是給使用者或應用程式參考的慣例；執行檔靠的是執行權限與檔頭（magic number）。<br>\n<b>(c) 對</b>：多個 process 用 shared mapping 對映同一個檔案時，對映的是同一批實體頁，任何一方的寫入其他人都看得到。<br>\n<b>(d) 錯</b>：partition 可以是 raw（沒有檔案系統），例如 swap 空間或某些資料庫直接使用的 raw partition。</p>"
+    },
+    {
+      "id": "os-0193",
+      "topics": [
+        "security"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": "21-22",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（題組 A）Consider the following C code snippet:</p>\n<pre class=\"code\">01  #include &lt;stdio.h&gt;\n02  #include &lt;string.h&gt;\n03\n04  void safeFunction() {\n05      printf(\"This is a safe function call.\\n\");\n06  }\n07\n08  void vulnerableFunction(char *str) {\n09      char buffer[50];\n10      strcpy(buffer, str);\n11  }\n12\n13  int main(int argc, char *argv[]) {\n14      if (argc &gt; 1) {\n15          vulnerableFunction(argv[1]);\n16      }\n17      return 0;\n18  }</pre>\n<p>Assume that the program runs on x86-64 Linux.</p>\n<p>21. For the command-line argument argv[1], which of the following situations would corrupt the stack?<br>\n(a) If argv[1] contains a non-printable character.<br>\n(b) If argv[1] contains a space.<br>\n(c) If argv[1] is a comma-delimited string of the phone numbers of all NYCU CS faculty members.<br>\n(d) None of the above.</p>\n<p>22. If the stack is corrupted, which of the following is least likely to be affected?<br>\n(a) The program control flow.<br>\n(b) The local variables.<br>\n(c) The function call arguments.<br>\n(d) The program code.</p>",
+      "choices": [
+        "21: (a) / (b) / (c) / (d)",
+        "22: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "21 (c)；22 (d)",
+      "explanation": "<p><b>21</b>：buffer 只有 50 bytes，strcpy 不檢查長度，會一直複製到 '\\0' 為止。會不會蓋壞 stack 只看<b>長度</b>：非可列印字元、空白都只是普通的 byte（而且命令列上的空白通常會被 shell 拆成不同參數）；所有教師的電話號碼以逗號串起來，長度遠超過 50 bytes，一定會溢位，蓋到 saved rbp、return address 等 → (c)。</p>\n<p><b>22</b>：stack 溢位會蓋掉區域變數、存在 stack 上的參數、以及 return address（影響控制流程）；但程式碼放在 text segment，通常是唯讀的，而且不在 stack 上，最不可能被影響 → (d)。</p>"
+    },
+    {
+      "id": "os-0194",
+      "topics": [
+        "page-replacement",
+        "thrashing"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": "23-24",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（題組 B）Assume each page is 512 bytes in size and the size of an integer is 2 bytes. Consider two C programs (Program 1 &amp; Program 2) designed to initialize all elements of a 256-by-256 two-dimensional array (called arr as below) to 0. The array is stored in row-major order; that is, the array is stored arr[0][0], arr[0][1], …, arr[0][255], arr[1][0]. If the operating system only allocates 128 page frames on-demand to each program and adopts Least-Recently-Used (LRU) page replacement policy to manage those fames, please answer the following two questions</p>\n<pre class=\"code\">int x, y;\nint [][] arr;\n\nfor (y=0; y&lt;256; y++)\n  for (x=0; x&lt;256; x++)\n    arr[x][y] = 0;</pre>\n<p>Program 1.</p>\n<pre class=\"code\">int x, y;\nint [][] arr;\n\nfor (x=0; x&lt;256; x++)\n  for (y=0; y&lt;256; y++)\n    arr[x][y] = 0;</pre>\n<p>Program 2.</p>\n<p>23. How many page faults would be generated while running Program 1: (a) 1 (b) 128 (c) 256 (d) 65536<br>\n24. How many page faults would be generated while running Program 2: (a) 1 (b) 128 (c) 256 (d) 65536</p>",
+      "choices": [
+        "23: (a) / (b) / (c) / (d)",
+        "24: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "23 (d)；24 (c)",
+      "explanation": "<p>一列有 256 個 int × 2 bytes = 512 bytes，剛好一頁，所以 arr[x] 就是第 x 頁，整個陣列 256 頁。</p>\n<p><b>23</b>：Program 1 的內層迴圈改 x，也就是每次換一列、換一頁，一輪內層就碰 256 個不同的頁。只有 128 個 frame，LRU 下要用的頁永遠是最久以前用的那一個，剛好被踢掉，每次存取都 fault：256 × 256 = <b>65536</b> 次 → (d)。這就是 thrashing 的典型例子。</p>\n<p><b>24</b>：Program 2 依列存取，一頁內的 256 個元素連續寫完才換下一頁，每頁只 fault 一次，共 <b>256</b> 次 → (c)。存取順序和儲存順序一致時，fault 數少了 256 倍。</p>"
+    },
+    {
+      "id": "os-0195",
+      "topics": [
+        "paging",
+        "demand-paging",
+        "protection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）In virtual memory management, which of the following are features of paging?</p>",
+      "choices": [
+        "(a). To increase the size of the physical memory.",
+        "(b). To divide a process's address space into fixed-size blocks and load only necessary pages into physical memory.",
+        "(c). To reduce the CPU clock speed.",
+        "(d). To prevent processes from accessing each other's memory spaces."
+      ],
+      "answer": "(b)(d)",
+      "explanation": "<p><b>(a) 錯</b>：paging 讓程式「看起來」有更大的位址空間，但實體記憶體本身並沒有變大。<br>\n<b>(b) 對</b>：把位址空間切成固定大小的頁，搭配 demand paging 只載入需要的頁。<br>\n<b>(c) 錯</b>：和 CPU 時脈無關。<br>\n<b>(d) 對</b>：每個 process 有自己的 page table，只能對映到分配給自己的 frame，自然達到記憶體保護。</p>"
+    },
+    {
+      "id": "os-0196",
+      "topics": [
+        "paging",
+        "contiguous-allocation",
+        "protection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on memory management is (are) true?</p>",
+      "choices": [
+        "(a). Managing memory via the slab allocator not only minimizes internal and external fragmentations but also efficiently handles the frequent allocation and deallocation of kernel objects.",
+        "(b). As page tables are per-process data structures, the page table and the other register values (like the instruction pointer) are together stored in the process control block of each process.",
+        "(c). The x86 64-bit CPU architecture currently provides a 48-bit virtual address with support for page sizes of 4 KB, 2 MB, or 1 GB. Larger page sizes help reduce the overhead of page table traversal.",
+        "(d). After enabling the memory-management unit (MMU), the user program never accesses the real physical addresses. That is, the user program can only work on the virtual address space."
+      ],
+      "answer": "(a)(c)(d)",
+      "explanation": "<p><b>(a) 對</b>：slab 為每種物件預先切好大小剛好的空間，碎裂少；物件用完放回 cache 下次直接重用，頻繁配置／釋放很有效率。<br>\n<b>(b) 錯</b>：page table 本身很大，放在記憶體中；PCB 只記錄指向它的指標（例如 x86 的 CR3 值），不是把整張表存在 PCB 裡。<br>\n<b>(c) 對</b>：x86-64 目前用 48-bit 虛擬位址（4 層頁表），支援 4KB、2MB、1GB 頁；大頁少走幾層頁表，也讓 TLB 涵蓋更大範圍。<br>\n<b>(d) 對</b>：開啟 MMU 後 user 程式產生的都是虛擬位址，一律經過轉換，無法直接使用實體位址。</p>"
+    },
+    {
+      "id": "os-0197",
+      "topics": [
+        "demand-paging",
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on virtual memory is (are) true?</p>",
+      "choices": [
+        "(a). If the required page data is not in the memory, the user process raises a page fault and the CPU runs the page fault handler to transfer the corresponding data into the memory.",
+        "(b). Adopting copy-on-write during process creation allows the parent and child processes initially to share the same pages. If either process writes to a shared page, a copy of the page is created.",
+        "(c). In Linux, the swap space is used for pages not associated with a file (known as anonymous memory); these pages include the stack and heap for a process.",
+        "(d). In x86 systems, when a CPU encounters a virtual address that results in a TLB miss, the operating system performs page table walking for translating a virtual address to a physical address."
+      ],
+      "answer": "(a)(b)(c)",
+      "explanation": "<p><b>(a) 對</b>：存取不在記憶體的頁會觸發 page fault，CPU 陷入 kernel 執行 page fault handler，把資料從磁碟載入。<br>\n<b>(b) 對</b>：這就是 copy-on-write。<br>\n<b>(c) 對</b>：沒有對應檔案的頁（anonymous memory，如 stack、heap）才需要 swap；有檔案對應的頁可以直接寫回或重新從檔案讀。<br>\n<b>(d) 錯</b>：x86 的 TLB miss 由<b>硬體</b>（MMU 的 page walker）走頁表，OS 不介入；需要軟體處理 TLB miss 的是 MIPS 這類架構。</p>"
+    },
+    {
+      "id": "os-0198",
+      "topics": [
+        "process-concept",
+        "os-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on process is (are) true?</p>",
+      "choices": [
+        "(a). A process control block serves as the repository for all the data needed to start, or restart, a process. It contains scheduling information, local variables and kernel data structure.",
+        "(b). Interrupts cause the operating system to change a CPU core from its current task and to run a kernel routine. The system needs to save the current context of the process running on the CPU core so that it can restore that context when its processing is done.",
+        "(c). Traditional UNIX systems identify the init process as the root of all child processes. In UNIX systems, a process clones itself to create new processes. Thus, all the processes in the system are the descendants of the init process, either directly or indirectly.",
+        "(d). A user program must use system calls to access files stored in storage devices. But a program can directly access the allocated heap data from memory without the help from operating systems."
+      ],
+      "answer": "(b)(c)(d)",
+      "explanation": "<p><b>(a) 錯</b>：PCB 存的是狀態、暫存器、排程資訊、記憶體管理資訊、開啟的檔案等；<b>區域變數</b>放在 process 自己的 stack，不在 PCB 裡。<br>\n<b>(b) 對</b>：中斷發生時要保存目前的 context，處理完才能恢復。<br>\n<b>(c) 對</b>：傳統 UNIX 的 init（PID 1）是所有使用者行程的祖先，其他行程都是用 fork 複製產生的。<br>\n<b>(d) 對</b>：檔案存取要靠 system call；但 heap 已經對映在自己的位址空間，直接用 load／store 存取即可（就算觸發 page fault，也是透明地由 OS 處理，程式不用主動呼叫）。</p>"
+    },
+    {
+      "id": "os-0199",
+      "topics": [
+        "bankers-algorithm",
+        "deadlock-characterization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider a system with the following resource allocation state. There are five processes P1~P5 and three resource types. The resource allocation tuple (x, y, z) means x instances of resource type 1, y instances of resource type 2, and z instances of resource type 3.</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Max Demand</th><th>Allocated</th><th>Available</th></tr>\n<tr><td>P1</td><td>(7, 5, 3)</td><td>(0, 1, 0)</td><td>(3, 3, 2)</td></tr>\n<tr><td>P2</td><td>(3, 2, 2)</td><td>(2, 0, 0)</td><td></td></tr>\n<tr><td>P3</td><td>(9, 0, 2)</td><td>(3, 0, 2)</td><td></td></tr>\n<tr><td>P4</td><td>(2, 2, 2)</td><td>(2, 1, 1)</td><td></td></tr>\n<tr><td>P5</td><td>(4, 3, 3)</td><td>(0, 0, 2)</td><td></td></tr></table></div>\n<p>Given the current system state, which of the following is/are true when checking the safety of granting Process P2 a request of (1, 0, 1) according to the Banker's Algorithm?</p>",
+      "choices": [
+        "(a). After granting the request, the system will remain in a safe state.",
+        "(b). If the system enters an unsafe state, there is still the possibility that no deadlock will actually occur.",
+        "(c). There are enough resources available to grant the request.",
+        "(d). The current system state is unsafe."
+      ],
+      "answer": "(a)(b)(c)",
+      "explanation": "<p>Need = Max − Allocated：P1 (7,4,3)、P2 (1,2,2)、P3 (6,0,0)、P4 (0,1,1)、P5 (4,3,1)。</p>\n<p><b>(c) 對</b>：請求 (1,0,1) ≤ P2 的 Need (1,2,2)，也 ≤ Available (3,3,2)。</p>\n<p><b>(a) 對</b>：假設答應後，Available = (2,3,1)，P2 Allocated = (3,0,1)、Need = (0,2,1)。找安全序列：P2 (0,2,1) ≤ (2,3,1)，做完 → (5,3,2)；P4 (0,1,1) → (7,4,3)；P1 (7,4,3) → (7,5,3)；P3 (6,0,0) → (10,5,5)；P5 (4,3,1) → (10,5,7)。⟨P2, P4, P1, P3, P5⟩ 是安全序列，用程式窮舉共有 16 種安全序列。</p>\n<p><b>(b) 對</b>：unsafe 只是有 deadlock 的可能，process 不一定真的會要到最大需求。<br>\n<b>(d) 錯</b>：答應前的狀態同樣能找到安全序列（例如 ⟨P2, P4, P1, P3, P5⟩），是 safe。</p>"
+    },
+    {
+      "id": "os-0200",
+      "topics": [
+        "os-basics",
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements are true regarding interrupt handling in operating systems?</p>",
+      "choices": [
+        "(a). Interrupts are signals that inform the processor of an event that needs immediate attention.",
+        "(b). Interrupts can only be generated by hardware, not software.",
+        "(c). When an interrupt occurs, the processor stops executing the current program and transfers control to the interrupt handler.",
+        "(d). Interrupts are prioritized, meaning the operating system may choose to delay handling a lower-priority interrupt in favor of a higher-priority one."
+      ],
+      "answer": "(a)(c)(d)",
+      "explanation": "<p><b>(a) 對</b>：中斷的定義。<br>\n<b>(b) 錯</b>：軟體也能產生中斷，例如 system call 用的 trap（軟體中斷）、除以 0 等例外。<br>\n<b>(c) 對</b>：處理器暫停目前程式、保存狀態，轉到中斷處理常式。<br>\n<b>(d) 對</b>：中斷有優先順序，高優先權的可以先處理，低優先權的可以被延後（或被遮罩）。</p>"
+    },
+    {
+      "id": "os-0201",
+      "topics": [
+        "process-concept",
+        "security"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Following is the memory map of the Linux utility program /usr/bin/cat. Which of the following statement(s) is/are true?</p>\n<pre class=\"code\">00400000-0040b000 r-xp 00000000 fd:01 1234567  /usr/bin/cat\n0060a000-0060b000 r--p 0000a000 fd:01 1234567  /usr/bin/cat\n0060b000-0060c000 rw-p 0000b000 fd:01 1234567  /usr/bin/cat\n00e7a000-00e9b000 rw-p 00000000 00:00 0        [heap]\n7f8b6c000000-7f8b6c021000 rw-p 00000000 00:00 0\n7f8b6c021000-7f8b70000000 ---p 00000000 00:00 0\n7f8b71a8d000-7f8b71aa3000 r-xp 00000000 fd:01 2345678  /lib/x86_64-linux-gnu/libgcc_s.so.1\n7f8b71aa3000-7f8b71ca2000 ---p 00016000 fd:01 2345678  /lib/x86_64-linux-gnu/libgcc_s.so.1\n7f8b71ca2000-7f8b71ca3000 r--p 00015000 fd:01 2345678  /lib/x86_64-linux-gnu/libgcc_s.so.1\n7f8b71ca3000-7f8b71ca4000 rw-p 00016000 fd:01 2345678  /lib/x86_64-linux-gnu/libgcc_s.so.1\n7ffc445e7000-7ffc44608000 rw-p 00000000 00:00 0        [stack]\n7ffc446da000-7ffc446dd000 r--p 00000000 00:00 0        [vvar]\n7ffc446dd000-7ffc446df000 r-xp 00000000 00:00 0        [vdso]\nffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0   [vsyscall]</pre>",
+      "choices": [
+        "(a). The CPU architecture is 32-bit.",
+        "(b). The program contains C library code.",
+        "(c). If we put shellcode on a buffer allocated by malloc(), the shellcode will be non-executable.",
+        "(d). The program has three child processes."
+      ],
+      "answer": "(b)(c)（(b) 待確認）",
+      "explanation": "<p><b>(a) 錯</b>：位址像 7ffc445e7000、ffffffffff600000 遠超過 32 bits，而且載入的是 x86_64 的函式庫，是 64-bit。<br>\n<b>(b) 對</b>：一般 C 程式都需要 C library；對映表中沒有 libc.so，代表 libc 是靜態連結進 /usr/bin/cat 本體裡（只動態載入了 libgcc_s），所以程式本身包含 C library 的程式碼（依此推論，待確認）。<br>\n<b>(c) 對</b>：[heap] 以及 malloc 大塊配置時使用的匿名對映都是 rw-p，沒有 x（執行）權限，放在裡面的 shellcode 不能執行（NX／DEP 保護）。<br>\n<b>(d) 錯</b>：memory map 只描述這個 process 自己的位址空間，看不出有沒有子行程。</p>"
+    },
+    {
+      "id": "os-0202",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements about the Round Robin (RR) scheduling algorithm is/are correct?</p>",
+      "choices": [
+        "(a). It can lead to starvation of certain processes.",
+        "(b). It ensures quicker process completion for all processes.",
+        "(c). Decreasing the RR time quantum will increase the turnaround time.",
+        "(d). It ensures that all processes receive equal CPU time."
+      ],
+      "answer": "皆不正確（待確認）",
+      "explanation": "<p><b>(a) 錯</b>：RR 輪流給每個 ready process 一個時間片，n 個 process 時每個最多等 (n − 1) × q 就會輪到，不會 starvation。<br>\n<b>(b) 錯</b>：RR 的平均 turnaround time 常比 SJF 差，對長工作也會因為一直被切換而更晚完成。<br>\n<b>(c) 錯</b>：quantum 和 turnaround time 沒有單調關係。例如三個 burst 都是 10 的 process，q = 10 時平均 turnaround = (10 + 20 + 30)/3 = 20；q = 1 時三個幾乎同時在 28、29、30 完成，平均 29；但若 burst 長短差很多，縮小 q 反而能讓短工作早完成。<br>\n<b>(d) 錯</b>：RR 給的是相同長度的時間片，不保證每個 process 拿到相同的總 CPU 時間（burst 短的提早結束、I/O-bound 的會提前放棄 CPU）。</p>\n<p>依此判斷四個選項都不成立；若出題者把「每輪平均分配」當成 (d) 的意思，(d) 可能被判為對，待確認。</p>"
+    },
+    {
+      "id": "os-0203",
+      "topics": [
+        "threads",
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on process scheduler and thread is (are) true?</p>",
+      "choices": [
+        "(a). Context switching is typically faster between threads than between processes. The reason is that threads share resources, including page table and user stack, of the process to which they belong.",
+        "(b). In Linux, Completely Fair Scheduler (CFS) allocates a larger time quantum to higher-priority processes. Processes with the same priority will receive the same time quantum.",
+        "(c). The dispatcher involved in the process scheduler switches process contexts between the current and the next-scheduled user processes in the user mode so as to minimize the dispatching latency.",
+        "(d). In contrast, during thread creation, the new thread shares many data structures (like memory space and file descriptors) with the parent process instead of copying them."
+      ],
+      "answer": "(d)",
+      "explanation": "<p><b>(a) 錯</b>：thread 切換較快是對的，但原因是共用位址空間（page table），不必換 page table、清 TLB；<b>user stack 不共用</b>，每個 thread 有自己的 stack。<br>\n<b>(b) 錯</b>：CFS 沒有固定的 time quantum，它依權重（nice 值）分配 CPU 時間的「比例」，用 virtual runtime 決定下一個誰跑；實際分到的時間片長度也會隨 ready 的 task 數變動。<br>\n<b>(c) 錯</b>：dispatcher 做 context switch 必須在 <b>kernel mode</b>，切換完才回到 user mode。<br>\n<b>(d) 對</b>：建立 thread 時與同 process 的其他 thread 共用位址空間、開啟的檔案等，不必複製，所以比建立 process 便宜。</p>"
+    },
+    {
+      "id": "os-0204",
+      "topics": [
+        "io-systems",
+        "file-system-interface"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on I/O system is (are) true?</p>",
+      "choices": [
+        "(a). For most computers, the bootstrap is stored in Non-Volatile Memory (NVM) flash memory firmware on the system motherboard and mapped to a known memory location.",
+        "(b). In Linux, if the requested file is not already open, the directory structure is searched to locate the file by its name. The directory structure may reside in the memory or on the storage devices.",
+        "(c). In Linux, page cache usually caches file in DRAM because DRAM is faster than storage devices and data can be retained in DRAM after the system powers down.",
+        "(d). To concurrently support multiple types of file systems, Virtual File System (VFS) layer separates file-system-generic operations from their implementation by defining a VFS interface."
+      ],
+      "answer": "(a)(b)(d)",
+      "explanation": "<p><b>(a) 對</b>：bootstrap 程式放在主機板上的 NVM flash 韌體，對映到 CPU 開機時固定會去執行的位址。<br>\n<b>(b) 對</b>：開檔時若還沒開啟，就搜尋目錄結構找出檔名對應的 FCB；目錄可能已被快取在記憶體，也可能要從磁碟讀。<br>\n<b>(c) 錯</b>：DRAM 是揮發性記憶體，斷電資料就沒了；page cache 用 DRAM 只是因為快。<br>\n<b>(d) 對</b>：VFS 定義統一介面，把通用操作和各檔案系統的實作分開，讓 ext4、NTFS 等可以同時存在。</p>"
+    },
+    {
+      "id": "os-0205",
+      "topics": [
+        "raid"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": "21-24",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（題組 A）Consider the following RAID 5 configuration using four identical disks (Disk 0–3). The specification of each disk is</p>\n<p>Capacity: 1 TB<br>Read throughput: 100MB/s<br>Write throughput: 100MB/s.</p>\n<div class=\"table-scroll\"><table><tr><th>Disk 0</th><th>Disk 1</th><th>Disk 2</th><th>Disk 3</th></tr>\n<tr><td>A1</td><td>A2</td><td>A3</td><td>A<sub>p</sub></td></tr>\n<tr><td>B1</td><td>B2</td><td>B<sub>p</sub></td><td>B3</td></tr>\n<tr><td>C1</td><td>C<sub>p</sub></td><td>C2</td><td>C3</td></tr>\n<tr><td>D<sub>p</sub></td><td>D1</td><td>D2</td><td>D3</td></tr></table></div>\n<p>21. How much data can be stored in the disk array? (a). 1TB (b). 2TB (c). 3TB (d). 4TB<br>\n22. What is the maximum read throughput when an application reads data from the disk array? (a). 100 MB/s (b). 200 MB/s (c). 300 MB/s (d). 400 MB/s<br>\n23. What is the maximum number of failed disk(s) that can be tolerated? (a). 0 (b). 1 (c). 2 (d). 3<br>\n24. Assume that none of the disk data is cached in the memory. What is the minimum number of disk(s) that need to be involved in a write to the disk array? (a). 1 (b). 2 (c). 3 (d). 4</p>",
+      "choices": [
+        "21: (a) / (b) / (c) / (d)",
+        "22: (a) / (b) / (c) / (d)",
+        "23: (a) / (b) / (c) / (d)",
+        "24: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "21 (c)；22 (d)；23 (b)；24 (b)（22 待確認）",
+      "explanation": "<p><b>21</b>：每個 stripe 3 塊資料 1 塊 parity，可用容量 4 × 3/4 = <b>3TB</b> → (c)。</p>\n<p><b>22</b>：parity 輪流分散在四顆磁碟上（圖中 A<sub>p</sub>、B<sub>p</sub>、C<sub>p</sub>、D<sub>p</sub> 分別在 Disk 3、2、1、0），每顆磁碟都存有資料，大量讀取時四顆可以同時工作，最大讀取 throughput = 4 × 100 = <b>400 MB/s</b> → (d)。（若只看單一 stripe，讀 3 塊資料只用到 3 顆，有人會答 300 MB/s，待確認。）</p>\n<p><b>23</b>：只有一份 parity，最多容忍 <b>1</b> 顆壞掉 → (b)。</p>\n<p><b>24</b>：小量寫入要更新資料塊和同一 stripe 的 parity 塊，至少牽涉 <b>2</b> 顆磁碟（read-modify-write：讀舊資料、舊 parity，寫新資料、新 parity）→ (b)。</p>"
+    },
+    {
+      "id": "os-0206",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": "25-27",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
+      },
+      "question": "<p>（題組 B）Assuming a custom CPU adopting multi-level page tables, where the page size, virtual address space size and the page table entry size are set to 32KB, 2<sup>64</sup>B, 16B, respectively. This custom CPU only has one register to hold the physical address of the topmost level of the multi-level page tables.</p>\n<p>25. What is the minimum level of this multi-level page tables? (a). 3 (b). 4 (c). 5 (d). 6<br>\n26. If the number of levels is set to the minimum, what is the maximum number of pages in the bottom level? (a). 2<sup>39</sup> (b). 2<sup>38</sup> (c). 2<sup>37</sup> (d). 2<sup>36</sup><br>\n27. If the number of levels is set to the minimum, how many pages are there in the top level? (a). 4 (b). 3 (c). 2 (d). 1</p>",
+      "choices": [
+        "25: (a) / (b) / (c) / (d)",
+        "26: (a) / (b) / (c) / (d)",
+        "27: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "25 (c)；26 (b)；27 (d)",
+      "explanation": "<p>頁大小 32KB = 2<sup>15</sup>，offset 15 bits；虛擬頁號 64 − 15 = <b>49</b> bits。每張頁表剛好一頁：2<sup>15</sup> / 16 B = 2<sup>11</sup> 個 entry，每層吃 11 bits。</p>\n<p><b>25</b>：⌈49 / 11⌉ = <b>5</b> 層（4 層只有 44 bits 不夠）→ (c)。</p>\n<p><b>26</b>：最底層的 entry 總數 = 虛擬頁數 2<sup>49</sup>，每頁放 2<sup>11</sup> 個，最多需要 2<sup>49</sup> / 2<sup>11</sup> = <b>2<sup>38</sup></b> 頁 → (b)。</p>\n<p><b>27</b>：5 層共 55 bits，比 49 bits 多 6 bits，所以最上層只用到 49 − 44 = 5 bits（32 個 entry），一頁就放得下；而且只有一個暫存器指向最上層的起點，最上層必須是單一的一頁 → <b>1</b>，(d)。</p>"
+    },
+    {
+      "id": "os-0207",
+      "topics": [
+        "contiguous-allocation",
+        "os-structures"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）Regarding dynamic loading, which of the following statements are TRUE?</p>",
+      "choices": [
+        "(a) In dynamic loading, a routine is not loaded into the main memory until it is called; all routines are kept on disk in a relocatable load format until required.",
+        "(b) Dynamic loading typically offers better memory-space utilization than static loading because routines that are never called (such as large, infrequently used error-handling routines) are never loaded into memory.",
+        "(c) Dynamic loading strictly requires special support from the complex kernel process scheduling to function; it is impossible for user programs to implement this method using standard libraries alone.",
+        "(d) Compared to dynamic loading, static loading generally results in faster program startup times for large applications because the entire program is loaded into memory at once, avoiding runtime overheads during execution."
+      ],
+      "answer": "(a)(b)",
+      "explanation": "<p><b>(a) 對</b>、<b>(b) 對</b>：這正是 dynamic loading（動態載入）的定義與好處。<br>\n<b>(c) 錯</b>：dynamic loading 不需要 OS 的特別支援，由程式設計者（或函式庫，例如 dlopen）自行實作即可。<br>\n<b>(d) 錯</b>：靜態載入要先把整個大程式讀進記憶體，啟動反而<b>比較慢</b>；動態載入只載入用到的部分，啟動快。</p>"
+    },
+    {
+      "id": "os-0208",
+      "topics": [
+        "os-basics",
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements best distinguishes software traps from hardware interrupts in terms of their origin, execution context, and privilege transition?</p>",
+      "choices": [
+        "(a) Handling Timing: Hardware interrupts are typically recognized and serviced only at instruction boundaries (i.e., after the current instruction retires), whereas software traps (specifically faults like Page Faults) are recognized and serviced immediately during the execution of the instruction.",
+        "(b) Masking Capability: The operating system can use the Interrupt Flag (e.g., IF in x86) to mask (ignore) \"Divide-by-Zero\" and \"Page Fault\" software traps to ensure atomicity within critical kernel sections.",
+        "(c) Synchronicity: Hardware interrupts are asynchronous events triggered by external devices (independent of the CPU clock), whereas software traps are synchronous events tied directly to the execution of a specific instruction.",
+        "(d) Event Nature: Software traps strictly indicate erroneous program behavior (e.g., illegal memory access), whereas hardware interrupts indicate normal system events; therefore, legitimate operating system service requests (System Calls) are never implemented using the trap mechanism."
+      ],
+      "answer": "(a)(c)",
+      "explanation": "<p><b>(a) 對</b>：外部中斷在指令邊界才處理；page fault 這類 fault 在指令執行途中就被偵測，處理完後重新執行那條指令。<br>\n<b>(b) 錯</b>：IF 只能遮罩可遮罩的外部硬體中斷，除以零、page fault 這類例外無法被 IF 遮罩。<br>\n<b>(c) 對</b>：硬體中斷與目前執行的指令無關（非同步）；trap 由特定指令引起（同步）。<br>\n<b>(d) 錯</b>：system call 正是用 trap（例如 int 0x80、syscall）實作的，trap 不只代表錯誤。</p>"
+    },
+    {
+      "id": "os-0209",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）Regarding the necessity, performance, and structure of multi-level page tables compared to single-level page tables, which of the following statements are TRUE?</p>",
+      "choices": [
+        "(a) A primary necessity for multi-level design in modern architectures (e.g., 64-bit) is that a linear single-level page table would require an impractically large, but not contiguous block of kernel memory, which is often impossible to allocate.",
+        "(b) In terms of memory consumption, a multi-level page table always consumes less physical memory than a single-level page table, regardless of whether the process's virtual address space is sparse or fully populated (dense).",
+        "(c) Regarding address-space sparsity, multi-level page tables save memory by allowing the operating system to avoid allocating inner-level page tables for invalid (unused) regions of the virtual address space.",
+        "(d) In terms of memory access time (assuming a TLB miss), the multi-level page table structure introduces a performance overhead compared to a single-level table, as the MMU must perform multiple memory references to traverse the hierarchy (e.g., directory-&gt; table -&gt; frame)."
+      ],
+      "answer": "(c)(d)",
+      "explanation": "<p><b>(a) 錯</b>：單層頁表的問題正是需要一大塊<b>連續</b>的記憶體；選項寫「not contiguous」與事實相反。<br>\n<b>(b) 錯</b>：位址空間全部用滿時，多層頁表除了所有底層表格，還要再加上上層表格，反而比單層多。<br>\n<b>(c) 對</b>：沒用到的區域不必配置下層表格，這是多層頁表省空間的關鍵。<br>\n<b>(d) 對</b>：TLB miss 時要依序讀每一層，記憶體存取次數比單層多。</p>"
+    },
+    {
+      "id": "os-0210",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）Regarding the behavior of fork() and exec() system calls in a multithreaded process (specifically under POSIX standards), which of the following statements are TRUE?</p>",
+      "choices": [
+        "(a) When fork() is invoked by a thread in a multithreaded process, the resulting child process contains duplicates of all threads that were running in the parent process at the time of the call.",
+        "(b) If a thread (other than the one calling fork()) holds a lock (e.g., a mutex) at the moment fork() is called, that lock will exist in the child process in a locked state, but the thread holding it will not exist in the child to unlock it, leading to potential deadlocks if the child tries to acquire this lock.",
+        "(c) It is generally unsafe to call complex library functions (like printf or malloc) in the child process between fork() and exec() because these functions may rely on internal locks that were left in an inconsistent state during the fork.",
+        "(d) The exec() system call allows the child process to retain the memory space and thread context of the parent process while simply resetting the Program Counter (PC) to the beginning of the main() function."
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<p><b>(a) 錯</b>：POSIX 的 fork() 只複製<b>呼叫 fork 的那個 thread</b>。<br>\n<b>(b) 對</b>：記憶體被整份複製，鎖也維持上鎖狀態，但持有它的 thread 沒被複製，子行程裡沒人能解鎖。<br>\n<b>(c) 對</b>：printf、malloc 內部有鎖，可能剛好被其他 thread 鎖住，所以 fork 後到 exec 前只能呼叫 async-signal-safe 的函式。<br>\n<b>(d) 錯</b>：exec 會把整個位址空間換成新程式，不會保留原本的記憶體與 thread。</p>"
+    },
+    {
+      "id": "os-0211",
+      "topics": [
+        "thrashing",
+        "page-replacement",
+        "demand-paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）Regarding virtual memory management techniques, specifically Thrashing, Working-Set Model, Page Replacement Algorithms, and Copy-on-Write (COW), which of the following statements are TRUE?</p>",
+      "choices": [
+        "(a) A classic symptom of thrashing is low CPU utilization. This occurs because processes spend the majority of their time waiting for the paging device (I/O), which often misleads the standard OS scheduler into increasing the degree of multiprogramming, thereby worsening the thrashing.",
+        "(b) Belady's anomaly refers to the phenomenon where increasing the number of available page frames results in an increase in the number of page faults. This anomaly can occur in the FIFO algorithm but is mathematically proven to be impossible in LRU (Least Recently Used), which belongs to the class of stack algorithms.",
+        "(c) When fork() is executed with Copy-on-Write enabled, the parent and child processes share the same physical pages. To detect when a copy is needed, these shared pages are initially marked as read-write in the page table so that the hardware allows the write to proceed immediately without OS intervention.",
+        "(d) The Working-Set Model prevents thrashing by estimating the current locality of each process. If the sum of the working-set sizes of all active processes exceeds the total number of available frames, the operating system selects a process to suspend (swap out) to release frames."
+      ],
+      "answer": "(a)(b)(d)",
+      "explanation": "<p><b>(a) 對</b>：thrashing 時 CPU 使用率掉下來，排程器誤以為要加更多 process，結果更糟。<br>\n<b>(b) 對</b>：LRU 是 stack algorithm，不會發生 Belady's anomaly；FIFO 會。<br>\n<b>(c) 錯</b>：共用的頁一開始要標成<b>唯讀</b>，寫入時觸發 page fault，OS 才有機會複製那一頁；標成可寫就偵測不到了。<br>\n<b>(d) 對</b>：所有 process 的 working set 總和 D 超過可用 frame 數時，暫停（換出）某個 process 釋出 frame。</p>"
+    },
+    {
+      "id": "os-0212",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of following statement(s) about CPU scheduling are correct?</p>",
+      "choices": [
+        "(a) The turnaround time of the non-preemptive Shortest-Job-First (SJF) scheduling remains even when the arrival rate of jobs varies.",
+        "(b) The turnaround time of the SJF is always shorter than that of the First-In-First-Out (FIFO) scheduling when all jobs arrive in the system simultaneously.",
+        "(c) We define the response time as the time from when the job arrives in a system to the first time it is scheduled for execution. The average response time of the round robin (RR) scheduling is shorter than that of preemptive SJF scheduling.",
+        "(d) We can periodically increase the priority of all jobs in the system to mitigate the starvation problem exhibited in Multi-Level Feedback Queue (MLFQ) scheduling."
+      ],
+      "answer": "(c)(d)（(c) 待確認）",
+      "explanation": "<p><b>(a) 錯</b>：到達時間不同時，長工作可能先開始而讓後到的短工作等待，turnaround 會隨到達情況改變。<br>\n<b>(b) 錯</b>：同時到達時 SJF 的平均 turnaround 最小，但只是 ≤ FIFO；所有工作一樣長或 FIFO 順序剛好就是由短到長時兩者相等，不是「always shorter」。<br>\n<b>(c) 對</b>：RR 讓每個工作很快就輪到第一次執行，平均 response time 通常比 SJF 好（長工作在 SJF 下要等所有短工作做完）。但在某些特例（例如只有一個工作）兩者相等，判定待確認。<br>\n<b>(d) 對</b>：MLFQ 的 priority boost（定期把所有工作拉回最高層）就是用來避免 starvation 的。</p>"
+    },
+    {
+      "id": "os-0213",
+      "topics": [
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）The atomicity violation bug occurs when multiple operations intend to run an indivisible (atomic) unit, but are interrupted by another thread in concurrent programs. The atomicity violation bugs result in the desired serializability among multiple memory accesses being violated, leading to lost updates. Please choose the correct atomicity violation bug code pattern(s) below.</p>\n<p>(a)</p><pre class=\"code\">static int i = 0;\nstatic object a, b = default;\nvar tid1 = Task.Run( () =&gt; {\n      lock(a) {i++;}\n});\nvar tid2 = Task.Run( () =&gt; {\n      lock(b) {i++;}\n});\nTask WhenAll (tid1, tid2); print(i);</pre>\n<p>(b)</p><pre class=\"code\">static pthread_cond_var WorkDone =\nPTHREAD_COND_INIT;\nvoid main () {\n      pthread_id tid = null;\n      pthread_create(&amp;tid, NULL, &amp;fun,\nNULL);\n      pthread_wait(&amp;WorkDone);\n}\nvoid fun() {pthread_singal(&amp;WorkDone);}</pre>\n<p>(c)</p><pre class=\"code\">static int i = 0;\nvar tid1 = Task.Run( () =&gt; {\n      if (atomic_load(&amp;i) == 0) {\n            atomic_add(&amp;i, 1);\n      }\n});\nvar tid2 = Task.Run( () =&gt; {\n      if (atomic_load(&amp;i) == 0) {\n            atomic_add(&amp;i, 1);\n      }\n});\nTask WhenAll (tid1, tid2); print(i);</pre>\n<p>(d)</p><pre class=\"code\">static long int i = 101;\nvar tid1 = Task.Run( () =&gt; {\n      i++;\n});\nvar tid2 = Task.Run( () =&gt; {\n      print(i);\n});\nTask WhenAll (tid1, tid2);</pre>",
+      "choices": [
+        "(a)",
+        "(b)",
+        "(c)",
+        "(d)"
+      ],
+      "answer": "(a)(c)（待確認）",
+      "explanation": "<p><b>(a) 是</b>：兩個 thread 用<b>不同</b>的鎖保護同一個 i，等於沒有互斥，i++ 的讀改寫可能交錯，遺失一次更新。<br>\n<b>(b) 不是</b>：如果 fun 先 signal、main 才 wait，訊號遺失，main 永遠等不到。這是執行<b>順序</b>的問題（order violation），不是遺失更新。<br>\n<b>(c) 是</b>：load 和 add 各自原子，但「檢查是 0 再加 1」這個組合不是原子的；兩個 thread 都可能讀到 0、都加 1，結果 i = 2，違反「只加一次」的意圖（check-then-act）。<br>\n<b>(d) 不是</b>：一邊寫一邊讀，印出 101 或 102 取決於先後，屬於 data race／順序問題，沒有多個操作被要求合成一個原子單位，也沒有遺失更新。</p>\n<p>官方未公布答案，(d) 是否算 atomicity violation 依定義寬嚴可能不同，待確認。</p>"
+    },
+    {
+      "id": "os-0214",
+      "topics": [
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）The spin lock ensures the correctness of concurrent programs on multiple processors. Please choose the correct spin-lock implementation(s) and usage(s) including the Test-And-Set, Compare-And-Swap, Load-Linked and Store-Conditional, and Fetch-And-Add instructions. (Note that the LoadLinked() and StoreConditional(), respectively, perform Load-Linked and Store-Conditional operations).</p>\n<p>(a)</p><pre class=\"code\">int TestAndSet (int *old_ptr, int new) {\n    int old = *old_ptr;\n    *old_ptr = new;\n    return old;\n}</pre>\n<p>(b)</p><pre class=\"code\">int CompareAndSwap (int *ptr, int\nexpected, int new) {\n    int original = expected;\n    if (*ptr == expected)\n        original = new;\n    return original;\n}</pre>\n<p>(c)</p><pre class=\"code\">void lock (lock_t *lock) {\n    while (1) {\n        if (LoadLinked (&amp;lock-&gt;flag)\n== 1) return;\n        while (StoreConditional\n(&amp;lock-&gt;flag, 1) == 1);\n\n    }\n}</pre>\n<p>(d)</p><pre class=\"code\">int FetchAndAdd (int*ptr) {\n    int old = *ptr;\n    *ptr = old + 1;\n    return *ptr;\n}</pre>",
+      "choices": [
+        "(a)",
+        "(b)",
+        "(c)",
+        "(d)"
+      ],
+      "answer": "(a)",
+      "explanation": "<p><b>(a) 正確</b>：Test-And-Set 回傳舊值並寫入新值（硬體保證原子），正是標準語意。<br>\n<b>(b) 錯</b>：Compare-And-Swap 應該在 *ptr == expected 時把 <b>*ptr</b> 改成 new，並回傳 *ptr 的原值；這段程式根本沒寫記憶體，回傳的也不是原值。<br>\n<b>(c) 錯</b>：邏輯反了。正確寫法是先等 LoadLinked 讀到 0（鎖空閒），再用 StoreConditional 寫 1，成功才 return；這段程式讀到 1（鎖被別人拿著）就直接 return，等於沒拿到鎖就進入臨界區。<br>\n<b>(d) 錯</b>：Fetch-And-Add 要回傳<b>舊值</b>（ticket lock 靠它拿號碼牌），這段回傳的是加完的新值。</p>"
+    },
+    {
+      "id": "os-0215",
+      "topics": [
+        "file-system-interface"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）The Linux <b>cat</b> command opens the file for reading. On Linux, the <b>strace</b> tool can dump the trace of every system call made by the <b>cat</b> Linux command shown below. Please choose the correct description(s) for system calls used by the <b>cat</b> Linux command.</p>\n<pre class=\"code\">prompt&gt; strace cat hello\n...\nopen (\"hello\", O_RDONLY| O_LARGEFILE)\nread (3, \"helloworld\\n\", 4096)\nwrite (X, \"helloworld\\n\", 11)\nhelloworld\nread(3, \"\", 4096)\nclose(3)\n...</pre>",
+      "choices": [
+        "(a) The return value of the first open system call is 3.",
+        "(b) The return value of the first read system call is 11.",
+        "(c) The first argument (X) of the write system call represents the file descriptor and the value of X is 1.",
+        "(d) The return value of the second read system call is 0."
+      ],
+      "answer": "(a)(b)(c)(d)",
+      "explanation": "<p><b>(a) 對</b>：0、1、2 已被 stdin、stdout、stderr 佔用，open 回傳最小可用的 fd = 3，之後的 read 也用 3。<br>\n<b>(b) 對</b>：\"helloworld\\n\" 是 10 個字母加換行，共 11 bytes，read 回傳實際讀到的位元組數 11。<br>\n<b>(c) 對</b>：cat 把內容寫到標準輸出，fd = 1。<br>\n<b>(d) 對</b>：讀到檔尾時 read 回傳 0，cat 據此結束迴圈並 close。</p>"
+    },
+    {
+      "id": "os-0216",
+      "topics": [
+        "disk-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）The hard drive (disk) has become the main form of persistent data storage in computer systems. In the disk, the motor spins the platters around at a constant rate. The rate of hard drive rotation is measured in Rotations Per Minute (RPM). Please choose the correct description(s) about the performance of disks below.</p>",
+      "choices": [
+        "(a) Each rotation takes 6 milliseconds (ms) when the RPM of this disk is 10,000.",
+        "(b) When the transfer rate of a disk is 100MB/second, transferring a 1024 KB block takes 10 milliseconds (ms) to complete.",
+        "(c) The SCAN disk scheduler is invented to shorten the seek time of the disk.",
+        "(d) The SCAN disk scheduler can resolve the starvation problem is shown in the Shortest Seek Time First (SSTF) SSTF disk scheduler when a steady stream of requests is always directed to the inner track of the disk, where the head currently is positioned."
+      ],
+      "answer": "(a)(b)(d)（(c) 待確認）",
+      "explanation": "<p><b>(a) 對</b>：10,000 RPM → 每秒 166.7 轉，一轉 = 60,000 ms / 10,000 = <b>6 ms</b>。<br>\n<b>(b) 對</b>：1024 KB = 1 MB，1 MB ÷ 100 MB/s = <b>10 ms</b>。<br>\n<b>(c) 錯</b>：SCAN（電梯演算法）主要是為了解決 SSTF 的 starvation、讓服務更公平；它的尋道時間未必比 SSTF 短。不過相對 FCFS 它也能縮短尋道，若出題者這樣看可能判對，待確認。<br>\n<b>(d) 對</b>：SSTF 下若一直有內圈附近的請求進來，外圈請求會一直等；SCAN 掃到底才回頭，每個請求最多等兩趟就會被服務。</p>"
+    },
+    {
+      "id": "os-0217",
+      "topics": [
+        "segmentation",
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": "21-25",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（題組 A）Consider a byte-addressable computer system with a 13-bit logical address, a total physical memory size of 4 KiB, and a page size of 64 Bytes. The system uses a segmented paging architecture where the logical address is divided into a Segment Number and a Segment Offset. The segment table provides a Base Address which is added to the Segment Offset to form a linear Address. This Linear Address is then translated via a single-level Page Table to a Physical Address.</p>\n<div class=\"table-scroll\"><table><tr><th>Segment Table（Segment Base Addr, Binary）</th><th>Idx</th></tr>\n<tr><td>0000,0000,0000</td><td>0</td></tr><tr><td>0010,0000,0000</td><td>1</td></tr><tr><td>0001,1000,0000</td><td>2</td></tr><tr><td>0011,0000,0000</td><td>3</td></tr><tr><td>0000,1000,0000</td><td>4</td></tr><tr><td>0100,0000,0000</td><td>5</td></tr><tr><td>0101,0000,0000</td><td>6</td></tr><tr><td>0110,0000,0000</td><td>7</td></tr></table></div>\n<div class=\"table-scroll\"><table><tr><th>Page Table（Frame Number, Decimal）</th><th>Idx</th></tr>\n<tr><td>...</td><td></td></tr><tr><td>12</td><td>24</td></tr><tr><td>5</td><td>25</td></tr><tr><td>33</td><td>26</td></tr><tr><td>8</td><td>27</td></tr><tr><td>...</td><td></td></tr></table></div>\n<p>Given the Logical Address in hexadecimal format \"16A4\", and the tables below, answer the following questions.</p>\n<p>21. What is the Segment Index derived from the logical address 16A4? (a) 3 (b) 4 (c) 5 (d) 6<br>\n22. What is the Segment Base Address (in hexadecimal) retrieved from the Segment Table? (a) 0x200 (b) 0x400 (c) 0x500 (d) 0x600<br>\n23. What is the calculated Linear Address (in hexadecimal)? (a) 0x2A4 (b) 0x6A4 (c) 0x4A4 (d) 0x5A4<br>\n24. What is the Virtual Page Number (VPN) index used to look up the Page Table? (a) 24 (b) 25 (c) 26 (d) 27<br>\n25. What is the final Physical Address (in hexadecimal)? (a) 0x864 (b) 0x424 (c) 0x244 (d) 0xD44</p>",
+      "choices": [
+        "21: (a) / (b) / (c) / (d)",
+        "22: (a) / (b) / (c) / (d)",
+        "23: (a) / (b) / (c) / (d)",
+        "24: (a) / (b) / (c) / (d)",
+        "25: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "21 (c)；22 (b)；23 (b)；24 (c)；25 (a)",
+      "explanation": "<p>segment table 有 8 個 entry，segment number 用 3 bits，segment offset = 13 − 3 = 10 bits。</p>\n<p>0x16A4 寫成 13 bits：1 0110 1010 0100 → 前 3 bits <b>101 = 5</b>（21 選 c）；後 10 bits 10 1010 0100 = <b>0x2A4</b>。</p>\n<p><b>22</b>：segment 5 的 base = 0100,0000,0000 = <b>0x400</b> → (b)。</p>\n<p><b>23</b>：linear address = 0x400 + 0x2A4 = <b>0x6A4</b> → (b)。</p>\n<p><b>24</b>：頁大小 64 B → offset 6 bits。0x6A4 = 1700，VPN = ⌊1700 / 64⌋ = <b>26</b>，offset = 1700 − 1664 = 36 = 0x24 → (c)。</p>\n<p><b>25</b>：page 26 → frame 33，實體位址 = 33 × 64 + 36 = 2112 + 36 = 2148 = <b>0x864</b> → (a)。4 KiB 實體記憶體有 64 個 frame，33 在範圍內。</p>"
+    },
+    {
+      "id": "os-0218",
+      "topics": [
+        "file-allocation",
+        "file-system-interface"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": "26-28",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（題組 B）Consider a file system called TFS that is divided into a series of blocks, the size of each block is 4 KB. The blocks are indexed from 0 to 31, assuming we have a tiny disk, with just 32 blocks. Let's refer to the region of the disk used for user data as the data region, which consists of the last 24 of the 32 blocks on the disk. Additionally, we allocate 5 of our 32 blocks for inode table denoted by I's in the diagram. An inode table is partitioned into multiple i-blocks indexed by i-block (IB) 0 to IB 4. An i-block stores multiple inodes and the size of each inode is 256 bytes. Finally, the inode bitmap (i), the data bitmap (d), and the superblock (S) respectively use one 4KB block.</p>\n<p>（圖的內容：block 0 = S、1 = i、2 = d、3～7 = I（inode table，位址 12KB 到 32KB，分成 IB0～IB4）、8～31 = D（data region）。）</p>\n<p>26. What is the maximum number of files where the TFS file system can manage? (a) 24 (b) 80 (c) 5 (d) 16</p>\n<p>27. The start address of the inode table on the TFS file system is 12 KB. This TFS file system uses five IBs to store the entire inode table. An IB stores multiple inodes, and the inode index starts from 0 in IB0 and is incrementally increased. The last inode is preserved in the IB4 with the index 79. Which IB preserves the inode where its index is 16? (a) 3 (b) 2 (c) 1 (d) 0</p>\n<p>28. The disk typically consists of a large number of addressable sectors, each of which is 512 bytes in size. To fetch the inodes where its index is 16, which sector of the disk would the file system issue a read to? (a) 32 (b) 16 (c) 8 (d) 4</p>",
+      "choices": [
+        "26: (a) / (b) / (c) / (d)",
+        "27: (a) / (b) / (c) / (d)",
+        "28: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "26 (b)；27 (c)；28 (a)",
+      "explanation": "<p>一個 IB = 4 KB ÷ 256 B = <b>16</b> 個 inode。</p>\n<p><b>26</b>：每個檔案需要一個 inode，5 × 16 = <b>80</b> 個 → (b)。（data region 只有 24 塊不是檔案數的上限，小檔案或空檔案不一定用到 data block。）</p>\n<p><b>27</b>：inode 16 → ⌊16 / 16⌋ = IB <b>1</b>（IB0 放 0～15）→ (c)。</p>\n<p><b>28</b>：位元組位址 = 12 KB + 16 × 256 = 12288 + 4096 = 16384，sector = 16384 ÷ 512 = <b>32</b> → (a)。</p>"
     }
   ]
 }
