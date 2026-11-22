@@ -3512,6 +3512,103 @@
       ],
       "answer": "(d)",
       "explanation": "<p>先說印刷問題：如果照字面讀成 a<sub>n</sub> − 3a<sub>n</sub> − 1 = 5·3<sup>n</sup>，會得到 a<sub>n</sub> = −(5·3<sup>n</sup> + 1)/2，代 n = 0 是 −3，和 a<sub>0</sub> = 2 矛盾，所以原意一定是 a<sub>n</sub> − 3a<sub>n−1</sub> = 5·3<sup>n</sup>。</p><p><b>齊次解：</b>特徵方程式 r − 3 = 0，r = 3，齊次解是 A·3<sup>n</sup>。</p><p><b>特解：</b>右邊是 5·3<sup>n</sup>，而 3 剛好是特徵根（重數 1），所以特解要多乘一個 n，猜 a<sub>n</sub><sup>(p)</sup> = Bn·3<sup>n</sup>。代回去：</p><pre class=\"formula\">Bn·3^n − 3·B(n−1)·3^(n−1) = Bn·3^n − B(n−1)·3^n = B·3^n = 5·3^n  ⇒  B = 5</pre><p><b>通解與初始條件：</b>a<sub>n</sub> = A·3<sup>n</sup> + 5n·3<sup>n</sup>，代 a<sub>0</sub> = 2 得 A = 2，所以 a<sub>n</sub> = (2 + 5n)(3<sup>n</sup>)，選 (d)。</p><p>驗算（程式跑過）：照遞迴算 a<sub>0</sub>~a<sub>4</sub> = 2, 21, 108, 459, 1782；(2+5n)3<sup>n</sup> 在 n = 1 時是 7·3 = 21、n = 2 時是 12·9 = 108，完全吻合。</p><p>快速刪去法：(a) 在 n = 0 是 1，不等於 a<sub>0</sub> = 2；(b)、(c) 的底數是 4、5，但齊次部分的特徵根只有 3，不可能出現 4<sup>n</sup>、5<sup>n</sup>。常見錯誤是忘了「右邊的底數等於特徵根時特解要乘 n」，直接猜 B·3<sup>n</sup>，代進去會變成 0 = 5·3<sup>n</sup> 而卡住。</p>"
+    },
+    {
+      "id": "dm-0159",
+      "topics": [
+        "graph-coloring"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "一、離散數學 (50%)<p>5. (10 points) Calculate the chromatic number of figure(a) (5 points) and figure(b) (5 points). (not need to explain)</p><figure class=\"fig\"><div class=\"q-fig\" data-spec=\"{&quot;width&quot;: 640, &quot;height&quot;: 318, &quot;nodes&quot;: [{&quot;id&quot;: &quot;v1&quot;, &quot;label&quot;: &quot;v1&quot;, &quot;x&quot;: 165, &quot;y&quot;: 42, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v2&quot;, &quot;label&quot;: &quot;v2&quot;, &quot;x&quot;: 102, &quot;y&quot;: 63, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v3&quot;, &quot;label&quot;: &quot;v3&quot;, &quot;x&quot;: 62, &quot;y&quot;: 117, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v4&quot;, &quot;label&quot;: &quot;v4&quot;, &quot;x&quot;: 62, &quot;y&quot;: 183, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v5&quot;, &quot;label&quot;: &quot;v5&quot;, &quot;x&quot;: 102, &quot;y&quot;: 237, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v6&quot;, &quot;label&quot;: &quot;v6&quot;, &quot;x&quot;: 165, &quot;y&quot;: 258, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v7&quot;, &quot;label&quot;: &quot;v7&quot;, &quot;x&quot;: 228, &quot;y&quot;: 237, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v8&quot;, &quot;label&quot;: &quot;v8&quot;, &quot;x&quot;: 268, &quot;y&quot;: 183, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v9&quot;, &quot;label&quot;: &quot;v9&quot;, &quot;x&quot;: 268, &quot;y&quot;: 117, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v10&quot;, &quot;label&quot;: &quot;v10&quot;, &quot;x&quot;: 228, &quot;y&quot;: 63, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bT&quot;, &quot;label&quot;: &quot;T&quot;, &quot;x&quot;: 487, &quot;y&quot;: 32, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bL&quot;, &quot;label&quot;: &quot;L&quot;, &quot;x&quot;: 360, &quot;y&quot;: 129, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bR&quot;, &quot;label&quot;: &quot;R&quot;, &quot;x&quot;: 621, &quot;y&quot;: 122, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bBL&quot;, &quot;label&quot;: &quot;BL&quot;, &quot;x&quot;: 414, &quot;y&quot;: 281, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bBR&quot;, &quot;label&quot;: &quot;BR&quot;, &quot;x&quot;: 576, &quot;y&quot;: 276, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;ba&quot;, &quot;label&quot;: &quot;a&quot;, &quot;x&quot;: 459, &quot;y&quot;: 126, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bb&quot;, &quot;label&quot;: &quot;b&quot;, &quot;x&quot;: 520, &quot;y&quot;: 125, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bc&quot;, &quot;label&quot;: &quot;c&quot;, &quot;x&quot;: 442, &quot;y&quot;: 186, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bd&quot;, &quot;label&quot;: &quot;d&quot;, &quot;x&quot;: 541, &quot;y&quot;: 184, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;be&quot;, &quot;label&quot;: &quot;e&quot;, &quot;x&quot;: 492, &quot;y&quot;: 220, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}], &quot;edges&quot;: [{&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v2&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v3&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v3&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v4&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v3&quot;, &quot;to&quot;: &quot;v4&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v3&quot;, &quot;to&quot;: &quot;v5&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v3&quot;, &quot;to&quot;: &quot;v8&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v5&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v9&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v5&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v5&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v5&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v6&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v6&quot;, &quot;to&quot;: &quot;v8&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v7&quot;, &quot;to&quot;: &quot;v8&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v7&quot;, &quot;to&quot;: &quot;v9&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v8&quot;, &quot;to&quot;: &quot;v9&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v8&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v9&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v9&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bT&quot;, &quot;to&quot;: &quot;bL&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bT&quot;, &quot;to&quot;: &quot;bR&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bL&quot;, &quot;to&quot;: &quot;bBL&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bR&quot;, &quot;to&quot;: &quot;bBR&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBL&quot;, &quot;to&quot;: &quot;bBR&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bT&quot;, &quot;to&quot;: &quot;ba&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bT&quot;, &quot;to&quot;: &quot;bb&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bL&quot;, &quot;to&quot;: &quot;ba&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bL&quot;, &quot;to&quot;: &quot;bc&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bR&quot;, &quot;to&quot;: &quot;bb&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bR&quot;, &quot;to&quot;: &quot;bd&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bc&quot;, &quot;to&quot;: &quot;bd&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bb&quot;, &quot;to&quot;: &quot;bc&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;ba&quot;, &quot;to&quot;: &quot;bd&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;ba&quot;, &quot;to&quot;: &quot;be&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bb&quot;, &quot;to&quot;: &quot;be&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBL&quot;, &quot;to&quot;: &quot;bc&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBL&quot;, &quot;to&quot;: &quot;be&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBR&quot;, &quot;to&quot;: &quot;bd&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBR&quot;, &quot;to&quot;: &quot;be&quot;, &quot;directed&quot;: false}], &quot;labels&quot;: [{&quot;id&quot;: &quot;la&quot;, &quot;x&quot;: 165, &quot;y&quot;: 308, &quot;text&quot;: &quot;figure(a)&quot;, &quot;cls&quot;: &quot;strong&quot;, &quot;anchor&quot;: &quot;middle&quot;}, {&quot;id&quot;: &quot;lb&quot;, &quot;x&quot;: 490, &quot;y&quot;: 308, &quot;text&quot;: &quot;figure(b)&quot;, &quot;cls&quot;: &quot;strong&quot;, &quot;anchor&quot;: &quot;middle&quot;}]}\"></div><figcaption><b>圖</b>：依原卷重畫。figure(a)：v1～v10 排成一圈，每個頂點和左右各 1 個、各 2 個的頂點相連，另有 5 條直徑 v1v6、v2v7、v3v8、v4v9、v5v10（在中心交叉）；figure(b)：外圈五邊形加內部 5 個頂點，共 10 個頂點、20 條邊（頂點代號 T、L、R、BL、BR、a～e 是為了詳解方便而加，原卷沒有標）。</figcaption></figure>",
+      "answer": "figure(a)：χ = 4；figure(b)：χ = 4（待確認）",
+      "explanation": "<p><span class=\"term\">Chromatic number<small>（色數）</small></span> χ(G) 是讓相鄰頂點顏色都不同所需的最少顏色數。要證明 χ = k，兩件事都要做：<b>找一組 k 色著色</b>（上界），再<b>證明 k−1 色不可能</b>（下界）。</p><p><b>figure(a)</b>：每個 v<sub>i</sub> 和 v<sub>i±1</sub>、v<sub>i±2</sub>、v<sub>i+5</sub> 相鄰（下標 mod 10），每點度數 5。</p><ul><li>下界：任三個連續頂點 v<sub>i</sub>, v<sub>i+1</sub>, v<sub>i+2</sub> 兩兩相鄰（是三角形），所以至少 3 色。若只用 3 色，每個三角形三色全用到，於是 v<sub>i+3</sub> 必須和 v<sub>i</sub> 同色（它和 v<sub>i+1</sub>、v<sub>i+2</sub> 都相鄰）。顏色就以週期 3 繞圈；但 10 不是 3 的倍數，繞一圈回來會得到 v<sub>1</sub> 和 v<sub>2</sub> 同色（10 ≡ 1 mod 3），矛盾。所以 χ ≥ 4。</li><li>上界：v1～v9 依序用 1,2,3,1,2,3,1,2,3，v10 用第 4 色。檢查直徑：v1(1)–v6(3)、v2(2)–v7(1)、v3(3)–v8(2)、v4(1)–v9(3)、v5(2)–v10(4) 都不同色，合法。所以 χ = 4。</li></ul><p>注意圖中 5 條直徑交會在圓心，那只是線交叉，不是頂點（原卷只標了 v1～v10）。</p><p><b>figure(b)</b>：用圖上的代號，外圈是 T（上）、L（左）、R（右）、BL（左下）、BR（右下），內部是 a（左上）、b（右上）、c（左中）、d（右中）、e（下中）。邊有：外圈五邊形；T–a、T–b、L–a、L–c、R–b、R–d、BL–c、BL–e、BR–d、BR–e；內部 a–d、a–e、b–c、b–e、c–d。</p><ul><li>下界：T, L, a 兩兩相鄰（三角形），先設 T=1、L=2、a=3。T, R, b 也是三角形，所以 {R, b} = {2, 3}。<ul><li>若 R=2、b=3：c 和 b(3)、L(2) 相鄰 → c=1；d 和 c(1)、a(3) 相鄰 → d=2，但 d 和 R(2) 相鄰，矛盾。</li><li>若 R=3、b=2：e 和 a(3)、b(2) 相鄰 → e=1；BL 和 L(2)、e(1) 相鄰 → BL=3；c 和 b(2)、BL(3) 相鄰 → c=1；d 和 c(1)、a(3) 相鄰 → d=2；BR 和 R(3)、d(2)、e(1) 都相鄰，沒有顏色可用，矛盾。</li></ul>所以 3 色不夠，χ ≥ 4。</li><li>上界：T=1、L=2、R=2、BL=1、BR=3、a=3、b=3、c=4、d=1、e=2，逐邊檢查都不同色，所以 χ = 4。</li></ul><p>兩題都用程式窮舉驗證：3 色著色不存在、4 色著色存在。常見錯誤：看到圖中最大的完全子圖只有三角形（K<sub>3</sub>），就以為 χ = 3。ω(G) = 3 只保證 χ ≥ 3，像 figure(a) 這種奇數長度的「週期」限制會逼出第 4 色。</p><p>（待確認）figure(a) 原卷在 5 條直徑交會的圓心畫了一個點，這裡依「只標 v1～v10」把它當成線交叉；若把圓心也當成頂點（和 10 個點都相鄰），χ 會變成 5。</p>"
+    },
+    {
+      "id": "dm-0160",
+      "topics": [
+        "planar-graphs"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）Which of these graphs are homeomorphic to K<sub>3,3</sub>?<figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ncu-114-q20-a.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 (a)、(b)</figcaption></figure><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ncu-114-q20-b.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 (c)、(d)、(e)</figcaption></figure>",
+      "choices": [
+        "(a)",
+        "(b)",
+        "(c)",
+        "(d)",
+        "(e)"
+      ],
+      "answer": "(c)、(e)",
+      "explanation": "<p><b>Homeomorphic（同胚）</b>的意思是：把度數 2 的點「抹平」（兩條邊合成一條，也就是反向的 elementary subdivision）之後，兩個圖同構。K<sub>3,3</sub> 有 6 個點、9 條邊、每點度數都是 3，所以一個圖要和它同胚，必須：(1) 只有度數 2 和 3 的點；(2) 抹平後剩 6 個度數 3 的點、9 條邊；(3) 這 6 點能分成兩組 3 個，邊全部跨組。</p><ul><li>(a) 不是：c、d、e、f 度數 2（d 只連 g、h）。抹平後只剩 a、b、g、h 四個點，邊為 a–b（經 f）、a–g（經 e）、b–h（經 c）、g–h（經 d）、a–h、b–g，得到的是 K<sub>4</sub>，點數就不對。</li><li>(b) 不是：g 連 a、d、b、e，h 連 b、e、c、f，度數都是 4。抹平不會改變其他點的度數，而 K<sub>3,3</sub> 每點度數 3，所以不可能同胚。</li><li>(c) 是：b、d、f、h、j、l 都是度數 2，抹平後剩 a、c、e、g、i、k 圍成六邊形，再加三條對角線 a–g、c–i、e–k。取 {a, e, i} 和 {c, g, k} 兩組：六邊形的邊和三條對角線都跨組，剛好 9 條，就是 K<sub>3,3</sub>。</li><li>(d) 不是：這是 Petersen graph（彼得森圖），10 個點全部度數 3、15 條邊，沒有度數 2 的點可以抹平，點數 10 ≠ 6。（它不是平面圖，但它包含的是 K<sub>3,3</sub> 的細分「子圖」，本身並不和 K<sub>3,3</sub> 同胚。）</li><li>(e) 是：a、c、g 度數 2，抹平得到 f–e、d–h、i–j 三條邊；加上 f–i、f–h、e–d、e–j、d–i、j–h，共 9 條，6 個點度數都是 3。取 {f, d, j} 和 {e, i, h}：f 連 e、i、h，d 連 e、i、h，j 連 e、i、h，正好是 K<sub>3,3</sub>。</li></ul><p>常見錯誤：(d) 很容易因為「Petersen graph 不是平面圖、和 K<sub>3,3</sub> 有關」就選它；但同胚要求整個圖抹平後同構，不是「含有細分子圖」（那是 Kuratowski 定理用的條件）。以上判斷已用程式把度數 2 的點逐一抹平再比對驗算。</p>"
+    },
+    {
+      "id": "dm-0161",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "<p>(10%) Which one of the following graphs has an Eulerian cycle?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ntu-111-q1.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（選項 (A)～(E) 五張圖）</figcaption></figure>",
+      "choices": [
+        "(A) 圖 (A)",
+        "(B) 圖 (B)",
+        "(C) 圖 (C)",
+        "(D) 圖 (D)",
+        "(E) 圖 (E)"
+      ],
+      "answer": "(B)",
+      "explanation": "<p><span class=\"term\">Eulerian cycle<small>（尤拉迴路）</small></span>是每條邊恰好走一次、最後回到起點的迴路。判斷法很簡單：<b>連通圖有尤拉迴路 ⇔ 每個點的度數都是偶數</b>。所以只要每張圖找一個奇數度的點就能淘汰。</p><ul><li>(A) 最左邊的點只連到上、中、下三個點，度數 3（奇數）→ 沒有。中央的點連到左、上、右上、右下、下共 5 條，也是奇數。</li><li>(B) 左右兩端的點各連 2 條；中間四個點組成一個「方框＋兩條對角線」的 K<sub>4</sub>，每點在 K<sub>4</sub> 內有 3 條邊，再加上連到左端或右端的 1 條，共 4 條。度數是 2, 4, 4, 4, 4, 2，全部偶數，而且圖連通 → <b>有尤拉迴路</b>。</li><li>(C) 最上方的點連到左邊的點、中間的點、右下方的點，共 3 條（奇數）→ 沒有。</li><li>(D) 左上角的點連到上方中央、中心、左下三個點，度數 3 → 沒有（上方中央的點度數 5，也是奇數）。</li><li>(E) 右上角的點連到左上方、中心、右下角，度數 3 → 沒有。</li></ul><p>只有 (B) 每個點都是偶數度。常見錯誤：把 Eulerian cycle（每條<b>邊</b>一次）和 Hamiltonian cycle（每個<b>點</b>一次）搞混，前者看度數就能判斷，後者沒有這種簡單條件。</p>"
+    },
+    {
+      "id": "dm-0162",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "<p>(10%) Which one of the following graphs has no Hamiltonian cycles?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ntu-112-q1.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（選項 (A)～(E) 五張圖）</figcaption></figure>",
+      "choices": [
+        "(A) 圖 (A)",
+        "(B) 圖 (B)",
+        "(C) 圖 (C)",
+        "(D) 圖 (D)",
+        "(E) 圖 (E)"
+      ],
+      "answer": "(D)",
+      "explanation": "<p><span class=\"term\">Hamiltonian cycle<small>（漢米爾頓迴路）</small></span>是每個<b>點</b>恰好經過一次再回到起點的迴路。沒有簡單的充要條件，做法是：有的圖直接找出一條迴路證明「有」，沒有的圖用<b>度數 2 的點</b>來推出矛盾。</p><p><b>關鍵技巧</b>：度數 2 的點在迴路裡沒得選，它的兩條邊<b>一定</b>要用。</p><p><b>(D)</b>：把點叫做 T（最上方）、M（左邊中間）、X（中心）、R（右邊）、Q（右下）、B（左下）。邊有 T–M、T–X、M–X、M–Q、M–B、X–B、X–R、X–Q、R–Q。T 的鄰居只有 M、X；B 的鄰居也只有 M、X，兩者度數都是 2，所以 M–T–X 和 M–B–X 這四條邊都必須用。但這四條邊自己就圍成一個 4 點的小迴路 M–T–X–B–M，M 和 X 的兩條邊都用完了，R、Q 再也接不進來 → <b>沒有 Hamiltonian cycle</b>。</p><p>其他四張圖都找得到（用程式窮舉驗證過）：</p><ul><li>(A) 左 → 上 → 右上 → 右下 → 下 → 中心 → 左。</li><li>(B) 左下 → 左 → 上 → 中間 → 右 → 右下方的點 → 左下。</li><li>(C) 左上 → 上方 → 右 → 下方 → 左下 → 中心 → 左上。</li><li>(E) 頂點 → 左中 → 左下 → 底部中間 → 右下 → 右中 → 頂點。</li></ul><p>常見錯誤：看到 (E) 有 3 個度數 2 的角就以為不行；其實三個角的兩條邊剛好可以串成外圈的大三角形，正是一條 Hamiltonian cycle。</p>"
     }
   ]
 }

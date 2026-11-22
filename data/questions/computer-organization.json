@@ -4522,6 +4522,206 @@
       ],
       "answer": "(d)",
       "explanation": "<p>先認圖：左圖有 Overflow detection、沒有 CarryOut，這是 MSB（ALU31）專用的 1-bit ALU；中圖有 CarryOut 要傳給下一級、沒有溢位偵測，是 ALU0～ALU30 用的一般版本。</p>\n<p>slt（set on less than）的做法：先算 a − b（Binvert = 1、CarryIn = 1），如果 a &lt; b，差是負的，所以 <b>MSB 加法器的和（符號位元）</b>就是答案。這個位元拉出來當 Set，接回 ALU0 的 Less，其他位的 Less 都接 0，結果就是 0…01 或 0…00。</p>\n<p>左圖裡，S1 是加法器的「和」輸出（也就是接到 mux 輸入 2 的那條線），S2 是加法器的「進位」輸出。所以 Set 來自 <b>S1</b>，<b>(d) 對</b>。</p>\n<p><b>(a) 錯</b>：左圖確實是 MSB ALU，但 Set 來自 S1（和），不是 S2（進位）。<br>\n<b>(b) 錯</b>：中圖不是 MSB ALU（它沒有溢位偵測），Set 也不是 CarryOut。<br>\n<b>(c) 錯</b>：先做減法的概念對，但接到 LSB 的是 MSB 的「和」（符號位元），不是 CarryOut。用 CarryOut 判斷的是無號數比較（sltu 的概念），而且方向相反：無號數 a − b 沒有借位時 CarryOut = 1，代表 a ≥ b。</p>\n<p>補充：嚴格來說，a − b 發生溢位時符號位元會錯（例如很大的正數減很大的負數），正確的 Set 應該是「和的 MSB XOR Overflow」；這題的圖只考到基本的接法。</p>"
+    },
+    {
+      "id": "co-0182",
+      "topics": [
+        "pipelining",
+        "single-cycle-datapath"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
+        "no": "5-(2)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
+      },
+      "question": "5. [30%] Please answer the questions for the design of a pipelined CPU.<p>(1) [5%] The image below shows the single-cycle datapath with the pipelined stages identified. In order to build a pipelined version of the datapath, what hardware resources should be added to buffer the required data between/across pipeline stages? Why?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/ncku-112-q5.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（標出五個 pipeline 階段的單週期 datapath）</figcaption></figure><p>(2) [12%] After adding the hardware resources mentioned above, the datapath shown in the above image becomes a pipelined datapath. But, it has a potential bug which makes it produce a wrong result when the pipelined datapath is used to handle a load instruction. Please describe the bug and draw a figure to fix the bug.</p>",
+      "answer": "Bug：Registers 的 Write register 編號直接接自 IF/ID 中的指令欄位；load 走到 WB 時，IF/ID 裡已經是 3 條之後的指令，於是資料被寫進錯誤的暫存器。修正：把目的暫存器編號（rd）一路經 ID/EX → EX/MEM → MEM/WB 傳下去，WB 時用 MEM/WB 裡的 rd 接到 Write register。",
+      "explanation": "<p>先看圖上 <b>Write register</b> 這個輸入是從哪裡來的：它跟 Read register 1、2 一樣，直接接在 Instruction memory 輸出（也就是加了 pipeline register 之後的 <b>IF/ID</b>）的指令欄位上。而 <b>Write data</b> 則是從最右邊 WB 階段的 Mux 繞回來。</p><p>單週期時這沒問題，因為整條指令在同一個 cycle 內做完。但 pipeline 化之後，一條 <code>ld x10, 0(x1)</code> 在第 5 個 cycle（WB）才把 Data memory 讀到的值送到 Write data；這時 IF/ID 裡已經是它後面第 3 條指令了。結果是：<b>資料是 load 的，暫存器編號卻是後面那條指令的 rd</b>，寫錯了暫存器（而且 load 本來的目的暫存器根本沒被更新）。</p><p><b>修正方法</b>：目的暫存器編號也是「這條指令的資料」，要跟著指令一起走。</p><ol><li>ID 階段從指令取出 rd（RISC-V 是 instruction[11:7]），存進 <b>ID/EX</b>。</li><li>EX 結束時把它複製到 <b>EX/MEM</b>，MEM 結束時再複製到 <b>MEM/WB</b>（每組 pipeline register 各多 5 個 bit）。</li><li>Registers 的 <b>Write register</b> 輸入改接 <b>MEM/WB.rd</b>，跟 MEM/WB 的 Read data／ALU result（經 Mux 成為 Write data）屬於同一條指令。</li></ol><p>畫圖時就是：從 IF/ID 的 instruction[11:7] 拉一條 5-bit 的線，依序穿過 ID/EX、EX/MEM、MEM/WB，最後從 WB 繞回 Registers 的 Write register 端。同理 RegWrite 等 WB 用的控制訊號也要跟著一路傳到 MEM/WB。</p><p>常見錯誤：只說「要加 forwarding」。forwarding 解的是 data hazard（後面指令太早要用到結果），這裡的問題是寫回時用錯了暫存器編號，跟 hazard 無關，沒有相依的指令也會寫錯。</p>"
+    },
+    {
+      "id": "co-0183",
+      "topics": [
+        "single-cycle-datapath"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）The architecture of a single cycle CPU is shown in the following Figure. Select the correct statements based on the Figure.<figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/ncu-111-q9.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（single cycle CPU 的 datapath 與 control）</figcaption></figure>",
+      "choices": [
+        "(a) Sending the value of PC register to an adder can determine the register number for rd (the register destination operand).",
+        "(b) Performing “Sign extend” to the Instruction[15-0] produces an signed integer with 32 bits.",
+        "(c) Sending the Zero signal from the ALU to the AND gate determines whether Instruction[31-26] represents Branch operator or not.",
+        "(d) The Mux before the “Write register” determines whether to write new data to the destination register or not.",
+        "(e) None of the above."
+      ],
+      "answer": "(b)",
+      "explanation": "<p>這張圖就是標準的 <b>single-cycle datapath（單週期資料路徑）</b>，逐項對照圖上的線怎麼接：</p><ul><li>(a) 錯：PC 送進左上角的 Add，另一個輸入是常數 4，算出來的是 <b>PC + 4</b>（下一道指令的位址），和 rd 是哪個暫存器完全無關。rd 的編號是直接從 Instruction[15-11] 拿的。</li><li>(b) 對：Sign extend 的輸入標 16、輸出標 32，把 16 位元的 immediate（Instruction[15-0]）依最高位元補齊成 32 位元的有號整數，給 ALU 或分支位移使用。</li><li>(c) 錯：指令是不是 branch 由 Control 解碼 Instruction[31-26]（opcode）得到 <b>Branch</b> 訊號。AND gate 做的是 Branch AND Zero → PCSrc，決定「這道 branch 要不要跳」，不是判斷它是不是 branch。</li><li>(d) 錯：Write register 前面的 Mux 由 <b>RegDst</b> 控制，選的是目的暫存器編號要用 Instruction[20-16]（rt，lw 用）還是 Instruction[15-11]（rd，R-type 用）。要不要寫入是 <b>RegWrite</b> 訊號決定的。</li><li>(e) 錯：(b) 是對的。</li></ul><p>常見錯誤：把「選哪個暫存器」（RegDst）和「要不要寫」（RegWrite）搞混，或把 Zero 當成判斷 opcode 的訊號。</p>"
+    },
+    {
+      "id": "co-0184",
+      "topics": [
+        "pipelining",
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": "7-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(25 pts) Consider a 5-stage (IF, ID, EX, MEM, WB) RISC-V pipelined processor (Figure 1) composed of logic blocks with the following latency (any unspecified block latency is treated as 0):</p><div class=\"table-scroll\"><table><tr><th>I-Mem / D-Mem R/W</th><th>Register File R/W</th><th>Mux</th><th>ALU</th><th>Adder / Shifter/Comparator</th><th>PC R/W</th><th>Single gate</th><th>Imm Gen</th><th>Control/ ALU Control</th><th>Pipeline Register R/W</th><th>Forwarding Unit/Hazard Detection Unit</th></tr><tr><td>280 ps</td><td>180 ps</td><td>25 ps</td><td>200 ps</td><td>50 ps</td><td>30 ps</td><td>5 ps</td><td>50 ps</td><td>80 ps</td><td>30 ps</td><td>50 ps</td></tr></table></div><div class=\"table-scroll\"><table><tr><th>funct7</th><th>rs2</th><th>rs1</th><th>funct3</th><th>rd</th><th>opcode</th></tr><tr><td>7 bits</td><td>5 bits</td><td>5 bits</td><td>3 bits</td><td>5 bits</td><td>7 bits</td></tr></table></div><p>R-type instruction format (add/sub rd, rs1, rs2)（bit 31 在最左、bit 0 在最右）</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/ntu-110-q7.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Figure 1（含 Forwarding Unit 與 Hazard Detection Unit 的五級管線 datapath）</figcaption></figure><p>Given the following code segment:</p><pre class=\"code\">#1 lw    x10, 100(x5)\n#2 add   x2, x10, x2\n#3 add   x2, x2, x4\n#4 sub   x6, x2, x6</pre><p>(a) (10 pts) Which pipeline stage determines the clock cycle time?</p><p>（本題 (b)～(d) 另收為第 7 題。）</p>",
+      "answer": "EX stage（約 360 ps）",
+      "explanation": "<p>管線的 clock cycle time 由<b>最慢的那一級</b>決定。做法是沿著 Figure 1 把每一級從「讀前一個 pipeline register」到「寫下一個 pipeline register」的<b>最長路徑</b>加起來（Pipeline Register R/W 讀、寫各算 30 ps）：</p><div class=\"table-scroll\"><table><tr><th>Stage</th><th>最長路徑</th><th>延遲</th></tr><tr><td>IF</td><td>PC 讀 30 + I-Mem 280 + 寫 IF/ID 30</td><td>340 ps</td></tr><tr><td>ID</td><td>讀 IF/ID 30 + Register File 180 + 比較器「=」50 + AND gate 5 + PC 前的 Mux 25 + 寫 PC 30</td><td>320 ps</td></tr><tr><td>EX</td><td>讀 ID/EX 30 + Forwarding Unit 50 + ForwardA/B Mux 25 + ALUSrc Mux 25 + ALU 200 + 寫 EX/MEM 30</td><td><b>360 ps</b></td></tr><tr><td>MEM</td><td>讀 EX/MEM 30 + D-Mem 280 + 寫 MEM/WB 30</td><td>340 ps</td></tr><tr><td>WB</td><td>讀 MEM/WB 30 + MemtoReg Mux 25 + Register File 寫 180</td><td>235 ps</td></tr></table></div><p>EX 的關鍵在於：ALU 的輸入要先等 Forwarding Unit 判斷完（50 ps），再經過兩層 Mux（forwarding 選擇、ALUSrc 選擇）才進 ALU（200 ps），整條串起來比記憶體那兩級（IF、MEM 各 280 ps 的記憶體存取）還長。ALU Control（80 ps）和 forwarding 路徑是平行的（30 + 80 = 110 ps，比 30 + 50 + 25 + 25 = 130 ps 短），不在關鍵路徑上。所以 <b>EX stage 決定 clock cycle time，約 360 ps</b>。</p><p>就算不把 pipeline register 的讀寫算進去，EX（50 + 25 + 25 + 200 = 300 ps）仍然大於 IF、MEM（280 ps）和 ID（180 + 50 + 5 + 25 = 260 ps），結論不變。</p><p>常見錯誤：直覺回答「記憶體最慢所以是 IF/MEM」，忽略了 forwarding 硬體把 Forwarding Unit 和 Mux 加進 EX 的關鍵路徑。（各級路徑是依圖判讀，細節如 PC 寫入是否算在 ID，待確認；但不影響 EX 最長的結論。）</p>"
+    },
+    {
+      "id": "co-0185",
+      "topics": [
+        "multiprocessors",
+        "cpu-performance",
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>[10 points]（複選）Suppose we are designing a computing system that aims to train LLMs with multi-trillion of parameters. For that, let us review the latest system architecture design. NVIDIA recently announced <i>DGX GH200 AI Supercomputer</i>. According to its specifications (shown below), it is capable of 128 petaFLOPS of FP8 AI performance with 32 GH200 superchips and 19.5 TB of shared memory.</p><div class=\"table-scroll\"><table><tr><th colspan=\"2\">DGX GH200 Technical Specifications</th></tr><tr><td>CPU and GPU</td><td>32x NVIDIA Grace Hopper Superchips</td></tr><tr><td>CPU Cores</td><td>2,304 Arm® Neoverse V2 Cores with SVE2 4X 128b</td></tr><tr><td>Shared Memory</td><td>19.5 TB</td></tr><tr><td>Performance</td><td>128 petaFLOPS of FP8 AI performance</td></tr><tr><td>Networking</td><td>32x OSFP single-port NVIDIA ConnectX-7 VPI with 400Gb/s InfiniBand<br>16x dual-port NVIDIA BlueField®-3 VPI with 200Gb/s InfiniBand and Ethernet</td></tr><tr><td>NVIDIA NVLink Switch System</td><td>9x L1 NVIDIA NVLink Switches</td></tr><tr><td>Management Network</td><td>Host baseboard management controller<br>(BMC) with RJ45</td></tr><tr><td>Software</td><td>NVIDIA AI Enterprise (optimized AI software)<br>NVIDIA Base Command (orchestration, scheduling, and cluster management)<br>DGX OS / Ubuntu / Red Hat Enterprise Linux / Rocky (operating system)</td></tr><tr><td>Support</td><td>Three-year business-standard hardware and software support</td></tr></table></div><p>However, to really exploit the potential of the DGX GH200, we need to understand the system architecture further by examining the <i>Grace Hopper Superchip</i>. As shown in the figure below, the GH200 chip features up to 480 GB of LPDDR5X CPU memory and supports up to 144 GB of HBM3e GPU memory, offering up to 624 GB of fast-access memory on a single GPU-CPU superchip. The CPU memory and GPU memory are connected via a cache-coherent interconnect (NVLink-C2C) to provide a unified, cache-coherent memory address space. The Hopper GPU can transfer data to/from Hopper GPUs on other superchips at 900GB/s via 18x NVLink 4 connections. (Note that the specifications for network and I/O in this figure are bi-directional bandwidth).</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/ntu-113-q8.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（NVIDIA GH200 Grace Hopper Superchip 架構圖）</figcaption></figure><p>(In comparison, today's H100 GPU is a standalone Hopper GPU chip which is connected to a CPU chip via a 16x PCIe-5 I/O bus at a bi-directional bandwidth of 128GB/s.)</p><p>For simplicity, assume that our target LLM uses an FP8 to represent each parameter, most of the calculations are matrix-vector multiplications performed in FP8, and the arithmetic intensity is 1 FLOPs/Byte for FP8. Suppose we use a DGX GH200 to train the LLM, which of the following statements is/are true?</p>",
+      "choices": [
+        "(A) If we only use the GPU memory to store the input data and parameters, the total GPU memory capacity, 144GB x 32 = 4.6TB, should be enough to run a LLM with 1 trillion parameters, but the performance is limited to 32 x 4900 GB/s * 1 FLOPs = 5 petaFLOP/s, which is only 20% of the peak performance of the system.",
+        "(B) It is possible to accelerate the training process for a 1-trillion parameter LLM with 2 sets of DGX GH200, but the scalability should be poor, according to the IEEE Spectrum article shown in a previous question.",
+        "(C) Because the CPU memory is 3~4 times larger than the GPU memory, if we modify our software to utilize of the unified memory feature on each GH200 node, we can train a much larger LLM at the same speed.",
+        "(D) If we cannot afford to buy a DGX GH200, we can still try to train a 1 trillion parameter LLM with a high-performance storage on one GH200 chip as a poor man's solution. We can use a solid-state disk array to take advantage of the high-speed I/O bandwidth (256GB/s each direction is not far from the 500GB/s CPU memory bandwidth) and optimize the software to minimize the performance degradation.",
+        "(E) Speaking of software optimization, cache blocking is important to accelerate large-scale matrix-vector multiplications, and the same concept can be used here. The principle behind cache blocking is to increase the cache block size to reduce the number of cache misses."
+      ],
+      "answer": "(D)（待確認）",
+      "explanation": "<p>這題的核心是 <span class=\"term\">roofline model<small>（屋頂線模型）</small></span>：可達效能 = min(峰值運算量, 記憶體頻寬 × arithmetic intensity)。題目給 arithmetic intensity 只有 1 FLOP/Byte，代表幾乎完全是 <b>memory-bound</b>，效能看頻寬。</p><ul><li><b>(A) 錯</b>：容量那半句沒問題（1 兆個 FP8 參數 = 1 TB &lt; 4.6 TB）。但效能算錯了：32 × 4900 GB/s = 156,800 GB/s ≈ 157 TB/s，乘上 1 FLOP/Byte 只有約 <b>0.157 petaFLOP/s</b>，不是 5 petaFLOP/s；和峰值 128 petaFLOPS 比只有約 0.12%，遠低於敘述說的 20%（5/128 也不是 20%，是約 3.9%）。</li><li><b>(B) 錯</b>：前一大題的 IEEE Spectrum 文章資料顯示擴展性<b>不差</b>：H100 系統 768 顆約 45 分鐘、3584 顆約 11 分鐘，晶片數 4.7 倍、時間縮短約 4 倍；Gaudi2 從 256 顆（約 7 小時多）到 384 顆（約 310 分鐘）也接近等比例變快。所以「scalability should be poor」和文章不符。</li><li><b>(C) 錯</b>：CPU 記憶體（480 GB）確實是 GPU 記憶體（144 GB）的 3 倍多，用 unified memory 能放更大的模型；但 CPU 記憶體頻寬只有 ≤ 500 GB/s，GPU 的 HBM 是 ≤ 4900 GB/s，差將近 10 倍。memory-bound 的工作負載換到慢的記憶體上，速度一定掉，不可能「at the same speed」。</li><li><b>(D) 對</b>：1 兆參數 FP8 需要 1 TB，單顆 GH200 的快速記憶體只有 624 GB 放不下，用 SSD 陣列當外部儲存是可行的權宜作法。4 組 16x PCIe-5 合計 512 GB/s 是雙向，單向 256 GB/s，和 CPU 記憶體頻寬 500 GB/s 只差約 2 倍，再靠軟體做資料預取、重疊計算與傳輸來降低損失，敘述合理。</li><li><b>(E) 錯</b>：<span class=\"term\">cache blocking<small>（分塊／tiling）</small></span>的原理是<b>重排計算順序</b>，把資料切成能放進 cache 的小塊，讓同一塊資料在被換掉前被重複使用很多次（提高 temporal locality），不是加大 cache block size。</li></ul><p>（本題是敘述判斷題，(D)「可行的權宜作法」帶有主觀成分，官方未公布答案，待確認。）</p>"
+    },
+    {
+      "id": "co-0186",
+      "topics": [
+        "division",
+        "booth-multiplication",
+        "carry-lookahead-adder"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider the arithmetic operation unit in the following figure for 32-bit MIPS CPU. Which of the following statement are correct?</p><p>（註：原卷這一題沒有附上所說的圖；從 (a) 的敘述看，指的是乘法與除法共用的硬體：一個 32-bit ALU、一個 32-bit 的 Divisor（乘法時當 Multiplicand）暫存器，以及一個 64-bit、可左右移的 Remainder（乘法時當 Product）暫存器。以下依這個標準硬體作答。）</p>",
+      "choices": [
+        "(a) As the operation unit performs a multiplication, the <i>Divisor</i> register acts as a <i>multiplicand</i> register and the <i>Remainder</i> register acts as a <i>Product</i> register. The lower word of <i>Remainder</i> register accommodates the dividend and the higher word of <i>Product</i> register accommodates the multiplier.",
+        "(b) The performance gain of Booth's algorithm comes from consecutive 0s or 1s in the multiplier.",
+        "(c) Using the non-restoring division algorithm (NRDA) and restoring division algorithm (RDA) to perform a division of 7 divided by 2 that is represented by a signed 4-bit binary number. NRDA requires 5 subtractions and 3 additions while RDA requires 2 subtractions and 3 additions.",
+        "(d) If we want to improve the performance of 32-bit ALU, we can use carry look-ahead adder to avoid waiting for carry propagation. To exploit the hierarchical design concept, we also can apply group propagate and group generate to design a multi-level carry look-ahead adder. The multi-level design owns the benefit of using systematic way to deal with the adder of large bit number in a simple way without the other benefit such as delay."
+      ],
+      "answer": "(b)",
+      "explanation": "<p><b>(a) 錯</b>：前半句對，乘除法共用硬體時 Divisor 暫存器在乘法時放 multiplicand、Remainder 暫存器當 Product 暫存器；除法開始時 dividend 也確實放在 Remainder 的低半部。錯在最後一句：乘法開始時 <b>multiplier 放在 Product 暫存器的低半部</b>（每一步檢查最右邊的位元、然後整個右移），高半部一開始是 0，用來累加部分積。</p><p><b>(b) 對</b>：<span class=\"term\">Booth's Algorithm<small>（Booth 演算法）</small></span>看相鄰兩個位元：一串連續的 1 只在開頭做一次減法、結尾做一次加法，中間只要移位；連續的 0 也只要移位。所以 multiplier 裡有長串的 0 或 1 時，加減法次數大幅減少，這就是它的效能來源。</p><p><b>(c) 錯</b>：把 7 = 0111 除以 2 = 0010，用除數放在左半、做 n + 1 = 5 次迭代的標準版本（程式模擬）：</p><ul><li>RDA（restoring）：每一輪都先減，結果是負的就加回去還原。前 3 輪減完都是負的（要還原），後 2 輪是正的，共 <b>5 次減法、3 次加法</b>。</li><li>NRDA（non-restoring）：負的時候不還原，下一輪改用加的。第 1 輪減（負）→ 第 2、3、4 輪加（第 2、3 輪結果仍負，第 4 輪變正）→ 第 5 輪減（正），最後餘數為正、不用修正，共 <b>2 次減法、3 次加法</b>。</li></ul><p>題目把兩者對調了，所以錯。另外也可以直接看出 RDA 的敘述不合理：RDA 的加法只用來「還原」前一次減法，加法次數不可能比減法多，「2 次減法、3 次加法」不可能是 RDA。</p><p><b>(d) 錯</b>：多層 carry look-ahead adder 用 group propagate／generate 一層層算進位，好處正是<b>延遲</b>：延遲大約隨位元數的對數成長，而且每個閘的輸入數（fan-in）不會隨位元數爆增。說它「沒有延遲上的好處」是錯的。</p><p>（待確認：原卷缺圖，以上依標準乘除法共用硬體解讀。）</p>"
+    },
+    {
+      "id": "co-0187",
+      "topics": [
+        "pipelining",
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）The following in-order pipelined five-stage MIPS processor design shown in Fig. 1 has a bug:</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q12.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 1（有 bug 的五級管線 MIPS 處理器）</figcaption></figure><p>Note that the processor has no forwarding paths, and if it detects data hazards at the decode stage (the hazard control unit is not shown), the pipeline stages will stall properly. If we use the buggy processor to execute the following code segment:</p><pre class=\"code\">add   $4, $1, $2\nor    $0, $1, $1\naddi  $2, $2, 3\nadd   $3, $4, $3\nadd   $1, $4, $0</pre><p>and assume that initially the registers $0 ~ $4 contains the values 0 ~ 4, respectively. That is, register $0 is 0, register $1 is 1, …, etc. Which of the following statements are true right after the writeback stage of the fourth instruction (<code>add $3, $4, $3</code>) is complete?</p>",
+      "choices": [
+        "(a) Register $0 has a value of 0.",
+        "(b) Register $1 has a value of 7.",
+        "(c) Register $1 has a value of 1.",
+        "(d) Register $4 has a value of 4."
+      ],
+      "answer": "(a)(b)(d)",
+      "explanation": "<p><b>先找 bug。</b>看圖最下面那條線：目的暫存器編號從 IF/ID 出來，經過 ID/EX、EX/MEM 之後就直接拉回 Registers 的 write register，<b>沒有經過 MEM/WB</b>；而 write data 是 MEM/WB 後面 Mux C 的輸出。也就是說，WB 階段寫入的「值」是第 k 條指令的結果，但寫入的「暫存器編號」卻是正在 MEM 階段的那一條（第 k + 1 條）指令的目的暫存器。每個結果都被寫到「下一條指令的目的暫存器」。</p><p><b>再看時序。</b>依一般假設，暫存器檔前半週期寫、後半週期讀。I1 在第 5 週期 WB；I4 在第 5 週期 ID 讀 $4、$3，和 I1 相距 3 條，不需要 stall；I5 讀 $4、$0 也都不用 stall。（如果假設暫存器不能同週期寫完再讀，I4 會多 stall 一個週期，但下面的結論不變。）</p><div class=\"table-scroll\"><table><tr><th>週期</th><th>WB 的指令與結果</th><th>此時 MEM 的指令（決定寫哪個暫存器）</th><th>實際效果</th></tr><tr><td>5</td><td>I1：1 + 2 = 3</td><td>I2（目的 $0）</td><td>寫 $0，但 $0 恆為 0，等於沒寫；$4 維持 4</td></tr><tr><td>5（ID）</td><td colspan=\"3\">I4 讀到 $4 = 4（沒有被更新）、$3 = 3</td></tr><tr><td>6</td><td>I2：1 | 1 = 1</td><td>I3（目的 $2）</td><td>$2 = 1</td></tr><tr><td>7</td><td>I3：2 + 3 = 5</td><td>I4（目的 $3）</td><td>$3 = 5</td></tr><tr><td>8</td><td>I4：4 + 3 = 7</td><td>I5（目的 $1）</td><td>$1 = 7</td></tr></table></div><p>I4 寫回完成後：$0 = 0、$1 = 7、$2 = 1、$3 = 5、$4 = 4。所以 <b>(a) 對</b>（$0 是硬體接地的 0，寫不進去）、<b>(b) 對</b>、<b>(c) 錯</b>、<b>(d) 對</b>（I1 的結果 3 被寫到 $0 去了，$4 從來沒被改）。以上用程式模擬管線（含與不含同週期寫後讀兩種假設）驗算，結果相同。</p><p>常見錯誤：用「正確的處理器」去算（會得到 $4 = 3、$3 = 6），沒注意到題目說的 bug 是寫入暫存器編號少了一級 pipeline register。</p>"
+    },
+    {
+      "id": "co-0188",
+      "topics": [
+        "booth-multiplication",
+        "carry-lookahead-adder"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements are correct?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q18-a.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 2</figcaption></figure><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q18-b.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 3</figcaption></figure><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q18-c.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 4</figcaption></figure>",
+      "choices": [
+        "(a) Fig. 2 shows a correct 3-bit×3-bit multiplier.",
+        "(b) Fig. 3 shows a wrong 32-bit×32-bit multiplier.",
+        "(c) The most significant bit of a carry look-ahead adder often experiences elevated input loading, leading to increased delays. Employing a multi-level carry look-ahead adder helps mitigate the issue of high input loading.",
+        "(d) Consider the 16-bit two-level carry look-ahead adder in Fig. 4 and the timing of transitioning to correct value on each signal line, <i>c</i><sub>1</sub> transitions to correct signal before <i>c</i><sub>4</sub> to <i>c</i><sub>15</sub>, <i>G</i><sub>(4<i>i</i>-4)-(4<i>i</i>-1)</sub> and <i>P</i><sub>(4<i>i</i>-4)-(4<i>i</i>-1)</sub> transition to correct values prior to <i>c</i><sub>4<i>i</i></sub>, for <i>i</i> = 1 to 3, and <i>c</i><sub>4<i>i</i></sub> transitions to correct value prior to <i>c</i><sub>4<i>i</i>+1</sub> to <i>c</i><sub>4<i>i</i>+3</sub>, for <i>i</i> = 1 to 3."
+      ],
+      "answer": "(c)(d)",
+      "explanation": "<p><b>(a) 錯</b>：3-bit × 3-bit 的乘積要 6 個位元。用加法器串接的做法是：Mplier0•Mcand 的最低位元直接就是 Product<sub>0</sub>，其餘位元和 Mplier1•Mcand 相加；每一級加法器輸出的最低位元成為一個乘積位元，其餘（連同進位）往下一級送，最後一級的輸出是乘積的高位元。對照 Fig. 3 可以看到右上角 Mplier0•Mcand 有一條「1 bit」的線直接拉到 Product0。Fig. 2 卻沒有這條線：Mplier0•Mcand 整個 3 位元送進加法器，加法器也只有 3 位元輸出、沒有進位，乘積只收到 1 + 1 + 3 = 5 個位元，少了最低位元，所以不是正確的乘法器。</p><p><b>(b) 錯</b>：Fig. 3 是標準的快速乘法器：32 個部分積 Mplier<i>i</i>•Mcand 兩兩用 32-bit 加法器相加，排成樹狀（共 31 個加法器、log<sub>2</sub>32 = 5 層），每個加法器分出的低位元依序成為 Product0、Product1…，最後一層輸出 Product47..16。這張圖是對的，所以說它「wrong」是錯的。</p><p><b>(c) 對</b>：單層 CLA 中 c<sub>i</sub> 的展開式會用到前面所有的 g、p，越高位的進位式子越長，閘的 fan-in（輸入負載）越大，延遲也越大。多層 CLA 把位元分組，先算 group G、P，再用同樣的 4-bit CLA 邏輯算組間進位，每個閘的輸入數維持很小，就解決了這個問題。</p><p><b>(d) 對</b>：看 Fig. 4 的訊號從哪裡來（以最壞情況的時序來看）：</p><ul><li>c<sub>1</sub> 由第一個 4-bit CLA GEN 直接用 G<sub>0</sub>、P<sub>0</sub>、c<sub>0</sub> 算出，只要一層邏輯；c<sub>4</sub> 要等 G<sub>0-3</sub>、P<sub>0-3</sub> 算好再經第二層，c<sub>5</sub> 以後還要再等 c<sub>4</sub> 回到第一層，所以 c<sub>1</sub> 最早穩定。</li><li>c<sub>4<i>i</i></sub> 是第二層用 G<sub>(4i−4)-(4i−1)</sub>、P<sub>(4i−4)-(4i−1)</sub>（以及更低組的 G、P 和 c<sub>0</sub>）算出來的，所以這些 G、P 一定先穩定。</li><li>c<sub>4i+1</sub>～c<sub>4i+3</sub> 由第 i + 1 個第一層 CLA GEN 算出，它的進位輸入就是 c<sub>4i</sub>，所以 c<sub>4i</sub> 先穩定。</li></ul><p>（待確認：(a) 依「乘積位元數不足、缺少直接輸出的最低位元」判斷為錯；(d) 是以最壞情況的時序來看，若某些輸入讓 G<sub>i</sub> = 1，個別進位可能提早就是正確值。）</p>"
+    },
+    {
+      "id": "co-0189",
+      "topics": [
+        "booth-multiplication",
+        "division",
+        "ieee-754"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements about computer arithmetic are correct?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q19.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 5</figcaption></figure>",
+      "choices": [
+        "(a) The hardware depicted in Fig. 5 above serves dual functions, functioning as both a multiplier and a divider. The Product/Remainder register necessitates a shift-right operation for multiplication and a shift-left operation for division. The control test unit receives its input from P2 when operating as a multiplier and from P1 when operating as a divider.",
+        "(b) For floating-point addition, aligning decimal points involves shifting the number with the smaller exponent to ensure proper alignment. This is because rounding the significand of the number with smaller exponent has a minor impact on accuracy. Conversely, if decimal points are aligned by shifting the number with the larger exponent, it may result in overflow on the significand of the number with the larger exponent.",
+        "(c) Addition is associative for both integers and floating-point numbers.",
+        "(d) Assuming the accuracy of a floating number is to the second decimal place and rounding half down with additional guard, round, and sticky bits. The ulp of the addition 5.01 × 10<sup>2</sup> + 1.56 × 10<sup>5</sup> is 0.499? (note: round_half_down(<i>x</i>) = ⌈<i>x</i> − 0.5⌉)."
+      ],
+      "answer": "(b)(d)",
+      "explanation": "<p><b>(a) 錯</b>：前兩句對：同一組硬體可以做乘法和除法；乘法時 Product 暫存器每步右移，除法時 Remainder 暫存器每步左移。錯在第三句的對應：乘法每一步要看的是乘數目前的<b>最低位元</b>（Product 暫存器最右邊那一位），決定要不要把被乘數加進去；除法每一步要看的是減完之後<b>餘數的正負</b>（左半部的最高位元，也就是 ALU 結果的符號），決定要不要還原。圖中 P2 是從暫存器左半部拉出、同時接回 ALU 的那條線，對應除法的餘數；P1 是另一個測試位元，對應乘法。題目把兩者講反了。</p><p><b>(b) 對</b>：對齊時把指數小的那個數的 significand 右移：被移出去的是很小的位元，只影響精確度一點點（還有 guard、round、sticky 位元幫忙）。如果反過來把指數大的數左移，最高位元會被擠出 significand 的範圍，造成溢位、錯得很嚴重。</p><p><b>(c) 錯</b>：整數加法（不考慮溢位、或用 2's complement 模 2<sup>n</sup> 運算）有結合律，但浮點數沒有。例如 (−1.5 × 10<sup>38</sup> + 1.5 × 10<sup>38</sup>) + 1.0 = 1.0，而 −1.5 × 10<sup>38</sup> + (1.5 × 10<sup>38</sup> + 1.0) = 0，因為 1.0 在和 10<sup>38</sup> 相加時被捨入掉了。</p><p><b>(d) 對</b>：精確到小數點後第二位，也就是有效位數 3 位。對齊：5.01 × 10<sup>2</sup> = 0.00501 × 10<sup>5</sup>，相加得 1.56501 × 10<sup>5</sup>。保留 1.56，後面的 guard 位是 5、round 位是 0、sticky 位是 1（後面還有非 0 的 1）。以最後一位為單位，x = 156.501，round half down = ⌈156.501 − 0.5⌉ = ⌈156.001⌉ = 157，結果 1.57 × 10<sup>5</sup>。誤差 = 1.57 − 1.56501 = 0.00499（× 10<sup>5</sup>），而 1 ulp = 0.01 × 10<sup>5</sup>，所以誤差是 <b>0.499 ulp</b>，敘述正確（已用程式以十進位精確運算驗算）。</p><p>（待確認：Fig. 5 中 P1、P2 的接法畫得不夠清楚，(a) 是依「P2 來自左半部（餘數），P1 是乘法的測試位元」判讀。）</p>"
     }
   ]
 }
