@@ -146,6 +146,9 @@ def check_questions(subject_id, topic_ids, errors):
         src = q.get("source", {})
         if src.get("kind") not in ("original", "exam"):
             e("source.kind 必須是 original 或 exam")
+        for img in re.findall(r'data-src="([^"]+)"', q.get("question", "") + q.get("explanation", "")):
+            if img.startswith(("http:", "https:", "/")) or not (ROOT / img).exists():
+                e(f"題目圖片 {img} 不存在（要放在 assets/exam-img/ 並用相對網站根目錄的路徑）")
         if src.get("kind") == "exam":
             for k in ("school", "year", "dept", "no"):
                 if not src.get(k):

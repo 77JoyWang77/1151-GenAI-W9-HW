@@ -228,7 +228,26 @@
     body.innerHTML = `<p class="qa-answer"><b>答案：</b>${q.answer}</p>${q.explanation}`;
     ans.append(h("summary", { text: "看答案與詳解" }), body);
     el.appendChild(ans);
+    qFigures(el);
     return el;
+  }
+  // 題目裡的圖：原卷裁切圖 <img class="q-img" data-src="assets/exam-img/…">（路徑相對於網站根目錄），
+  // 重畫的圖 <div class="q-fig" data-spec="{…Frame…}">（用 viz-core 的 Player 靜態畫出）
+  function qFigures(el) {
+    el.querySelectorAll("img.q-img[data-src]").forEach((img) => {
+      img.src = ROOT + img.dataset.src;
+      img.loading = "lazy";
+    });
+    el.querySelectorAll(".q-fig[data-spec]").forEach((div) => {
+      if (!window.DSViz) return;
+      try {
+        const f = JSON.parse(div.dataset.spec);
+        div.style.setProperty("--fig-w", (f.width || 640) + "px");
+        new window.DSViz.Player(div, { static: true, width: f.width || 640, height: f.height || 240, title: "" }).load([f], { autoplay: false });
+      } catch (err) {
+        div.textContent = "圖無法顯示";
+      }
+    });
   }
   async function loadQuestions(subjectId) {
     try { return await getJSON(`data/questions/${subjectId}.json`); } catch (e) { return { levels: {}, questions: [] }; }

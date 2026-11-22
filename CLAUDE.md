@@ -89,6 +89,7 @@
 │   └── topic.html
 ├── assets/
 │   ├── icons.svg                 ← 全站 SVG icon（第 10.1 節）
+│   ├── exam-img/<subject-id>/    ← 考古題的原卷裁切圖（第 7.1 節）
 │   ├── css/style.css
 │   └── js/
 │       ├── theme.js              ← 亮 / 暗模式（放在 <head>，預設淺色）
@@ -247,8 +248,11 @@
 
 1. 考古題來源只有兩種：使用者提供的檔案（PDF 或圖片），或 AI 從**使用者指定**的考古題網站（例如學校圖書館考古題系統）取得的原卷。**不可憑印象寫出或編造題目、學校、年份、題號**；從網站取得時，`source.url` 一定要填原卷網址。
    - 掃描檔先用 OCR 找出題目位置，但收錄的文字一律對照原卷圖片逐字確認，不能直接用 OCR 結果。
-   - 題目本身有錯（例如公式與資料矛盾）、或必須看大張圖或手寫註記才能作答的題目先不收，回報時列出來。
-2. 逐題拆開：題目全文照錄（包含選項、表格；有圖的題目用靜態圖重畫或用文字完整描述）。
+   - 題目本身有錯（例如公式與資料矛盾）、或圖上的手寫註記蓋住題目內容、無法確認原字的題目先不收，回報時列出來。
+2. 逐題拆開：題目全文照錄（包含選項、表格）。有圖的題目一定要附圖，不能因為有圖就不收：
+   - 樹、圖、陣列、小表格這類結構簡單的圖，用 viz-core 的 Frame 格式重畫：`<figure class="fig"><div class="q-fig" data-spec="{Frame JSON}"></div><figcaption>…</figcaption></figure>`，`site.js` 會用 Player 畫出來，和主題頁的靜態圖同一套風格與狀態色。
+   - 電路、datapath、波形、長篇圖表這類難以重畫的，從原卷裁切成 PNG（灰階、寬 ≤ 1100px），放在 `assets/exam-img/<subject-id>/<學校>-<年>-q<題號>.png`，寫成 `<figure class="fig"><img class="q-img" data-src="assets/exam-img/…" alt="原卷附圖"><figcaption>…</figcaption></figure>`（`data-src` 相對網站根目錄，由 `site.js` 補上路徑；深色模式會自動反相）。
+   - 圖上有考生的手寫註記（答案、塗改）時，裁切前先塗白遮掉；遮掉後題目仍完整才收。
 3. 標上 `topics`（可多個）、`type`，`level` 一律為 `"exam"`。
 4. 填 `source`：`{ "kind": "exam", "school": "國立臺灣大學", "year": 113, "dept": "資訊工程學系", "no": 3, "url": "官方檔案連結（有的話）" }`。`school`、`year`、`dept`、`no` 必填。
 5. 自己寫詳解，計算題用程式驗算；看不清楚或不確定的地方標「（待確認）」並回報使用者。

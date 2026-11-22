@@ -309,6 +309,10 @@ figure.fig { margin: 18px 0; }
 figure.fig .viz-stage { box-shadow: var(--shadow); }
 figure.fig figcaption { font-size: .88em; color: var(--ink-soft); text-align: center; margin-top: 8px; }
 figure.fig figcaption b { color: var(--ink); }
+/* 考古題的原卷裁切圖：深色模式下反相，讓白底掃描圖融入背景 */
+figure.fig img.q-img { display: block; max-width: 100%; height: auto; margin: 0 auto; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); }
+:root[data-theme="dark"] figure.fig img.q-img { filter: invert(.9) hue-rotate(180deg); }
+figure.fig .q-fig { max-width: min(100%, var(--fig-w, 640px)); margin: 0 auto; }
 .fig-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
 .prose p { margin: 0 0 12px; }
 .prose ol, .prose ul { padding-left: 1.4em; margin: 0 0 12px; }
