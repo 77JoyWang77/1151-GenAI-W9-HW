@@ -4442,6 +4442,86 @@
       ],
       "answer": "33 (d)；34 (a)；35 (c)（33、34 待確認）",
       "explanation": "<p><b>33</b>：(a) 錯：$t0 是 caller-saved，呼叫 fib 後可能被改掉，用它存第一次遞迴的結果會出錯。(b) 錯：$s1 是 callee-saved，fib 自己會改 $s1，必須先存起來還原給呼叫者。(c) 對這份程式而言 $ra、$a0 確實要存，但「each function」太絕對（leaf function 不必存 $ra）。(d) 對：blti 要同時放「比較用的立即值」和「分支位移」兩個立即值，再加一個暫存器，32 bits 放不下。選 (d)（若出題者接受 (c) 則有爭議，待確認）。</p>\n<p><b>34</b>：逐次呼叫計算：fib(2)：beq（跳到 L1）、jal、jal、jr，共 4 條；fib(1)：beq（不跳）、j EXIT、jr，共 3 條；fib(0)：同樣 3 條。合計 10 條 × 3 = <b>30</b> cycles → (a)。若把呼叫者執行的 jal fib 也算進來是 33（選項 d），題意未明，待確認。</p>\n<p><b>35</b>：beq 的 opcode = 4 = 000100；rs = $t0 = 8 = 01000；rt = $0 = 00000；位移 = (L1 後第一條指令的位址 − (beq 位址 + 4)) / 4：beq 後面依序是第 8、9 行，L1 下一條是第 11 行，所以要跳過 2 條，offset = <b>2</b>。編碼 000100 01000 00000 0000 0000 0000 0010 → (c)。(b)(d) 把 opcode 寫錯，(a) 是負位移。</p>"
+    },
+    {
+      "id": "co-0179",
+      "topics": [
+        "cache-performance",
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>（承 Q1：compute_distance 對 N 個 2D 點兩兩計算距離，內層迴圈每次 load 4 個 float、store 1 個 float；N=1024，cache 放不下所有資料點，write-back/write-allocate，block 32 bytes）</p>\n<pre class=\"code\">void compute_distance(float x[], float y[], int N, float distance[]) {\n    for (int i = 0; i &lt; N; i++) {\n        for (int j = 0; j &lt; N; j++) {\n            float x_dist = x[i]- x[j];\n            float y_dist = y[i] - y[j];\n            distance[j + i * N] = sqrt(x_dist*x_dist + y_dist*y_dist);\n        }\n    }\n}</pre>\n<p>(2pts) Following the previous question, let us calculate the <i>arithmetic intensity</i>, which is defined as the ratio between the number of executed operations and the number of bytes transferred between the processor and the memory. For the compute_distance function, we focus on floating-point operations only. What is the arithmetic intensity of this function?</p>",
+      "choices": [
+        "(A) Less than 0.35.",
+        "(B) Between 0.35 and 0.7.",
+        "(C) Between 0.7 and 1.",
+        "(D) Between 1 and 2.",
+        "(E) More than 2."
+      ],
+      "answer": "(A)（待確認）",
+      "explanation": "<p>Arithmetic intensity（運算強度）= 浮點運算次數 ÷ 搬移的 bytes 數，roofline model 就是靠它判斷程式卡在運算還是卡在記憶體頻寬。</p>\n<p><b>分子</b>：內層每次迭代的浮點運算有 2 個減法（x_dist、y_dist）、2 個乘法、1 個加法、1 個 sqrt，共 6 個（sqrt 不算的話是 5 個）。</p>\n<p><b>分母</b>：照前一題給的存取模型，每次迭代 load 4 個 float、store 1 個 float，共 5 × 4 = 20 bytes。</p>\n<p>intensity = 6 / 20 = <b>0.3</b>（只算 5 個運算則是 0.25），都小於 0.35，答案 (A)。意思是每搬 1 byte 只做 0.3 個運算，這支程式非常吃記憶體頻寬。</p>\n<p>（待確認）另一種讀法是只算 cache miss 真正跟 DRAM 搬的量：x[j]、y[j]、distance 每 8 次迭代各 miss 一個 32-byte block，平均每次迭代 12 bytes；若再加上 distance 被寫回的 4 bytes，是 16 bytes。這樣 intensity 是 6/12 = 0.5 或 6/16 = 0.375，會落在 (B)。題目在前一題特別寫出「每次 load 4、store 1」，又把分母說成 processor 和 memory 之間的 bytes，這裡採用前者的算法，和下一題「x[]、y[] 都在 cache 裡」的對照也比較一致。</p>"
+    },
+    {
+      "id": "co-0180",
+      "topics": [
+        "cache-performance",
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>（承 Q1、Q2：compute_distance 內層迴圈每次 load 4 個 float（x[i]、y[i]、x[j]、y[j]）、store 1 個 float（distance[j + i * N]），N=1024）</p>\n<p>(2pts) Following the previous question, suppose we make the processor large enough to store all the 2D points, so that all the x[] and y[] are already in the cache before the function is called. What is the arithmetic intensity of this function in this case?</p>",
+      "choices": [
+        "(A) Less than 0.35.",
+        "(B) Between 0.35 and 0.7.",
+        "(C) Between 0.7 and 1.",
+        "(D) Between 1 and 2.",
+        "(E) More than 2."
+      ],
+      "answer": "(D)（待確認）",
+      "explanation": "<p>題目說 x[]、y[] 在呼叫前就已經全部在 cache 裡（題目寫 processor large enough，意思是 cache 夠大），那 4 個 load 都不必再跟記憶體搬資料，剩下的只有每次迭代 store 的 1 個 float，也就是 4 bytes。</p>\n<p>浮點運算還是每次 6 個（2 減、2 乘、1 加、1 sqrt），intensity = 6 / 4 = <b>1.5</b>；sqrt 不算的話是 5 / 4 = 1.25。兩種算法都落在 1～2，答案 (D)。和上一題的 0.3 相比提高到 5 倍，代表把資料留在 cache 裡，在 roofline 上會往右移、離運算屋頂更近。</p>\n<p>（待確認）如果把 write-allocate 的效果也算進去：distance 每 8 次迭代要先把一個 32-byte block 讀進來、之後再寫回 32 bytes，平均每次迭代 8 bytes，intensity = 6/8 = 0.75，會變成 (C)。這裡依上一題的算法（只算 store 的 4 bytes）作答。常見錯誤是忘記 x[]、y[] 已在 cache，分母仍然用 20 bytes，算出 0.3。</p>"
+    },
+    {
+      "id": "co-0181",
+      "topics": [
+        "carry-lookahead-adder",
+        "twos-complement-overflow"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": "27",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（題組 C）Consider two one-bit ALU designs and a 32-bit ALU design for 32-bit MIPS CPU design.</p>\n<p>（圖的內容：<br>\n<b>左圖</b>：1-bit ALU。a 經 Ainvert 控制的 mux 選 a 或 ¬a，b 經 Binvert 控制的 mux 選 b 或 ¬b，兩者送進 AND、OR 與加法器（+，CarryIn 由上方進入）。結果 mux 由 Operation 選擇：0 = AND、1 = OR、2 = 加法器的和、3 = Less 輸入。加法器的和輸出（接到 mux 輸入 2 的那條線）往下拉出一條標 <i>S1</i>；加法器底部的進位輸出標 <i>S2</i>。S1、S2 連同 a、b 的訊號一起送進下方的 Overflow detection 方塊，輸出 Overflow。這個 1-bit ALU 沒有對外的 CarryOut。<br>\n<b>中圖</b>：同樣的 1-bit ALU（Ainvert、Binvert、CarryIn、Operation，mux 0～3 = AND、OR、加法器、Less），但沒有 Overflow detection，加法器的進位從底部輸出為 CarryOut。<br>\n<b>右圖</b>：32-bit ALU，ALU0～ALU31 串接，每一級的 CarryOut 接下一級的 CarryIn；Ainvert、Binvert、Operation 接到每一級，Binvert 同時接 ALU0 的 CarryIn；ALU1～ALU31 的 Less 接 0；ALU31 輸出 Result31、Set、Overflow，其中 Set 接回 ALU0 的 Less。）</p>\n<p>27. Which of the following statements is correct?</p>",
+      "choices": [
+        "(a) The left figure is the most significant bit (MSB) ALU and the <i>set</i> signal comes from <i>S2</i>.",
+        "(b) The middle figure is the MSB ALU and the <i>set</i> signal comes from <i>CarryOut</i>.",
+        "(c) The concept to realize <i>slt</i> is that a subtraction is performed first and then the <i>CarryOut</i> of the MSB ALU is the <i>set</i> signal that is connected to the least significant bit ALU.",
+        "(d) The <i>set</i> signal comes from the <i>S</i>1 of the ALU in the left figure."
+      ],
+      "answer": "(d)",
+      "explanation": "<p>先認圖：左圖有 Overflow detection、沒有 CarryOut，這是 MSB（ALU31）專用的 1-bit ALU；中圖有 CarryOut 要傳給下一級、沒有溢位偵測，是 ALU0～ALU30 用的一般版本。</p>\n<p>slt（set on less than）的做法：先算 a − b（Binvert = 1、CarryIn = 1），如果 a &lt; b，差是負的，所以 <b>MSB 加法器的和（符號位元）</b>就是答案。這個位元拉出來當 Set，接回 ALU0 的 Less，其他位的 Less 都接 0，結果就是 0…01 或 0…00。</p>\n<p>左圖裡，S1 是加法器的「和」輸出（也就是接到 mux 輸入 2 的那條線），S2 是加法器的「進位」輸出。所以 Set 來自 <b>S1</b>，<b>(d) 對</b>。</p>\n<p><b>(a) 錯</b>：左圖確實是 MSB ALU，但 Set 來自 S1（和），不是 S2（進位）。<br>\n<b>(b) 錯</b>：中圖不是 MSB ALU（它沒有溢位偵測），Set 也不是 CarryOut。<br>\n<b>(c) 錯</b>：先做減法的概念對，但接到 LSB 的是 MSB 的「和」（符號位元），不是 CarryOut。用 CarryOut 判斷的是無號數比較（sltu 的概念），而且方向相反：無號數 a − b 沒有借位時 CarryOut = 1，代表 a ≥ b。</p>\n<p>補充：嚴格來說，a − b 發生溢位時符號位元會錯（例如很大的正數減很大的負數），正確的 Set 應該是「和的 MSB XOR Overflow」；這題的圖只考到基本的接法。</p>"
     }
   ]
 }

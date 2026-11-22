@@ -5353,6 +5353,33 @@
       ],
       "answer": "26 (b)；27 (c)；28 (a)",
       "explanation": "<p>一個 IB = 4 KB ÷ 256 B = <b>16</b> 個 inode。</p>\n<p><b>26</b>：每個檔案需要一個 inode，5 × 16 = <b>80</b> 個 → (b)。（data region 只有 24 塊不是檔案數的上限，小檔案或空檔案不一定用到 data block。）</p>\n<p><b>27</b>：inode 16 → ⌊16 / 16⌋ = IB <b>1</b>（IB0 放 0～15）→ (c)。</p>\n<p><b>28</b>：位元組位址 = 12 KB + 16 × 256 = 12288 + 4096 = 16384，sector = 16384 ÷ 512 = <b>32</b> → (a)。</p>"
+    },
+    {
+      "id": "os-0219",
+      "topics": [
+        "demand-paging",
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts)（複選）Which of the following are correct for Virtual Memory?</p>",
+      "choices": [
+        "(A) Each process has its own virtual space",
+        "(B) Allow more processes to run concurrently",
+        "(C) Allow address spaces to be shared by several processes",
+        "(D) Use SEVERAL bases",
+        "(E) Use ONE base"
+      ],
+      "answer": "(A)(B)(C)(D)（(D)(E) 待確認）",
+      "explanation": "<p>Virtual Memory（虛擬記憶體）把每個行程看到的邏輯位址空間和實體記憶體分開，靠 page table 一頁一頁對應過去。</p>\n<p><b>(A) 對</b>：每個行程都有自己獨立的虛擬位址空間，同一個虛擬位址在不同行程會對應到不同的實體 frame。<br>\n<b>(B) 對</b>：配合 demand paging（需求分頁），行程只要把正在用的頁面放進記憶體就能執行，同樣大小的記憶體可以放更多行程，提高 multiprogramming 程度。<br>\n<b>(C) 對</b>：兩個行程的 page table 可以指向同一個 frame，做到 shared library、shared memory、fork 後的 copy-on-write。<br>\n<b>(D) 對</b>、<b>(E) 錯</b>：只用一組 base/limit register 的是 contiguous allocation（連續配置），整個行程必須放在一段連續的實體記憶體。虛擬記憶體以 page（或 segment）為單位，每一頁都有自己的 frame 起始位址，等於用了很多個 base，所以行程在實體記憶體裡可以不連續。</p>\n<p>（待確認）(D)、(E) 的「base」題目沒有定義，這裡解讀成「位址轉換用的基底位址」；若出題者指的是每個行程只有一個 page-table base register（PTBR），判定可能不同。</p>"
     }
   ]
 }
