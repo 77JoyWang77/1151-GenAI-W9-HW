@@ -12,14 +12,14 @@
       ],
       "skipped": [
         {
-          "no": 3,
+          "no": "3-(d)",
           "subject": "operating-systems",
-          "reason": "答案不唯一：選項有不存在的排程演算法名稱，I/O burst 模型有多種解讀（待依新規則重新評估）"
+          "reason": "排程演算法名稱「LISC」不是標準演算法，卷上也沒有定義，找不到合理解讀可以決定排程規則，無法算出答案"
         },
         {
-          "no": 4,
+          "no": "3-(e)",
           "subject": "operating-systems",
-          "reason": "答案不唯一：取決於實際量測數據（待依新規則重新評估）"
+          "reason": "排程演算法名稱「LIF」卷上沒有定義（可能指 last-in-first，但搶先規則、I/O 回來是否算新到都無從確定），無法得到可驗證的答案"
         }
       ]
     },
@@ -254,13 +254,7 @@
         "computer-organization",
         "operating-systems"
       ],
-      "skipped": [
-        {
-          "no": 14,
-          "subject": "computer-organization",
-          "reason": "答案不唯一：取決於乘除法硬體的實作細節（待依新規則重新評估）"
-        }
-      ]
+      "skipped": []
     },
     {
       "school": "國立陽明交通大學",
@@ -367,11 +361,6 @@
           "reason": "題目有錯：插入 61 後 (A)～(D) 都不成立"
         },
         {
-          "no": "12–17",
-          "subject": "data-structures",
-          "reason": "題意不明（待依新規則重新評估）"
-        },
-        {
           "no": 24,
           "subject": "data-structures",
           "reason": "題目有錯：parent 公式前後不一致"
@@ -387,18 +376,7 @@
         "data-structures",
         "algorithms"
       ],
-      "skipped": [
-        {
-          "no": 11,
-          "subject": "data-structures",
-          "reason": "題意不明：heap 原內容與「存入 15 個元素」沒有交代（待依新規則重新評估）"
-        },
-        {
-          "no": 19,
-          "subject": "algorithms",
-          "reason": "題意不明：路由器數量不限時「最小功耗」定義不清（待依新規則重新評估）"
-        }
-      ]
+      "skipped": []
     },
     {
       "school": "國立陽明交通大學",
@@ -558,13 +536,7 @@
         "discrete-math",
         "linear-algebra"
       ],
-      "skipped": [
-        {
-          "no": 9,
-          "subject": "linear-algebra",
-          "reason": "答案不唯一：特徵空間二維，K 隨自由參數改變（待依新規則重新評估）"
-        }
-      ]
+      "skipped": []
     },
     {
       "school": "國立中央大學",
@@ -580,11 +552,6 @@
           "no": 15,
           "subject": "discrete-math",
           "reason": "題目有錯：遞迴式為齊次，但選項都含非齊次項"
-        },
-        {
-          "no": 4,
-          "subject": "linear-algebra",
-          "reason": "答案不唯一：U 的欄序與相位不唯一，K 可能為 0、1、2（待依新規則重新評估）"
         }
       ]
     },

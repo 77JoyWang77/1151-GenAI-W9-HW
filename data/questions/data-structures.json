@@ -8118,6 +8118,196 @@
       ],
       "answer": "(A)(D)",
       "explanation": "<p>先把空格填好。合併兩棵 max-heap 性質的樹，根一定是兩個根中比較大的那個；它保留一邊子樹不動，另一邊子樹和「另一棵樹」遞迴合併後接回來：</p><pre class=\"code\">if root1 = nil then return root2          /* (a) = root2 */\nif root2 = nil then return root1          /* (b) = root1 */\nif root1.data &gt; root2.data then\n    root1.right ← Merge(root1.right, root2) /* (c)(d)(e) */\n    return root1                          /* (f) = root1 */\nelse\n    root2.right ← Merge(root2.right, root1) /* (g)(h)(i) */\n    return root2                          /* (j) = root2 */</pre><p>這其實就是 <span class=\"term\">Leftist Tree<small>（左傾樹）</small></span>、skew heap 合併的骨架，只是沒有維持左右平衡的條件。</p><ul><li>(A) 對：(b) 是 root2 為空時回傳 root1；(f) 是 root1 較大時回傳新的根 root1，兩者都是 root1。</li><li>(B) 錯：(c) 和 (d) 必須是 root1 的<b>同一邊</b>孩子（例如都是 root1.right），否則會發生「把右子樹合併後接到左邊」：原本的左子樹整個遺失，右子樹又同時掛在兩個位置。所以 (c) = (d)，三者不可能全都不同。</li><li>(C) 錯：(c) 填 root1.left 或 root1.right 都可以（只要 (d) 跟著填同一邊），(g) 也一樣，答案不唯一。</li><li>(D) 對：Merge 本身不在乎參數順序，Merge(root1, root2.right) 和 Merge(root2.right, root1) 都會回傳一棵包含兩者全部節點、符合 max-heap 性質的樹，只是形狀可能不同。</li><li>(E) 錯：若 root1 和 root2 是同一棵樹，root1.data &gt; root2.data 不成立，走 else：root2.right ← Merge(root2.right, root1)。最簡單的情況是單一節點：Merge(nil, r) 回傳 r，於是 r.right = r，形成自己指向自己的環；節點多時同樣會把整棵樹掛回自己的子樹裡，結構被破壞。</li></ul><p>程式驗算：隨機產生 2000 組 MaxBT 測試，標準填法與 (h)(i) 互換都得到正確的 MaxBT；(c)、(d)、(e) 全不同的填法會出錯；同一棵樹傳兩次會產生環。答案 (A)(D)。</p>"
+    },
+    {
+      "id": "ds-0348",
+      "topics": [
+        "stack"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Consider a stack containing (5, 4, 7, 9, 0) where the stack top is 5, show the correct one(s) for the followings:",
+      "choices": [
+        "(A) After pushing 3 and 5, the stack content is (3, 5, 4, 7, 9, 0)",
+        "(B) After the work in (A), there are 7 elements left in the stack.",
+        "(C) Now, the top second and third elements in the stack are equal.",
+        "(D) Popping 3 times after the work in (A), the stack becomes (5, 4, 7, 9, 0).",
+        "(E) The number of nonempty continuous popping is five if it is done from the above original stack."
+      ],
+      "answer": "(B)(E)（待確認）",
+      "explanation": "<p>照題目的寫法，括號裡最左邊是 top。原本 (5, 4, 7, 9, 0)，共 5 個元素。</p>\n<ul>\n<li>(A) 錯：先 push 3、再 push 5，top 是最後放進去的 5，內容應為 (5, 3, 5, 4, 7, 9, 0)，共 7 個。選項只寫了 6 個，等於漏了一次 push。</li>\n<li>(B) 對：5 + 2 = 7 個元素。</li>\n<li>(C) 錯：從 top 數第二、第三個是 3 和 5，不相等（若把 (A) 的內容當真，第二、第三個是 5 和 4，也不相等）。</li>\n<li>(D) 錯：從 (5, 3, 5, 4, 7, 9, 0) pop 3 次，拿掉 5、3、5，剩 (4, 7, 9, 0)，不是 (5, 4, 7, 9, 0)。要 pop 2 次才會回到原狀。</li>\n<li>(E) 對：原本有 5 個元素，可以連續成功 pop 5 次，第 6 次就是 stack underflow。</li>\n</ul>\n<p>題意不明的地方在 (A) 與「After the work in (A)」：(A) 寫的內容本身是錯的，(B)(D) 指的是「真的 push 了 3 和 5 之後」，這裡照實際操作解讀；若改照 (A) 寫的 6 個元素，(B) 變錯、(D) 仍錯。所以答案標待確認。</p>"
+    },
+    {
+      "id": "ds-0349",
+      "topics": [
+        "stack",
+        "circular-queue",
+        "linked-stack-queue"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Which of the following statement(s)is correct?",
+      "choices": [
+        "(A) Both stack and queue can be implemented with a linked list.",
+        "(B) Both stack and queue are stack.",
+        "(C) When a queue is implemented with an array, two elements in the queue are both of the same type.",
+        "(D) The number of elements in a queue is less than some integer.",
+        "(E) An element in a queue is defined to point to its predecessor by default."
+      ],
+      "answer": "(A)(C)(D)（待確認）",
+      "explanation": "<ul>\n<li>(A) 對：stack 只在頭端 push/pop，queue 在尾端加入、頭端刪除（多記一個 rear 指標），都可以用 linked list 做到 O(1)。</li>\n<li>(B) 錯：queue 是 FIFO，stack 是 LIFO，兩者不同。</li>\n<li>(C) 對：C 的陣列元素型別都相同，用陣列實作的 queue，裡面任兩個元素型別一定一樣。</li>\n<li>(D) 解讀成「queue 的元素個數有上限」：實際的 queue 不論用陣列（容量 MAX_QUEUE_SIZE）或 linked list（受記憶體限制）都存得有限個元素，所以判為對。但若把 queue 當成抽象資料型態（ADT），理論上可以無限成長，這時會判為錯，所以標待確認。</li>\n<li>(E) 錯：linked list 實作的 queue，節點預設指向下一個（successor，往 rear 方向），不是前一個。</li>\n</ul>"
+    },
+    {
+      "id": "ds-0350",
+      "topics": [
+        "singly-linked-list",
+        "circular-linked-list",
+        "merge-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Consider a linked list of <i>n</i> members, show the following correct one(s).",
+      "choices": [
+        "(A) A linked list is static.",
+        "(B) The timing complexity of sorting this list with merge technique is O(<i>n</i><sup>2</sup>) in the worst case.",
+        "(C) Change a single linked list as a circular-linked needs O(<i>n</i>) time.",
+        "(D) The best merging time of two linked lists, whose lengths are <i>m</i> and <i>n</i>, is O(<i>m</i>), if <i>m</i> is the larger.",
+        "(E) If each linked list has an additional pointer to its last element, the time complexity of merging two linked lists is constant."
+      ],
+      "answer": "(C)(D)(E)（待確認）",
+      "explanation": "<ul>\n<li>(A) 錯：linked list 的節點用 malloc 動態配置，長度可以隨時變，是動態（dynamic）結構；陣列才是靜態。</li>\n<li>(B) 判為錯：merge sort 在 linked list 上一樣是 Θ(n log n)（切半 log n 層，每層合併 O(n)），最差情況也一樣。嚴格來說 O 只是上界，n log n ≤ n²，寫 O(n²) 也不算錯；但出題者用 O 表示「緊的複雜度」，這裡照這個意思判錯。</li>\n<li>(C) 對：要讓最後一個節點的 link 指回第一個節點，得先從頭走到尾找到最後一個節點，O(n)。</li>\n<li>(D) 判為對：合併兩個排序好的串列要 O(m + n)，m 比較大時就是 O(m)。若「merge」指把兩條串列接起來（concatenate），沒有尾指標時要走到其中一條的尾端，O(m) 也是成立的上界。</li>\n<li>(E) 判為對：這裡的 merge 指串接。有尾指標時，只要把第一條的尾節點接到第二條的頭、更新尾指標，O(1)。若 merge 指「合併兩條排序好的串列」，尾指標幫不上忙，仍要 O(m + n)，就變錯。</li>\n</ul>\n<p>這題的 merge 一詞同時有「排序合併」和「串接」兩種意思，(B)(D)(E) 會隨解讀改變。這裡依選項的寫法推測出題者的意思（(E) 提到尾指標，只對串接有用），所以答案標待確認。</p>"
+    },
+    {
+      "id": "ds-0351",
+      "topics": [
+        "doubly-linked-list",
+        "merge-sort",
+        "binary-search-tree",
+        "sorting-summary"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Consider two doubly linked lists of integers, one has different member values from those of the other, show the correct one(s) below:",
+      "choices": [
+        "(A) When deleting an element with some value, the time complexity is O(<i>n</i>).",
+        "(B) If these lists are sorted in the same order, the time complexity is O(<i>n</i>) when merging them.",
+        "(C) When sorting one of them (length <i>n</i>), the time complexity in the worst case is O(<i>n</i><sup>2</sup>).",
+        "(D) When merging and sorting them, the time complexity in the worst case is O(<i>n</i><sup>2</sup>).",
+        "(E) These lists can be constructed as a binary search tree in O(<i>n</i>) times in the worst case."
+      ],
+      "answer": "(A)(B)(C)(D)（待確認）",
+      "explanation": "<ul>\n<li>(A) 對：雙向串列刪除節點本身是 O(1)，但要先依「值」把節點找出來，最差走完整條，O(n)。</li>\n<li>(B) 對：兩條都排好序，用兩個指標一路比較往前走，每個節點只看一次，O(n)（n 為兩條總長）。</li>\n<li>(C) 對：串列不能隨機存取，常用的 insertion sort 或 bubble sort 最差 O(n²)；就算用 merge sort 是 O(n log n)，O(n²) 仍是正確的上界。</li>\n<li>(D) 對：先串接或合併再排序，總長仍是 O(n)，最差排序時間 O(n²) 成立（同 (C)）。</li>\n<li>(E) 錯：把 n 個值逐一插入 BST，最差（輸入剛好有序）樹退化成鏈，總時間 1 + 2 + … + n = O(n²)；而且以比較為基礎建出 BST 等於排序，不可能在最差情況 O(n) 完成。</li>\n</ul>\n<p>(C)(D) 的對錯取決於 O 是當「上界」還是當「緊的界」：題目沒指定排序法，取上界解讀判為對。若出題者心中想的是 merge sort 的 O(n log n)，(C)(D) 會判錯、答案只剩 (A)(B)，所以標待確認。</p>"
+    },
+    {
+      "id": "ds-0352",
+      "topics": [
+        "sorting-summary",
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）For the sorting of a series of random numbers, show the following correct one(s):",
+      "choices": [
+        "(A) Applying queue is faster than applying stack.",
+        "(B) Applying a linked list is faster than applying an array.",
+        "(C) Applying a circular linked list is faster than applying a linked list.",
+        "(D) Applying a doubly linked list is faster than applying a single list.",
+        "(E) Applying a binary tree is faster than applying a doubly linked list."
+      ],
+      "answer": "(E)（待確認）",
+      "explanation": "<ul>\n<li>(A) 錯：queue 和 stack 只是存取順序不同，本身沒有帶來比較快的排序方法。</li>\n<li>(B) 錯：陣列可以隨機存取，能用 quick sort、heap sort 這類平均 O(n log n) 的方法；串列插入不用搬移元素，但找位置仍要一路走，insertion sort 還是 O(n²)，整體不會比陣列快。</li>\n<li>(C)(D) 錯：環狀或雙向只是多了回頭或繞回的連結，不會降低排序的比較次數，複雜度一樣。</li>\n<li>(E) 對：亂數資料逐一插入 binary search tree 再做 inorder traversal（tree sort），平均 O(n log n)；用雙向串列做插入排序平均是 O(n²)。</li>\n</ul>\n<p>題目沒有說明各結構搭配哪種排序法，「比較快」只能依各結構最常見的用法比較平均情況，所以標待確認。</p>"
+    },
+    {
+      "id": "ds-0353",
+      "topics": [
+        "doubly-linked-list",
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）For a doubly linked list and a binary search tree, show the correct one(s) below:",
+      "choices": [
+        "(A) A doubly linked list can be used to implement a binary search tree.",
+        "(B) The time complexity of the implementation is O(<i>n</i><sup>2</sup>) in the worst case.",
+        "(C) The time complexity for the implementation is O(<i>n</i>log(<i>n</i>)) in average.",
+        "(D) For a binary search tree, the time complexity for search is O(<i>n</i>) in average.",
+        "(E) The search time in a binary search tree is O(<i>n</i>) in the worst case."
+      ],
+      "answer": "(A)(B)(C)(E)（待確認）",
+      "explanation": "<ul>\n<li>(A) 對：雙向串列的節點有兩個指標，把 llink、rlink 當成 left child、right child，就是 BST 的節點結構。</li>\n<li>(B) 對：「implementation」解讀成把 n 個資料插入建成 BST。最差（資料已排序）樹退化成一條鏈，第 i 次插入要走 i − 1 步，總共 O(n²)。</li>\n<li>(C) 對：資料順序隨機時，樹高平均 O(log n)，n 次插入平均 O(n log n)。</li>\n<li>(D) 錯：平均搜尋時間是 O(log n)。</li>\n<li>(E) 對：樹退化成鏈時，搜尋要走 n 層，O(n)。</li>\n</ul>\n<p>(B)(C) 的「implementation」沒說是指什麼操作的時間，這裡解讀成「建出整棵 BST」；若解讀成單次操作，最差 O(n)、平均 O(log n)，(B)(C) 都會變錯，所以標待確認。</p>"
+    },
+    {
+      "id": "ds-0354",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_software.pdf"
+      },
+      "question": "（複選）(3%) There is a max binary heap with height h, where h &gt;=2. The height of the root is 0. The pop operation is used to remove an element. After 15 elements are stored to the heap, the new height of the heap is H. The function ceil( <i>x</i> ) returns the smallest possible integer value which is greater than or equal to the given argument <i>x</i>. Which of the following statement(s) is(are) correct?",
+      "choices": [
+        "(A) It takes at most (2<sup>H+1</sup> – 1) pop operations to remove all the nodes.",
+        "(B) Let G = ceil( H/2 ). It takes at most 2<sup>G</sup> pop operations to remove three levels of the heap.",
+        "(C) To remove the second smallest element, it takes N pop operations, where N is inside [2<sup>H–1</sup>, 2<sup>H</sup>].",
+        "(D) |H-h| is smaller than or equal to 2."
+      ],
+      "answer": "(A)(D)（待確認）",
+      "explanation": "<p>關鍵事實：高度為 H（root 高度 0）的 binary heap 是 complete binary tree，節點數 n 滿足 2<sup>H</sup> ≤ n ≤ 2<sup>H+1</sup> − 1。原本的 heap 有幾個元素題目沒給，只知道 h ≥ 2，也就是原本有 n<sub>0</sub> ≥ 4 個；「After 15 elements are stored」解讀成再放入 15 個，n = n<sub>0</sub> + 15。下面用程式把 h = 2～11 的每一種 n<sub>0</sub> 都跑過。</p>\n<ul>\n<li>(A) 對：pop 一次移除一個元素，最多 n ≤ 2<sup>H+1</sup> − 1 次就清空。</li>\n<li>(B) 錯：「移除三層」解讀成讓高度少 3，至少要把節點數降到 2<sup>H−2</sup> − 1 以下，最多要 pop n − (2<sup>H−2</sup> − 1) 次，約 7·2<sup>H−2</sup> 次，遠大於 2<sup>⌈H/2⌉</sup>。例如 H = 4、n = 31 時要 pop 28 次，但 2<sup>G</sup> = 4。所有情況都不成立。</li>\n<li>(C) 錯：max heap 每次 pop 出最大值，第二小的元素是倒數第二個被 pop 的，所以 N = n − 1，範圍是 [2<sup>H</sup> − 1, 2<sup>H+1</sup> − 2]。只有 n 剛好是 2<sup>H</sup> 或 2<sup>H</sup> + 1 時才落在 [2<sup>H−1</sup>, 2<sup>H</sup>]，不是一定成立。</li>\n<li>(D) 對：h 最小是 2（n<sub>0</sub> = 4～7），加 15 個變成 19～22 個，H = 4，差 2；h 越大，加 15 個造成的高度變化越小（h = 3 時差 1，h ≥ 4 時差最多 1）。所以 |H − h| ≤ 2 一定成立。</li>\n</ul>\n<p>另一種解讀是「放完之後 heap 裡共有 15 個元素」：這時 H = 3、h 為 2 或 3，(A)(D) 仍然對；(C) 的 N = 14 不在 [4, 8]，仍然錯；(B) 移除三層要 pop 14 次 &gt; 2<sup>2</sup> = 4，仍然錯。兩種解讀答案相同，但「15 個元素」的意思和 (B) 的「three levels」都沒有交代清楚，所以標待確認。</p>"
     }
   ]
 }

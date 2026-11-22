@@ -4509,6 +4509,26 @@
       ],
       "answer": "(E)（待確認）",
       "explanation": "<p><span class=\"term\">c-means<small>（又稱 k-means 分群）</small></span>要先指定群數 c，然後重複兩個步驟直到分組不再改變：</p><ol><li><b>指派</b>：每個資料點分到離它最近的中心。</li><li><b>更新</b>：每群的中心改成該群成員的平均。</li></ol><p>兩個步驟都會讓「每點到所屬中心的距離平方和」（SSE）不增加，而分組方式只有有限多種，所以在歐氏距離下一定會停。但停下來的只是<b>區域最佳解</b>，而且結果取決於初始中心怎麼選。</p><p>先算出五條序列兩兩的 <span class=\"term\">Hamming distance<small>（漢明距離，對應位置不同的字元數）</small></span>：</p><div class=\"table-scroll\"><table><tr><th></th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th></tr><tr><th>a</th><td>0</td><td>1</td><td>6</td><td>6</td><td>4</td></tr><tr><th>b</th><td>1</td><td>0</td><td>6</td><td>6</td><td>4</td></tr><tr><th>c</th><td>6</td><td>6</td><td>0</td><td>1</td><td>4</td></tr><tr><th>d</th><td>6</td><td>6</td><td>1</td><td>0</td><td>5</td></tr><tr><th>e</th><td>4</td><td>4</td><td>4</td><td>5</td><td>0</td></tr></table></div><p>可以看出 {a, b}、{c, d} 各自只差 1 個字元，e 和大家都差 4 以上。直覺上最好的分法是 {a, b}、{c, d}、{e}。</p><p>用程式把序列做 one-hot 編碼（每個位置用 4 維向量表示 A/C/G/T），跑 k-means，並把 C(5,3) = 10 種「從資料點挑 3 個當初始中心」的情況都試一遍。結果如下：</p><ul><li>(A) 錯：題目說「不論用什麼距離」。保證會停的論證要求「取平均」剛好是該距離下的最佳中心，這只對歐氏距離平方成立；換成其他距離又照樣取平均，SSE 不一定下降，可能來回震盪。另外，若初始中心離所有資料都很遠，某一群可能分不到任何點（empty cluster），最後就不是三群。</li><li>(B) 錯：雖然 a、b 只差 1，但如果初始中心剛好挑 a、b、c，第一輪 a 和 b 就各自當一群的中心，程式跑出 {a, e}、{b}、{c, d} 並停在那裡。a、b 被拆開，所以不是「always」。</li><li>(C) 錯：上面那組結果的 SSE = 5，而 {a, b}、{c, d}、{e} 的 SSE = 2。k-means 停在較差的區域最佳解，所以不保證全域最佳。事實上，k-means 的最佳化問題是 NP-hard。</li><li>(D) 錯：用 2-mer（長度 2 的子字串）出現次數當特徵，c = GCATAG 的 2-mer 是 {GC, CA, AT, TA, AG}，d = GCATAC 的是 {GC, CA, AT, TA, AC}，5 個裡有 4 個相同，兩者非常接近。程式驗算：初始中心挑 a、c、e 時，c 和 d 就分在同一群，所以「never」錯。</li><li>(E) 選這個：每一輪要算 n 個點到 c 個中心的距離，每次距離要看 d 維，所以一輪是 O(n·c·d)，總共 O(t·n·c·d)，t 是迭代次數。本題 c = 3，序列長度固定（d 是常數），迭代次數也視為常數，複雜度就是 O(n)，和序列數成正比。</li></ul><p>（待確認）(E) 要把迭代次數 t 當成常數才成立。嚴格來說，k-means 在最壞情況下的迭代次數可以是 n 的指數，所以 (E) 並不是無條件成立。這題沒有公布答案；因為 (A)～(D) 都能舉出明確的反例，而 (E) 符合一般「k-means 對 n 是線性時間」的說法，所以判 (E) 為出題者要的答案。</p>"
+    },
+    {
+      "id": "al-0193",
+      "topics": [
+        "recurrence-methods",
+        "closest-pair"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_software.pdf"
+      },
+      "question": "<p>Given <i>n</i> points on a line, the <i>n</i> points are the <i>n</i> users who need wifi signal. Suppose that we have only one kind of wifi router and we don't care about the number of wifi routers needed, but we have to minimize the power consumption of the routers. Power consumption is presented as the distance that signal of a router can reach.</p>\n<p>(a) <b>Design a Divide and Conquer</b> algorithm to determine the minimum power consumption. (4%).<br>\n(b) What is the time required for your Divide and Conquer algorithm? (2%).</p>",
+      "answer": "（待確認）取「用一台 router 涵蓋所有使用者」的解讀：最小功耗 = (max − min) / 2，用 divide and conquer 同時找最大、最小值，T(n) = 2T(n/2) + 2，共 ⌈3n/2⌉ − 2 次比較，O(n)",
+      "explanation": "<p><b>先處理題意</b>：照字面「router 數量不限、每台功耗相同」，可以在每個使用者的位置各放一台，訊號距離 0 就夠，最小功耗是 0，根本不需要演算法，顯然不是出題者要的。題目要求 divide and conquer 並問時間，最合理的解讀是：<b>所有 router 同一種（同一個訊號距離 r），要讓所有使用者都收得到，而 router 放的位置不限</b>，等價於找一台 router 能涵蓋所有點的最小半徑（數量不限只是說不用在意 router 成本）。在一條線上，能涵蓋所有點的最小區間就是 [min, max]，router 放在中點，<b>最小功耗 r = (max − min) / 2</b>。所以問題變成「同時找出最大值和最小值」。</p>\n<p><b>(a) 演算法</b>：把點分成左右兩半，各自遞迴求 (min, max)，再合併：</p>\n<pre class=\"code\">MinMax(P, l, r):\n    if l == r: return (P[l], P[l])\n    if r == l + 1:                      // 兩個點：比較 1 次\n        if P[l] &lt; P[r]: return (P[l], P[r])\n        else:          return (P[r], P[l])\n    m = (l + r) / 2\n    (min1, max1) = MinMax(P, l, m)\n    (min2, max2) = MinMax(P, m + 1, r)\n    return (min(min1, min2), max(max1, max2))   // 合併：比較 2 次\n\nPower(P, n):\n    (lo, hi) = MinMax(P, 0, n - 1)\n    return (hi - lo) / 2                // router 放在 (lo + hi) / 2</pre>\n<p>正確性：整體的最小值一定是左半最小值或右半最小值之一，最大值同理，所以合併只要各比一次。</p>\n<p><b>(b) 時間</b>：遞迴式 T(n) = 2T(n/2) + 2，T(2) = 1，T(1) = 0。展開得 T(n) = 3n/2 − 2（n 為 2 的冪次；一般 n 是 ⌈3n/2⌉ − 2），也就是 <b>O(n)</b>。用程式驗算 n = 4、8、16、1024 的比較次數分別是 4、10、22、1534，都等於 3n/2 − 2。對照一下：分別找最大和最小要 2n − 2 次比較，divide and conquer 省下約 n/2 次。</p>\n<p><b>另一種解讀</b>：若 router 只能放在使用者的位置上，而且相鄰的 router 要彼此收得到訊號（串成一條網路），最小功耗會變成「排序後相鄰兩點的最大間距」。divide and conquer 做法和一維最近點對類似：先排序，最大間距 = max(左半最大間距, 右半最大間距, 右半最小值 − 左半最大值)，T(n) = 2T(n/2) + O(1) = O(n)，加上排序總共 O(n log n)。</p>\n<p>卷上沒有交代 router 的擺放限制，這裡取第一種解讀，所以答案標待確認。</p>"
     }
   ]
 }

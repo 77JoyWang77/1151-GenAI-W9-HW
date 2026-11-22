@@ -5458,6 +5458,83 @@
       ],
       "answer": "(A)(C)(D)（待確認）",
       "explanation": "<ul><li>(A) 對：現在一般說的 Web 3.0（Web3）是以 blockchain 為基礎的網路。資料和身分不再集中在少數大平台，而是分散在網路上的節點，目標就是更「去中心化」。</li><li>(B) 錯：<span class=\"term\">Software-Defined Networking<small>（軟體定義網路，SDN）</small></span>的核心是把 control plane（決定怎麼轉送）從交換器裡抽出來，交給一個<b>邏輯上集中</b>的 controller 統一管理，交換器只負責照 flow table 轉送（data plane）。所以 SDN 是 centralized，傳統路由器各自算路由才是分散式。</li><li>(C) 對：DNS 沒有一台存放所有名稱的伺服器，而是分層：root server → TLD server（.com、.tw）→ authoritative server（各組織自己的），每一層只管自己那一段。這種設計可以擴展，也沒有單點故障。</li><li>(D) 對：<span class=\"term\">IETF<small>（網際網路工程任務組）</small></span>負責制定網際網路標準，以 RFC 文件發布，例如 TCP、IP、HTTP。</li></ul><p>（待確認）(A) 的「Web 3.0」有兩種說法：早期 Tim Berners-Lee 用它稱呼 Semantic Web（語意網），目標是讓機器看得懂網頁內容，不是去中心化；近年多指以 blockchain 為基礎的 Web3。依題目的敘述，判斷出題者指的是後者，所以 (A) 算對。若照 Semantic Web 的說法，答案會是 (C)(D)。</p>"
+    },
+    {
+      "id": "os-0223",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": "3-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(10 pts) The following table shows the time attributes of five processes in a uni-processor computer, including PID, priority, arrival time, CPU burst, and IO burst. Assuming that the IO burst occurs on different devices and always starts after first time unit. The less the priority value, the higher its priority. Please answer the following sub-questions.</p>\n<div class=\"table-scroll\"><table>\n<tr><th>PID</th><th>Priority</th><th>Arrival Time</th><th>CPU Burst</th><th>IO Burst</th></tr>\n<tr><td>1</td><td>2</td><td>0</td><td>4</td><td>0</td></tr>\n<tr><td>2</td><td>1 (Highest)</td><td>2</td><td>5</td><td>3</td></tr>\n<tr><td>3</td><td>3 (Lowest)</td><td>3</td><td>3</td><td>0</td></tr>\n<tr><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td></tr>\n<tr><td>5</td><td>1</td><td>10</td><td>4</td><td>2</td></tr>\n</table></div>\n<p>(a) (2 pts) When round-robin scheduling algorithm is used and the quantum size is 3, what's the completion time of PID 5 process?</p>",
+      "answer": "20（I/O 模型的解讀待確認）",
+      "explanation": "<p>先說好 I/O 的模型：「IO burst 在第一個時間單位之後開始」解讀成<b>每個有 I/O 的行程先用 CPU 跑 1 個單位，接著去做 I/O，I/O 做完再回來把剩下的 CPU burst − 1 跑完</b>；I/O 在各自的裝置上進行，彼此可以重疊，做 I/O 時不佔 CPU。所以：</p>\n<ul><li>P1：CPU 4（沒有 I/O）</li><li>P2：CPU 1 → I/O 3 → CPU 4</li><li>P3：CPU 3（沒有 I/O）</li><li>P4：CPU 1 → I/O 3 → CPU 4</li><li>P5：CPU 1 → I/O 2 → CPU 3</li></ul>\n<p>（「CPU Burst」是否已經包含 I/O 前的那 1 個單位，卷上沒有明講；這裡取「包含」的解讀，所以答案標待確認。以下時間軸都用模擬程式跑過。）</p><p><span class=\"term\">Round-Robin<small>（輪轉排程）</small></span>，quantum = 3；行程去做 I/O 時就算 quantum 沒用完也會讓出 CPU。時間軸：</p>\n<div class=\"table-scroll\"><table>\n<tr><th>時間</th><th>執行</th><th>說明</th></tr>\n<tr><td>0–3</td><td>P1</td><td>用完 quantum，P1 還剩 1；P2（2）、P3（3）已到</td></tr>\n<tr><td>3–4</td><td>P2</td><td>跑 1 單位就去 I/O，7 回來</td></tr>\n<tr><td>4–7</td><td>P3</td><td>跑完，P3 在 7 完成；P4 在 4 到達</td></tr>\n<tr><td>7–8</td><td>P1</td><td>P1 在 8 完成</td></tr>\n<tr><td>8–9</td><td>P4</td><td>去 I/O，12 回來</td></tr>\n<tr><td>9–12</td><td>P2</td><td>用完 quantum，還剩 1；P5 在 10 到達</td></tr>\n<tr><td>12–13</td><td>P5</td><td>去 I/O，15 回來</td></tr>\n<tr><td>13–16</td><td>P4</td><td>用完 quantum，還剩 1</td></tr>\n<tr><td>16–17</td><td>P2</td><td>P2 在 17 完成</td></tr>\n<tr><td>17–20</td><td>P5</td><td>剩下 3 單位一次跑完 → <b>20</b></td></tr>\n<tr><td>20–21</td><td>P4</td><td>P4 在 21 完成</td></tr>\n</table></div>\n<p>同一時刻「新到／I/O 回來」和「quantum 用完被放回佇列」誰排前面，兩種慣例都試過，P5 都是在 <b>20</b> 完成，所以這一小題對排隊慣例不敏感。</p>"
+    },
+    {
+      "id": "os-0224",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": "3-(b)",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(10 pts) The following table shows the time attributes of five processes in a uni-processor computer, including PID, priority, arrival time, CPU burst, and IO burst. Assuming that the IO burst occurs on different devices and always starts after first time unit. The less the priority value, the higher its priority. Please answer the following sub-questions.</p>\n<div class=\"table-scroll\"><table>\n<tr><th>PID</th><th>Priority</th><th>Arrival Time</th><th>CPU Burst</th><th>IO Burst</th></tr>\n<tr><td>1</td><td>2</td><td>0</td><td>4</td><td>0</td></tr>\n<tr><td>2</td><td>1 (Highest)</td><td>2</td><td>5</td><td>3</td></tr>\n<tr><td>3</td><td>3 (Lowest)</td><td>3</td><td>3</td><td>0</td></tr>\n<tr><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td></tr>\n<tr><td>5</td><td>1</td><td>10</td><td>4</td><td>2</td></tr>\n</table></div>\n<p>(b) (2 pts) When non-preemptive priority scheduling algorithm is used, what's the completion time of PID 5 process?</p>",
+      "answer": "18（I/O 模型的解讀待確認）",
+      "explanation": "<p>先說好 I/O 的模型：「IO burst 在第一個時間單位之後開始」解讀成<b>每個有 I/O 的行程先用 CPU 跑 1 個單位，接著去做 I/O，I/O 做完再回來把剩下的 CPU burst − 1 跑完</b>；I/O 在各自的裝置上進行，彼此可以重疊，做 I/O 時不佔 CPU。所以：</p>\n<ul><li>P1：CPU 4（沒有 I/O）</li><li>P2：CPU 1 → I/O 3 → CPU 4</li><li>P3：CPU 3（沒有 I/O）</li><li>P4：CPU 1 → I/O 3 → CPU 4</li><li>P5：CPU 1 → I/O 2 → CPU 3</li></ul>\n<p>（「CPU Burst」是否已經包含 I/O 前的那 1 個單位，卷上沒有明講；這裡取「包含」的解讀，所以答案標待確認。以下時間軸都用模擬程式跑過。）</p><p>Non-preemptive（不可搶先）優先權排程：數字越小越優先，同優先權照到達順序；行程一旦拿到 CPU 就跑到這段 CPU burst 結束（完成或去做 I/O）。</p>\n<div class=\"table-scroll\"><table>\n<tr><th>時間</th><th>執行</th><th>說明</th></tr>\n<tr><td>0–4</td><td>P1</td><td>只有 P1 在時開始，不可搶先，跑完</td></tr>\n<tr><td>4–5</td><td>P2</td><td>P2 優先權 1 最高；跑 1 單位去 I/O，8 回來</td></tr>\n<tr><td>5–8</td><td>P3</td><td>P3、P4 都是 3，P3 先到</td></tr>\n<tr><td>8–12</td><td>P2</td><td>P2（1）比 P4（3）優先；P5 在 10 到達但不能搶</td></tr>\n<tr><td>12–13</td><td>P5</td><td>P5（1）優先；去 I/O，15 回來</td></tr>\n<tr><td>13–14</td><td>P4</td><td>去 I/O，17 回來</td></tr>\n<tr><td>14–15</td><td>閒置</td><td>沒有人在 ready queue</td></tr>\n<tr><td>15–18</td><td>P5</td><td>跑完剩下 3 單位 → <b>18</b></td></tr>\n<tr><td>18–22</td><td>P4</td><td>P4 在 22 完成</td></tr>\n</table></div>\n<p>常見錯誤：在 5 的時候讓 P4 先跑。P3、P4 優先權相同時應該照到達順序（P3 先到），若讓 P4 先跑會得到 21。</p>"
+    },
+    {
+      "id": "os-0225",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": "3-(c)",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(10 pts) The following table shows the time attributes of five processes in a uni-processor computer, including PID, priority, arrival time, CPU burst, and IO burst. Assuming that the IO burst occurs on different devices and always starts after first time unit. The less the priority value, the higher its priority. Please answer the following sub-questions.</p>\n<div class=\"table-scroll\"><table>\n<tr><th>PID</th><th>Priority</th><th>Arrival Time</th><th>CPU Burst</th><th>IO Burst</th></tr>\n<tr><td>1</td><td>2</td><td>0</td><td>4</td><td>0</td></tr>\n<tr><td>2</td><td>1 (Highest)</td><td>2</td><td>5</td><td>3</td></tr>\n<tr><td>3</td><td>3 (Lowest)</td><td>3</td><td>3</td><td>0</td></tr>\n<tr><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td></tr>\n<tr><td>5</td><td>1</td><td>10</td><td>4</td><td>2</td></tr>\n</table></div>\n<p>(c) (2 pts) When preemptive SJF scheduling algorithm is used, what's the completion time of PID 5 process?</p>",
+      "answer": "17（待確認：若改用「剩餘總 CPU 時間」比較則為 18）",
+      "explanation": "<p>先說好 I/O 的模型：「IO burst 在第一個時間單位之後開始」解讀成<b>每個有 I/O 的行程先用 CPU 跑 1 個單位，接著去做 I/O，I/O 做完再回來把剩下的 CPU burst − 1 跑完</b>；I/O 在各自的裝置上進行，彼此可以重疊，做 I/O 時不佔 CPU。所以：</p>\n<ul><li>P1：CPU 4（沒有 I/O）</li><li>P2：CPU 1 → I/O 3 → CPU 4</li><li>P3：CPU 3（沒有 I/O）</li><li>P4：CPU 1 → I/O 3 → CPU 4</li><li>P5：CPU 1 → I/O 2 → CPU 3</li></ul>\n<p>（「CPU Burst」是否已經包含 I/O 前的那 1 個單位，卷上沒有明講；這裡取「包含」的解讀，所以答案標待確認。以下時間軸都用模擬程式跑過。）</p><p>Preemptive SJF（又稱 SRTF）比的是「<b>下一段 CPU burst</b>」的（剩餘）長度，這是 SJF 的定義。被 I/O 切開以後，P2、P4、P5 的第一段都只有 1，所以它們一到就能搶到 CPU：</p>\n<div class=\"table-scroll\"><table>\n<tr><th>時間</th><th>執行</th><th>說明</th></tr>\n<tr><td>0–2</td><td>P1</td><td>只有 P1</td></tr>\n<tr><td>2–3</td><td>P2</td><td>P2 下一段 1 &lt; P1 剩 2，搶先；之後去 I/O，6 回來</td></tr>\n<tr><td>3–5</td><td>P1</td><td>P1 剩 2 &lt; P3 的 3；4 時 P4 到（下一段 1），和 P1 剩的 1 一樣，不搶 → P1 在 5 完成</td></tr>\n<tr><td>5–6</td><td>P4</td><td>下一段 1 最短；去 I/O，9 回來</td></tr>\n<tr><td>6–9</td><td>P3</td><td>6 時 P2 回來（4）&gt; P3 剩 2，P3 跑完</td></tr>\n<tr><td>9–10</td><td>P2</td><td>P2、P4 都剩 4，P2 先到</td></tr>\n<tr><td>10–11</td><td>P5</td><td>P5 下一段 1 &lt; P2 剩 3，搶先；去 I/O，13 回來</td></tr>\n<tr><td>11–14</td><td>P2</td><td>13 時 P5 回來（3）&gt; P2 剩 1，P2 在 14 完成</td></tr>\n<tr><td>14–17</td><td>P5</td><td>P5（3）&lt; P4（4）→ <b>17</b> 完成</td></tr>\n<tr><td>17–21</td><td>P4</td><td></td></tr>\n</table></div>\n<p><b>另一種解讀</b>：很多人會直接拿表上的「CPU Burst 總剩餘量」來比（不管中間的 I/O）。那時間軸是 P1 0–4 → P3 4–7 → P2 7–8（去 I/O）→ P4 8–9（去 I/O）→ 閒置 9–10 → P5 10–11（去 I/O）→ P2 11–15 → P5 15–18 → P4 18–22，P5 在 <b>18</b> 完成。</p>\n<p>SJF 的定義是看下一段 CPU burst，所以這裡取 17；但卷上沒有說明，答案標待確認。</p>"
+    },
+    {
+      "id": "os-0226",
+      "topics": [
+        "file-system-interface",
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(10 pts) Suppose that a process needs to read and write a large file from the storage sub-system. Please answer the <b>five</b> sub-questions using one of three values: (<b>A</b>) – less than, (<b>B</b>) – greater than, and (<b>C</b>) – similar to.</p>\n<p>Assume blocking I/O is adopted as the I/O model, the file to be stored has very large size, and the delay of system load can be ignored here. The file system has 4K-byte data blocks.</p>\n<p>The following table shows the setting of the process and the sub-questions to be answered. The first column defines the buffering model, the second column defines the parameters of the buffering model, and the third column shows the function calls used to store the data. The first line of below table stands for the baseline, which considers the combination of unbuffered I/O, 4K buffer size, and no disk synchronization, to be compared to.</p>\n<div class=\"table-scroll\"><table>\n<tr><th colspan=\"3\">Setting</th><th>Sub-Questions</th></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 4KB</td><td>write()</td><td>(Baseline to be compared to)</td></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 4KB</td><td>fsync() after write ()</td><td><b>(a) (2 pts) How is the Clock time compared with that of baseline?</b></td></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 8KB</td><td>fsync () after write ()</td><td><b>(b) (2 pts) How is the User CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>line-at-a-time</td><td>puts()</td><td><b>(c) (2 pts) How is the System CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>fully buffer</td><td>puts()</td><td><b>(d) (2 pts) How is the User CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>fully buffer</td><td>puts()+fflush()+fsync ()</td><td><b>(e) (2 pts) How is the System CPU time compared with that of baseline?</b></td></tr>\n</table></div>",
+      "answer": "(a) B；(b) C；(c) B；(d) B；(e) B（(b)、(e) 待確認）",
+      "explanation": "<p>先把三種時間分清楚：<b>clock time</b>（牆上時間，含等磁碟）、<b>user CPU time</b>（在使用者空間執行的時間，例如 stdio 函式庫搬資料）、<b>system CPU time</b>（在 kernel 裡執行的時間，主要跟 system call 次數和 kernel 處理的資料量有關）。baseline 是每次 write() 4KB、不同步磁碟，資料寫進 page cache 就返回。</p>\n<ul>\n<li><b>(a) B（greater）</b>：每次 write() 之後都 fsync()，process 要等資料真的寫到磁碟才繼續（blocking），磁碟比記憶體慢好幾個數量級，牆上時間明顯變長。</li>\n<li><b>(b) C（similar）</b>：fsync() 增加的是等待時間和 kernel 的工作，不會增加 user 時間；buffer 從 4KB 加到 8KB，write() 次數減半，user 端少一點迴圈開銷，但 unbuffered I/O 的 user time 本來就很小，差距可以忽略 → 「差不多」。若把「呼叫次數減半」看得比較重，也可能答 A（less），所以標待確認。</li>\n<li><b>(c) B（greater）</b>：line buffering 遇到換行就 flush，一行通常遠小於 4KB，所以 write() system call 的次數比 baseline（每 4KB 一次）多很多，system time 增加。</li>\n<li><b>(d) B（greater）</b>：fully buffered 時 system call 次數和 baseline 差不多（stdio 緩衝區也是一個 block 大小），但每次 puts() 都要在使用者空間把資料逐字元複製到 stdio 的緩衝區、找字串結尾，這些都算 user time，所以 user CPU 比直接 write() 多。</li>\n<li><b>(e) B（greater）</b>：表格第三欄是「存資料時用到的呼叫」，和 (a)(b) 列的「fsync() after write()」同樣解讀成每次 puts() 之後都 fflush() + fsync()：fflush 讓緩衝失效、每次都觸發 write()，再加上 fsync() 在 kernel 裡處理回寫，system time 增加。若解讀成只在最後 fflush/fsync 一次，write() 次數和 baseline 相同，system time 會「差不多」（C），所以標待確認。</li>\n</ul>\n<p>這題沒有唯一的數字答案，比較的是趨勢；作答時把「哪個動作增加了哪一種時間」講清楚最重要：同步（fsync）主要拉長 clock time，system call 次數影響 system time，stdio 的複製影響 user time。</p>"
     }
   ]
 }

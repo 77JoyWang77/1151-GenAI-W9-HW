@@ -4751,6 +4751,32 @@
       ],
       "answer": "(A)(D)(E)",
       "explanation": "<p><b>(A) 對</b>：ARM big.LITTLE 是 heterogeneous multi-core（異質多核心）架構，把高效能的「大核」和省電的「小核」放在同一顆晶片上，輕負載交給小核、重負載才叫醒大核，設計目的就是能源效率。</p>\n<p><b>(B) 錯</b>：這個選項原文寫「codes that can’t be serialized」（不能被序列化的程式碼），字面上語意不通；照 Amdahl’s Law（阿姆達爾定律）題型的慣例，應該是想寫「can’t be <b>parallelized</b>」，也就是必須循序執行的部分（serial fraction）最多 5%（待確認）。用 Amdahl’s Law 算要達成 90 倍需要的循序比例 s：</p>\n<pre class=\"formula\">Speedup = 1 / (s + (1 − s) / 100) = 90\n→ 100s + (1 − s) = 100 / 90\n→ 99s = 1/9\n→ s = 1/891 ≈ 0.11%</pre>\n<p>也就是說循序部分最多只能約 0.11%，遠比 5% 嚴格。反過來驗證：如果循序部分真的有 5%，speedup 只有 1 / (0.05 + 0.95/100) ≈ 16.8 倍，離 90 倍差很遠（已用程式驗算）。所以「最多 5% 就夠」是錯的。另一種字面解讀「不能被序列化（即可平行）的部分最多 5%」也一樣達不到 90 倍，所以不管怎麼讀，(B) 都是錯的。</p>\n<p><b>(C) 錯</b>：「always」太絕對。效能 = 指令數 × CPI × cycle time，RISC 指令簡單、CPI 低，但同一個程式往往需要更多指令；實際效能還受製程、微架構、編譯器影響。現代 x86（CISC）在內部也會把指令拆成類 RISC 的 micro-op 執行，效能不見得輸。</p>\n<p><b>(D) 對</b>：block 越大，兩個處理器各自存取的不同變數越容易落在同一個 block，一方寫入就會 invalidate 另一方的副本，造成 false sharing（偽共享）miss 變多。</p>\n<p><b>(E) 對</b>：block 越大，一次 miss 會把附近更多資料一起搬進來，利用 spatial locality（空間區域性），後面存取相鄰資料時就不用再 cold miss，所以 compulsory miss（強制失誤）會減少。代價是 block 數變少，conflict／capacity miss 可能上升、miss penalty 也變大。</p>\n<p>答案 <b>(A)(D)(E)</b>。</p>"
+    },
+    {
+      "id": "co-0191",
+      "topics": [
+        "division",
+        "booth-multiplication"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements are <u>true</u>?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-115-q14.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（5-bit Divisor、10-bit ALU 與 Remainder 暫存器）</figcaption></figure>",
+      "choices": [
+        "(a) Consider the above ALU design and a multiplication of 00101<sub>2</sub> × 00011<sub>2</sub>, the value of Remainder register is 0001111000<sub>2</sub> after three iterations of multiplication is conducted.",
+        "(b) Consider the same ALU design and now a division of 01101<sub>2</sub> ÷ 00011<sub>2</sub> using the restoring scheme is conducted. The value of Remainder register is 0000010001<sub>2</sub> after four iterations of division is conducted. Note that the shift operation is performed at the end of each iteration rather than at the beginning.",
+        "(c) Consider the 5-bit non-restoring division algorithm that performs shift-left operation at the end of each iteration rather than at the beginning. The algorithms require 6 but not 5 iterations to obtain correct quotient.",
+        "(d) Consider a multiplication of 00101<sub>2</sub> × 01001<sub>2</sub> applying the Booth algorithm. This multiplication requires two additions and two subtractions."
+      ],
+      "answer": "(b)(c)(d)（待確認）",
+      "explanation": "<p>這個硬體是乘除法共用的版本：5-bit 的 Divisor（乘法時放被乘數），10-bit 的 Remainder 暫存器（乘法時放乘積，右半一開始放乘數；除法時右半一開始放被除數，最後左半是餘數、右半是商）。以下每一步都用程式模擬過。</p>\n<p><b>(a) 錯</b>：乘法每一輪：看 Remainder 的最低位，是 1 就把被乘數加到左半，然後整個右移 1 位。初始 00000 00011：</p>\n<ul><li>第 1 輪：LSB = 1，左半 + 00101 → 00101 00011，右移 → 00010 10001</li>\n<li>第 2 輪：LSB = 1，左半 00010 + 00101 = 00111 → 00111 10001，右移 → 00011 11000</li>\n<li>第 3 輪：LSB = 0，只右移 → <b>00001 11100</b></li></ul>\n<p>選項的 0001111000 是<b>兩輪</b>之後的值，三輪後應為 0000111100。最後 5 輪做完是 0000001111 = 15 = 5 × 3，可以拿來檢查。</p>\n<p><b>(b) 對</b>：題目特別說明 shift 在每一輪的「最後」做，所以一開始不先左移。每一輪：左半減除數 → 結果 ≥ 0 就保留差、商位元 1，&lt; 0 就還原、商位元 0 → 整個左移 1 位並把商位元補進最右邊。初始 00000 01101、除數 00011：</p>\n<ul><li>第 1 輪：00000 − 3 &lt; 0，商 0 → 左移 → 00000 11010</li>\n<li>第 2 輪：00000 − 3 &lt; 0，商 0 → 00001 10100</li>\n<li>第 3 輪：00001 − 3 &lt; 0，商 0 → 00011 01000</li>\n<li>第 4 輪：00011 − 3 = 0 ≥ 0，商 1 → 左半變 00000，左移 → <b>00000 10001</b></li></ul>\n<p>和選項相同。若照常見的改良版做法「開始前先左移 1 次」，四輪後會是 0000100010，選項就變錯；但題目已明講 shift 不在開頭，所以照題意判對。</p>\n<p><b>(c) 對</b>：shift 放在每輪最後、一開始不先移，第 1 輪拿去和除數比的左半永遠是 0，等於白做一輪，要 n + 1 = 6 輪才能產生 5 個正確的商位元。用程式把所有 5-bit 被除數 0～31、除數 1～31 跑過：5 輪有 496 組商錯誤，6 輪全部正確。</p>\n<p><b>(d) 對</b>：Booth 演算法看乘數相鄰兩位 (b<sub>i</sub>, b<sub>i−1</sub>)，最右邊補 0：10 → 減被乘數、01 → 加被乘數、00／11 → 不動。乘數 01001 從低位起的配對是 (1,0) 減、(0,1) 加、(0,0) 不動、(1,0) 減、(0,1) 加，共 <b>2 次加法、2 次減法</b>。若反過來把 00101 當乘數：(1,0) 減、(0,1) 加、(1,0) 減、(0,1) 加、(0,0)，也一樣是 2 加 2 減。</p>\n<p>(a)(b)(c) 的結果都取決於硬體的細節（一開始有沒有先移位、一輪怎麼算），卷上只有圖和 (b)(c) 的一句說明；這裡照「shift 在每輪最後、開頭不先移位」來判，所以答案標待確認。</p>"
     }
   ]
 }
