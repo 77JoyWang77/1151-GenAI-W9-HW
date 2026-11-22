@@ -81,7 +81,7 @@
 │   └── <subject-id>/
 │       ├── index.html            ← 科目首頁（從 templates/subject.html 複製）
 │       ├── questions.html        ← 科目題庫頁（從 templates/questions.html 複製）
-│       └── <chapter-id>/<topic-id>.html   ← 主題頁（從 templates/topic.html 複製）
+│       └── <chapter-id>/<topic-id>.html   ← 主題頁（用 scripts/new_topic.py 從 templates/topic.html 產生）
 ├── code/
 │   └── <subject-id>/<topic-id>.c    ← 每個主題的完整 C 程式（只用來編譯驗證，頁面片段從這裡取出）
 ├── templates/
@@ -100,6 +100,7 @@
 └── scripts/
     ├── check.py                  ← 檢查所有科目與主題是否符合本文件
     ├── header.py                 ← 產生全站統一頁首（6.6）
+    ├── new_topic.py              ← 產生主題頁（11）
     ├── stamp.py                  ← 替 CSS / JS 加版本號（4）
     └── exam/                     ← 考古題匯入工具：OCR、檢查、合併、裁圖、預覽（第 11 節）
 ```
@@ -125,6 +126,7 @@
   5. **性質與效能**：複雜度怎麼來的，最好／平均／最差情況，數字要解釋意義。
   6. **應用與比較**：用在哪裡、和相近的結構或做法有什麼差別。
 - 文字要能**獨立讀懂**，不能只寫「請看動畫」；圖和動畫是輔助，不是取代。
+- **比較兩種做法時一次只改一個變因**，其他條件寫清楚並固定。例如比較區塊大小對命中率的影響，快取總容量要相同（4 個 1-word 區塊 vs 2 個 2-word 區塊），不能讓容量也跟著變大，否則讀者分不出差別是哪個因素造成的。
 - 講解用 `<div class="panel prose">`，裡面可以有 `<h3>` 小標、段落、條列。
 - **一個 section 一張卡片**：同一節的文字、表格（包在 `<div class="table-scroll">` 裡）、靜態圖、公式、callout、「看程式碼」都放在**同一個** `.panel.prose` 裡，照閱讀順序排，不要把表格或圖另外包成一張卡片，讓一節被切成好幾塊。
 - **唯一的例外是互動動畫**（`.viz`）：它本身就是一張可操作的卡片，放在講解卡片的前面或後面，不要塞進講解卡片裡。所以一個 section 只會是「卡片」或「卡片 → 動畫」（必要時「卡片 → 動畫 → 卡片」），`check.py` 會檢查兩張卡片之間一定隔著動畫。
@@ -240,6 +242,7 @@
 ```
 
 - `id`：科目縮寫 + 四位數流水號（資料結構用 `ds-0001`），**全科唯一、不可重複使用**。
+- **新增題目前先 `git pull`**，從最新的最大題號往下排。考古題可能在別的對話中整批匯入，用舊的最大題號會和它們撞號（`check.py` 會檢查重複）。push 時被拒，就先 pull，題號撞到時把自己新增的題目重新編號，並一起改頁面上的 `q-link`。
 - `topics`：一題可以對應多個主題，主題頁會自動列出所有標了它的題目。
 - `type`：選擇／填空／計算／追蹤／證明／實作／簡答。選擇題要有 `choices`。
 - `source.kind`：`"original"`（原創）或 `"exam"`（考古題）。
@@ -383,13 +386,21 @@
 ```js
 {
   nodes:    [{ id, label, x, y, shape: "circle" | "box", w, h, r, state, sub }],
-  edges:    [{ from, to, state, directed: false }],
+  edges:    [{ from, to, state, directed: false, dashed: false }],   // dashed：虛線（例如 claim edge、可能但尚未發生的關係）
   pointers: [{ id, label, target: nodeId, dir: "up"|"down"|"left"|"right", state }],
   labels:   [{ id, x, y, text, cls: "title"|"strong"|"warn", anchor: "start"|"middle"|"end" }],
   caption:  "這一步在做什麼（可用 <b>、<code>）",
   line:     3 或 [3, 4]               // 右側要高亮的程式碼行（從 1 開始）
 }
 ```
+
+Player 的其他選項與方法：
+
+| 用法 | 說明 |
+|---|---|
+| `new Player(root, { …, wide: true })` | 程式碼一律放在圖的下方，讓圖用滿整個寬度。適合很寬的時序圖、大表格 |
+| `player.resize(width, height)` | 依資料量改變畫面（viewBox）大小，例如週期數變多時加寬；不要直接改 `player.svg` 的屬性 |
+| `player.setCode(lines)` | 切換右側程式碼（例如換成另一種做法） |
 
 ### 9.4 狀態色（state）— 全站語意要一致
 
@@ -408,7 +419,7 @@
 
 1. **使用者可以自己輸入**資料，並提供經典例子的快捷按鈕；輸入要驗證，錯誤時給中文提示。
 2. 每個 frame 的 `caption` 都要說明「**為什麼**」，例：✅「isp[*] = 13 ≥ icp[+] = 12，先 pop」 ❌「pop」。
-3. 每個 frame 都要標 `line`，讓程式碼和動畫同步（初始或總結畫面可以是 `null`）。
+3. 每個 frame 都要標 `line`，讓程式碼和動畫同步（初始或總結畫面可以是 `null`）。行號**用內容找**：`const ln = (s) => CODE.findIndex((l) => l.includes(s)) + 1;`，再寫 `ln("return 1;")`；不要寫死數字，否則 `.c` 檔一改就對錯行。動畫右側的 `CODE` 陣列也要用程式從 `.c` 檔抽出來貼上，不要手打。
 4. 一次操作約 3～40 步；畫面放不下時要提前擋住並說明（例如限制樹高、token 數）。
 5. 使用者輸入的文字放進 caption 前要用 `esc()` 跳脫。
 6. 初始畫面要先載入**一段示範操作**，用 `{ autoplay: false }`，讓使用者一按播放鍵就能播放；只有 1 步時按播放鍵會出現提示（Player 內建）。
@@ -447,7 +458,7 @@ figure("bst-valid-invalid", () => ({
 - 首頁 banner 在淺色模式是淡品牌色底＋深色字，深色模式是深墨底＋白字（`--banner-*` 變數在兩種模式各有一組）；外框只用很淡的 `--banner-border`（比底色深一點點），沒有裝飾圖。
 - 顏色**只能**使用 `style.css` 最上方 `:root` 的變數，不在其他地方寫死色碼。
 - **預設淺色**，頁首按鈕可切換深色：`theme.js` 在 `<html>` 設定 `data-theme="dark"`，深色配色寫在 `:root[data-theme="dark"]`，選擇存在 localStorage。
-- 新元件一律用 CSS 變數上色，才會自動適用兩種模式；也要支援手機寬度（≥ 360px）：窄螢幕的樣式統一寫在 `style.css` 最後的 `@media (max-width: 600px)` 區塊（放在最後才能蓋過基本樣式），改完要用 360px 寬度截圖確認沒有橫向捲動。
+- 新元件一律用 CSS 變數上色，才會自動適用兩種模式；也要支援手機寬度（≥ 360px）：窄螢幕的樣式統一寫在 `style.css` 最後的 `@media (max-width: 600px)` 區塊（放在最後才能蓋過基本樣式），改完要用 360px 寬度截圖確認沒有橫向捲動。圖和動畫在窄螢幕會保留最小寬度、在自己的框裡左右滑動（`.viz-stage`），所以畫的時候字不要太小（label 至少 12px 等級），也要實際用 360px 截圖確認讀得清楚。題庫頁（`subjects/<id>/questions.html`）也要用 360px 檢查：考古題常有長式子、長表格、`<pre>`，題目卡片裡的 `<pre>` 和表格要能在自己的框裡捲動（表格包 `.table-scroll`）。
 - 動畫要平滑、不炫技：顏色代表狀態（第 9.4 節），位置移動代表資料移動。
 - **用語實用導向**：首頁、科目頁、題庫頁只放標題和功能，不寫宣傳性標語或「這裡可以做什麼」之類的說明文字。首頁只有 banner（站名、科目名稱、數字概況：已完成主題、練習題、考古題）和科目卡片（不加「科目」小標，也不列已完成的主題），全部由 `site.js` 讀 JSON 產生，新增主題或題目後會自動更新。
 - 科目頁的主題列表保持簡潔：已完成的主題是連結、籌備中的灰色並標「籌備中」，高頻主題名稱前有火焰 icon；不要再加其他標籤。
@@ -485,8 +496,10 @@ figure("bst-valid-invalid", () => ({
 ### 新增一個主題（最常見）
 
 1. 在 `data/<subject-id>.json` 找到主題（通常已是 `planned`，優先做 `priority: high`），可以先查參考書對應節次確認觀念，但頁面內容要自己寫、獨立完整。
-   動手前先用 `grep -o '<h2>[^<]*' subjects/<subject-id>/*/*.html` 看已完成的頁面有沒有講過同樣的內容（例如 Stack 頁已經有中序轉後序和後序求值）。有重疊時先告訴使用者，改做別的主題，或在新頁只簡短帶過、連到既有的頁面，不要重寫一份。
-2. 複製 `templates/topic.html` → `subjects/<subject-id>/<chapter-id>/<topic-id>.html`。
+   動手前先用 `grep -o '<h2>[^<]*' subjects/*/*/*.html` 看**所有科目**已完成的頁面有沒有講過同樣的內容（例如 Stack 頁已經有中序轉後序和後序求值；資料結構和演算法都有排序、圖論）。有重疊時先告訴使用者，改做別的主題，或在新頁只簡短帶過、連到既有的頁面，不要重寫一份。要提到還在籌備中的主題時，寫出名稱並標「（籌備中）」，不放連結。
+2. 先在 `data/<subject-id>.json` 補好這個主題的 `difficulty`、`tags`、`updated`，再用產生器建立頁面，不要手動複製模板：
+   `python scripts/new_topic.py <subject-id> <topic-id> --sub "一句話副標" --desc "≤ 70 字描述" [--body body.html]`
+   名稱、章節、麵包屑、meta 列、頁首、頁尾都從 JSON 和模板自動產生；`--body` 是頁面主體（多個 `<section>`，可用 `{{X}}` `{{OK}}` `{{BULB}}` `{{MARK}}` 代表四種 icon），沒給就保留模板的範例段落讓你照著填。內容改了要重新產生時，再跑一次同樣的指令。
 3. 先規劃講解的骨架（第 6.1 節），再決定哪些地方配靜態圖、哪些地方做動畫，寫在 `assets/js/viz/<subject-id>/<topic-id>.js`（第 9 節）。
 4. 先寫好完整的 C 程式並實際編譯執行（第 6.3 節），再撰寫文字講解，把圖、動畫和程式碼片段放在對應的文字旁；片段和動畫右側程式碼都從完整程式取出；不提到參考書。
 5. 在 `data/questions/<subject-id>.json` 新增這個主題的練習題（每個難度至少 2 題，答案用程式驗算），寫好考研重點的題型地圖和易錯點的例題連結（第 6.4 節）。
@@ -495,6 +508,16 @@ figure("bst-valid-invalid", () => ({
 8. 本機預覽：`python -m http.server 8000` → `http://localhost:8000`（直接雙擊 html 會讀不到 json）。
 9. 截圖檢查每張圖有沒有文字重疊或超出畫面；有動畫時實際操作：正常輸入、經典例子、邊界情況（空、滿、重複、找不到）、非法輸入；亮暗兩種模式都看一次。
 10. 回報：新增或修改了哪些檔案、動畫支援哪些操作、預設採用哪種做法、哪些地方標了「（待確認）」。
+
+### 平行製作多個主題
+
+使用者要求一次做多個主題、用子代理平行處理時：
+
+1. 每個主題在**自己的 repo 複本**裡做（例如 `cp -r` 到 `/tmp/wt/<topic-id>`），各自用不同的本機預覽 port。
+2. 子代理只新增自己的三個檔案（`code/`、`assets/js/viz/`、主題頁），並只改共用 JSON 裡**自己的**主題條目與題目；不 commit、不 push，也不改共用的 CSS、`viz-core.js`、`site.js`、`scripts/`、`templates/`、`CLAUDE.md`。真的需要改共用檔案時，在回報裡提出，由主流程決定。
+3. 題號事先分配好（每科只會有一個子代理在加題目，就接著該科目前最大的題號）。
+4. 全部完成後由主流程合併：複製三個新檔案、把每個主題的 JSON 條目與新題目合併進主 repo，再執行 `python scripts/header.py`、`python scripts/stamp.py`、`python scripts/check.py`，抽查截圖，最後一次 commit、push（push 前照第 7 節先 pull、確認題號沒撞）。
+5. 子代理被中斷（例如用量上限）時，已完成的檔案都留在複本裡，之後讓同一個子代理接著做，不要重開一個從頭做。
 
 ### 匯入考古題
 

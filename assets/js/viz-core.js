@@ -55,6 +55,7 @@
      *   width, height: SVG viewBox 尺寸（預設 640 x 300）
      *   code:    虛擬碼 / C 程式碼，每行一個字串
      *   legend:  [[state, 說明], ...]
+     *   wide:    true 時程式碼一律放在圖的下方，讓圖用滿整個寬度（適合很寬的時序圖、表格）
      */
     constructor(root, opts) {
       this.opts = Object.assign({ width: 640, height: 300, code: [], legend: [], title: "" }, opts);
@@ -101,7 +102,7 @@
       }
 
       const stage = h("div", { class: "viz-stage" }, [this.svg]);
-      const body = h("div", { class: "viz-body" + (this.opts.code.length ? "" : " no-code") }, [stage]);
+      const body = h("div", { class: "viz-body" + (this.opts.code.length ? "" : " no-code") + (this.opts.wide ? " wide" : "") }, [stage]);
 
       if (this.opts.code.length) {
         this.codeLines = this.opts.code.map((line, i) =>
@@ -148,6 +149,13 @@
     }
 
     /** 切換右側程式碼（同一個動畫有多種操作時使用，例如 insert / delete） */
+    /** 改變畫面（viewBox）大小，例如依資料量調整寬度；下一個 frame 照新尺寸畫 */
+    resize(width, height) {
+      this.opts.width = width;
+      this.opts.height = height;
+      this.svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    }
+
     setCode(lines) {
       if (!this.codeBox || this._codeKey === lines.join("\n")) return;
       this._codeKey = lines.join("\n");
@@ -303,7 +311,7 @@
           ln = svg("line", {}, this.layers.edge);
           this.els.edge[id] = ln;
         }
-        ln.setAttribute("class", "vedge s-" + (e.state || "default"));
+        ln.setAttribute("class", "vedge s-" + (e.state || "default") + (e.dashed ? " dashed" : ""));
         if (e.directed) ln.setAttribute("marker-end", `url(#${this.markerId})`);
         else ln.removeAttribute("marker-end");
         ln._e = e;

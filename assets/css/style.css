@@ -281,7 +281,7 @@ details.quiz p { margin: 0; color: var(--ink-soft); padding-left: 22px; }
 .vop:hover { filter: brightness(1.08); }
 
 .viz-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
-@media (min-width: 860px) { .viz-body { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); } .viz-body.no-code { grid-template-columns: 1fr; } }
+@media (min-width: 860px) { .viz-body { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); } .viz-body.no-code, .viz-body.wide { grid-template-columns: 1fr; } }
 .viz-stage { background: radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0) 0 0 / 22px 22px, var(--bg); border-radius: 10px; border: 1px solid var(--line); }
 .viz-svg { width: 100%; height: auto; display: block; }
 .viz-code { position: relative; background: var(--code-bg); border-radius: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; line-height: 1.65; padding: 8px 0; max-height: 330px; overflow: auto; }
@@ -357,6 +357,7 @@ figure.fig .q-fig { max-width: min(100%, var(--fig-w, 640px)); margin: 0 auto; }
 .vedge.s-visited { stroke: var(--s-visited); }
 .vedge.s-removed { stroke: var(--s-removed); stroke-dasharray: 5 5; }
 .vedge.s-muted   { stroke: var(--s-muted); }
+.vedge.dashed    { stroke-dasharray: 6 5; }
 
 .vptr.s-default text { fill: var(--brand); }   .vptr.s-default path { stroke: var(--brand); }
 .vptr.s-active  text { fill: var(--s-active); } .vptr.s-active  path { stroke: var(--s-active); }
@@ -436,6 +437,11 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 .stat-label { color: color-mix(in srgb, var(--banner-ink) 62%, transparent); font-size: .82em; white-space: nowrap; }
 .home-block { margin-top: 24px; }
 
+/* 題目、詳解裡任何 <pre>（例如考古題的路徑、表格文字）太寬時在自己的框裡捲動，不撐開整頁 */
+.qcard pre, .qbank pre, .prose pre { max-width: 100%; overflow-x: auto; }
+/* 很長、沒有空白的式子（例如 x<sub>1</sub>x<sub>2</sub>…、長的 tag）在窄螢幕可以斷行 */
+.qcard, .qbank, .prose { overflow-wrap: anywhere; }
+
 /* ---------- 窄螢幕（手機）：放在檔案最後，才能蓋過上面的基本樣式 ---------- */
 @media (max-width: 600px) {
   .site-header .wrap { height: 52px; gap: 8px; }
@@ -456,4 +462,7 @@ details.qans .qa > :last-child { margin-bottom: 0; }
   .qfilters select:first-child, .qfilters select:nth-child(4), .qfilters input[type="search"] { grid-column: 1 / -1; }
   .qfilters .vinput { width: 100%; min-width: 0; }
   .qcount { grid-column: 1 / -1; text-align: right; }
+  /* 圖和動畫保留最小寬度，字才不會縮到看不清楚；放不下時在框內左右滑動，不讓整頁橫向捲動 */
+  .viz-stage { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .viz-svg { min-width: 520px; }
 }
