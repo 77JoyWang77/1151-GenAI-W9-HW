@@ -129,6 +129,2014 @@
       "question": "用 LCS 求序列 A = 3, 1, 4, 1, 5, 9, 2, 6 的最長<b>嚴格遞增</b>子序列（LIS）的長度，並寫出一個。說明為什麼這個方法是對的。",
       "answer": "長度 4，例如 1, 4, 5, 9",
       "explanation": "<p>把 A 排序並去掉重複，得到 B = 1, 2, 3, 4, 5, 6, 9。A 和 B 的 LCS 就是 A 的 LIS：</p><ul><li>A 的任何嚴格遞增子序列，元素互不相同且由小到大，所以也是 B 的子序列，是共同子序列。</li><li>反過來，A、B 的共同子序列是 B 的子序列，B 嚴格遞增，所以它在 A 裡也是嚴格遞增的。</li></ul><p>兩者是同一群序列，最長的自然一樣長。對 A、B 做 LCS，得到長度 <b>4</b>，例如 1, 4, 5, 9（也可以是 3, 4, 5, 9 或 1, 4, 5, 6）。時間 O(n²)。（已用程式驗證：LCS 長度 = 窮舉所得 LIS 長度 = 4。）</p><p>注意一定要<b>去掉重複</b>：如果 B 保留兩個 1，LCS 可能選到 1, 1，就不是嚴格遞增了。</p>"
+    },
+    {
+      "id": "al-0009",
+      "topics": [
+        "huffman-coding"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>2. (10%) Let input is an array of unique characters along with their frequency of occurrences, shown as following table. Please show the total bits of the constructed Huffman code.</p><div class=\"table-scroll\"><table><tr><th>Character</th><td>A</td><td>L</td><td>G</td><td>O</td><td>R</td><td>I</td><td>T</td><td>H</td><td>M</td></tr><tr><th>Frequency</th><td>12</td><td>3</td><td>13</td><td>23</td><td>1</td><td>5</td><td>16</td><td>21</td><td>6</td></tr></table></div>",
+      "answer": "284 bits",
+      "explanation": "<p>Huffman 每次把頻率最小的兩個合併：</p><pre class=\"formula\">1+3=4, 4+5=9, 6+9=15, 12+13=25, 15+16=31,\n21+23=44, 25+31=56, 44+56=100</pre><p>得到各字元的碼長：H、O 為 2；A、G、T 為 3；M 為 4；I 為 5；R、L 為 6。總位元數 = Σ 頻率 × 碼長：</p><pre class=\"formula\">21·2 + 23·2 + 12·3 + 13·3 + 16·3 + 6·4 + 5·5 + 1·6 + 3·6\n= 42 + 46 + 36 + 39 + 48 + 24 + 25 + 6 + 18 = 284</pre><p>快速驗算法：總位元數也等於「所有合併產生的內部節點權重和」：4+9+15+25+31+44+56+100 = 284，兩種算法一致（也已用程式驗算）。這 100 個字元如果用固定長度編碼，9 種字元需要 4 bits，共 400 bits；Huffman 省下 116 bits，約 29%。</p><p>注意：Huffman tree 的形狀在頻率相同時可能不唯一，但總位元數（加權路徑長）一定相同。</p>"
+    },
+    {
+      "id": "al-0010",
+      "topics": [
+        "master-theorem",
+        "recurrence-methods"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>6. (15%) Use the master method to give tight asymptotic bounds for the following recurrences. If the master method does not apply, you should point out and explain.</p><p>(1) (3%) T(n) = 2T(n/4) + √n</p><p>(2) (3%) T(n) = T(n − 1) + n lg n</p><p>(3) (3%) T(n) = 3T(n/4) + n lg n</p><p>(4) (3%) T(n) = 4T(n/2) + n² lg n</p><p>(5) (3%) T(n) = 7T(n/2) + Θ(n²)</p>",
+      "answer": "(1) Θ(√n lg n)；(2) 不適用 master method，解得 Θ(n² lg n)；(3) Θ(n lg n)；(4) 基本版 master method 不適用（落在 case 2 與 case 3 的縫隙），用延伸版得 Θ(n² lg² n)；(5) Θ(n<sup>lg 7</sup>)",
+      "explanation": "<p>Master method 適用 T(n) = aT(n/b) + f(n)，關鍵是比較 f(n) 和 n<sup>log<sub>b</sub> a</sup>。</p><ul><li><b>(1)</b> a = 2、b = 4，n<sup>log<sub>4</sub>2</sup> = n<sup>1/2</sup>，f(n) = √n 一樣大 → case 2，T(n) = <b>Θ(√n lg n)</b>。</li><li><b>(2)</b> 這是「減一」的遞迴，不是 aT(n/b) 的形式，<b>master method 不適用</b>。直接展開：T(n) = Σ<sub>k=1..n</sub> k lg k。上界 ≤ n·n lg n；下界取後半段 k ≥ n/2，就有 (n/2)·(n/2)lg(n/2) = Ω(n² lg n)，所以 <b>Θ(n² lg n)</b>。</li><li><b>(3)</b> a = 3、b = 4，n<sup>log<sub>4</sub>3</sup> ≈ n<sup>0.793</sup>；f(n) = n lg n = Ω(n<sup>0.793+ε</sup>)（例如 ε = 0.2）。檢查 regularity：3·(n/4)lg(n/4) ≤ (3/4)n lg n，c = 3/4 &lt; 1 成立 → case 3，<b>Θ(n lg n)</b>。</li><li><b>(4)</b> a = 4、b = 2，n<sup>log<sub>2</sub>4</sup> = n²；f(n) = n² lg n 比 n² 大，但只大了 lg n，<b>沒有大到多項式倍 n<sup>ε</sup></b>，所以不符合 case 3；也不等於 Θ(n²)，不符合 case 2 → 基本版 <b>master method 不適用</b>。用延伸版 case 2（f(n) = Θ(n<sup>log<sub>b</sub>a</sup> lg<sup>k</sup> n)，k = 1）可得 Θ(n² lg² n)；用遞迴樹也一樣：每層成本 n² lg(n/2<sup>i</sup>)，加總 lg n 層得 n²·Σ(lg n − i) = Θ(n² lg² n)。</li><li><b>(5)</b> a = 7、b = 2，n<sup>lg 7</sup> ≈ n<sup>2.81</sup>，f(n) = n² = O(n<sup>2.81−ε</sup>) → case 1，<b>Θ(n<sup>lg 7</sup>)</b>（這就是 Strassen 矩陣乘法的遞迴）。</li></ul><p>易錯：(4) 很多人直接套 case 3 寫 Θ(n² lg n)，那是錯的；n lg n 對 n（或 n² lg n 對 n²）只差 log 倍，是 master method 的經典「縫隙」。</p>"
+    },
+    {
+      "id": "al-0011",
+      "topics": [
+        "p-np",
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>7. (15%) Answer <b>True</b> or <b>False</b> for the following statements and also justify your reasons.</p><p>(1) (3%) If an NP-complete problem can be reduced to a problem L in polynomial time, then L is NP-complete.</p><p>(2) (3%) If a problem A can be reduced to a problem B and A ∈ P, then B ∈ P.</p><p>(3) (3%) If a problem A ∈ P, then A ∈ NP.</p><p>(4) (3%) If P≠NP, there exists a 2-approximation algorithm for the general traveling-salesman problem.</p><p>(5) (3%) The maximum numbers of elements in a heap of height h is 2<sup>h</sup> − 1.</p>",
+      "answer": "(1) False；(2) False；(3) True；(4) False；(5) False（以高度 = 根到最深葉的邊數來算，最多 2<sup>h+1</sup> − 1 個；若高度以層數計則為 True，見詳解）",
+      "explanation": "<ul><li><b>(1) False</b>：NP-complete 問題 ≤<sub>p</sub> L 只能說明 L 是 <b>NP-hard</b>（至少一樣難）。要 NP-complete 還需要 L ∈ NP。反例：halting problem 是 NP-hard 但不在 NP，不是 NP-complete。</li><li><b>(2) False</b>：A ≤<sub>p</sub> B 的意思是「會解 B 就會解 A」，難度的資訊是從 B 往 A 傳：B ∈ P ⇒ A ∈ P。反過來 A 簡單不能推出 B 簡單，例如任何 P 問題都可以歸約到 SAT，但 SAT 不見得在 P。這題是在考歸約的方向。</li><li><b>(3) True</b>：能在多項式時間內<b>解出</b>，當然能在多項式時間內<b>驗證</b>（直接忽略 certificate、自己解一次），所以 P ⊆ NP。</li><li><b>(4) False</b>：一般 TSP（不滿足三角不等式）在 P ≠ NP 的前提下，對任何常數 ρ ≥ 1 都<b>不存在</b>多項式時間的 ρ-近似演算法；證明是用它來解 Hamiltonian cycle。只有滿足三角不等式的 metric TSP 才有 2-近似（MST 前序走訪）。</li><li><b>(5) False</b>：heap 是 complete binary tree。若高度 h 定義為根到最深葉子的<b>邊數</b>（演算法領域的常用定義，單一節點高度 0），全滿時有 1 + 2 + … + 2<sup>h</sup> = <b>2<sup>h+1</sup> − 1</b> 個元素，所以 2<sup>h</sup> − 1 不對。不過如果把高度定義成「層數」（單一節點高度 1），那最多就是 2<sup>h</sup> − 1，敘述變成 True。這題的答案取決於高度定義；本卷演算法部分用的是邊數定義，所以判 False（待確認）。</li></ul>"
+    },
+    {
+      "id": "al-0012",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>8. (10%) Given three strings x[0, ..., n − 1], y[0, ..., m − 1] and z[0, ..., r − 1]. We say that z is a shuffle of x and y if it contains all characters of x and y and the left-to-right ordering of the characters from x and the characters from y is preserved. For example, \"NcCKsiUe\" is a shuffle of \"NCKU\" and \"csie\". The dynamic programming algorithm uses a table S to check x, y and z, where S[i][j] is true if and only if the first i + j characters of z are a shuffle of the first i characters of x together with the first j characters of y. Complete the following pseudocode for checks whether z is a shuffle of x and y by filling (1), (2) and (3). (please use C-style expression)</p><pre class=\"code\">isShuffle(x, y, z)\n    Let S[0 ... n][0 ... m] be a new table\n    S[0][0] = true\n    if r ≠ n + m\n        return false\n    for i = 1 to n\n        S[i][0] = ______(1) (3%)______\n    for j = 1 to m\n        S[0][j] = ______(2) (3%)______\n    for i = 1 to n\n        for j = 1 to m\n            S[i][j] = ______(3) (4%)______\n    return S[n][m]</pre>",
+      "answer": "(1) S[i-1][0] &amp;&amp; x[i-1] == z[i-1]<br>(2) S[0][j-1] &amp;&amp; y[j-1] == z[j-1]<br>(3) (S[i-1][j] &amp;&amp; x[i-1] == z[i+j-1]) || (S[i][j-1] &amp;&amp; y[j-1] == z[i+j-1])",
+      "explanation": "<p>關鍵是想「z 的前 i+j 個字元中，<b>最後一個</b>字元 z[i+j−1] 是從哪裡來的」。因為字串從 0 開始編號，x 的第 i 個字元是 x[i−1]。</p><ul><li><b>(1)</b> j = 0 表示完全沒用到 y，z 的前 i 個字元必須剛好等於 x 的前 i 個：前 i−1 個要對（S[i-1][0]），而且第 i 個也要相等：<code>S[i-1][0] &amp;&amp; x[i-1] == z[i-1]</code>。</li><li><b>(2)</b> 對稱地：<code>S[0][j-1] &amp;&amp; y[j-1] == z[j-1]</code>。</li><li><b>(3)</b> z[i+j−1] 要嘛是 x 的第 i 個字元（那前面 i−1 個 x、j 個 y 必須能拼出 z 的前 i+j−1 個，即 S[i-1][j]），要嘛是 y 的第 j 個字元（S[i][j-1]）：<br><code>(S[i-1][j] &amp;&amp; x[i-1] == z[i+j-1]) || (S[i][j-1] &amp;&amp; y[j-1] == z[i+j-1])</code></li></ul><p>兩種來源要用 <b>||</b> 合起來：當 x[i−1] 和 y[j−1] 是同一個字母時，兩條路都可能成立，只看其中一條會判錯。整個演算法時間 Θ(nm)。用題目的例子 \"NcCKsiUe\"、\"NCKU\"、\"csie\" 跑程式，結果為 true。</p>"
+    },
+    {
+      "id": "al-0013",
+      "topics": [
+        "floyd-warshall"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>9. (10%) Consider the given directed graph.</p><p>（原圖以有向邊列表表示，u → v (w) 代表從 u 到 v、權重 w：）</p><pre>2 → 1 (1)     3 → 2 (2)     4 → 1 (−4)    2 → 4 (2)\n1 → 5 (−1)    5 → 2 (7)     4 → 5 (3)     6 → 2 (5)\n6 → 3 (10)    3 → 6 (−8)</pre><p>The Floyd-Warshall algorithm can solve the all-pairs shortest-paths problem on a directed graph G = (V, E). Answer the following questions.</p><p>(1) (2%) What is the time complexity of Floyd-Warshall algorithm?</p><p>(2) (3%) Let d<sub>ij</sub><sup>(k)</sup> be the weight of a shortest path from vertex i to vertex j for which all intermediate vertices are in the set {1, 2, ..., k} and D<sup>(k)</sup> = (d<sub>ij</sub><sup>(k)</sup>) be a n × n matrix. Floyd-Warshall algorithm computes D<sup>(k)</sup> from D<sup>(k−1)</sup> as the following formula.</p><p>d<sub>ij</sub><sup>(k)</sup> = ________</p><p>Please complete the above formula.</p><p>(3) (5%) Let dist(i, j) be the length of the shortest path from node i to node j. What is dist(1,5) + dist(2,5) + dist(3,5) + dist(4,5) + dist(6,5)?</p>",
+      "answer": "(1) Θ(|V|³)；(2) d<sub>ij</sub><sup>(k)</sup> = min( d<sub>ij</sub><sup>(k−1)</sup>, d<sub>ik</sub><sup>(k−1)</sup> + d<sub>kj</sub><sup>(k−1)</sup> )（k ≥ 1；k = 0 時為邊權 w<sub>ij</sub>）；(3) −13",
+      "explanation": "<p><b>(1)</b> 三層迴圈 k、i、j 各跑 |V| 次，每次 O(1)，所以 <b>Θ(|V|³)</b>，和邊數無關。</p><p><b>(2)</b> 只允許經過 {1..k} 的最短路徑，要嘛根本沒經過 k（那就是 d<sub>ij</sub><sup>(k−1)</sup>），要嘛經過 k 一次，拆成 i→k 和 k→j 兩段，兩段的中間點都只在 {1..k−1}：</p><pre class=\"formula\">d_ij^(k) = w_ij                                     , k = 0\nd_ij^(k) = min( d_ij^(k-1), d_ik^(k-1) + d_kj^(k-1) ) , k ≥ 1</pre><p><b>(3)</b> 先確認沒有負環：唯一含負邊的環 3→6→3 = −8 + 10 = 2 &gt; 0；1→5→2→1 = 7；2→4→1→5→2 = 4，都非負，最短路徑有定義。各點到 5 的最短路徑：</p><div class=\"table-scroll\"><table><tr><th>起點</th><th>路徑</th><th>長度</th></tr><tr><td>1</td><td>1→5</td><td>−1</td></tr><tr><td>2</td><td>2→4→1→5</td><td>2 − 4 − 1 = −3</td></tr><tr><td>3</td><td>3→6→2→4→1→5</td><td>−8 + 5 + 2 − 4 − 1 = −6</td></tr><tr><td>4</td><td>4→1→5</td><td>−4 − 1 = −5</td></tr><tr><td>6</td><td>6→2→4→1→5</td><td>5 + 2 − 4 − 1 = 2</td></tr></table></div><p>總和 −1 − 3 − 6 − 5 + 2 = <b>−13</b>（已用 Floyd-Warshall 程式驗算）。易錯：4→5 直接走是 3，但繞 4→1→5 只要 −5；3→2 直接走是 2，但 3→6→2 是 −3，更短。</p>"
+    },
+    {
+      "id": "al-0014",
+      "topics": [
+        "master-theorem",
+        "recurrence-methods"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>13) (10%) Give asymptotic tight bound (Θ) for T(n) where T(n) = 2T(n/4) + √n log(n). (Assume that T(n) is a constant for sufficiently small n.)</p>",
+      "answer": "T(n) = Θ(√n log² n)",
+      "explanation": "<p>a = 2、b = 4，n<sup>log<sub>4</sub>2</sup> = n<sup>1/2</sup> = √n。f(n) = √n log n 比 √n 只多了 log n 倍，<b>不是多項式倍</b>，所以基本版 master theorem 的三個 case 都不適用（這是 case 2 和 case 3 之間的縫隙）。</p><p><b>方法一：延伸版 case 2</b>：若 f(n) = Θ(n<sup>log<sub>b</sub>a</sup> lg<sup>k</sup> n)（k ≥ 0），則 T(n) = Θ(n<sup>log<sub>b</sub>a</sup> lg<sup>k+1</sup> n)。這裡 k = 1，得 Θ(√n lg² n)。</p><p><b>方法二：遞迴樹</b>：第 i 層有 2<sup>i</sup> 個子問題，大小 n/4<sup>i</sup>，每層成本 2<sup>i</sup>·√(n/4<sup>i</sup>)·log(n/4<sup>i</sup>) = √n·(log n − 2i)。共 log<sub>4</sub>n 層，加總 √n·Σ(log n − 2i) ≈ √n·(log n)·(log<sub>4</sub> n)/2 = Θ(√n log² n)；葉子有 2<sup>log<sub>4</sub>n</sup> = √n 個，成本 Θ(√n)，被前面蓋過。</p><p>易錯：直接寫 Θ(√n log n)（誤用 case 2）或 Θ(√n log n) 當 case 3，都不對。</p>"
+    },
+    {
+      "id": "al-0015",
+      "topics": [
+        "optimal-bst"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>14) (10%) Given a sequence K = ⟨k<sub>1</sub>, k<sub>2</sub>, k<sub>3</sub>, k<sub>4</sub>, k<sub>5</sub>⟩ of five distinct keys in sorted order (so that k<sub>1</sub> &lt; k<sub>2</sub> &lt; k<sub>3</sub> &lt; k<sub>4</sub> &lt; k<sub>5</sub>) and six dummy keys d<sub>0</sub>, d<sub>1</sub>, d<sub>2</sub>, d<sub>3</sub>, d<sub>4</sub>, d<sub>5</sub> representing values not in K, we have a probability p<sub>i</sub> for k<sub>i</sub> and a probability q<sub>i</sub> for d<sub>i</sub>. Determine the cost of an optimal binary search tree for K with the following probabilities:</p><div class=\"table-scroll\"><table><tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><th>p<sub>i</sub></th><td></td><td>0.08</td><td>0.15</td><td>0.05</td><td>0.1</td><td>0.12</td></tr><tr><th>q<sub>i</sub></th><td>0.04</td><td>0.1</td><td>0.08</td><td>0.1</td><td>0.06</td><td>0.12</td></tr></table></div>",
+      "answer": "最佳 BST 的期望搜尋成本為 2.85（根為 k<sub>4</sub>）",
+      "explanation": "<p>先確認機率總和：Σp = 0.5、Σq = 0.5，合計 1。成本定義為 Σ(depth(k<sub>i</sub>)+1)·p<sub>i</sub> + Σ(depth(d<sub>i</sub>)+1)·q<sub>i</sub>，也就是期望比較次數。</p><pre class=\"formula\">e[i][i-1] = q(i-1)\nw[i][j]   = w[i][j-1] + p(j) + q(j)\ne[i][j]   = min over i ≤ r ≤ j { e[i][r-1] + e[r+1][j] } + w[i][j]</pre><p>依長度由短到長填表（r 為達到最小值的根）：</p><div class=\"table-scroll\"><table><tr><th>e[i][j]</th><th>j=1</th><th>j=2</th><th>j=3</th><th>j=4</th><th>j=5</th></tr><tr><th>i=1</th><td>0.36 (k1)</td><td>0.89 (k2)</td><td>1.37 (k2)</td><td>1.98 (k2)</td><td><b>2.85 (k4)</b></td></tr><tr><th>i=2</th><td></td><td>0.51 (k2)</td><td>0.99 (k2)</td><td>1.57 (k3)</td><td>2.35 (k4)</td></tr><tr><th>i=3</th><td></td><td></td><td>0.41 (k3)</td><td>0.86 (k4)</td><td>1.52 (k4)</td></tr><tr><th>i=4</th><td></td><td></td><td></td><td>0.42 (k4)</td><td>1.04 (k5)</td></tr><tr><th>i=5</th><td></td><td></td><td></td><td></td><td>0.48 (k5)</td></tr></table></div><p>例如 e[1][5]：w[1][5] = 1，選 r = 4 時 e[1][3] + e[5][5] + 1 = 1.37 + 0.48 + 1 = <b>2.85</b>，比其他根都小（r = 2 時是 0.36 + 1.52 + 1 = 2.88，只差 0.03，很容易算錯）。最佳樹：根 k4，左子樹 {k1..k3} 以 k2 為根（k1 在左、k3 在右），右子樹是 k5。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "al-0016",
+      "topics": [
+        "strongly-connected-components"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>15) (10%) Given a directed and strongly connected graph G = (V, E), please design an algorithm to determine whether it contains a (directed) cycle of odd length.</p>",
+      "answer": "任選起點 s 做 BFS 求 d(v)，若存在某條邊 (u, v) 使 d(u) 與 d(v) 同奇偶，則有奇數長度的有向環；否則沒有。時間 O(V + E)。",
+      "explanation": "<p><b>演算法</b>：</p><ol><li>任選一點 s，沿著有向邊做 BFS，算出 d(v) = s 到 v 的距離（因為強連通，每個點都到得了）。</li><li>檢查每一條邊 (u, v)：若 d(u) mod 2 == d(v) mod 2，回答「有奇數環」。</li><li>所有邊都是奇偶相異，回答「沒有」。</li></ol><p>BFS O(V + E)，掃邊 O(E)，總共 <b>O(V + E)</b>。</p><p><b>正確性</b>：</p><ul><li>若某邊 (u, v) 的 d(u)、d(v) 同奇偶：因為強連通，存在 v 回到 s 的路徑，長度設為 L。考慮兩條封閉走訪 s ⇝ u → v ⇝ s（長度 d(u) + 1 + L）與 s ⇝ v ⇝ s（長度 d(v) + L）。兩者長度差 d(u) + 1 − d(v) 是奇數，所以其中一條是<b>奇數長度的封閉走訪</b>。而任何奇數長度的封閉有向走訪都能拆成若干個有向簡單環，長度加起來是奇數，必有一個環是奇數長度。</li><li>若每條邊都從奇偶 p 連到 1 − p：任何有向環沿途奇偶交替，回到起點時走了偶數步，所以所有環都是偶數長度。</li></ul><p>強連通是關鍵：沒有它就不保證 v 能回到 s，「同奇偶的邊」不一定落在環上。等價的說法是：強連通有向圖有奇數環 ⇔ 把它當無向圖時不是 bipartite（二分圖）。</p>"
+    },
+    {
+      "id": "al-0017",
+      "topics": [
+        "bellman-ford"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>16) (10%) Find a feasible solution or determine that no feasible solution exists for the following system of difference constraints:</p><pre>x1 − x3 ≤ 1\nx2 − x3 ≤ −4\nx4 − x5 ≤ 2\nx3 − x4 ≤ 7\nx5 − x1 ≤ 5\nx4 − x2 ≤ 10\nx1 − x2 ≤ 2\nx5 − x3 ≤ −1</pre>",
+      "answer": "可行解之一：x = (x1, x2, x3, x4, x5) = (−2, −4, 0, 0, −1)",
+      "explanation": "<p><b>建圖</b>：每條 x<sub>i</sub> − x<sub>j</sub> ≤ b 變成一條邊 v<sub>j</sub> → v<sub>i</sub>、權重 b；再加一個新點 v<sub>0</sub>，連到每個點、權重 0。從 v<sub>0</sub> 跑 Bellman-Ford：若有負環則無解，否則 x<sub>i</sub> = δ(v<sub>0</sub>, v<sub>i</sub>) 就是一組可行解。</p><pre>v3→v1 (1)   v3→v2 (−4)   v5→v4 (2)   v4→v3 (7)\nv1→v5 (5)   v2→v4 (10)   v2→v1 (2)   v3→v5 (−1)</pre><p><b>最短距離</b>：一開始全部是 0（v<sub>0</sub> 直接連過去）。</p><ul><li>v2：v0→v3→v2 = 0 − 4 = −4</li><li>v1：v0→v3→v2→v1 = −4 + 2 = −2</li><li>v5：v0→v3→v5 = −1</li><li>v4：v0→v4 = 0（經 v5 是 −1 + 2 = 1，較大）</li><li>v3：v0→v3 = 0（經 v4 是 7，較大）</li></ul><p>再鬆弛一輪沒有任何值改變 → 沒有負環，有解：<b>x = (−2, −4, 0, 0, −1)</b>。</p><p>逐條檢查：x1−x3 = −2 ≤ 1；x2−x3 = −4 ≤ −4；x4−x5 = 1 ≤ 2；x3−x4 = 0 ≤ 7；x5−x1 = 1 ≤ 5；x4−x2 = 4 ≤ 10；x1−x2 = 2 ≤ 2；x5−x3 = −1 ≤ −1，全部成立（已用程式驗算）。任何解每個分量同加一個常數仍是解，所以答案不唯一。</p>"
+    },
+    {
+      "id": "al-0018",
+      "topics": [
+        "set-cover-approx"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>17) (10%) Given a finite set X and a family F of subsets of X such that every element of X belongs to at least one subset in F, the set-covering problem is to find a minimum-size subset ζ ⊆ F whose members cover all of X: X = ∪<sub>S∈ζ</sub> S. The following algorithm is a δ-approximation algorithm to find a set cover ζ satisfying |ζ| ≤ δ|ζ*| where ζ* is an optimal solution. Please compute the minimum value of δ.</p><pre>GREEDY-SET-COVER(X, F)\n1  U = X\n2  ζ = ∅\n3  while U ≠ ∅\n4      select an S ∈ F that maximizes |S ∩ U|\n5      U = U − S\n6      ζ = ζ ∪ {S}\n7  return ζ</pre>",
+      "answer": "δ = H(max{|S| : S ∈ F})，其中 H(d) = Σ<sub>i=1..d</sub> 1/i 為第 d 個 harmonic number；因此 δ ≤ ln|X| + 1",
+      "explanation": "<p><b>證明概念（攤成本法）</b>：每次貪婪選一個集合 S，成本 1，平均分給這次<b>新蓋到</b>的元素：每個新元素付 1/|S ∩ U|。總成本 |ζ| = Σ<sub>x∈X</sub> c<sub>x</sub>。</p><p>看最佳解裡的任一集合 S*。把 S* 的元素依被蓋到的順序排，當 S* 還剩 k 個沒被蓋時，貪婪選到的集合至少蓋 k 個新元素（因為 S* 本身就能蓋 k 個，貪婪選的是最多的），所以這時被蓋的那個元素付的錢 ≤ 1/k。加起來 S* 的元素總共付 ≤ 1/|S*| + … + 1/2 + 1 = H(|S*|) ≤ H(max|S|)。</p><p>每個元素至少在最佳解的某個集合裡，所以 |ζ| = Σc<sub>x</sub> ≤ Σ<sub>S*∈ζ*</sub> H(|S*|) ≤ |ζ*|·H(max{|S| : S ∈ F})。故 <b>δ = H(max|S|)</b>，又 H(d) ≤ ln d + 1 ≤ ln|X| + 1。</p><p>例如最大集合有 6 個元素時，δ = 1 + 1/2 + … + 1/6 = 2.45，也就是貪婪解最多是最佳解的 2.45 倍。題目問「minimum value of δ」，這裡解讀為這個分析能證明的最小倍率 H(max|S|)（待確認）。</p>"
+    },
+    {
+      "id": "al-0019",
+      "topics": [
+        "master-theorem",
+        "recurrence-methods"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>11. (10%) Use the master method to give tight asymptotic bounds for the following recursive T(n) = 27T(n/3) + Θ(n³/lg n). (Assume that T(n) is a constant for sufficiently small n.)</p>",
+      "answer": "Master method 不適用；用遞迴樹解得 T(n) = Θ(n³ lg lg n)",
+      "explanation": "<p>a = 27、b = 3，n<sup>log<sub>3</sub>27</sup> = n³。f(n) = n³/lg n 比 n³ <b>小</b>，但只小了 lg n 倍，不是多項式倍 n<sup>ε</sup>，所以 case 1 不成立；也不是 Θ(n³)，case 2 不成立 → <b>master method 不適用</b>（這是課堂上的經典反例）。</p><p><b>遞迴樹</b>：第 i 層有 27<sup>i</sup> 個子問題、大小 n/3<sup>i</sup>，該層成本</p><pre class=\"formula\">27^i · (n/3^i)³ / lg(n/3^i) = n³ / (lg n − i·lg 3)</pre><p>令 k = log<sub>3</sub>n − i（從底往上數），每層是 n³/(k·lg 3)，加總 k = 1..log<sub>3</sub>n：n³/lg 3 · Σ 1/k = n³/lg 3 · H(log<sub>3</sub>n) = Θ(n³ lg lg n)。葉子有 27<sup>log<sub>3</sub>n</sup> = n³ 個，成本 Θ(n³)，被蓋過。</p><p>所以 <b>T(n) = Θ(n³ lg lg n)</b>。易錯：直接當 case 1 寫 Θ(n³)，或當 case 2 寫 Θ(n³ lg n)，都不對。</p>"
+    },
+    {
+      "id": "al-0020",
+      "topics": [
+        "matrix-chain"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>12. (10%) The following procedure is a bottom-up method for matrix chain order. This procedure assumes that matrix A<sub>i</sub> has dimensions p<sub>i−1</sub> × p<sub>i</sub> for i = 1, 2, ..., n. Its input is a sequence p = ⟨p<sub>0</sub>, p<sub>1</sub>, ..., p<sub>n</sub>⟩, where p.length = n + 1. Let m[i, j] be the minimum number of scalar multiplications needed to compute the matrix A<sub>i</sub>A<sub>i+1</sub>⋯A<sub>j</sub>. The procedure uses an auxiliary table m[1..n, 1..n] for storing the m[i, j] costs and another auxiliary table s[1..n − 1, 2..n] that records which index of k achieved the optimal cost in computing m[i, j]. Please fill in the empty statements.</p><pre class=\"code\">n = p.length − 1\nlet m[1..n, 1..n] and s[1..n − 1, 2..n] be new tables\nFor i = 1 to n\n    m[i, i] = 0\nFor l = 2 to n      // l is the chain length\n    For i = 1 to n − l + 1\n        j = ______(a) (3%)______\n        m[i, j] = ∞\n        For k = i to j − 1\n            q = ______(b) (4%)______\n            If q &lt; m[i, j]\n                m[i, j] = q\n                s[i, j] = ______(c) (3%)______</pre>",
+      "answer": "(a) i + l − 1　(b) m[i, k] + m[k+1, j] + p<sub>i−1</sub>·p<sub>k</sub>·p<sub>j</sub>　(c) k",
+      "explanation": "<ul><li><b>(a) j = i + l − 1</b>：長度 l 的鏈從 A<sub>i</sub> 開始，到 A<sub>i+l−1</sub> 結束。i 的上限 n − l + 1 正好讓 j 不超過 n。</li><li><b>(b) q = m[i, k] + m[k+1, j] + p<sub>i−1</sub>p<sub>k</sub>p<sub>j</sub></b>：在 A<sub>k</sub> 和 A<sub>k+1</sub> 之間切開，左半 A<sub>i..k</sub> 是 p<sub>i−1</sub> × p<sub>k</sub>、右半 A<sub>k+1..j</sub> 是 p<sub>k</sub> × p<sub>j</sub>，最後相乘一次要 p<sub>i−1</sub>·p<sub>k</sub>·p<sub>j</sub> 次純量乘法，加上兩半各自的最佳成本。</li><li><b>(c) s[i, j] = k</b>：記下最佳切點，之後用 s 遞迴印出括號方式。</li></ul><p>為什麼外層迴圈要用長度 l：算 m[i, j] 需要所有更短的子鏈結果，依長度由短到長填表就保證用到時都已算好。三層迴圈，時間 Θ(n³)、空間 Θ(n²)。易錯：(b) 寫成 p<sub>i</sub>p<sub>k</sub>p<sub>j</sub>，忘了 A<sub>i</sub> 的列數是 p<sub>i−1</sub>。</p>"
+    },
+    {
+      "id": "al-0021",
+      "topics": [
+        "optimal-bst"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>14. (10%) We are given a sequence K = ⟨k<sub>1</sub>, k<sub>2</sub>, ..., k<sub>n</sub>⟩ of n distinct keys in sorted order (so that k<sub>1</sub> &lt; k<sub>2</sub> &lt; ⋯ &lt; k<sub>n</sub>), and we wish to build a binary search tree from these keys. For each key k<sub>i</sub>, we have a probability p<sub>i</sub> that a search will be for k<sub>i</sub>. Some searches may be for values not in K, and so we also have n + 1 \"dummy keys\" d<sub>0</sub>, d<sub>1</sub>, ..., d<sub>n</sub> representing values not in K. In particular, d<sub>0</sub> represents all values less than k<sub>1</sub>, d<sub>n</sub> represents all values greater than k<sub>n</sub>, and for i = 1, 2, ..., n − 1, the dummy key d<sub>i</sub> represents all values between k<sub>i</sub> and k<sub>i+1</sub>. For each dummy key d<sub>i</sub>, we have a probability q<sub>i</sub> that a search will correspond to d<sub>i</sub>. Determine the cost and structure of an optimal binary search tree in the expected cost of search time for a set of n = 7 keys with the following probabilities:</p><div class=\"table-scroll\"><table><tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr><tr><th>p<sub>i</sub></th><td></td><td>0.04</td><td>0.06</td><td>0.08</td><td>0.02</td><td>0.10</td><td>0.12</td><td>0.14</td></tr><tr><th>q<sub>i</sub></th><td>0.06</td><td>0.06</td><td>0.06</td><td>0.06</td><td>0.05</td><td>0.05</td><td>0.05</td><td>0.05</td></tr></table></div>",
+      "answer": "最小期望成本 3.12；結構：根 k5，左子樹以 k2 為根（k1 在左，k3 在右，k4 為 k3 的右子），右子樹以 k7 為根（k6 為其左子）",
+      "explanation": "<p>用 DP：e[i][j] = min<sub>r</sub>{ e[i][r−1] + e[r+1][j] } + w[i][j]，e[i][i−1] = q<sub>i−1</sub>，w 為區間內所有 p、q 的和。依長度填表，得到（括號內為最佳根 r）：</p><div class=\"table-scroll\"><table><tr><th>e[i][j]</th><th>j=1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr><tr><th>i=1</th><td>0.28 (1)</td><td>0.62 (2)</td><td>1.02 (2)</td><td>1.34 (2)</td><td>1.83 (3)</td><td>2.44 (3)</td><td><b>3.12 (5)</b></td></tr><tr><th>2</th><td></td><td>0.30 (2)</td><td>0.68 (3)</td><td>0.93 (3)</td><td>1.41 (3)</td><td>1.96 (5)</td><td>2.61 (5)</td></tr><tr><th>3</th><td></td><td></td><td>0.32 (3)</td><td>0.57 (3)</td><td>1.04 (4)</td><td>1.48 (5)</td><td>2.13 (5)</td></tr><tr><th>4</th><td></td><td></td><td></td><td>0.24 (4)</td><td>0.57 (5)</td><td>1.01 (5)</td><td>1.55 (6)</td></tr><tr><th>5</th><td></td><td></td><td></td><td></td><td>0.30 (5)</td><td>0.72 (6)</td><td>1.20 (6)</td></tr><tr><th>6</th><td></td><td></td><td></td><td></td><td></td><td>0.32 (6)</td><td>0.78 (7)</td></tr><tr><th>7</th><td></td><td></td><td></td><td></td><td></td><td></td><td>0.34 (7)</td></tr></table></div><p>e[1][7] = e[1][4] + e[6][7] + w[1][7] = 1.34 + 0.78 + 1.00 = <b>3.12</b>，根 k5。再用 root 表往下拆：{k1..k4} 的根 k2，{k3..k4} 的根 k3，{k6..k7} 的根 k7：</p><pre>              k5\n           /      \\\n         k2        k7\n        /  \\      /  \\\n      k1    k3   k6   d7\n     / \\   /  \\  / \\\n    d0 d1 d2  k4 d5 d6\n             / \\\n            d3 d4</pre><p>期望成本 3.12 表示平均一次搜尋要比較約 3.12 次。直覺上機率大的 k5、k6、k7 放在靠近根的地方，機率最小的 k4（0.02）放在最深。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "al-0022",
+      "topics": [
+        "maximum-flow"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>15. (10%) The following graph is about the maximum flow problem. Each edge is labeled with its capacity. What is the maximum flow from vertex s to vertex t.</p><p>（原圖以有向邊列表表示，u → v (容量)：）</p><pre>s → 1 (18)   s → 2 (16)   2 → 1 (6)    1 → 3 (16)   3 → 2 (19)\n2 → 4 (14)   4 → 3 (7)    3 → t (22)   4 → t (8)</pre>",
+      "answer": "30",
+      "explanation": "<p>用 Edmonds-Karp（每次找最短的增廣路徑）：</p><ol><li>s → 1 → 3 → t，瓶頸 16（1→3 滿）。</li><li>s → 2 → 4 → t，瓶頸 8（4→t 滿）。</li><li>s → 2 → 4 → 3 → t，瓶頸 6（2→4 剩 6，4→3 容量 7，3→t 剩 6）。這時 2→4 滿了。</li></ol><p>總流量 16 + 8 + 6 = <b>30</b>。之後 residual graph 中從 s 只能到 {s, 1, 2}，找不到增廣路徑。</p><p><b>驗證（最小割）</b>：S = {s, 1, 2}、T = {3, 4, t}，跨過去的邊是 1 → 3 (16) 和 2 → 4 (14)，容量和 30 = 最大流，max-flow min-cut 定理成立。注意 3 → 2 (19) 是從 T 指回 S，不算在割的容量裡。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "al-0023",
+      "topics": [
+        "p-np",
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": "問答-1",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "We have the following definitions and theorem related to NP-completeness.<p><b>Definition 1</b>. Let X<sub>1</sub> and X<sub>2</sub> be tow problems. X<sub>1</sub> polynomially reduces to X<sub>2</sub> (written as X<sub>1</sub> ∝ X<sub>2</sub>) if and only if X<sub>1</sub> can be solved in polynomial time, by using a polynomial time algorithm which solves X<sub>2</sub>.<br><b>Definition 2.</b> A problem is said to be a P (resp., NP) problem if it can be solved in polynomial time by a deterministic (resp., non-deterministic) algorithm.<br><b>Definition 3.</b> NP (resp., P) is the set of all NP (resp., P) problems.<br><b>Definition 4.</b> A problem X is an NP-complete (NPC) problem if X∈NP and every NP problem reduces to X.<br><b>Cook's Theorem</b>. NP=P if and only if the satisfiability (SAT) problem is a P problem.<br>(This implies that every NP problem polynomially reduces to SAT.)</p><p>(A) (15%) Assume that SAT ∝ B, B ∝ C, C ∝ D and D∈NP. By the assumptions and above definitions and theorem, prove that D is NP-complete.</p><p>(B) (5%) By the above definitions and theorem, show the following statement is true or false. You should also show your reasons. If the reasons are incorrect, then you get no point.<br>Statement: An NPC problem can polynomially reduce to any NPC problem.</p><p>(C) (5%) By the above definitions and theorem, show the following statement is true or false. You should also show your reasons. If the reasons are incorrect, then you get no point.<br>Statement: If an NPC problem can be solved in polynomial time by a deterministic algorithm, then all NP problems can also be solved in polynomial time by a deterministic algorithm.</p>",
+      "answer": "(A) 由 ∝ 的遞移性得 SAT ∝ D，再由 Cook's theorem 每個 NP 問題 ∝ SAT ∝ D，加上 D∈NP，D 是 NPC。(B) True。(C) True。",
+      "explanation": "<p>先證一個會一直用到的引理：<b>∝ 有遞移性</b>。若 X ∝ Y、Y ∝ Z：解 X 的多項式演算法 A 會呼叫「解 Y 的演算法」；而 Y 又能用呼叫「解 Z 的演算法」的多項式演算法 B 解掉。把 A 裡每次解 Y 的呼叫換成 B，A 本身最多呼叫多項式次、每次 B 的輸入大小也是多項式，多項式的多項式還是多項式，所以 X 可以用解 Z 的多項式演算法在多項式時間解掉，即 X ∝ Z。</p><p><b>(A)</b> SAT ∝ B、B ∝ C，由遞移性 SAT ∝ C；再加上 C ∝ D，得 SAT ∝ D。由 Cook's theorem，任何 NP 問題 X 都有 X ∝ SAT，再遞移得 X ∝ D。所以每個 NP 問題都 reduce 到 D；題目又給 D∈NP。依 Definition 4，D 是 NP-complete。</p><p><b>(B) True。</b>設 X、Y 都是 NPC。X 是 NPC，所以 X∈NP（Definition 4 的前半）；Y 是 NPC，所以每個 NP 問題都 ∝ Y（Definition 4 的後半）。X 正是一個 NP 問題，所以 X ∝ Y。X、Y 是任選的，所以任何 NPC 問題都能 reduce 到任何 NPC 問題。</p><p><b>(C) True。</b>設 NPC 問題 X 有確定性多項式演算法，即 X∈P。任一 NP 問題 Y，由 Definition 4 有 Y ∝ X，也就是 Y 可以用「解 X 的多項式演算法」在多項式時間內解掉；而解 X 的演算法本身是確定性多項式時間，代進去之後整個就是確定性多項式時間演算法，所以 Y∈P。（另一種寫法：SAT∈NP，所以 SAT ∝ X，得 SAT∈P，再由 Cook's theorem 得 NP = P。）</p><p>常見錯誤：(A) 只寫「SAT ∝ D 所以 D 是 NPC」卻沒說 D∈NP，那只能得到 NP-hard；或沒交代 ∝ 為什麼可以遞移。</p>"
+    },
+    {
+      "id": "al-0024",
+      "topics": [
+        "rod-cutting",
+        "activity-selection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Which of the following statements are true?",
+      "choices": [
+        "(A) Dynamic programming is a technique that avoids the recursive explosion.",
+        "(B) Overlapping recursive calls tend to yield exponential algorithm.",
+        "(C) Greedy algorithm makes locally optimal decision at each step.",
+        "(D) Divide and conquer is a type of recursive algorithm. The recursion is the divide part."
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<ul><li>(A) 對。直接遞迴時同樣的子問題會被重算很多次，呼叫次數爆炸；dynamic programming（動態規劃）把每個子問題的答案存起來（table 或 memoization），每個只算一次。</li><li>(B) 對。典型例子是 fib(n) = fib(n−1) + fib(n−2) 的直接遞迴，子問題重疊，呼叫次數約 φ<sup>n</sup>，是指數級。</li><li>(C) 對。greedy algorithm（貪婪演算法）每一步都選「眼前看起來最好」的選擇，不回頭；要正確還需要 greedy-choice property 和 optimal substructure。</li><li>(D) 錯。divide and conquer 分成 divide（切成子問題）、conquer（<b>遞迴</b>解子問題）、combine（合併）三步，遞迴的是 conquer 這一步，不是 divide。</li></ul>"
+    },
+    {
+      "id": "al-0025",
+      "topics": [
+        "p-np",
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（多選題，每個選項單獨計分）</p>Choose the correct statement(s):",
+      "choices": [
+        "(A) It has been proved that there exists no deterministic algorithm that can solve any given NPC problem with a polynomial time complexity in the worst case.",
+        "(B) If we can prove that the worst-case problem lower bound of an NPC problem is of a polynomial order, then we can prove that NP≠P.",
+        "(C) If we can prove that an existing NP-hard problem is polynomially reducible to a problem X, then X is NP-hard.",
+        "(D) If a problem is proved to be an NP-hard and NP problem, then it is an NPC problem.",
+        "(E) If a problem X can be solved by a non-deterministic algorithm taking a polynomial time complexity in the worst case, then X is an NP problem."
+      ],
+      "answer": "(C)(D)(E)",
+      "explanation": "<ul><li>(A) 錯。這等於證明了 P ≠ NP，到現在還是未解問題，沒有人證明過。</li><li>(B) 錯。lower bound 是「至少要花多少時間」。證明某 NPC 問題至少要多項式時間，完全不排除它可以在多項式時間內解掉，推不出 NP ≠ P。要推出 NP ≠ P，必須證明它的 lower bound 是<b>超過多項式</b>（例如指數）。</li><li>(C) 對。已知 NP-hard 問題 Y ∝ X：所有 NP 問題都 ∝ Y，再由 reduction 的遞移性都 ∝ X，所以 X 是 NP-hard。</li><li>(D) 對。NPC 的定義就是「屬於 NP 且是 NP-hard」。</li><li>(E) 對。這就是 NP 的定義：可以被非確定性演算法在多項式時間內解掉。</li></ul>"
+    },
+    {
+      "id": "al-0026",
+      "topics": [
+        "rod-cutting"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": "問答-2",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "(13%) You are going on a long hiking trip. You start on the road at kilometer post 0. Along the way there are <i>n</i> hotels, at kilometer posts <i>a</i><sub>1</sub> &lt; <i>a</i><sub>2</sub> &lt; ⋯ &lt; <i>a</i><sub>n</sub>, where each <i>a</i><sub>i</sub> is measured from the starting point. The only places you are allowed to stop are at these hotels, but you can choose which of the hotels you stop at. You must stop at the final hotel (at distance <i>a</i><sub>n</sub>), which is your destination. You'd ideally like to travel 20 kilometers a day, but this may not be possible. If you travel <i>x</i> kilometers during a day, the penalty for that day is (20 − <i>x</i>)<sup>2</sup>. You want to plan your trip so as to minimize the total penalty. Give an algorithm that determines the optimal sequence of hotels at which to stop. (Note: This problem can be solved by a dynamic programming algorithm. If you use a dynamic programming algorithm to solve this problem, please write down the recursive formula of the algorithm, describe the meaning of the notations you used in the formula, give the initial value settings, and analyze the time complexity of the algorithm.)",
+      "answer": "令 a<sub>0</sub> = 0，P[i] = 以第 i 家旅館當作當天終點時，從起點到這裡的最小總 penalty。P[0] = 0，P[i] = min<sub>0≤j&lt;i</sub> { P[j] + (20 − (a<sub>i</sub> − a<sub>j</sub>))² }，答案 P[n]，用 prev[i] 記錄取到最小值的 j 倒推出旅館序列；O(n²) 時間、O(n) 空間。",
+      "explanation": "<p><b>子問題</b>：最後一天一定是從某家旅館 j（或起點）走到 a<sub>n</sub>。不管前面怎麼走，從起點到旅館 j 那段也必須是最佳的（不然換成更好的走法，總 penalty 會更小），這就是 optimal substructure。</p><p><b>符號</b>：</p><ul><li>a<sub>0</sub> = 0 代表起點（kilometer post 0）。</li><li>P[i]：在第 i 家旅館（位置 a<sub>i</sub>）過夜為止，所能達到的最小總 penalty。</li><li>prev[i]：達到 P[i] 時，前一晚住的旅館編號（0 表示起點）。</li></ul><p><b>遞迴式</b>：</p><pre class=\"formula\">P[0] = 0\nP[i] = min over 0 ≤ j &lt; i of { P[j] + (20 − (a_i − a_j))² },  i = 1..n</pre><p>意思是：枚舉「前一晚住在 j」，當天走 a<sub>i</sub> − a<sub>j</sub> 公里，付出 (20 − (a<sub>i</sub> − a<sub>j</sub>))² 的 penalty，再加上走到 j 的最小代價。</p><p><b>演算法</b>：i 由 1 到 n 依序填 P[i]，同時記下 prev[i] = 取到最小值的 j。答案是 P[n]；從 n 開始沿 prev 往回走到 0，反過來就是最佳的停留旅館序列。</p><p><b>時間</b>：P[i] 要看 i 個候選，總共 Σ i = n(n+1)/2，所以 O(n²)；空間 O(n)。</p><p>常見錯誤：用 greedy「每天走到離 20 公里最接近的旅館」。反例：旅館在 2、25、28（終點）。greedy 第一天選 25（差 5，罰 25），第二天只剩 3 公里（罰 289），共 314；但直接一天走 28 公里只罰 64。（已用程式比對 DP 與 greedy。）所以要用 DP 把所有前一站都比較過。</p>"
+    },
+    {
+      "id": "al-0027",
+      "topics": [
+        "strongly-connected-components",
+        "topological-sort"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": "問答-1",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "Given a directed graph <i>G</i>=(<i>V</i>, <i>E</i>), and two vertices <i>u</i> and <i>v</i> in <i>V</i>, we call vertex <i>v</i> is reachable from <i>u</i>, if there exists a directed path from <i>u</i> to <i>v</i>. A vertex <i>s</i> in <i>V</i> is called a source vertex if every vertex in <i>V</i> is reachable from <i>s</i>.<p>(a) (8%) Given a directed graph <i>G</i>=(<i>V</i>, <i>E</i>), and a specified vertex <i>v</i> in <i>V</i>, design a linear time algorithm (i.e. your algorithm should run in <i>O</i>(|<i>V</i>|+|<i>E</i>|) time) to determine if <i>v</i> is a source vertex. You need to describe the data structure used in your algorithm.</p><p>(b) (8%) Given a directed acyclic graph (DAG; a directed graph is acyclic if it contains no directed cycles) <i>G</i>=(<i>V</i>, <i>E</i>), you are asked to determine if <i>G</i> contains a source vertex. If you apply the algorithm of subproblem (a) on every vertex of <i>G</i>, you will get an algorithm runs in <i>O</i>(|<i>V</i>|<sup>2</sup>+|<i>V</i>||<i>E</i>|) time. It is not desirable. Design a more efficient algorithm for this problem. Analyze the time complexity of your algorithm.</p><p>(c) (9%) Given a directed graph <i>G</i>=(<i>V</i>, <i>E</i>), you are asked to determine if <i>G</i> contains a source vertex. Note that the given graph may contain directed cycles. As in subproblem (b) an <i>O</i>(|<i>V</i>|<sup>2</sup>+|<i>V</i>||<i>E</i>|) time algorithm is not acceptable. Design a more efficient algorithm for this problem and analyze the time complexity of your algorithm.</p>",
+      "answer": "(a) adjacency list 存圖，從 v 做 BFS/DFS，看是否走到全部 |V| 個點，O(|V|+|E|)。(b) 算 in-degree，恰好一個 in-degree 0 的點時它就是 source，否則沒有，O(|V|+|E|)。(c) 對整張圖做 DFS（每次從未拜訪的點重新開始），finish time 最大的點 v* 是唯一可能的 source，再從 v* 做一次 (a) 檢查，O(|V|+|E|)。",
+      "explanation": "<p><b>(a)</b> 用 adjacency list（每個點一條串列，存它的出邊）存圖，再用一個 visited 布林陣列和一個 queue（BFS）或 stack/遞迴（DFS）。從 v 出發做 BFS，數被拜訪到的點；等於 |V| 就是 source，否則不是。每個點進 queue 一次、每條邊看一次，O(|V|+|E|)。注意要用 adjacency list，用 matrix 會變 O(|V|²)。</p><p><b>(b)</b> DAG 的關鍵性質：任何一個點沿著反向邊一直往回走，因為沒有 cycle，一定會停在某個 in-degree 為 0 的點，也就是<b>每個點都能被某個 in-degree 0 的點走到</b>。</p><ul><li>source 一定是 in-degree 0：若 s 有一條進來的邊 (u, s)，而 s 又要走得到 u，就會形成 s→…→u→s 的 cycle，DAG 不可能，所以 source 只會在 in-degree 0 的點之中。</li><li>若有 2 個以上 in-degree 0 的點，彼此都走不到對方（沒有邊進得去），不存在 source。</li><li>若剛好 1 個 in-degree 0 的點 s，由上面的性質，每個點都能被 s 走到，s 就是 source。（DAG 至少有一個 in-degree 0 的點。）</li></ul><p>做法：掃所有邊算 in-degree，數 in-degree 0 的點。O(|V|+|E|)。</p><p><b>(c)</b> 有 cycle 時 in-degree 不一定是 0，改用 DFS 的 finish time：</p><ol><li>對整張圖做 DFS：依序從每個還沒拜訪的點開始 DFS，記錄每個點的 finish time。</li><li>取 finish time 最大的點 v*（最後一次 DFS 的起點）。</li><li>從 v* 做一次 (a) 的 BFS，全部走得到就回答「有 source（v* 就是一個）」，否則回答「沒有」。</li></ol><p>為什麼只要檢查 v*：假設 source s 存在。如果 s 在 v* 那棵 DFS 樹之前就被拜訪，s 那次 DFS 會走到所有點（s 走得到所有點），v* 不可能是之後才開始的新起點，矛盾；所以 s 是在 v* 那次 DFS 中被拜訪，也就是 v* 走得到 s，再接 s 走得到所有點，v* 也是 source。所以「有 source ⇔ v* 是 source」。（等價的做法：先求 strongly connected components，縮點成 DAG 後套 (b)：恰好一個 in-degree 0 的 SCC 時，它裡面的點都是 source。）</p><p>時間：一次完整 DFS O(|V|+|E|)，再一次 BFS O(|V|+|E|)，合計 O(|V|+|E|)。</p>"
+    },
+    {
+      "id": "al-0028",
+      "topics": [
+        "p-np"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": "問答-2",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "A non-deterministic (ND) algorithm has two phases, the choosing phase and the checking phase, for solving a given problem. The former is for selecting one from a specific set of choices iteration by iteration. The latter is for checking if all selected choices constitute a solution to the problem. If so, the algorithm returns SUCCESS; otherwise, FAILURE. It is assumed that an ND algorithm always selects choices that lead to the return of SUCCESS unless there are no such choices. A problem is called an NP problem if there exists a polynomial time-complexity ND algorithm solving the problem. For example, the famous satisfiability (SAT) problem is an NP problem. The SAT problem is to determine if a given Boolean formula <i>f</i>(<i>x</i><sub>1</sub>,…,<i>x</i><sub>n</sub>) of <i>n</i> Boolean variables <i>x</i><sub>1</sub>,…,<i>x</i><sub>n</sub> is satisfiable or unsatisfiable. A formula <i>f</i>(<i>x</i><sub>1</sub>,…,<i>x</i><sub>n</sub>) is satisfiable (resp., unsatisfiable) if there exists an (resp., no) TRUE-FALSE assignment of the <i>n</i> variables to make the formula TRUE. The following polynomial time-complexity ND algorithm, called ND-SAT, can solve the SAT problem, which is the evidence that the SAT problem is an NP problem.<p><b>Algorithm:</b> ND-SAT<br><b>Input:</b> a Boolean formula <i>f</i>(<i>x</i><sub>1</sub>,…,<i>x</i><sub>n</sub>) of <i>n</i> variables <i>x</i><sub>1</sub>,…,<i>x</i><sub>n</sub><br><b>Output: SUCCESS</b> if <i>f</i> is satisfiable; <b>FAILURE</b>, otherwise.</p><pre class=\"code\">for i ← 1 to n do\n  x_i ← choice({TRUE, FALSE})  //Choose TRUE or FALSE to assign to x_i\nif f(x_1,...,x_n) == TRUE then  //Check if f(x_1,...,x_n) is satisfiable or unsatisfiable\n  return SUCCESS\nelse\n  return FAILURE</pre><p>In practice, we can prove a problem to be an NP problem by showing a polynomial time-complexity ND algorithm solving the problem. (a) By this concept, please prove that the exact cover decision problem (ECDP) is an NP problem by showing a polynomial time-complexity ND algorithm solving the ECDP (18%). Note that you should follow the above-mentioned ND algorithm definition and the format of the ND-SAT algorithm. That is, the ND algorithm should contain the input description, the output description, the choosing phase, the checking phase, and return statements; otherwise, you will lose some points. (b) Furthermore, please analyze the time complexity of your ND algorithm in terms of the big O notation to show that it indeed has a polynomial time complexity (7%). The ECDP is defined as follows. Given a universal set <i>U</i>={<i>u</i><sub>1</sub>,…,<i>u</i><sub>m</sub>} of <i>m</i> elements, and a collection <i>S</i>={<i>S</i><sub>1</sub>,…,<i>S</i><sub>n</sub>} of <i>n</i> sets, where <i>S</i><sub>i</sub> is a non-empty subset of <i>U</i>, 1≤<i>i</i>≤<i>n</i>, the ECDP is to determine if there exists a collection <i>S</i>* of sets that is an exact cover of <i>U</i>, where <i>S</i>*⊆<i>S</i>. A collection <i>S</i>* of sets is an exact cover of <i>U</i> if every element <i>u</i> in <i>U</i> appears exactly once in only one set of <i>S</i>*. For example, suppose <i>U</i>={1,2,3,4,5,6,7} is a universal set of seven elements, and <i>S</i>={<i>A</i>,<i>B</i>,<i>C</i>,<i>D</i>,<i>E</i>} is a collection of five sets, where <i>A</i>={1,2,7}, <i>B</i>={1,4}, <i>C</i>={4,5}, <i>D</i>={3,5,6}, and <i>E</i>={4}. Then, <i>S</i>*={<i>A</i>,<i>D</i>,<i>E</i>}⊆<i>S</i> is an exact cover of <i>U</i>. In summary, the ECDP with the input of <i>U</i> ={1,2,3,4,5,6,7} and <i>S</i>={<i>A</i>={1,2,7}, <i>B</i>={1,4}, <i>C</i>={4,5}, <i>D</i>={3,5,6}, <i>E</i>={4}} will return SUCCESS, since <i>S</i>*={<i>A</i>,<i>D</i>,<i>E</i>}⊆<i>S</i> is an exact cover of <i>U</i>.</p>",
+      "answer": "choosing phase 對每個 S<sub>i</sub> 選 TRUE/FALSE（是否放進 S*），checking phase 用計數陣列檢查 U 的每個元素在被選的集合中恰好出現一次；時間 O(n + nm) = O(nm)，是多項式。",
+      "explanation": "<p><b>(a)</b> 照 ND-SAT 的格式：</p><p><b>Algorithm:</b> ND-ECDP<br><b>Input:</b> a universal set U = {u<sub>1</sub>,…,u<sub>m</sub>} and a collection S = {S<sub>1</sub>,…,S<sub>n</sub>} of non-empty subsets of U<br><b>Output:</b> SUCCESS if there is an exact cover S* ⊆ S of U; FAILURE, otherwise.</p><pre class=\"code\">// choosing phase\nfor i ← 1 to n do\n    c_i ← choice({TRUE, FALSE})     // TRUE 表示把 S_i 放進 S*\n// checking phase\nfor j ← 1 to m do\n    count[j] ← 0\nfor i ← 1 to n do\n    if c_i == TRUE then\n        for each element u_j in S_i do\n            count[j] ← count[j] + 1\nfor j ← 1 to m do\n    if count[j] ≠ 1 then            // 沒被蓋到（0）或被蓋到兩次以上\n        return FAILURE\nreturn SUCCESS</pre><p>正確性：若存在 exact cover，依假設 ND 演算法會選中那一組 c<sub>i</sub>，checking phase 檢查每個元素都恰好被計到 1 次，回傳 SUCCESS；若不存在，任何選法都至少有一個元素 count ≠ 1，回傳 FAILURE。以題目的例子，選中 A、D、E 時 count 全是 1，回傳 SUCCESS。</p><p><b>(b)</b> 時間分析（輸入大小至少是 n + m）：</p><ul><li>choosing phase：n 次 choice，每次 O(1)，共 O(n)。</li><li>初始化 count：O(m)。</li><li>累加：每個被選的集合最多 m 個元素，共 O(nm)。</li><li>最後檢查：O(m)。</li></ul><p>合計 O(n + m + nm) = O(nm)，是輸入大小的多項式，所以 ECDP 有多項式時間的 ND 演算法，ECDP ∈ NP。</p><p>常見扣分點：只寫「猜一組 S* 再檢查」沒有分 choosing／checking phase；或只檢查「每個元素至少出現一次」，漏掉「不能重複出現」。</p>"
+    },
+    {
+      "id": "al-0029",
+      "topics": [
+        "rod-cutting"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Which of the following are true for dynamic programming?",
+      "choices": [
+        "(A) The solution has optimal substructure",
+        "(B) Breaking a problem into smaller overlapping subproblems.",
+        "(C) Solving problems in a sequential manner.",
+        "(D) The time complexity of dynamic programming (with overlapping subproblems using memorization) is O(n<sup>2</sup>)"
+      ],
+      "answer": "(A)(B)(C)（C 待確認）",
+      "explanation": "<ul><li>(A) 對。dynamic programming（動態規劃）適用的前提之一：最佳解由子問題的最佳解組成（optimal substructure）。</li><li>(B) 對。另一個前提是子問題會重疊（overlapping subproblems），所以才值得把答案存起來重複使用。</li><li>(C) 視為對（待確認）。DP 把問題看成一連串的決策，依子問題由小到大的順序（bottom-up）一個一個填表，是「循序」地解；出題意圖應該是這個。但敘述很籠統，有爭議。</li><li>(D) 錯。DP 的時間 = 子問題個數 × 每個子問題的計算量，依問題而定：LCS 是 O(mn)、matrix-chain 是 O(n³)、0/1 knapsack 是 O(nW)，沒有固定是 O(n²)。</li></ul>"
+    },
+    {
+      "id": "al-0030",
+      "topics": [
+        "bellman-ford"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Consider the problem of solving single-source shortest-paths on the following weighted directed graph:<p>（原卷的圖整理如下：有向圖，頂點 0～9，有向邊與權重如下表。）</p><div class=\"table-scroll\"><table><tr><th>邊</th><td>0→1</td><td>0→3</td><td>0→5</td><td>0→6</td><td>1→2</td><td>1→3</td><td>2→7</td><td>2→8</td><td>3→4</td><td>3→6</td><td>5→6</td><td>5→8</td><td>6→4</td><td>7→9</td><td>8→7</td><td>9→8</td></tr><tr><th>權重</th><td>7</td><td>6</td><td>6</td><td>5</td><td>4</td><td>−2</td><td>−2</td><td>−3</td><td>2</td><td>1</td><td>−2</td><td>3</td><td>3</td><td>−1</td><td>1</td><td>1</td></tr></table></div>Let <i>d</i>[<i>i</i>, <i>j</i>] denote the length of shortest path from node <i>i</i> to node <i>j</i>. For the following items, choose the correct one(s):",
+      "choices": [
+        "(A) <i>d</i>[0,1] = 7",
+        "(B) <i>d</i>[0,2] = 11",
+        "(C) <i>d</i>[0,3] = 6",
+        "(D) <i>d</i>[0,4] = 8",
+        "(E) <i>d</i>[0,5] = 6"
+      ],
+      "answer": "(A)(B)(E)",
+      "explanation": "<p>圖裡有負權重的邊，Dijkstra 不保證正確，要用 Bellman-Ford（或因為只有 7→9→8→7 一個 cycle、權重和 = −1+1+1 = 1 &gt; 0，沒有負 cycle，最短路徑都有定義）。從 0 出發的最短距離：</p><div class=\"table-scroll\"><table><tr><th>節點</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr><tr><th>d[0, ·]</th><td>7</td><td>11</td><td>5</td><td>7</td><td>6</td><td>4</td><td>9</td><td>8</td><td>8</td></tr><tr><th>最短路徑</th><td>0→1</td><td>0→1→2</td><td>0→1→3</td><td>0→1→3→4、0→5→6→4</td><td>0→5</td><td>0→5→6</td><td>0→1→2→7、0→1→2→8→7</td><td>0→1→2→8</td><td>兩條（經 7 的兩種走法再 →9）</td></tr></table></div><ul><li>(A) 對。進入 1 的邊只有 0→1。</li><li>(B) 對。進入 2 的邊只有 1→2，7 + 4 = 11。</li><li>(C) 錯。直接 0→3 是 6，但繞 0→1→3 = 7 + (−2) = 5 更短。這是「看到直達邊就以為最短」的典型錯誤。</li><li>(D) 錯。0→1→3→4 = 5 + 2 = 7；0→5→6→4 = 6 − 2 + 3 = 7，都是 7。</li><li>(E) 對。進入 5 的邊只有 0→5。</li></ul><p>（用 Bellman-Ford 與窮舉所有簡單路徑兩種方式驗算。）</p>"
+    },
+    {
+      "id": "al-0031",
+      "topics": [
+        "bellman-ford"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Follow the previous question. Choose the correct item(s):",
+      "choices": [
+        "(A) <i>d</i>[0,6] = 5",
+        "(B) <i>d</i>[0,7] = 9",
+        "(C) <i>d</i>[0,8] = 7",
+        "(D) There are exactly two shortest paths from node 0 to node 4.",
+        "(E) There are exactly two shortest paths from node 0 to node 9."
+      ],
+      "answer": "(B)(D)(E)",
+      "explanation": "<p>圖裡有負權重的邊，Dijkstra 不保證正確，要用 Bellman-Ford（或因為只有 7→9→8→7 一個 cycle、權重和 = −1+1+1 = 1 &gt; 0，沒有負 cycle，最短路徑都有定義）。從 0 出發的最短距離：</p><div class=\"table-scroll\"><table><tr><th>節點</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr><tr><th>d[0, ·]</th><td>7</td><td>11</td><td>5</td><td>7</td><td>6</td><td>4</td><td>9</td><td>8</td><td>8</td></tr><tr><th>最短路徑</th><td>0→1</td><td>0→1→2</td><td>0→1→3</td><td>0→1→3→4、0→5→6→4</td><td>0→5</td><td>0→5→6</td><td>0→1→2→7、0→1→2→8→7</td><td>0→1→2→8</td><td>兩條（經 7 的兩種走法再 →9）</td></tr></table></div><ul><li>(A) 錯。0→6 直達是 5，但 0→5→6 = 6 − 2 = 4；0→1→3→6 = 5 + 1 = 6。最短是 4。</li><li>(B) 對。0→1→2→7 = 11 − 2 = 9；0→1→2→8→7 = 11 − 3 + 1 = 9。</li><li>(C) 錯。0→1→2→8 = 11 − 3 = 8；0→5→8 = 9。最短是 8。</li><li>(D) 對。長度 7 的有 0→1→3→4 和 0→5→6→4，剛好兩條。</li><li>(E) 對。進入 9 只能經過 7→9（−1），d[0,9] = 9 − 1 = 8；到 7 的最短路徑有兩條，所以到 9 也剛好兩條：0→1→2→7→9、0→1→2→8→7→9。</li></ul><p>（最短路徑條數用窮舉驗算。）</p>"
+    },
+    {
+      "id": "al-0032",
+      "topics": [
+        "asymptotic-notation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Let <i>f</i>(<i>n</i>) and <i>g</i>(<i>n</i>) be asymptotically positive functions, and lg <i>x</i> = log<sub>2</sub>(<i>x</i>). Which of the following statements are correct?",
+      "choices": [
+        "(A) If <i>f</i>(<i>n</i>) = <i>O</i>(<i>g</i>(<i>n</i>)) then lg <i>f</i>(<i>n</i>) = <i>O</i>(lg <i>g</i>(<i>n</i>)), where <i>g</i>(<i>n</i>) ≥ 2 and <i>f</i>(<i>n</i>) ≥ 1 for <i>n</i> ≥ 1.",
+        "(B) If <i>f</i>(<i>n</i>) = <i>O</i>(<i>n</i>) then <i>f</i>(<i>n</i>) × <i>f</i>(<i>n</i>) = <i>O</i>(<i>n</i><sup>2</sup>).",
+        "(C) If <i>f</i>(<i>n</i>) = <i>O</i>(<i>n</i>) then 2<sup><i>f</i>(<i>n</i>)</sup> = <i>O</i>(2<sup><i>n</i></sup>).",
+        "(D) <i>f</i>(<i>n</i>) + <i>o</i>(<i>f</i>(<i>n</i>)) = θ(<i>f</i>(<i>n</i>)).",
+        "(E) <i>f</i>(<i>n</i>) = θ(<i>f</i>(<i>n</i>/2))."
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) 對。f(n) ≤ c·g(n)，取 lg：lg f(n) ≤ lg c + lg g(n)。因為 g(n) ≥ 2，lg g(n) ≥ 1，所以 lg c ≤ |lg c|·lg g(n)，得 lg f(n) ≤ (|lg c| + 1)·lg g(n)。f(n) ≥ 1 保證 lg f(n) ≥ 0，不會出現負數的問題。這兩個條件就是為了讓這個證明成立。</li><li>(B) 對。f(n) ≤ cn，所以 f(n)² ≤ c²n²。</li><li>(C) 錯。反例 f(n) = 2n = O(n)，但 2<sup>2n</sup> = 4<sup>n</sup>，4<sup>n</sup>/2<sup>n</sup> = 2<sup>n</sup> → ∞，不是 O(2<sup>n</sup>)。常數放在指數上就不再是常數倍了。</li><li>(D) 對。o(f(n)) 的項 h(n) 滿足 h(n)/f(n) → 0，所以 n 夠大時 0 ≤ h(n) ≤ f(n)/2（漸近正函數），f(n) ≤ f(n) + h(n) ≤ 1.5 f(n)。</li><li>(E) 錯。反例 f(n) = 2<sup>n</sup>：f(n/2) = 2<sup>n/2</sup>，兩者比值 2<sup>n/2</sup> → ∞，不是同一級。多項式函數才會成立。</li></ul>"
+    },
+    {
+      "id": "al-0033",
+      "topics": [
+        "recurrence-methods",
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Assume that the function value of each of the following functions is constant for <i>n</i> ≤ 2.<pre class=\"formula\">t(n) = n + Σ_{k=1}^{n−1} [t(k) + t(n−k)],    f(n) = 2f(n/4) + √n,\ng(n) = g(n/2) + √n,                         h(n) = 5h(n/2) + (n lg n)²,\na(n) = a(n−1) + n^k lg n.</pre>Choose the correct answers.",
+      "choices": [
+        "(A) <i>t</i>(<i>n</i>) = θ(2<sup><i>n</i></sup>)",
+        "(B) <i>f</i>(<i>n</i>) = θ(√<i>n</i>)",
+        "(C) <i>g</i>(<i>n</i>) = θ(√<i>n</i>)",
+        "(D) <i>h</i>(<i>n</i>) = <i>n</i><sup>lg 5</sup>",
+        "(E) <i>a</i>(<i>n</i>) = θ(<i>n</i><sup><i>k</i>+1</sup> lg <i>n</i>)"
+      ],
+      "answer": "(C)(D)(E)（D 依 θ(n<sup>lg 5</sup>) 解讀，待確認）",
+      "explanation": "<ul><li>(A) 錯。Σ[t(k) + t(n−k)] 其實是 2Σ<sub>k=1</sub><sup>n−1</sup> t(k)，所以 t(n) = n + 2Σ<sub>k=1</sub><sup>n−1</sup> t(k)。和 t(n−1) 的式子相減：t(n) − t(n−1) = 1 + 2t(n−1)，得 t(n) = 3t(n−1) + 1，所以 t(n) = Θ(3<sup>n</sup>)，不是 Θ(2<sup>n</sup>)。（程式算出 t(n+1)/t(n) 趨近 3。）</li><li>(B) 錯。Master theorem：a = 2、b = 4，n<sup>log<sub>4</sub>2</sup> = n<sup>1/2</sup>，和 √n 同級（case 2），所以 f(n) = Θ(√n lg n)，多一個 lg n。</li><li>(C) 對。a = 1、b = 2，n<sup>log<sub>2</sub>1</sup> = n<sup>0</sup> = 1，√n 多項式地大於 1，且 regularity 條件 √(n/2) ≤ c√n 成立（c = 1/√2），case 3，g(n) = Θ(√n)。直接展開也可以：√n(1 + 1/√2 + 1/2 + …) 是等比級數，收斂到常數倍的 √n。</li><li>(D) 視為對（待確認）。a = 5、b = 2，n<sup>lg 5</sup> ≈ n<sup>2.32</sup>，比 (n lg n)² = n² lg² n 多項式地大（n<sup>0.32</sup> 壓過 lg² n），case 1，h(n) = Θ(n<sup>lg 5</sup>)。題目寫成等號應是漏了 θ；若嚴格看「等於」則不成立。</li><li>(E) 對。展開 a(n) = Σ<sub>i≤n</sub> i<sup>k</sup> lg i（k 為非負常數）。上界：每項 ≤ n<sup>k</sup> lg n，共 n 項，≤ n<sup>k+1</sup> lg n。下界：只看後半 i ≥ n/2 的 n/2 項，每項 ≥ (n/2)<sup>k</sup> lg(n/2)，乘起來是 Ω(n<sup>k+1</sup> lg n)。所以 Θ(n<sup>k+1</sup> lg n)。</li></ul>"
+    },
+    {
+      "id": "al-0034",
+      "topics": [
+        "matrix-chain"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Given 4 matrices <i>Q</i>, <i>R</i>, <i>S</i>, and <i>T</i> with dimensions 13x12, 12x30, 30x15, and 15x18, respectively. If we would like to obtain the matrix multiplication <i>QRST</i> with the least number of scalar multiplications, which of the following statements are incorrect?",
+      "choices": [
+        "(A) This is a divide-and-conquer question.",
+        "(B) The first pair of metrices to be multiplied are <i>Q</i> and <i>R</i>.",
+        "(C) The last matrix to be multiplied is <i>T</i>.",
+        "(D) There is more than one way to achieve the minimum number of scalar multiplications.",
+        "(E) The minimum number of scalar multiplications needed is 11250."
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<p>維度序列 p = (13, 12, 30, 15, 18)。一個 a×b 乘 b×c 要 a·b·c 次純量乘法。五種括號方式全部列出來：</p><div class=\"table-scroll\"><table><tr><th>括號方式</th><th>次數</th></tr><tr><td>((Q(RS))T)</td><td>12·30·15 + 13·12·15 + 13·15·18 = 5400 + 2340 + 3510 = <b>11250</b></td></tr><tr><td>(Q((RS)T))</td><td>5400 + 12·15·18 + 13·12·18 = 11448</td></tr><tr><td>(((QR)S)T)</td><td>4680 + 5850 + 3510 = 14040</td></tr><tr><td>(Q(R(ST)))</td><td>17388</td></tr><tr><td>((QR)(ST))</td><td>19800</td></tr></table></div><p>題目問「錯的」：</p><ul><li>(A) 錯（要選）。matrix-chain multiplication 是 dynamic programming 的經典題（子問題 m[i, j] 會重疊），不是 divide and conquer。</li><li>(B) 錯（要選）。最佳解先乘 R 和 S。</li><li>(C) 正確。最佳解最後一步是 (QRS) × T。</li><li>(D) 錯（要選）。只有 ((Q(RS))T) 達到 11250，其他都比較多，最佳方式唯一。</li><li>(E) 正確。最少是 11250。</li></ul><p>（五種括號方式已用程式全部算過。）</p>"
+    },
+    {
+      "id": "al-0035",
+      "topics": [
+        "huffman-coding"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Let X = {a/25, b/20, c/10, d/20, e/50} be the alphabet and its frequency distribution. Which of the following statements are correct?",
+      "choices": [
+        "(A) This is a greedy algorithm question.",
+        "(B) The code length of ‘e’ is 1.",
+        "(C) ‘a’ and ‘c’ have the same code length.",
+        "(D) The code length for the string “cad” is 9.",
+        "(E) There is more than one way to achieve optimum prefix code."
+      ],
+      "answer": "(A)(B)(C)(D)(E)",
+      "explanation": "<p>Huffman coding（霍夫曼編碼）每次合併頻率最小的兩個：</p><ol><li>c10 + b20（或 d20，兩個都是 20）= 30</li><li>剩 d20、a25、30、e50：d20 + a25 = 45</li><li>剩 30、45、e50：30 + 45 = 75</li><li>e50 + 75 = 125</li></ol><p>碼長：e = 1，a、b、c、d 都是 3。加權總長 = 50·1 + (25+20+10+20)·3 = 275。</p><ul><li>(A) 對。Huffman 每步都選頻率最小的兩個合併，是 greedy algorithm。</li><li>(B) 對。e 的頻率 50 最大，最後才合併，碼長 1。</li><li>(C) 對。a、c 碼長都是 3。</li><li>(D) 對。“cad” = 3 + 3 + 3 = 9 bits。</li><li>(E) 對。第一步 b、d 頻率同為 20，選哪個和 c 合併都可以；每次合併時左右（0/1）也可以對調，所以最佳 prefix code 不唯一。</li></ul><p>（已用程式跑 Huffman 驗算碼長。）</p>"
+    },
+    {
+      "id": "al-0036",
+      "topics": [
+        "rod-cutting"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Which of the following statements describe the differences between Dynamic Programming and Divide-and-Conquer?",
+      "choices": [
+        "(A) Whether the subproblems overlap or not",
+        "(B) The division of problems",
+        "(C) The combination of subproblems",
+        "(D) The way the base case is solved",
+        "(E) The depth of recurrence"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>兩者都是「把問題切成子問題 → 解子問題 → 合併答案」，都需要切分、合併和 base case，遞迴深度也都由問題本身決定。真正的差別只有一個：</p><ul><li>(A) 是差別。divide and conquer 的子問題彼此獨立（例如 merge sort 的左右兩半）；dynamic programming 的子問題會重疊，所以要把算過的答案存起來（table 或 memoization），避免重算。</li><li>(B)(C)(D)(E) 不是本質差別，兩種方法都有這些步驟，做法依問題而定。</li></ul>"
+    },
+    {
+      "id": "al-0037",
+      "topics": [
+        "randomized-quicksort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>When CAN the worst case of Quicksort occur?</p><p>C<sub>1</sub>: Quick Sort where leftmost (or rightmost) element is always chosen as pivot<br>C<sub>2</sub>: leftmost element is chosen as pivot and array is already sorted in SAME order<br>C<sub>3</sub>: leftmost element is chosen as pivot and array is already sorted in REVERSE order</p>",
+      "choices": [
+        "(A) C<sub>1</sub>",
+        "(B) C<sub>2</sub>",
+        "(C) C<sub>1</sub> and C<sub>2</sub>",
+        "(D) C<sub>2</sub> and C<sub>3</sub>"
+      ],
+      "answer": "(D)（待確認）",
+      "explanation": "<p>Quicksort 的最差情況 Θ(n²) 發生在每次 partition 都切成「0 個」和「n−1 個」，也就是 pivot 每次都是最小或最大值。</p><ul><li>C<sub>2</sub>：固定拿最左邊當 pivot、陣列已經由小到大排好 → pivot 每次都是最小值，右邊剩 n−1 個，最差。</li><li>C<sub>3</sub>：固定拿最左邊、陣列已經反向排好 → pivot 每次都是最大值，一樣最差。</li></ul><p>所以 C<sub>2</sub>、C<sub>3</sub> 都會出現最差情況，選 (D)。</p><p>（待確認）C<sub>1</sub> 只說「固定拿最左或最右當 pivot」，這種策略在遇到已排序輸入時確實「可能」出現最差情況，所以嚴格讀題 C<sub>1</sub> 也成立，但沒有「C<sub>1</sub>、C<sub>2</sub>、C<sub>3</sub> 全選」的選項；依選項設計推測出題者要的是具體的輸入情境 C<sub>2</sub> 和 C<sub>3</sub>。避免最差情況的做法是隨機挑 pivot（randomized quicksort），期望時間 O(n log n)。</p>"
+    },
+    {
+      "id": "al-0038",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>A typical dynamic programming example is the snake sequence. Given a grid of numbers, find maximum length snake sequence and print it. A snake sequence is made up of adjacent numbers in the grid such that for each number, the number on the right or the number below it is +1 or -1 its value. For example, if you are at location (x, y) in the grid, you can either move right i.e. (x+1, y) if that number is ± 1 or move down i.e. (x, y+1) if that number is ± 1. The length of a snake sequence is defined as the number of moves. Given the following grid (A matrix with M rows and N columns),</p><pre>9, 6, 5, 2\n8, 7, 6, 5\n7, 3, 1, 6\n1, 1, 1, 7</pre><p>(a) The maximum LENGTH of snake sequence is</p>",
+      "choices": [
+        "(A) 6",
+        "(B) 7",
+        "(C) 5",
+        "(D) 4"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>令 L(x, y) 為「從 (x, y) 出發往右或往下能走的最多步數」，L(x, y) = max{ L(x+1, y) + 1（右邊差 ±1 時）, L(x, y+1) + 1（下面差 ±1 時）, 0 }。從右下角往左上填表即可，每格只看兩個鄰居。</p><p>注意座標是 (x, y) = (行, 列)，例如 7(0,2) 是第 0 行、第 2 列的 7。程式驗算得到唯一最長的蛇：</p><pre>9(0,0) → 8(0,1) → 7(1,1) → 6(2,1) → 5(3,1) → 6(3,2) → 7(3,3)</pre><p>共 7 個數字、6 步（長度定義是 moves 數，不是數字個數）。</p><p>所以最大長度是 6，選 (A)。常見錯誤是數「數字個數」7 而選 (B)。</p>"
+    },
+    {
+      "id": "al-0039",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>A typical dynamic programming example is the snake sequence. Given a grid of numbers, find maximum length snake sequence and print it. A snake sequence is made up of adjacent numbers in the grid such that for each number, the number on the right or the number below it is +1 or -1 its value. For example, if you are at location (x, y) in the grid, you can either move right i.e. (x+1, y) if that number is ± 1 or move down i.e. (x, y+1) if that number is ± 1. The length of a snake sequence is defined as the number of moves. Given the following grid (A matrix with M rows and N columns),</p><pre>9, 6, 5, 2\n8, 7, 6, 5\n7, 3, 1, 6\n1, 1, 1, 7</pre><p>(b) Time complexity of above solution is</p>",
+      "choices": [
+        "(A) O(M × N)",
+        "(B) O(M<sup>2</sup>)",
+        "(C) O(N<sup>2</sup>)",
+        "(D) O(M)"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>DP 表有 M × N 格，每格只看右邊和下面兩個鄰居，是 O(1) 的工作，所以填表 O(MN)；最後從最大值那格沿著來源回溯印出路徑，最多走 M + N 步，不影響總複雜度。答案 O(M × N)，選 (A)。</p><p>對比一下：若不做 DP、從每格各自暴力展開所有路徑，路徑數可能指數成長；DP 把每格的答案記下來，每格只算一次。</p>"
+    },
+    {
+      "id": "al-0040",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>A typical dynamic programming example is the snake sequence. Given a grid of numbers, find maximum length snake sequence and print it. A snake sequence is made up of adjacent numbers in the grid such that for each number, the number on the right or the number below it is +1 or -1 its value. For example, if you are at location (x, y) in the grid, you can either move right i.e. (x+1, y) if that number is ± 1 or move down i.e. (x, y+1) if that number is ± 1. The length of a snake sequence is defined as the number of moves. Given the following grid (A matrix with M rows and N columns),</p><pre>9, 6, 5, 2\n8, 7, 6, 5\n7, 3, 1, 6\n1, 1, 1, 7</pre><p>(c) The last number of the maximum-length snake sequence is</p>",
+      "choices": [
+        "(A) 9(0,0)",
+        "(B) 6(3,2)",
+        "(C) 7(3,3)",
+        "(D) 1(2,3)",
+        "(E) 7(0,2)"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>令 L(x, y) 為「從 (x, y) 出發往右或往下能走的最多步數」，L(x, y) = max{ L(x+1, y) + 1（右邊差 ±1 時）, L(x, y+1) + 1（下面差 ±1 時）, 0 }。從右下角往左上填表即可，每格只看兩個鄰居。</p><p>注意座標是 (x, y) = (行, 列)，例如 7(0,2) 是第 0 行、第 2 列的 7。程式驗算得到唯一最長的蛇：</p><pre>9(0,0) → 8(0,1) → 7(1,1) → 6(2,1) → 5(3,1) → 6(3,2) → 7(3,3)</pre><p>共 7 個數字、6 步（長度定義是 moves 數，不是數字個數）。</p><p>最後一個數字是右下角的 7(3,3)，選 (C)。</p>"
+    },
+    {
+      "id": "al-0041",
+      "topics": [
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>A typical dynamic programming example is the snake sequence. Given a grid of numbers, find maximum length snake sequence and print it. A snake sequence is made up of adjacent numbers in the grid such that for each number, the number on the right or the number below it is +1 or -1 its value. For example, if you are at location (x, y) in the grid, you can either move right i.e. (x+1, y) if that number is ± 1 or move down i.e. (x, y+1) if that number is ± 1. The length of a snake sequence is defined as the number of moves. Given the following grid (A matrix with M rows and N columns),</p><pre>9, 6, 5, 2\n8, 7, 6, 5\n7, 3, 1, 6\n1, 1, 1, 7</pre><p>(d) The third number of the maximum-length snake sequence is</p>",
+      "choices": [
+        "(A) 7(1,1)",
+        "(B) 7(0,2)",
+        "(C) 3(1,2)",
+        "(D) 6(2,1)",
+        "(E) 8(0,1)"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>令 L(x, y) 為「從 (x, y) 出發往右或往下能走的最多步數」，L(x, y) = max{ L(x+1, y) + 1（右邊差 ±1 時）, L(x, y+1) + 1（下面差 ±1 時）, 0 }。從右下角往左上填表即可，每格只看兩個鄰居。</p><p>注意座標是 (x, y) = (行, 列)，例如 7(0,2) 是第 0 行、第 2 列的 7。程式驗算得到唯一最長的蛇：</p><pre>9(0,0) → 8(0,1) → 7(1,1) → 6(2,1) → 5(3,1) → 6(3,2) → 7(3,3)</pre><p>共 7 個數字、6 步（長度定義是 moves 數，不是數字個數）。</p><p>第 1 個 9(0,0)、第 2 個 8(0,1)、第 3 個 7(1,1)，選 (A)。小心 (B) 7(0,2)：8(0,1) 往下確實是 7，但從 7(0,2) 再往右是 3、往下是 1，走不下去，所以那條不是最長的。</p>"
+    },
+    {
+      "id": "al-0042",
+      "topics": [
+        "recurrence-methods"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>For questions with sequences, we constantly split the problem into a number of sub-problems that are smaller instances of the same problem, and we try to solve the smaller problems recursively. We called this type of algorithm</p>",
+      "choices": [
+        "(A) Dynamic programming",
+        "(B) Divide and conquer",
+        "(C) Greedy algorithms",
+        "(D) Quicksort"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>把問題切成幾個「同型但較小」的子問題、遞迴解完再合併，正是 <span class=\"term\">Divide and Conquer<small>（分治法）</small></span> 的定義，選 (B)。</p><p>和 DP 的差別：DP 處理的是子問題會重疊、需要記錄答案避免重算的情況；分治法的子問題通常彼此獨立（例如 merge sort 的左右兩半）。Quicksort 是分治法的一個例子，不是一類演算法的名稱。</p>"
+    },
+    {
+      "id": "al-0043",
+      "topics": [
+        "maximum-flow"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>What is the value of the maximum flow for the following st-flow network?</p><p>（原圖的有向邊與容量）s→A 10、s→C 10、A→B 4、A→C 2、A→D 8、C→D 9、D→B 6、B→t 10、D→t 10</p>",
+      "choices": [
+        "(A) 16",
+        "(B) 17",
+        "(C) 18",
+        "(D) 19"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>用增廣路徑找流量：</p><ul><li>s→A→B→t 送 4（A→B 滿）</li><li>s→A→D→t 送 6（s→A 剩 0）</li><li>s→C→D→t 送 4（D→t 滿 10）</li><li>s→C→D→B→t 送 5（C→D 滿 9）</li></ul><p>總流量 4 + 6 + 4 + 5 = 19。</p><p>再用 <span class=\"term\">Min Cut<small>（最小割）</small></span> 確認：取 S = {s, A, C}，跨出去的邊 A→B 4 + A→D 8 + C→D 9 = 21；取 S = {s, A, C, D}，跨出去的邊 A→B 4 + D→B 6 + D→t 10 = 20；取 S = {s, C}，s→A 10 + C→D 9 = 19。找到容量 19 的割，而且已經送出 19 的流，依 max-flow min-cut 定理最大流就是 19，選 (D)（Edmonds–Karp 程式驗算也是 19）。</p>"
+    },
+    {
+      "id": "al-0044",
+      "topics": [
+        "string-automata"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>Many string-matching algorithms build a finite automata. Below is a partially-completed state transition function for a string s of length 10 over the alphabet {A, B, C}. It is possible to reconstruct s from the partial table. How many A's does the string s have?</p><div class=\"table-scroll\"><table><tr><th></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th></tr><tr><th>A</th><td></td><td></td><td></td><td>4</td><td>5</td><td></td><td>2</td><td></td><td></td><td></td></tr><tr><th>B</th><td></td><td></td><td></td><td>0</td><td>0</td><td></td><td>7</td><td></td><td></td><td>3</td></tr><tr><th>C</th><td></td><td></td><td></td><td>0</td><td>0</td><td></td><td>0</td><td></td><td></td><td>10</td></tr></table></div>",
+      "choices": [
+        "(A) 4",
+        "(B) 5",
+        "(C) 6",
+        "(D) 7"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>字串比對自動機中，δ(q, a) = q + 1 代表 s 的第 q+1 個字元就是 a；其他值代表「讀到 a 之後，最長的後綴同時是 s 前綴」的長度。</p><ul><li>δ(3,A)=4、δ(4,A)=5、δ(6,B)=7、δ(9,C)=10 → s<sub>4</sub>=A、s<sub>5</sub>=A、s<sub>7</sub>=B、s<sub>10</sub>=C。</li><li>δ(3,B)=0、δ(3,C)=0 → 在狀態 3 讀 B 或 C 連長度 1 的前綴都對不上，所以 s<sub>1</sub> ≠ B、C，s<sub>1</sub>=A。</li><li>δ(6,A)=2 → s<sub>6</sub>A 等於前綴 s<sub>1</sub>s<sub>2</sub>，所以 s<sub>2</sub>=A、s<sub>6</sub>=s<sub>1</sub>=A。</li><li>δ(9,B)=3 → s<sub>8</sub>s<sub>9</sub>B = s<sub>1</sub>s<sub>2</sub>s<sub>3</sub>，所以 s<sub>3</sub>=B、s<sub>8</sub>=A、s<sub>9</sub>=A。</li></ul><p>得到 s = AABAAABAAC，有 7 個 A，選 (D)。用程式把 3<sup>10</sup> 種字串全部建自動機比對表格，唯一符合的就是 AABAAABAAC。</p>"
+    },
+    {
+      "id": "al-0045",
+      "topics": [
+        "np-reductions",
+        "p-np"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>What can you infer from the facts that PROBLEMA is NP-complete and PROBLEMA linear-time reduces to PROBLEMB?</p><p>C<sub>1</sub>: If there exists an O(N<sup>3</sup>) algorithm for PROBLEMB, then P = NP.<br>C<sub>2</sub>: If there does not exist an O(N<sup>3</sup>) algorithm for PROBLEMB, then P ≠ NP.<br>C<sub>3</sub>: If there exists an O(N<sup>3</sup>) algorithm for PROBLEMB, then there exists an O(N<sup>3</sup>) algorithm for PROBLEMA.<br>C<sub>4</sub>: If there exists an O(N<sup>3</sup>) algorithm for PROBLEMA, then there exists an O(N<sup>3</sup>) algorithm for PROBLEMB.</p>",
+      "choices": [
+        "(A) C<sub>1</sub> and C<sub>3</sub>",
+        "(B) C<sub>1</sub> and C<sub>4</sub>",
+        "(C) C<sub>2</sub> and C<sub>3</sub>",
+        "(D) C<sub>2</sub> and C<sub>4</sub>"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>A ≤ B（A 歸約到 B）的意思是「B 會解，A 就會解」，難度方向是 B 至少和 A 一樣難。</p><ul><li>C<sub>3</sub> 對：線性時間歸約產生的 B 實例大小是 O(N)，再用 O(N<sup>3</sup>) 解 B，總共 O(N) + O((cN)<sup>3</sup>) = O(N<sup>3</sup>)。</li><li>C<sub>1</sub> 對：由 C<sub>3</sub>，NP-complete 的 A 有多項式解，所有 NP 問題都能歸約到 A，所以 P = NP。</li><li>C<sub>2</sub> 錯：B 沒有 O(N<sup>3</sup>) 解法，可能只是 B 特別難（例如 B 根本不在 NP），也可能 A 有 O(N<sup>4</sup>) 解；推不出 P ≠ NP。</li><li>C<sub>4</sub> 錯：方向反了，A 簡單推不出 B 簡單。</li></ul><p>選 (A)。</p>"
+    },
+    {
+      "id": "al-0046",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>The VERTEX-COVER problem is to find a vertex cover of the size k in a given graph G. In the SUBSET-SUM problem, given a finite set S ⊂ N and a target t ∈ N, we ask whether there is a subset S′ ⊆ S whose elements sum to t. The VERTEX-COVER problem is polynomial-time reducible to the SUBSET-SUM problem. Given an instance &lt; G, k &gt; of the VERTEX-COVER problem, one can construct a corresponding instance &lt; S, t &gt; of the SUBSET-SUM problem. Given the following graph G and k = 3, {v<sub>1</sub>, v<sub>3</sub>, v<sub>4</sub>} is the vertex cover of size k = 3. The corresponding set S = {1, 4, 16, 64, 256, 1040, 1041, 1093, 1284, 1344} is constructed as the following table. What is the target t?</p><p>（原圖的圖 G：頂點 v<sub>0</sub>～v<sub>4</sub>；邊 e<sub>0</sub> = v<sub>0</sub>v<sub>4</sub>、e<sub>1</sub> = v<sub>4</sub>v<sub>1</sub>、e<sub>2</sub> = v<sub>0</sub>v<sub>3</sub>、e<sub>3</sub> = v<sub>4</sub>v<sub>2</sub>、e<sub>4</sub> = v<sub>1</sub>v<sub>2</sub>）</p><div class=\"table-scroll\"><table><tr><th></th><th></th><th colspan=\"5\">modified based 4</th><th>decimal</th></tr><tr><th></th><th></th><th>e<sub>4</sub></th><th>e<sub>3</sub></th><th>e<sub>2</sub></th><th>e<sub>1</sub></th><th>e<sub>0</sub></th><th></th></tr><tr><td>x<sub>0</sub></td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1041</td></tr><tr><td>x<sub>1</sub></td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1284</td></tr><tr><td>x<sub>2</sub></td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1344</td></tr><tr><td>x<sub>3</sub></td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1040</td></tr><tr><td>x<sub>4</sub></td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1093</td></tr><tr><td>y<sub>0</sub></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr><tr><td>y<sub>1</sub></td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>4</td></tr><tr><td>y<sub>2</sub></td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>16</td></tr><tr><td>y<sub>3</sub></td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>64</td></tr><tr><td>y<sub>4</sub></td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>256</td></tr></table></div>",
+      "choices": [
+        "(A) 2389",
+        "(B) 3417",
+        "(C) 3754",
+        "(D) 3758"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>這是 VERTEX-COVER ≤<sub>p</sub> SUBSET-SUM 的標準構造：每個數寫成「改良 4 進位」，最高位是「選了幾個頂點」，其餘每一位對應一條邊。</p><ul><li>x<sub>i</sub>：最高位 1（代表選頂點 v<sub>i</sub>），在 v<sub>i</sub> 相鄰的邊那一位放 1。</li><li>y<sub>j</sub>：只在 e<sub>j</sub> 那位放 1，用來補足。</li></ul><p>目標 t 的最高位放 k，每條邊的位都放 2：因為一個 vertex cover 讓每條邊被 1 或 2 個端點蓋到，蓋到 1 次的再加 y<sub>j</sub> 補成 2。用 4 進位是為了每位最多加到 3，不會進位干擾別的位。</p><pre>t = k·4^5 + 2·(4^4 + 4^3 + 4^2 + 4^1 + 4^0)\n  = 3·1024 + 2·(256 + 64 + 16 + 4 + 1)\n  = 3072 + 682 = 3754</pre><p>驗算：cover {v<sub>1</sub>, v<sub>3</sub>, v<sub>4</sub>} 取 x<sub>1</sub>+x<sub>3</sub>+x<sub>4</sub> = 1284 + 1040 + 1093 = 3417，各邊位是 (e<sub>4</sub>..e<sub>0</sub>) = (1,1,1,2,1)，再補 y<sub>4</sub>+y<sub>3</sub>+y<sub>2</sub>+y<sub>0</sub> = 256+64+16+1 = 337，總和 3754。選 (C)。(B) 3417 是只加 x 沒補 y 的陷阱答案。</p>"
+    },
+    {
+      "id": "al-0047",
+      "topics": [
+        "linear-time-sorting"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>For each of the following algorithms in the next five problems, what is the tightest asymptotic upper bound for its runtime complexity for n numbers? Please use the following table of (A)-(E) choices when answering.</p><div class=\"table-scroll\"><table><tr><th>(A)</th><th>(B)</th><th>(C)</th><th>(D)</th><th>(E)</th></tr><tr><td>O(1)</td><td>O(lg n)</td><td>O(n)</td><td>O(n lg n)</td><td>O(n<sup>2</sup>)</td></tr></table></div><p>(3 points) Bucket sort when there are Θ(n) buckets: expected time?</p>",
+      "choices": [
+        "(A) O(1)",
+        "(B) O(lg n)",
+        "(C) O(n)",
+        "(D) O(n lg n)",
+        "(E) O(n<sup>2</sup>)"
+      ],
+      "answer": "(C)",
+      "explanation": "<p><span class=\"term\">Bucket Sort<small>（桶排序）</small></span>假設輸入均勻分布，把 n 個數丟進 Θ(n) 個桶，每桶期望只有 O(1) 個元素；每桶用 insertion sort，期望成本是 E[n<sub>i</sub>²] = 2 − 1/n = O(1)。全部加起來 Θ(n) + n·O(1) = O(n)，選 (C)。</p><p>注意這是「期望」時間；如果資料全部擠進同一桶，最差會退化成 O(n²)。</p>"
+    },
+    {
+      "id": "al-0048",
+      "topics": [
+        "loop-invariant"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Consider an integer array A of size n &gt; 0 with elements A[1], …, A[n], where the first p elements are positive and the other (n − p) elements are negative. The following algorithm calculates p correctly by calling COMPUTE-P(A, n). What loop invariant is maintained for the <b>while</b> loop of the algorithm?</p><pre>COMPUTE-P(A, len)\n1  if A[1] &lt; 0 return 0\n2  left = 1, right = len\n3  while left &lt; right\n4      m = ceiling((left + right) / 2)\n5      if A[m] &gt; 0\n6          left = m\n7      else\n8          right = m − 1\n9  return left</pre>",
+      "choices": [
+        "(A) left + 1 ≤ p ≤ right",
+        "(B) left + 1 ≤ p ≤ right − 1",
+        "(C) left ≤ p ≤ right",
+        "(D) left ≤ p ≤ right − 1",
+        "(E) none of the other choices"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>p 是最後一個正數的位置。檢查 <span class=\"term\">Loop Invariant<small>（迴圈不變式）</small></span> left ≤ p ≤ right：</p><ul><li>初始化：走到第 2 行代表 A[1] &gt; 0，所以 p ≥ 1 = left；p ≤ n = right。成立。</li><li>維持：若 A[m] &gt; 0，m 在正數區，p ≥ m，令 left = m 仍有 left ≤ p；若 A[m] &lt; 0，m 在負數區，p ≤ m − 1，令 right = m − 1 仍有 p ≤ right。</li><li>終止：left = right 時夾出 p = left，回傳正確。</li></ul><p>選 (C)。(A) 在初始 p = 1 時就不成立（left + 1 = 2 &gt; p）；(D) 在 p = n 時不成立。另外 m 取 ceiling 是為了避免 left = m 時卡在原地造成無窮迴圈。</p>"
+    },
+    {
+      "id": "al-0049",
+      "topics": [
+        "p-np",
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Which of the following statement has been proved to be true?</p>",
+      "choices": [
+        "(A) An NP problem of size n must take more than poly(n) time to solve.",
+        "(B) Any NP problem is polnomial-reducible to any NP-complete problem.",
+        "(C) Any NP-complete problem is polnomial-reducible to any NP problem.",
+        "(D) If an NP-complete problem can be solved by an approximation algorithm with ratio 2, any other NP-complete problem can also be solved by an approximation algorithm with a constant ratio.",
+        "(E) none of the other choices"
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(A) 錯：P ⊆ NP，P 裡的問題本身就是 NP 問題、有多項式解；而且 P 是否等於 NP 還沒證明。</li><li>(B) 對：這就是 <span class=\"term\">NP-complete<small>（NP 完全）</small></span>的定義之一 —— 它在 NP 裡，而且所有 NP 問題都能多項式歸約到它。</li><li>(C) 錯：歸約到「任何」NP 問題（包括 P 裡的簡單問題）等於說 NP-complete 很簡單，未被證明。</li><li>(D) 錯：一般的多項式歸約不保留近似比。例如 vertex cover 有 2-近似，但一般的 TSP 若有常數比近似就會推出 P = NP。</li></ul><p>選 (B)。</p>"
+    },
+    {
+      "id": "al-0050",
+      "topics": [
+        "matrix-chain"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Dynamic programming can be used to solve the matrix-chain multiplication problem. Suppose we hope to compute the matrix product A<sub>1</sub>A<sub>2</sub>…A<sub>6</sub> with the matrix dimensions as follows.</p><div class=\"table-scroll\"><table><tr><th>matrix</th><td>A<sub>1</sub></td><td>A<sub>2</sub></td><td>A<sub>3</sub></td><td>A<sub>4</sub></td><td>A<sub>5</sub></td><td>A<sub>6</sub></td></tr><tr><th>dimension</th><td>30 × 35</td><td>35 × 15</td><td>15 × 5</td><td>5 × 10</td><td>10 × 20</td><td>20 × 25</td></tr></table></div><p>Let m[i, j] be the minimum number of scalar multiplications needed to compute the matrix A<sub>i</sub>A<sub>i+1</sub>…A<sub>j</sub>. What is m[2, 5]?</p>",
+      "choices": [
+        "(A) 4375",
+        "(B) 7125",
+        "(C) 5375",
+        "(D) 8500",
+        "(E) none of the other choices"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>維度序列 p = 30, 35, 15, 5, 10, 20, 25（A<sub>i</sub> 是 p<sub>i−1</sub> × p<sub>i</sub>）。m[i, j] = min<sub>i≤k&lt;j</sub>{ m[i, k] + m[k+1, j] + p<sub>i−1</sub>p<sub>k</sub>p<sub>j</sub> }。</p><p>先算小的：m[2,3] = 35·15·5 = 2625，m[3,4] = 15·5·10 = 750，m[4,5] = 5·10·20 = 1000，m[2,4] = 4375，m[3,5] = 2500。</p><ul><li>k = 2：m[2,2] + m[3,5] + 35·15·20 = 0 + 2500 + 10500 = 13000</li><li>k = 3：m[2,3] + m[4,5] + 35·5·20 = 2625 + 1000 + 3500 = 7125</li><li>k = 4：m[2,4] + m[5,5] + 35·10·20 = 4375 + 0 + 7000 = 11375</li></ul><p>最小是 7125（在 A<sub>3</sub> 後面切：(A<sub>2</sub>A<sub>3</sub>)(A<sub>4</sub>A<sub>5</sub>)），選 (B)，程式驗算一致。(A) 4375 是 m[2,4] 的值，小心看錯。</p>"
+    },
+    {
+      "id": "al-0051",
+      "topics": [
+        "matrix-chain"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) What is the time complexity of finding the minimum number of scalar multiplications needed for A<sub>1</sub>A<sub>2</sub>…A<sub>n</sub> using dynamic programming?</p>",
+      "choices": [
+        "(A) O(n<sup>2.5</sup>)",
+        "(B) O(n<sup>3</sup>)",
+        "(C) O(n<sup>2</sup>)",
+        "(D) O(n)",
+        "(E) none of the other choices"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>DP 表 m[i, j] 有 Θ(n²) 格，每格要試 j − i 個切點 k，最多 O(n)，總共 O(n³)，選 (B)。空間是 Θ(n²)。</p>"
+    },
+    {
+      "id": "al-0052",
+      "topics": [
+        "floyd-warshall"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Given a graph G = (V, E) with the adjacent matrix W = w<sub>ij</sub> with W an n × n matrix. The following algorithm can compute the All-Pairs Shortest Path of G.</p><pre>FLOYD-WARSHALL'(W)\n1  D = W\n2  for k = 1, 2, …, n\n3      for i = 1, 2, …, n\n4          for j = 1, 2, …, n\n5              d_ij = min(d_ij, d_ik + d_kj)</pre><p>What is the SPACE complexity of this algorithm?</p>",
+      "choices": [
+        "(A) Θ(n<sup>2</sup>)",
+        "(B) Θ(n<sup>3</sup>)",
+        "(C) Θ(n)",
+        "(D) Θ(n<sup>4</sup>)",
+        "(E) none of the other choices"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>這個版本只用一個 n × n 的矩陣 D 原地更新，沒有保留每一輪的 D<sup>(k)</sup>，所以空間是 Θ(n²)，選 (A)。時間才是 Θ(n³)。</p><p>原地更新為什麼對：第 k 輪中 d<sub>ik</sub>、d<sub>kj</sub> 不會被改小（d<sub>kk</sub> = 0，min(d<sub>ik</sub>, d<sub>ik</sub> + 0) 不變），所以用新舊值都一樣。若照定義存每一輪的矩陣才會變成 Θ(n³)。</p>"
+    },
+    {
+      "id": "al-0053",
+      "topics": [
+        "maximum-flow"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 21,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) When using the Edmonds-Karp algorithm to find the maximum flow of a flow network G = (V, E), which is CORRECT?</p>",
+      "choices": [
+        "(A) The time complexity is O(E|f*|), where f* denotes a maximum flow in the network.",
+        "(B) The algorithm uses the depth-first search principle.",
+        "(C) The time complexity is O(VE<sup>2</sup>).",
+        "(D) The time complexity is O(VE|f*|).",
+        "(E) none of the other choices"
+      ],
+      "answer": "(C)",
+      "explanation": "<p><span class=\"term\">Edmonds-Karp<small>（Edmonds-Karp 演算法）</small></span>是用 BFS 找「邊數最少」的增廣路徑的 Ford-Fulkerson。可以證明增廣次數 O(VE)，每次 BFS O(E)，總共 O(VE²)，和容量大小無關，選 (C)。</p><p>(A) O(E|f*|) 是一般 Ford-Fulkerson（整數容量、任意找路）的界；(B) 錯在它用的是 BFS。</p>"
+    },
+    {
+      "id": "al-0054",
+      "topics": [
+        "knapsack",
+        "activity-selection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 22,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Consider a fractional knapsack problem of 6 items. The i-th item is worth v<sub>i</sub> dollars and weights w<sub>i</sub> pounds.</p><div class=\"table-scroll\"><table><tr><th>item i</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr><tr><th>ponds w<sub>i</sub></th><td>4</td><td>2</td><td>8</td><td>5</td><td>5</td><td>8</td></tr><tr><th>dollors v<sub>i</sub></th><td>3</td><td>8</td><td>16</td><td>7</td><td>9</td><td>20</td></tr></table></div><p>Suppose that at most W=20 pounds can be carried in the knapsack. The sequence of picking the items is</p>",
+      "choices": [
+        "(A) 2, 6, 3, 5",
+        "(B) 2, 6, 5, 3",
+        "(C) 2, 6, 5, 4, 3",
+        "(D) 6, 3, 5, 2, 4",
+        "(E) none of the other choices"
+      ],
+      "answer": "(A)",
+      "explanation": "<p><span class=\"term\">Fractional Knapsack<small>（分數背包）</small></span>的 greedy：照「每磅價值」v<sub>i</sub>/w<sub>i</sub> 由大到小拿。</p><p>單位價值：1 → 0.75、2 → 4、3 → 2、4 → 1.4、5 → 1.8、6 → 2.5，排序為 2, 6, 3, 5, 4, 1。</p><ul><li>拿 2（2 磅），累計 2</li><li>拿 6（8 磅），累計 10</li><li>拿 3（8 磅），累計 18</li><li>剩 2 磅，拿 5 的 2/5，裝滿 20</li></ul><p>挑選順序 2, 6, 3, 5，選 (A)，總價值 8 + 20 + 16 + 9·2/5 = 47.6。(D) 是照總價值大小拿的錯誤做法。</p>"
+    },
+    {
+      "id": "al-0055",
+      "topics": [
+        "huffman-coding"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "（複選）<p>Please find the following table for the characters and their corresponding occurring probabilities. Please design a Huffman encoding tree and select the correct descriptions.</p><div class=\"table-scroll\"><table><tr><th>Symbol (X)</th><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td><td>F</td><td>G</td></tr><tr><th>Prob (X)</th><td>0.15</td><td>0.06</td><td>0.24</td><td>0.21</td><td>0.09</td><td>0.21</td><td>0.03</td></tr></table></div>",
+      "choices": [
+        "(A) The codeword length for symbol C is 3",
+        "(B) The codeword length for symbol G is 5",
+        "(C) The codeword length for symbol E is 5",
+        "(D) The codeword length for symbol A is 4",
+        "(E) none of above is correct"
+      ],
+      "answer": "(B)",
+      "explanation": "<p><span class=\"term\">Huffman Coding<small>（霍夫曼編碼）</small></span>每次合併機率最小的兩個：</p><ol><li>G 0.03 + B 0.06 = 0.09</li><li>E 0.09 + (GB) 0.09 = 0.18</li><li>A 0.15 + (EGB) 0.18 = 0.33</li><li>D 0.21 + F 0.21 = 0.42</li><li>C 0.24 + (AEGB) 0.33 = 0.57</li><li>(DF) 0.42 + (CAEGB) 0.57 = 1</li></ol><p>由根往下數深度：C、D、F = 2；A = 3；E = 4；B、G = 5。平均碼長 2.58 bits。</p><ul><li>(A) C 是 2，不是 3，錯。</li><li>(B) G 是 5，對。</li><li>(C) E 是 4，錯。</li><li>(D) A 是 3，錯。</li></ul><p>答案 (B)。中間有兩組同機率（E 和 GB 都是 0.09、D 和 F 都是 0.21），但不管怎麼排，合併的對象都一樣，碼長不受影響（程式驗算）。</p>"
+    },
+    {
+      "id": "al-0056",
+      "topics": [
+        "rod-cutting",
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "（複選）<p><b>Properties of dynamic programming (DP):</b> Which of the following statements is/are correct about DP?</p>",
+      "choices": [
+        "(A) Any DP problem can be visualized as the optimal path finding problem.",
+        "(B) Once a DP problem is solved, all the related sub-problems are also solved.",
+        "(C) Once a DP problem is solved, it is straightforward to obtain the second-best solution.",
+        "(D) The optimal solution of a DP problem can be obtained using optimal solutions of its sub-problems.",
+        "(E) A DP problem has overlapping sub-problems which are reused several times when solving the original problem."
+      ],
+      "answer": "(A)(B)(D)(E)（(A) 待確認）",
+      "explanation": "<ul><li>(A) 對：把每個子問題當成一個節點、遞迴式中的「從哪個子問題轉移過來」當成有權重的邊，子問題圖是一個 DAG，DP 就是在這個 DAG 上找最佳路徑（最長或最短路徑）。</li><li>(B) 對：bottom-up 填表時，原問題依賴的子問題全部都已經算出來了，表格裡就有它們的答案。</li><li>(C) 錯：DP 表只記錄每個子問題的最佳值，次佳解需要額外記錄（例如每格存前兩名）或另外的演算法，不是直接可得。</li><li>(D) 對：這就是 <span class=\"term\">Optimal Substructure<small>（最佳子結構）</small></span>。</li><li>(E) 對：<span class=\"term\">Overlapping Subproblems<small>（重疊子問題）</small></span> 是 DP 比單純分治有效率的原因。</li></ul><p>（待確認）(A) 的「Any」有爭議：有些 DP（例如 matrix-chain 一次要合併兩個子問題）比較像在超圖上找最佳結構，不是單純路徑；官方未公布答案。</p>"
+    },
+    {
+      "id": "al-0057",
+      "topics": [
+        "order-statistics",
+        "linear-time-sorting"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "（複選）<p>(5 points) Consider the following variation of the Selection Problem: Given a sequence S = ⟨a<sub>1</sub>, a<sub>2</sub>, …, a<sub>n</sub>⟩ of n distinct integers and two positive integers x and y, where each number in S falls between 1 and y, the goal is to report the smallest x numbers in S in ascending order. This scenario assumes the conventional single-processor, random access machine (RAM) model, with a machine word size of at least ⌈log y⌉ bits. To tackle this problem, five algorithms have been proposed. Please select the correct description(s) below.</p>",
+      "choices": [
+        "(A) Algorithm A: The algorithm initializes an empty max-heap and sequentially inserts numbers from S. During insertion, if the size of the max-heap exceeds x, it removes the maximum element from the heap. Finally, the remaining numbers in the heap are sorted by heapsort and reported. If x ≤ n/log n, Algorithm A runs in O(n) time in the worst case.",
+        "(B) Algorithm B: The algorithm initially constructs a min-heap and proceeds to extract the minimum element x times. If x ≤ n/log n, Algorithm B runs in O(n) time in the worst case.",
+        "(C) Algorithm C: The algorithm begins by performing a base-n radix sort, followed by reporting the smallest x values. If y ≤ n<sup>2</sup>, Algorithm C runs in O(n) time in the worst case.",
+        "(D) Algorithm D: The algorithm performs a counting sort by allocating an array C of length y, traversing through S and incrementing C[a<sub>i</sub>] for each a<sub>i</sub>. It finally reports the smallest x values by scanning through the counter array. If y ≤ n<sup>2</sup>, Algorithm D runs in O(n) time in the worst case.",
+        "(E) Algorithm E: The algorithm first applies quickselect, i.e., Randomized-Select, to determine the x-th smallest number in S. Subsequently, it traverses S for extracting all numbers smaller than or equal to the x-th smallest number. Finally, these x numbers are sorted by quicksort and reported. The time complexity of Algorithm E is O(n + x log x) in expectation."
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<ul><li>(A) 錯：n 次插入、heap 大小 ≤ x+1，每次 O(log x)，總共 O(n log x + x log x)。取 x = n/log n 時 log x = log n − log log n = Θ(log n)，變成 Θ(n log n)，不是 O(n)。</li><li>(B) 對：bottom-up 建 heap O(n)，再 extract-min x 次，每次 O(log n)，共 O(n + x log n) ≤ O(n + (n/log n)·log n) = O(n)。</li><li>(C) 對：數值 ≤ y ≤ n²，以 n 為基數最多 3 位數（n² 寫成 100），每一位 counting sort O(n + n)，常數輪，O(n)。</li><li>(D) 錯：配置並初始化、掃描長度 y 的計數陣列要 Θ(y)，y 可能到 n²，所以是 O(n + y) = O(n²)。和 (C) 對照：同樣的值域，radix sort 把一次 n² 拆成幾次 n。</li><li>(E) 對：Randomized-Select 期望 O(n)，掃一遍 O(n)，對 x 個數 quicksort 期望 O(x log x)，合計期望 O(n + x log x)。</li></ul>"
+    },
+    {
+      "id": "al-0058",
+      "topics": [
+        "amortized-analysis"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "<p>（單選）(5 points) A Dynamic Array (abbreviated as DArray) is a type of array that permits the insertion and deletion of elements at the end to dynamically adjust its size. DArray D maintains three crucial attributes, including the underlying array D.data, the logical data size D.size, and the actual array capacity D.capacity. The invariant D.size ≤ D.capacity holds at any given moment. The Insert(D, x) operation appends the element x to the end of D.data. In case D.size = D.capacity, it triggers a call to Resize(D) before appending x, where Resize(D) allocates a new and larger array, moves all the data to it, increases the value of D.capacity, sets up D.data, and finally frees the old array. Two implementations of Resize(D) are provided: ResizeA(D) increases D.capacity by a constant (e.g., 10) while ResizeB(D) doubles D.capacity each time.</p><p>To initialize DArray D, we set D.size to 0, D.capacity to 1, and allocate a size 1 array to D.data. Assuming that both allocating and freeing arrays of length n take O(n) time, and moving a single element takes O(1) time, please select the correct description(s) below.</p>",
+      "choices": [
+        "(A) DArray is not suitable for random access because its memory may be relocated.",
+        "(B) DArray can only be allocated in the heap memory due to its dynamic memory nature.",
+        "(C) If ResizeA(D) is considered, the amortized time complexity of Insert(D, x) is O(1).",
+        "(D) If ResizeB(D) is considered, the amortized time complexity of Insert(D, x) is O(1).",
+        "(E) In the Delete(D) operation, if D.size &gt; 0, D.size is decreased by one. If, at this stage, D.size &lt; ⌈D.capacity/2⌉, we create a new array d′ with a size of ⌈D.capacity/2⌉, transfer the data to d′, set up d′ as the new data array for D.data, and subsequently free the old array. Then, the amortized time complexity of mixed Insert and Delete operations can be O(1), where Resize(D) can be either ResizeA(D) or ResizeB(D)."
+      ],
+      "answer": "(D)",
+      "explanation": "<ul><li>(A) 錯：資料一直存在一段連續陣列，搬家後用新位址存取即可，random access 仍是 O(1)，這正是動態陣列的優點。</li><li>(B) 錯：動態陣列的資料區通常在 heap，但結構本身（甚至小容量時的資料）放在 stack 或靜態區也可以，「只能」太武斷。</li><li>(C) 錯：每 10 次插入就搬一次家，第 i 次搬家要搬約 10i 個元素，n 次插入總共 Θ(n²/10) = Θ(n²)，均攤 Θ(n)。</li><li>(D) 對：容量翻倍，n 次插入的搬移總量 1 + 2 + 4 + … &lt; 2n，再加上配置/釋放的成本也是 O(n)，均攤 O(1)。</li><li>(E) 錯：縮小的門檻是「不到一半」就縮成一半，會發生 thrashing：容量 c 剛好滿時插入一個 → 擴成 2c（ResizeB），再刪一個 → size = c &lt; ⌈2c/2⌉？此時 size 剛好 c、等於一半，再刪一個就縮回去；在邊界上反覆插入、刪除，每次都要 Θ(n) 搬家。標準做法是降到 1/4 才縮成一半。</li></ul><p>單選，答案 (D)。</p>"
+    },
+    {
+      "id": "al-0059",
+      "topics": [
+        "recurrence-methods",
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "（複選）<p>(10 points) Consider a hash function h that maps numerous keys into an array A, indexed from 0 to n−1. The concern is that excessive collisions arising from the hashed keys can potentially cause inefficiency within the hash table. The following pseudocode, while not complete, implements a function that utilizes the divide-and-conquer strategy to identify the case where strictly more than half of the keys share the same hash value. The function takes the hash function h and the subarray A with the index range from low to high as input and returns the majority hash value shared by over ⌊(high − low + 1)/2⌋ keys. If the keys stored in the subarray A[low..high] do not have such a majority hash value, the function returns −1.</p><pre>1: function FindMajorityHashValue(h, A, low, high)\n2:     if low = high then return h(A[low]) end if\n3:     mid ← ⌊(low + high)/2⌋\n4:     leftMajority ← FindMajorityHashValue(h, A, low, mid)\n5:     rightMajority ← FindMajorityHashValue(h, A, mid + 1, high)\n6:     leftCount ← CountElement(A, low, high, leftMajority)\n7:     rightCount ← CountElement(A, low, high, rightMajority)\n8:     [                                                   ]\n9: end function</pre><p>In the pseudocode, CountElement(A, low, high, val) calculates and returns the count of keys in the subarray A[low..high] whose hashed values are equal to the given val. Please select the correct description(s) below.</p>",
+      "choices": [
+        "(A) If leftMajority = rightMajority = −1, A[low..high] may still have a majority hash value.",
+        "(B) If A[low..high] has a majority hash value and rightMajority = −1, the function should return leftMajority.",
+        "(C) If leftCount = rightCount, the function should return −1.",
+        "(D) Suppose that an implementation of CountElement runs within Θ(ℓ) time, where ℓ = high − low + 1. The time complexity of FindMajorityHashValue can be O(n log n).",
+        "(E) Suppose that a magical implementation of CountElement runs within Θ(ℓ/log ℓ) time, where ℓ = high − low + 1. The time complexity of FindMajorityHashValue can be O(n)."
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<p>關鍵性質：若某個值在整段中超過一半，它一定至少在左半或右半之一超過一半（否則兩半各 ≤ 一半，加起來 ≤ ⌊ℓ/2⌋）。</p><ul><li>(A) 錯：由上面性質，兩半都沒有 majority，整段也不會有。</li><li>(B) 對：整段有 majority、右半沒有，那它一定是左半的 majority。</li><li>(C) 錯：leftMajority = rightMajority（同一個值）時兩個 count 自然相等，而那個值很可能就是整段的 majority，應該回傳它，不是 −1。</li><li>(D) 對：T(n) = 2T(n/2) + Θ(n)，由 <span class=\"term\">Master Theorem<small>（主定理）</small></span> 得 Θ(n log n)。</li><li>(E) 錯：T(n) = 2T(n/2) + Θ(n/log n)。f(n) = n/log n 不比 n<sup>log₂2</sup> = n 多項式地小，主定理三種情況都不適用。展開遞迴樹：第 i 層合計 2<sup>i</sup> · (n/2<sup>i</sup>)/log(n/2<sup>i</sup>) = n/(log n − i)，加總 n · (1/log n + … + 1/1) = Θ(n log log n)，不是 O(n)。</li></ul>"
+    },
+    {
+      "id": "al-0060",
+      "topics": [
+        "matrix-chain"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "<p>（單選）</p><p>(5 points) We want to multiply a sequence of matrices M<sub>1</sub>, …, M<sub>n</sub> with the minimum number of multiplications. Since the matrix multiplication is associative, we can parenthesize the matrix multiplication in all possible orders. Let m<sub>i,j</sub> be the minimum number of multiplications to multiply M<sub>i</sub>, …, M<sub>j</sub>. We can derive a recursion of m<sub>i,j</sub>, where r<sub>i</sub> and c<sub>i</sub> are the numbers of rows and columns of the matrix M<sub>i</sub> respectively.</p><pre>m_{i,j} = min_{i≤k&lt;j} ( m_{i,k} + m_{k+1,j} + r_i c_k c_j )     (1)</pre><p>Now consider m<sub>s,s+k</sub>, 1 &lt; s &lt; s + k &lt; n. For given s and k, let x be the number of m<sub>i,j</sub>'s that have m<sub>s,s+k</sub> at the right hand side of Equation 1, and let y be the number of different m's that are at the right-hand side of Equation 1 when i = s and j = s + k. What is the approximate value of x + y?</p>",
+      "choices": [
+        "(A) s·C(n−k, 2)",
+        "(B) n + k",
+        "(C) (n − s)(n − s − k)",
+        "(D) C(k, 2) + C(n, 2)",
+        "(E) C(n−k−s, 2) + C(k, 2)"
+      ],
+      "answer": "(B)",
+      "explanation": "<p><b>x</b>：m<sub>s,s+k</sub> 會出現在哪些 m<sub>i,j</sub> 的右邊？</p><ul><li>當作左半 m<sub>i,k′</sub>：i = s、k′ = s + k，j 可以是 s+k+1 … n，共 n − s − k 個。</li><li>當作右半 m<sub>k′+1,j</sub>：k′ + 1 = s、j = s + k，i 可以是 1 … s−1，共 s − 1 個。</li></ul><p>x = (n − s − k) + (s − 1) = n − k − 1。</p><p><b>y</b>：m<sub>s,s+k</sub> 的切點 k′ 有 k 種（s … s+k−1），每種用到 m<sub>s,k′</sub> 和 m<sub>k′+1,s+k</sub> 兩個不同的 m，而且這 2k 個彼此都不同，y = 2k。</p><p>x + y = n + k − 1 ≈ n + k，選 (B)。（用程式列出 n = 12、s = 3、k = 4 的依賴關係：x = 7、y = 8，合計 15 = n + k − 1）</p><p>（選項中的 C(a, 2) 代表二項式係數，原卷以括號上下排列書寫）</p>"
+    },
+    {
+      "id": "al-0061",
+      "topics": [
+        "matrix-chain"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "（複選）<p>(5 points) When we compute all m<sub>i,j</sub>'s with Equation 1, we must follow an order of i and j so that the m's on the right-hand side are all known when we compute m<sub>i,j</sub>. Please select all the correct orders in the following choices.</p><p>（Equation 1 為上一題的 m<sub>i,j</sub> = min<sub>i≤k&lt;j</sub>(m<sub>i,k</sub> + m<sub>k+1,j</sub> + r<sub>i</sub>c<sub>k</sub>c<sub>j</sub>)）</p>",
+      "choices": [
+        "(A) decreasing order of i + j",
+        "(B) increasing order of i + j",
+        "(C) increasing order of (i − j)<sup>2</sup>",
+        "(D) decreasing order of (i − j)<sup>3</sup>",
+        "(E) increasing order of |(i + j)(i − j)|"
+      ],
+      "answer": "(C)(D)(E)",
+      "explanation": "<p>m<sub>i,j</sub> 依賴 m<sub>i,k</sub> 和 m<sub>k+1,j</sub>（i ≤ k &lt; j）。一個順序合法，代表被依賴的那一項排序鍵一定「比較早」。</p><ul><li>(A)(B) 錯：m<sub>i,k</sub> 的 i + k 比 i + j 小，但 m<sub>k+1,j</sub> 的 k+1+j 比 i + j 大，兩個方向都有，用 i + j 排一定會有一邊還沒算。</li><li>(C) 對：(i − j)² 就是區間長度的平方，子問題都比較短，鍵值比較小。</li><li>(D) 對：i &lt; j，(i − j)³ = −(j − i)³，「遞減」順序就是 j − i 遞增。</li><li>(E) 對：|(i + j)(i − j)| = j² − i²。m<sub>i,k</sub>：k² − i² &lt; j² − i²；m<sub>k+1,j</sub>：j² − (k+1)² &lt; j² − i²（因為 k + 1 &gt; i）。兩者都嚴格比較小。</li></ul><p>程式對 n = 9 列出所有依賴關係逐一檢查，(C)(D)(E) 全部滿足，(A)(B) 有違反。</p>"
+    },
+    {
+      "id": "al-0062",
+      "topics": [
+        "rod-cutting"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "（複選）<p>(5 points) Consider a sequence of numbers (v<sub>1</sub>, …, v<sub>n</sub>). Now we remove k numbers from the sequence so that we have k + 1 non-empty segments of numbers. For example, consider (2, 3, 8, 1, 4). If we remove 8 then we have two segments (2, 3) and (1, 4).</p><p>Now we want to minimize the maximum sum of numbers of a segment. Let m(1, n, k) be the answer, then what is the correct recursion for m when 1 ≤ i &lt; j ≤ n and 0 &lt; k ≤ (j − i)/2 ?</p>",
+      "choices": [
+        "(A) m(i, j, k) = min<sub>x=i</sub><sup>j</sup> max(Σ<sub>y=x</sub><sup>j</sup> v<sub>y</sub>, m(i, x, k − 1))",
+        "(B) m(i, j, k) = min<sub>x=i+1</sub><sup>j−1</sup> max(Σ<sub>y=x+1</sub><sup>j</sup> v<sub>y</sub>, m(i, x − 1, k − 1))",
+        "(C) m(i, j, k) = min<sub>x=i+1</sub><sup>j−1</sup> max(m(x + 1, j, k − 1), Σ<sub>y=i</sub><sup>x−1</sup> v<sub>y</sub>)",
+        "(D) m(i, j, k) = min<sub>v+w=k−1, v,w≥0</sub> min<sub>x=i+1</sub><sup>j−1</sup> (max(m(i, x − 1, v), m(x + 1, j, w))",
+        "(E) m(i, j, k) = min<sub>v+w=k−1, v,w≥0</sub> min<sub>x=i</sub><sup>j</sup> (max(m(i, x, v), m(x, j, w))"
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<p>m(i, j, k)：在 v<sub>i..j</sub> 中刪掉 k 個數、留下 k + 1 段非空，最小化「最大段和」。k = 0 時就是整段總和。</p><ul><li>(B) 對：枚舉「最後一個被刪的位置」x，最後一段是 v<sub>x+1..j</sub>，前面 v<sub>i..x−1</sub> 還要刪 k − 1 個；x 不能是 i 或 j，否則會出現空段。</li><li>(C) 對：同理改成枚舉「第一個被刪的位置」x，第一段是 v<sub>i..x−1</sub>，後面 v<sub>x+1..j</sub> 刪 k − 1 個。</li><li>(D) 對：枚舉任一個被刪的位置 x，左右兩邊分配剩下的 k − 1 次刪除（v + w = k − 1），兩邊各自最佳化。</li><li>(A) 錯：Σ<sub>y=x</sub><sup>j</sup> 和 m(i, x, k − 1) 都包含 v<sub>x</sub>，而且沒有刪掉任何數，等於少刪一個。</li><li>(E) 錯：m(i, x, v) 和 m(x, j, w) 共用 v<sub>x</sub>，也沒有真的刪掉 x。</li></ul><p>（不合法的 m，例如段太短刪不下，令為 ∞）用程式對隨機數列和暴力枚舉比對 400 組，(B)(C)(D) 全對，(A)(E) 出現錯誤。</p>"
+    },
+    {
+      "id": "al-0063",
+      "topics": [
+        "rod-cutting"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "（複選）<p>(5 points) Which of the following descriptions is true for the previous problem?</p><p>（上一題：數列 (v<sub>1</sub>, …, v<sub>n</sub>) 刪掉 k 個數，留下 k + 1 段非空的數，要最小化各段和的最大值，m(i, j, k) 為 v<sub>i..j</sub> 刪 k 個數的最佳值）</p>",
+      "choices": [
+        "(A) We can always find an optimal solution that removes one of the largest v.",
+        "(B) We can always find an optimal solution that does not remove one of the smallest v.",
+        "(C) The initial value for m(i, i, 0) is v<sub>i</sub>.",
+        "(D) The initial value for m(i, j, k) when k &gt; (j − i)/2 is 0.",
+        "(E) The initial value for m(i, i + 2, 1), 1 ≤ i ≤ n − 2 is max(v<sub>i</sub>, v<sub>i+2</sub>)."
+      ],
+      "answer": "(C)(E)",
+      "explanation": "<ul><li>(A) 錯：反例 (5, 1, 5)、k = 1，段必須非空，唯一的刪法是刪中間的 1，最大的 5 不可能被刪。</li><li>(B) 錯：同一個反例，唯一解就是刪掉最小的 1。</li><li>(C) 對：只有一個數、不刪，最大段和就是 v<sub>i</sub>。</li><li>(D) 錯：k + 1 段非空加上 k 個刪除至少需要 2k + 1 個數，k &gt; (j − i)/2 代表數量不夠、無解，應該設成 ∞（不可能），設 0 反而會讓 min 誤選它。</li><li>(E) 對：三個數刪一個且兩段非空，只能刪中間的 v<sub>i+1</sub>，兩段分別是 v<sub>i</sub>、v<sub>i+2</sub>，答案 max(v<sub>i</sub>, v<sub>i+2</sub>)。</li></ul>"
+    },
+    {
+      "id": "al-0064",
+      "topics": [
+        "topological-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "（複選）<p>(5 points) Consider a directed acylic graph G = (V, E) of n tasks where every node is a task and every edge is a dependency. If there is an edge from a task v to another task w, that means we need to finish v before starting w. We have p processors of the same capability and every processor can finish any task in one unit of time.</p><p>We define a schedule function s to map a task v to a positive integer time step s(v). Since we have only p processors, so the system can only process at most p tasks in one time step. Also, a schedule needs to respect the dependency of edges.</p>",
+      "choices": [
+        "(A) For every positive integer i, |{v | s(v) ≤ i}| ≤ p.",
+        "(B) If there is a path (v<sub>i<sub>1</sub></sub>, …, v<sub>i<sub>k</sub></sub>) in G, then s(v<sub>i<sub>j</sub></sub>) &lt; s(v<sub>i<sub>k</sub></sub>) for 1 ≤ j ≤ k.",
+        "(C) The number of time steps required is at least min(⌈n/p⌉, L), where L is the number of tasks along the longest path in G.",
+        "(D) Without loss of generality, we can always assume s(v) = 1 for all v's without incoming edges.",
+        "(E) If the number of processors is infinite, then we can finish all tasks in L time steps, where L is the number of tasks along the longest path in G."
+      ],
+      "answer": "(C)(E)",
+      "explanation": "<ul><li>(A) 錯：處理器限制是「同一個時間步」最多 p 個，應為 |{v | s(v) = i}| ≤ p；寫成 ≤ i 是累計，等於整個排程最多只能做 p 個工作。</li><li>(B) 錯：j 可以等於 k，那就變成 s(v<sub>i<sub>k</sub></sub>) &lt; s(v<sub>i<sub>k</sub></sub>)，不可能成立（應為 1 ≤ j &lt; k）。</li><li>(C) 對：每步最多做 p 個，至少 ⌈n/p⌉ 步；最長路徑上的 L 個工作必須依序做，至少 L 步。所以至少 max(⌈n/p⌉, L) ≥ min(⌈n/p⌉, L)，敘述成立（只是不夠緊）。</li><li>(D) 錯：沒有入邊的工作可能超過 p 個，第 1 步做不完。</li><li>(E) 對：處理器無限時，令 s(v) = 「以 v 結尾的最長路徑上的工作數」，依 <span class=\"term\">Topological Order<small>（拓撲順序）</small></span>計算，每條邊都滿足 s(v) &lt; s(w)，最大值剛好是 L。</li></ul>"
+    },
+    {
+      "id": "al-0065",
+      "topics": [
+        "vertex-cover-approx",
+        "set-cover-approx"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "資料結構與演算法",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf"
+      },
+      "question": "<p>(30 points) A vertex cover of an undirected graph G = (V, E) is a subset V′ ⊆ V such that if (u, v) ∈ E, then either u ∈ V′ or v ∈ V′ (or both). The size of a vertex cover is defined as the number of vertices in it. The vertex-cover problem is to find a vertex cover of minimum size in a given undirected graph. It has been shown to be NP-hard, thus we cannot find a polynomial-time algorithm for solving it exactly unless NP = P. Fortunately, some polynomial-time approximation algorithms have been proposed for solving the vertex-cover problem.</p><p>The following two approximation algorithms take as input an undirected graph and compute a vertex cover for it. Initially, all edges in the graph are uncovered for both Algorithm VC-Arbitrary and Algorithm VC-Max-Degree. Once a vertex v is put into the cover, all edges incident on v are covered and removed.</p><p>Algorithm VC-Arbitrary picks an arbitrary uncovered edge (u, v), puts both u and v into the cover, throws out all edges incident on either u or v, and repeats the process until there are no uncovered edges left.</p><p>Algorithm VC-Max-Degree picks a vertex v that covers the most number of uncovered edges, puts v into the cover, throws out all edges incident on v, and repeats the process until there are no uncovered edges left.</p><p>(a) (10 points) Give an example for which Algorithm VC-Arbitrary yields a solution that is at least double the size of a minimum-size vertex cover. Give another example for which Algorithm VC-Max-Degree will definitely yield a solution with the size more than that of a minimum-size vertex cover no matter how it breaks the tie. Each example should contain no more than ten vertices. You have to justify your solution by showing the vertex cover found by the algorithm and its corresponding minimum-size vertex cover.</p><p>(b) (10 points) Prove or disprove that Algorithm VC-Arbitrary has a smaller ratio bound than Algorithm VC-Max-Degree. The ratio bounds in your proof or disproof should be as tight as possible.</p><p>(c) (10 points) In the weighted vertex-cover problem, you are given an undirected graph G = (V, E) and a weight w(v) for each vertex v ∈ V, and the objective is to find a vertex cover (covering all edges in E) of minimum total weight. In other words, the goal is to find a vertex cover C of G such that Σ<sub>v∈C</sub> w(v) is minimized among all possible vertex covers of G. You are required to formulate the weighted vertex cover problem as an integer linear program.</p>",
+      "answer": "(a) VC-Arbitrary：單一條邊 u–v，演算法得 {u, v}（2 個），最佳 {u}（1 個）。VC-Max-Degree：中心 c 接三條長度 2 的腳 c–a<sub>i</sub>–b<sub>i</sub>（i = 1, 2, 3，共 7 點），演算法必先選 c，再補 3 個，共 4 個；最佳 {a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>} 只要 3 個。(b) 成立：VC-Arbitrary 的近似比是 2（緊），VC-Max-Degree 的近似比是 Θ(log n)，沒有常數上界。(c) min Σ w(v)x<sub>v</sub>，s.t. x<sub>u</sub> + x<sub>v</sub> ≥ 1 ∀(u, v) ∈ E，x<sub>v</sub> ∈ {0, 1}。",
+      "explanation": "<p><b>(a)</b></p><ul><li>VC-Arbitrary：圖只有兩點一邊 u–v。演算法挑這條邊、把 u、v 都放進去，大小 2；最小覆蓋只要 {u}，大小 1，剛好兩倍。（更一般地，n 條互不相交邊加上一個星狀結構也行，但一條邊就足夠）</li><li>VC-Max-Degree：中心 c，三條腳 c–a<sub>1</sub>–b<sub>1</sub>、c–a<sub>2</sub>–b<sub>2</sub>、c–a<sub>3</sub>–b<sub>3</sub>，7 個點 6 條邊。度數：c 為 3，a<sub>i</sub> 為 2，b<sub>i</sub> 為 1，c 是唯一的最大度數，沒有 tie，一定先選 c。拿掉 c 的三條邊後剩下 a<sub>1</sub>b<sub>1</sub>、a<sub>2</sub>b<sub>2</sub>、a<sub>3</sub>b<sub>3</sub> 三條互不相鄰的邊，每條要再選一點，總共 4 個。最小覆蓋 {a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>}：每條邊都碰到某個 a<sub>i</sub>，大小 3；而三條邊 a<sub>i</sub>b<sub>i</sub> 互不相交，任何覆蓋至少 3 個，所以 3 是最小。程式窮舉所有 tie-breaking 也確認貪婪一定得到 4。</li></ul><p><b>(b)</b> 敘述成立。</p><ul><li>VC-Arbitrary 是 2-近似：它挑出的邊彼此沒有共同端點，形成一個 <span class=\"term\">Matching<small>（匹配）</small></span> M，輸出大小 2|M|；任何覆蓋都必須對 M 的每條邊各至少選一個端點，且這些端點都不同，所以 OPT ≥ |M|，比值 ≤ 2。(a) 的單邊例子達到 2，所以 2 是緊的。</li><li>VC-Max-Degree 沒有常數比：它等同於 set cover 的貪婪法，近似比為 H(Δ) = O(log n)。而且這個界是緊的：取左邊 k 個點 L（最佳覆蓋），右邊對每個 j = 2, …, k 放 ⌊k/j⌋ 個點、每個連到 L 中 j 個不同的點。右邊的點度數可以設計成永遠不小於左邊剩下的度數，貪婪會由 j = k 往下把右邊全部選完，大小 Σ<sub>j</sub>⌊k/j⌋ = Θ(k log k)，而 OPT = k，比值 Θ(log k) = Θ(log n)。例如 k = 6 時（14 個點）貪婪至少選 8 個，最佳 6 個。</li></ul><p>所以 VC-Arbitrary 的比值界 2 比 VC-Max-Degree 的 Θ(log n) 小。有趣的是，直覺上「挑度數最大的點」看起來比較聰明，最差情況反而比較糟。</p><p><b>(c)</b> 每個點設一個 0/1 變數 x<sub>v</sub>（1 代表選進覆蓋）：</p><pre>minimize    Σ_{v∈V} w(v) · x_v\nsubject to  x_u + x_v ≥ 1      for every (u, v) ∈ E\n            x_v ∈ {0, 1}       for every v ∈ V</pre><p>限制式保證每條邊至少有一個端點被選，目標函數就是總權重。把 x<sub>v</sub> ∈ {0, 1} 放寬成 0 ≤ x<sub>v</sub> ≤ 1 解 LP，再把 x<sub>v</sub> ≥ 1/2 的點選進來，就是加權版的 2-近似演算法。</p>"
+    },
+    {
+      "id": "al-0066",
+      "topics": [
+        "np-reductions",
+        "p-np"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Suppose that problem L<sub>1</sub> is polynomial-time reducible to problem L<sub>2</sub>. Which of the following statement(s) is(are) correct?",
+      "choices": [
+        "(A) If L<sub>1</sub> is NP-hard, then L<sub>2</sub> is NP-hard.",
+        "(B) If L<sub>2</sub> is NP-hard, then L<sub>1</sub> is NP-hard.",
+        "(C) If L<sub>1</sub> is in P, then L<sub>2</sub> is in P.",
+        "(D) If L<sub>2</sub> is in P, then L<sub>1</sub> is in P.",
+        "(E) If a problem is in NP, then there does not exist any polynomial time algorithm to solve it."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>L<sub>1</sub> ≤<sub>p</sub> L<sub>2</sub> 的意思是「L<sub>2</sub> 至少和 L<sub>1</sub> 一樣難」：會解 L<sub>2</sub> 就能在多項式時間內解 L<sub>1</sub>。</p><ul><li>(A) 對：難度往右傳。所有 NP 問題 ≤<sub>p</sub> L<sub>1</sub> ≤<sub>p</sub> L<sub>2</sub>，遞移後 L<sub>2</sub> 也是 NP-hard。</li><li>(B) 錯：方向反了。</li><li>(C) 錯：簡單的問題可以歸約到很難的問題，L<sub>1</sub> 容易推不出 L<sub>2</sub> 容易。</li><li>(D) 對：容易往左傳，先轉換再用 L<sub>2</sub> 的多項式演算法。</li><li>(E) 錯：P ⊆ NP，例如排序、最短路徑都在 NP 裡又有多項式解。</li></ul><p>口訣：歸約 A ≤ B，「難往右、易往左」。</p>"
+    },
+    {
+      "id": "al-0067",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Assume that NP ≠ P. Which of the following problem(s) is(are) NP-hard?",
+      "choices": [
+        "(A) Finding a longest simple path between two nodes in a directed graph where the edge-weight is one for every edge.",
+        "(B) Finding a smallest cycle in a graph where the edge weight is one for every edge.",
+        "(C) Finding a largest cycle in a graph, where the edge weight is one for every edge.",
+        "(D) Finding a negative-weight cycle with any kind (positive or negative) of edge weights.",
+        "(E) Finding a shortest simple path between two nodes in a directed graph with negative-weight cycles."
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<ul><li>(A) NP-hard：最長簡單路徑長度能到 n − 1，就等於有 Hamiltonian path。</li><li>(B) 不是：最小 cycle（girth）從每個點做 BFS 即可，多項式時間。</li><li>(C) NP-hard：最大 cycle 長度為 n 等於 Hamiltonian cycle。</li><li>(D) 不是：Bellman-Ford 跑 V − 1 輪後再鬆弛一次，若還能變小就找到負環，O(VE)。</li><li>(E) NP-hard：把所有權重取負號，最長簡單路徑就變成「有負環圖中的最短簡單路徑」，可由 (A) 歸約過來。注意這裡要求<b>simple</b> path，否則繞負環會變成 −∞，問題就沒有意義。</li></ul>"
+    },
+    {
+      "id": "al-0068",
+      "topics": [
+        "huffman-coding"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Huffman codes: Given n characters each with a given frequency, find Huffman binary codes for these n characters. Suppose that there are six characters to be encoded. For the following five binary coding trees, select the ones that <b>cannot</b> possibly represent Huffman binary codes.<br>（原圖以括號表示：o(…) 為內部節點，括號內依左到右列出子節點；□ 為葉節點。）<pre>(A) o( o( o( o( o(□,□), □), □), □), □)\n(B) o( o( o( o(□,□), □), o(□) ), o(□,□) )\n(C) o( o( o( o(□,□), o(□,□) ), □), □)\n(D) o( o( o(□,□), o(□,□) ), o( o(□,□) ) )\n(E) o( o( o( o(□,□), □), □), o(□,□) )</pre>",
+      "choices": [
+        "(A)",
+        "(B)",
+        "(C)",
+        "(D)",
+        "(E)"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<p><span class=\"term\">Huffman Coding<small>（霍夫曼編碼）</small></span>每次合併兩個最小的節點，所以產生的樹一定是 <b>full binary tree</b>：每個內部節點都恰好有 2 個子節點。只有一個子節點的節點可以直接縮掉，讓它底下的碼都短 1 位，一定更好，所以不可能是最佳碼。</p><ul><li>(B)：右下那個內部節點 o(□) 只有一個子節點 → 不可能。</li><li>(D)：根的右子 o(o(□,□)) 只有一個子節點 → 不可能。</li><li>(A)：full，葉深度 1, 2, 3, 4, 5, 5，頻率 16, 8, 4, 2, 1, 1 就會長成這樣。</li><li>(C)：full，葉深度 1, 2, 4, 4, 4, 4，頻率 5, 3, 1, 1, 1, 1 可得到。</li><li>(E)：full，葉深度 2, 2, 2, 3, 4, 4，頻率 5, 5, 5, 2, 1, 1 可得到。</li></ul><p>上面的頻率都用程式跑 Huffman 驗證過深度。</p>"
+    },
+    {
+      "id": "al-0069",
+      "topics": [
+        "asymptotic-notation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）We say that O(f(n)) &lt; O(g(n)) if there exists a function in O(g(n)) that is greater than all the functions in O(f(n)). For n being positive integers, select the correct statement(s) in the following:",
+      "choices": [
+        "(A) O(n<sup>1.1</sup>) &gt; O(n log<sup>2</sup> n)",
+        "(B) O(n!) &gt; O(⌊n/2⌋<sup>⌊n/2⌋</sup>)",
+        "(C) O(3<sup>log<sub>4</sub> n</sup>) &gt; O(n<sup>2</sup>)",
+        "(D) O(log log n) &gt; O(log n)"
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<p>題目的定義其實就是比成長速度：g 嚴格長得比 f 快時 O(f) &lt; O(g)。</p><ul><li>(A) 對：n<sup>1.1</sup> / (n log² n) = n<sup>0.1</sup> / log² n → ∞，任何多項式都比 polylog 快。</li><li>(B) 對：取 log 比較，log n! ≈ n log n，而 log(⌊n/2⌋<sup>⌊n/2⌋</sup>) ≈ (n/2) log n，前者大約是後者的兩倍，所以 n! 長得快得多。</li><li>(C) 錯：3<sup>log<sub>4</sub> n</sup> = n<sup>log<sub>4</sub>3</sup> ≈ n<sup>0.79</sup>，比 n² 慢。</li><li>(D) 錯：log log n 比 log n 慢。</li></ul>"
+    },
+    {
+      "id": "al-0070",
+      "topics": [
+        "floyd-warshall",
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Which of the following graph algorithm(s) utilize dynamic programming?",
+      "choices": [
+        "(A) Kruskal's algorithm",
+        "(B) Dijkstra's algorithm",
+        "(C) Finding longest common sequence in a pair of strings",
+        "(D) The Floyd-Warshall algorithm for computing the all-pairs shortest path of a graph."
+      ],
+      "answer": "(C)(D)",
+      "explanation": "<ul><li>Kruskal、Dijkstra 都是 <span class=\"term\">Greedy<small>（貪婪法）</small></span>：每步選目前最小的邊／距離最小的點，不回頭。</li><li>LCS：c[i][j] 由 c[i−1][j−1]、c[i−1][j]、c[i][j−1] 填表，是典型 <span class=\"term\">Dynamic Programming<small>（動態規劃）</small></span>。</li><li>Floyd-Warshall：d<sup>(k)</sup>[i][j] = min(d<sup>(k−1)</sup>[i][j], d<sup>(k−1)</sup>[i][k] + d<sup>(k−1)</sup>[k][j])，依「允許經過的中繼點」逐層填表，也是 DP。</li></ul>"
+    },
+    {
+      "id": "al-0071",
+      "topics": [
+        "maximum-flow"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Consider the maximum flow problem. Assume that all the edge capacities are positive integers. Which of the following statement(s) is(are) correct?",
+      "choices": [
+        "(A) There is a polynomial time algorithm to find a maximum cut.",
+        "(B) There is a polynomial time algorithm to find a minimum cut.",
+        "(C) There are possibly many distinct flows having maximum flow value with different edge flow on edges.",
+        "(D) There are possibly many distinct minimum cuts with different total capacities.",
+        "(E) The sum of the capacity of a minimum cut and the value of a maximum flow must be an even number."
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<ul><li>(A) 錯：Max-Cut 是 NP-hard，在 P ≠ NP 的前提下沒有多項式演算法。</li><li>(B) 對：先求最大流（例如 Edmonds-Karp O(VE²)），再從 s 在 residual graph 上能走到的點就是 min cut 的 S 側。</li><li>(C) 對：例如 s 到 t 有兩條容量都是 1 的平行路徑、中間再接一個瓶頸 1，流可以走任一條，值相同但邊上流量不同。</li><li>(D) 錯：min cut 可以有很多個，但<b>容量都等於最小值</b>，不可能不同。</li><li>(E) 對：Max-flow min-cut theorem 說兩者相等，相加 = 2 × 同一個整數，一定是偶數。</li></ul>"
+    },
+    {
+      "id": "al-0072",
+      "topics": [
+        "master-theorem",
+        "recurrence-methods"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Which of the following statement(s) is(are) correct? Assume that T(1) is a constant and n&gt;0.",
+      "choices": [
+        "(A) If T(n) = 2T(n/2) + n log n, then T(n) = Θ(n log n).",
+        "(B) If T(n) = 2T(n/2) + n/log n, then T(n) = Θ(n).",
+        "(C) If T(n) = 2T(n/2) + n/log<sup>2</sup> n, then T(n) = Θ(n).",
+        "(D) If T(n) = √n T(√n) + n, then T(n) = Θ(n log n).",
+        "(E) If T(n) = T(n/2 + √n) + n, then T(n) = Θ(n)."
+      ],
+      "answer": "(C)(E)",
+      "explanation": "<p>前三個都是 a = b = 2，n<sup>log<sub>b</sub>a</sup> = n，用遞迴樹看每一層的成本：第 i 層有 2<sup>i</sup> 個子問題，每個大小 n/2<sup>i</sup>，令 k = lg n − i。</p><ul><li>(A) 錯：每層成本 n·(lg n − i)，加總 n·Σk = Θ(n log² n)。</li><li>(B) 錯：每層 n / k，加總 n·Σ1/k = Θ(n log log n)（調和級數）。</li><li>(C) 對：每層 n / k²，Σ1/k² 收斂到常數，總和 Θ(n)。</li><li>(D) 錯：兩邊除以 n 得 T(n)/n = T(√n)/√n + 1，令 S(n) = T(n)/n，S(n) = S(√n) + 1 = Θ(log log n)，所以 T(n) = Θ(n log log n)。</li><li>(E) 對：n 夠大時 n/2 + √n ≤ 3n/4，T(n) ≤ T(3n/4) + n = Θ(n)；又至少有 + n，所以是 Θ(n)。</li></ul>"
+    },
+    {
+      "id": "al-0073",
+      "topics": [
+        "maximum-flow"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）This question is about a directed flow network. The flow and capacity are denoted as x/y on an edge, where x is the flow amount and y is the capacity. The following figure shows a flow in a directed flow network. S and T are the source and the sink, respectively.<br>（原圖以邊列表描述，A 為左上、B 為左下、C 為右上、D 為右下的頂點）<pre>S → A: 7/10    S → B: 17/21\nA → B: 4/10    B → A: 1/10\nA → C: 4/4     B → D: 20/23\nC → D: a       D → C: b\nC → T: c       D → T: d</pre>Which of the following set(s) of a, b, c, and d is(are) valid for the flow?",
+      "choices": [
+        "(A) a = 1/10, b = 9/10, c = 11/15, and d = 13/17",
+        "(B) a = 2/7, b = 9/8, c = 12/12, and d = 12/14",
+        "(C) a = 3/4, b = 10/10, c = 11/13, and d = 13/21",
+        "(D) a = 5/5, b = 8/10, c = 7/11, and d = 17/18"
+      ],
+      "answer": "(C)(D)",
+      "explanation": "<p>合法的 flow 要滿足兩件事：每條邊 0 ≤ 流量 ≤ 容量（capacity constraint），以及除了 S、T 以外每個點流入 = 流出（flow conservation）。</p><p>先檢查已知的點：A 流入 7 + 1 = 8、流出 4 + 4 = 8；B 流入 17 + 4 = 21、流出 1 + 20 = 21，都平衡。剩下的條件是：</p><ul><li>C：4 + b = a + c</li><li>D：20 + a = b + d</li></ul><ul><li>(A) C 點：4 + 9 = 13 ≠ 1 + 11 = 12，不平衡，錯。</li><li>(B) b = 9/8 流量超過容量，錯。</li><li>(C) C：4 + 10 = 14 = 3 + 11；D：20 + 3 = 23 = 10 + 13；容量都沒超，對。</li><li>(D) C：4 + 8 = 12 = 5 + 7；D：20 + 5 = 25 = 8 + 17；容量都沒超，對。</li></ul><p>檢查：S 流出 24，(C)(D) 的 c + d 都是 24，和流進 T 的量一致。</p>"
+    },
+    {
+      "id": "al-0074",
+      "topics": [
+        "amortized-analysis"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）This question considers \"vector\" in C++ STL. The usage of vector is very similar to a regular array in C/C++ in that it supports direct access. In addition, it also supports the operation <code>push_back</code>, which adds an element at the end of a vector. As a result, we do not need to declare the size for a vector.",
+      "choices": [
+        "(A) Elements in a vector are stored in consecutive memory spaces so that it supports direct access.",
+        "(B) Let <code>V</code> be a vector of size m. The statement <code>V.push_back(a)</code> adds <code>a</code> at the end of <code>V</code>. However, the memory allocated for <code>V</code> might be too small to hold the added element <code>a</code>. This is handled by allocating a new block of memory of size (m+1), copying all the elements of <code>V</code> to the newly allocated space, and then inserting <code>a</code> at the end of <code>V</code>.",
+        "(C) If we make a sequence of n insertions, there is a way that we can achieve Θ(n) amortized cost for the memory space management.",
+        "(D) A single <code>push_back</code> operation could take Θ(n) time, where n is the number of elements in the vector."
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<ul><li>(A) 對：vector 底層是連續陣列，才能 O(1) 用 index 存取。</li><li>(B) 錯：如果每次只多配 1 格，n 次 push_back 要複製 1 + 2 + … + n = Θ(n²) 次。實際做法是容量不夠時<b>加倍</b>（或乘上常數倍）。</li><li>(C) 對：容量加倍時，n 次插入的總複製量 ≤ 1 + 2 + 4 + … + n &lt; 2n，所以整串操作總成本 Θ(n)，平均每次 O(1)，這就是 <span class=\"term\">Amortized Analysis<small>（攤銷分析）</small></span>的經典例子。</li><li>(D) 對：剛好遇到擴容的那一次要把 n 個元素全部複製，單次就是 Θ(n)。攤銷 O(1) 不代表每次都 O(1)。</li></ul>"
+    },
+    {
+      "id": "al-0075",
+      "topics": [
+        "huffman-coding"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 21,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）This question is about generalizing Huffman's algorithm to ternary codes (i.e., codes using three symbols 0, 1, and 2). Suppose that there are six characters to be encoded. For the following five ternary coding trees, select the ones that <b>cannot</b> possibly represent Huffman ternary codes.<br>（原圖以括號表示：o(…) 為內部節點，括號內依左到右列出子節點；□ 為葉節點。）<pre>(A) o( o(□,□,□), o(□,□), □ )\n(B) o( o( o(□,□,□), □), □, □ )\n(C) o( o(□,□,□), o(□,□,□) )\n(D) o( o(□,□), o(□,□), o(□,□) )\n(E) o( o( o(□,□), □, □), □, □ )</pre>",
+      "choices": [
+        "(A)",
+        "(B)",
+        "(C)",
+        "(D)",
+        "(E)"
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<p>三元 Huffman 每次合併 3 個最小的節點，每合併一次節點數少 2。6 個字元 (6 − 1) 不是 2 的倍數，所以要先補一個頻率 0 的虛擬字元，湊成 7 個。結果是：<b>最多只有一個內部節點只有 2 個子節點，而且它必須在最深的那一層</b>（因為虛擬字元一開始就被合併）。其他內部節點都要有 3 個子節點。</p><ul><li>(A) 可以：只有 o(□,□) 缺一個子節點，而它在最深層。頻率 5, 1, 1, 1, 1, 1 就會得到這棵樹。</li><li>(B) 不行：缺子節點的是第二層那個 o(…, □)，但更深的地方還有葉子；把最深的一片葉子移到空位，平均碼長會更短，所以不是最佳碼。</li><li>(C) 不行：根只有 2 個子節點，可以把某片深度 2 的葉子提到根的空位變深度 1，更短。</li><li>(D) 不行：有三個內部節點都只有 2 個子節點，超過一個，一定可以再壓縮。</li><li>(E) 可以：只有最深的 o(□,□) 缺一個子節點。頻率 5, 5, 2, 2, 1, 1 就會得到這棵樹。</li></ul><p>(A)(E) 的頻率例子都用程式模擬三元 Huffman（補 0 後每次合併 3 個）驗證過。</p>"
+    },
+    {
+      "id": "al-0076",
+      "topics": [
+        "asymptotic-notation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 22,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Let f(n) and g(n) be asymptotically positive functions, where log(g(n)) ≥ 1 and log(f(n)) ≥ 1 for all sufficiently large n. Which of the following statement(s) is(are) correct?",
+      "choices": [
+        "(A) f(n) = O(g(n)) implies log(f(n)) = O(log(g(n)))",
+        "(B) log(f(n)) = O(log(g(n))) implies f(n) = O(g(n))",
+        "(C) f(n) = O(g(n)) implies 2<sup>f(n)</sup> = O(2<sup>g(n)</sup>)",
+        "(D) ⌈log n⌉! = O(n)",
+        "(E) 2<sup>√(2 log n)</sup> = O(n)"
+      ],
+      "answer": "(A)(E)",
+      "explanation": "<ul><li>(A) 對：f ≤ c·g ⇒ log f ≤ log c + log g ≤ (log c + 1)·log g（因為 log g ≥ 1）。這就是題目給 log g ≥ 1 的用意。</li><li>(B) 錯：f = n²、g = n，log f = 2 log n = O(log n)，但 n² ≠ O(n)。</li><li>(C) 錯：f = 2n、g = n，2<sup>2n</sup> = 4<sup>n</sup> ≠ O(2<sup>n</sup>)。常數倍放進指數會變成指數倍。</li><li>(D) 錯：令 k = ⌈log n⌉，log(k!) ≈ k log k = log n · log log n，比 log n 大，所以 ⌈log n⌉! 長得比任何多項式都快，不是 O(n)。</li><li>(E) 對：指數 √(2 log n) 比 log n 小很多，2<sup>√(2 log n)</sup> = o(n)。</li></ul>"
+    },
+    {
+      "id": "al-0077",
+      "topics": [
+        "activity-selection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 27,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Activity-selection problem. Suppose we have a set S = {a<sub>1</sub>, a<sub>2</sub>, …, a<sub>n</sub>} of n proposed activities. Each activity a<sub>i</sub> has a start time s<sub>i</sub> and a finish time f<sub>i</sub>, where 0 ≤ s<sub>i</sub> &lt; f<sub>i</sub> &lt; ∞. If selected, activity a<sub>i</sub> takes place during the half-open time interval [s<sub>i</sub>, f<sub>i</sub>). Activities a<sub>i</sub> and a<sub>j</sub> are compatible if the intervals [s<sub>i</sub>, f<sub>i</sub>) and [s<sub>j</sub>, f<sub>j</sub>) do not overlap. That is, a<sub>i</sub> and a<sub>j</sub> are compatible if s<sub>i</sub> ≥ f<sub>j</sub> or s<sub>j</sub> ≥ f<sub>i</sub>. In the activity-selection problem, we wish to select a maximum-size subset of mutually compatible activities. For the following greedy ideas, select the one(s) that yield an optimal solution.",
+      "choices": [
+        "(A) Selecting the first activity to start (that is compatible with all previously selected activities).",
+        "(B) Selecting the first activity to finish (that is compatible with all previously selected activities).",
+        "(C) Selecting the last activity to start (that is compatible with all previously selected activities).",
+        "(D) Selecting the last activity to finish (that is compatible with all previously selected activities).",
+        "(E) Selecting the compatible activity that overlaps the fewest other remaining activities."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<ul><li>(B) 對：最早結束的活動留下最多剩餘時間，交換論證可證明一定有最佳解包含它，這是標準解法。</li><li>(C) 對：把時間軸反過來看，「最晚開始」就是反向的「最早結束」，同樣正確。</li><li>(A) 錯：反例 [0, 10)、[1, 2)、[3, 4)：選最早開始的 [0, 10) 只能選 1 個，最佳是 2 個。</li><li>(D) 錯：和 (A) 對稱，反例 [0, 10)、[1, 2)、[3, 4)：最晚結束的是 [0, 10)，同樣只得 1 個。</li><li>(E) 錯：「重疊最少」看似聰明，但有經典反例（一排 11 個活動的構造）會讓它選到中間的活動而少選一個。</li></ul>"
+    },
+    {
+      "id": "al-0078",
+      "topics": [
+        "asymptotic-notation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 29,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Function iteration: The notation f<sup>(i)</sup>(n) (NOT f<sup>i</sup>(n)) denotes the function f(n) iteratively applied i times to an initial value of n. For non-negative integers i, f<sup>(i)</sup>(n) = n if i = 0, and f<sup>(i)</sup>(n) = f(f<sup>(i−1)</sup>(n)) if i &gt; 0. Now let lg n represent base-2 logarithm. lg<sup>(i)</sup> n is defined as above with f(n) = lg n; note that lg<sup>(i)</sup> n is defined only if lg<sup>(i−1)</sup> n &gt; 0. Let lg<sup>*</sup> n denote the iterated logarithm, given by lg<sup>*</sup> n = min{i ≥ 0 : lg<sup>(i)</sup> n ≤ 1}. Which of the following statement(s) is(are) correct?",
+      "choices": [
+        "(A) If f(n) = 2n, then f<sup>(i)</sup>(n) = 2<sup>i</sup>n.",
+        "(B) If f(n) = 2n, then f<sup>(i)</sup>(n) = 2n<sup>i</sup>.",
+        "(C) lg<sup>*</sup> n = lg lg n",
+        "(D) lg<sup>*</sup> 16 = 3"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<ul><li>(A) 對、(B) 錯：每套一次就乘 2，套 i 次是 2<sup>i</sup>·n。</li><li>(C) 錯：lg* n 是「要取幾次 lg 才會 ≤ 1」，成長得比 lg lg n 慢非常多（例如 n = 2<sup>65536</sup> 時 lg lg n = 16，而 lg* n 只有 5）。</li><li>(D) 對：16 → 4 → 2 → 1，取了 3 次 lg 才 ≤ 1，所以 lg* 16 = 3。</li></ul>"
+    },
+    {
+      "id": "al-0079",
+      "topics": [
+        "order-statistics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 30,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Given n integers, the problem of searching for the k'th largest integer among the n integers is called \"selection problem\". Selection problems can be solved in linear time. Typical implementation starts with partitioning the n integers into ⌈n/5⌉ groups. Then we solve a sequence of median finding (selection problem again) from integers of smaller problem size. Finally we can drop out more than a quarter of the n integers. The next iteration is to deal with a selection problem of size less than (3/4)n. Thus linear time is achieved. Which of the following statement(s) is(are) correct?",
+      "choices": [
+        "(A) In the linear time algorithm stated above, if we partition the set of n integers into ⌈n/3⌉ groups, we still can achieve linear time performance.",
+        "(B) In the linear time algorithm stated above, if we partition the set of n integers into ⌈n/7⌉ groups, we still can achieve linear time performance.",
+        "(C) This problem can be solved in O(n log n) time using heap sort.",
+        "(D) If a heap sort is applied, this problem has lower bound Ω(n log n) because Ω(n log n) is the lower bound to heap sort."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<p>Median of medians 的遞迴式是 T(n) ≤ T(n/g) + T(剩下的比例·n) + O(n)，兩個子問題比例加起來要 &lt; 1 才會線性。</p><ul><li>(A) 錯：每組 3 個，至少可丟掉約 n/3，遞迴式 T(n) = T(n/3) + T(2n/3) + O(n)，比例和 = 1，結果是 Θ(n log n)。</li><li>(B) 對：每組 7 個，至少可丟掉約 2n/7，T(n) = T(n/7) + T(5n/7) + O(n)，比例和 6/7 &lt; 1，仍是線性。</li><li>(C) 對：直接排序再取第 k 個就是 O(n log n)。</li><li>(D) 錯：某個特定解法的下界不是問題本身的下界；selection 問題的下界是 Ω(n)，而且確實有 O(n) 演算法。</li></ul>"
+    },
+    {
+      "id": "al-0080",
+      "topics": [
+        "floyd-warshall",
+        "longest-common-subsequence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Which of the following graph algorithm(s) utilize dynamic programming?",
+      "choices": [
+        "(A) Kruskal's algorithm",
+        "(B) Dijkstra's algorithm",
+        "(C) Finding longest common sequence in a pair of strings",
+        "(D) The Floyd-Warshall algorithm for computing the all-pairs shortest path of a graph."
+      ],
+      "answer": "(C)(D)",
+      "explanation": "<ul><li>Kruskal（每次挑最輕且不成環的邊）、Dijkstra（每次挑距離最小的點）都是 <span class=\"term\">Greedy<small>（貪婪法）</small></span>。</li><li>LCS 用 c[i][j] 表格，由更短的前綴推出來，是 <span class=\"term\">Dynamic Programming<small>（動態規劃）</small></span>。</li><li>Floyd-Warshall 以「中繼點只允許用 1..k」為子問題，d<sup>(k)</sup>[i][j] = min(d<sup>(k−1)</sup>[i][j], d<sup>(k−1)</sup>[i][k] + d<sup>(k−1)</sup>[k][j])，也是 DP。</li></ul>"
+    },
+    {
+      "id": "al-0081",
+      "topics": [
+        "asymptotic-notation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Show the correct one(s) for the following equality:",
+      "choices": [
+        "(A) n! = O(n<sup>n</sup>)",
+        "(B) 10n<sup>3</sup>+10n<sup>5</sup>+100n<sup>2</sup>2<sup>n</sup>=O(n<sup>2</sup>2<sup>n</sup>)",
+        "(C) 3<sup>n</sup>2<sup>n</sup>+nlog(n) = O(n<sup>3</sup>2<sup>n</sup>)",
+        "(D) Σ<sub>i=0</sub><sup>n</sup> i<sup>4</sup> = Θ(n<sup>5</sup>)",
+        "(E) n<sup>3</sup>2<sup>n</sup>+15n<sup>2</sup>3<sup>n</sup>=O(n<sup>3</sup> 2<sup>n</sup>)"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) 對：n! = 1·2·…·n ≤ n·n·…·n = n<sup>n</sup>。</li><li>(B) 對：指數項 n²2<sup>n</sup> 主導，多項式 n⁵ 長得比它慢。</li><li>(C) 錯：3<sup>n</sup>2<sup>n</sup> = 6<sup>n</sup>，6<sup>n</sup> / (n³2<sup>n</sup>) = 3<sup>n</sup>/n³ → ∞。</li><li>(D) 對：Σi⁴ ≈ n⁵/5，上界 n·n⁴，下界取後半段 (n/2)·(n/2)⁴，都是 n⁵ 等級。</li><li>(E) 錯：15n²3<sup>n</sup> 比 n³2<sup>n</sup> 大，(3/2)<sup>n</sup> 的成長蓋過 n。</li></ul>"
+    },
+    {
+      "id": "al-0082",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 21,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Given T(n) = 3T(n/4) + n, which of the following are the asymptotic bound(s) of T(n)?",
+      "choices": [
+        "(A) Θ(n)",
+        "(B) O(n lg n)",
+        "(C) Θ(n<sup>3</sup>)",
+        "(D) Ω(lg n)",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<p>a = 3、b = 4，n<sup>log<sub>4</sub>3</sup> ≈ n<sup>0.79</sup>，f(n) = n 比它大一個多項式等級，而且 regularity 條件 3·(n/4) = (3/4)n ≤ c·n（c = 3/4 &lt; 1）成立，屬於 <span class=\"term\">Master Theorem<small>（主定理）</small></span>第三種情況：T(n) = Θ(n)。</p><ul><li>(A) 對。</li><li>(B) 對：Θ(n) 的函數也在 O(n lg n) 裡，O 只是上界。</li><li>(C) 錯：Θ 要求上下界都對，n 不是 Θ(n³)。</li><li>(D) 對：n 至少和 lg n 一樣大，Ω 是下界。</li><li>(E) 錯。</li></ul><p>常見錯誤：以為只能選「最緊」的那一個；多選題要逐一檢查 O、Ω 的定義是否成立。</p>"
+    },
+    {
+      "id": "al-0083",
+      "topics": [
+        "recurrence-methods"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 22,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "What is the time complexity of the following algorithm?<pre class=\"code\">int sum (int n) {\n    if(n &lt;= 1)\n        return 1;\n    else\n        return sum(n-1) + n;\n}</pre>",
+      "choices": [
+        "(A) Θ(1)",
+        "(B) Θ(n)",
+        "(C) Θ(n lg n)",
+        "(D) Θ(n<sup>2</sup>)",
+        "(E) Θ(n!)"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>每次呼叫做常數的工作（比較、一次加法），再遞迴到 n − 1：T(n) = T(n − 1) + c，展開得 T(n) = c·(n − 1) + T(1) = Θ(n)。</p><p>注意：回傳值是 1 + 2 + … + n ≈ n²/2，但那是<b>結果的大小</b>，不是執行時間，別把 Θ(n²) 選進來。</p>"
+    },
+    {
+      "id": "al-0084",
+      "topics": [
+        "knapsack",
+        "p-np"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 31,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）The knapsack problem: Given n items with values v<sub>i</sub> and weights w<sub>i</sub>, 1 ≤ i ≤ n, and a knapsack with maximum weight W, where v<sub>i</sub>, w<sub>i</sub>, and W are positive integers. Which of the following statement(s) is (are) correct.",
+      "choices": [
+        "(A) The fractional knapsack problem is to find the maximum value of Σ<sub>i=1</sub><sup>n</sup> v<sub>i</sub>x<sub>i</sub> subject to the constraints Σ<sub>i=1</sub><sup>n</sup> w<sub>i</sub>x<sub>i</sub> ≤ W and 0 ≤ x<sub>i</sub> ≤ 1, i = 1 to n. This problem can be solved by greedy method..",
+        "(B) The fractional knapsack problem has a polynomial time algorithm to solve it.",
+        "(C) The 0-1 knapsack problem is to find the maximum value of Σ<sub>i=1</sub><sup>n</sup> v<sub>i</sub>x<sub>i</sub> subject to the constraints Σ<sub>i=1</sub><sup>n</sup> w<sub>i</sub>x<sub>i</sub> ≤ W where x<sub>i</sub> = 0 or 1, i = 1 to n. This problem can be solved by dynamic programming with time complexity O(nW).",
+        "(D) The algorithm, for solving the 0-1 knapsack problem with time complexity O(nW), is a polynomial time algorithm.",
+        "(E) The decision version of the fractional knapsack problem is in NP."
+      ],
+      "answer": "(A)(B)(C)(E)",
+      "explanation": "<ul><li>(A)(B) 對：fractional 版本依 v<sub>i</sub>/w<sub>i</sub>（單位重量價值）由大到小裝，最後一個裝一部分即可，排序 O(n log n)，是多項式時間的 greedy。</li><li>(C) 對：DP 表 K[i][w] = max(K[i−1][w], K[i−1][w − w<sub>i</sub>] + v<sub>i</sub>)，表格 n × W，O(nW)。</li><li>(D) 錯：O(nW) 是 <span class=\"term\">Pseudo-polynomial<small>（偽多項式）</small></span>。輸入中 W 只用 log W 個 bit 表示，nW 相對於輸入長度是指數級。0-1 knapsack 的判定版本是 NP-complete。</li><li>(E) 對：fractional 版本在 P 裡，而 P ⊆ NP。</li></ul>"
+    },
+    {
+      "id": "al-0085",
+      "topics": [
+        "bellman-ford"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 32,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Consider the following system of difference constraints..<pre>x2 − x1 ≤ 2     x5 − x3 ≤ 1\nx3 − x1 ≤ 1     x6 − x5 ≤ 5\nx4 − x2 ≤ 3     x6 − x4 ≤ 2\nx3 − x2 ≤ 3     x4 − x5 ≤ 2</pre>Which of the following statement(s) is (are) correct.",
+      "choices": [
+        "(A) There are infinitely many solutions for x<sub>i</sub>'s, i = 1 to 6.",
+        "(B) The maximum value of x<sub>6</sub> − x<sub>1</sub> is 6",
+        "(C) The maximum value of x<sub>6</sub> − x<sub>1</sub> is 7",
+        "(D) The maximum value of x<sub>4</sub> − x<sub>1</sub> is 5",
+        "(E) The maximum value of x<sub>4</sub> − x<sub>1</sub> is 4"
+      ],
+      "answer": "(A)(B)(E)",
+      "explanation": "<p><span class=\"term\">Difference Constraints<small>（差分約束）</small></span>：每條 x<sub>j</sub> − x<sub>i</sub> ≤ w 對應一條邊 i → j，權重 w。沿著一條 1 → k 的路徑把不等式相加，可得 x<sub>k</sub> − x<sub>1</sub> ≤ 路徑長，所以 x<sub>k</sub> − x<sub>1</sub> 的最大值 = 1 到 k 的最短路徑長（而且令 x<sub>i</sub> = δ(1, i) 就能取到）。</p><p>邊：1→2 (2)、1→3 (1)、2→4 (3)、2→3 (3)、3→5 (1)、5→6 (5)、4→6 (2)、5→4 (2)。Bellman-Ford（程式驗證）得 δ = (0, 2, 1, 4, 2, 6)。</p><ul><li>(A) 對：圖中沒有負環，所以有解；而且任一解每個變數都加同一個常數仍是解，有無限多組。</li><li>(B) 對、(C) 錯：δ(6) = 6，路徑 1→3→5→4→6 = 1+1+2+2。走 1→3→5→6 或 1→2→4→6 都是 7，不是最短，別選錯。</li><li>(E) 對、(D) 錯：δ(4) = 4，路徑 1→3→5→4；1→2→4 是 5。</li></ul>"
+    },
+    {
+      "id": "al-0086",
+      "topics": [
+        "p-np"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 36,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Assume NP ≠ P and consider the decision version of the following problems. Which of the following problems have polynomial-time verification algorithm.",
+      "choices": [
+        "(A) The shortest path problem.",
+        "(B) The longest path problem",
+        "(C) Decide whether a positive number is a composite number.",
+        "(D) The hamiltonian-cycle problem.",
+        "(E) The maximum flow problem."
+      ],
+      "answer": "(A)(B)(C)(D)(E)",
+      "explanation": "<p>有多項式時間驗證演算法 = 屬於 NP。</p><ul><li>(A) 最短路徑、(E) 最大流的判定版本都在 P 裡，而 P ⊆ NP，當然可以多項式驗證（甚至不用證據，直接解）。</li><li>(B) 「是否存在長度 ≥ k 的簡單路徑」：證據就是那條路徑，檢查是否簡單、長度是否 ≥ k，多項式時間。</li><li>(C) 合數：證據是一個因數 d（1 &lt; d &lt; n），做一次除法檢查。</li><li>(D) Hamiltonian cycle：證據是頂點的排列，檢查每個點恰出現一次、相鄰兩點有邊。</li></ul><p>常見錯誤：以為「NP-hard 的問題不能多項式驗證」或「P 的問題不算 NP」。NP 的定義只看驗證。</p>"
+    },
+    {
+      "id": "al-0087",
+      "topics": [
+        "p-np"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 37,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Assume NP ≠ P. The MINCUT problem is to partition the vertices in a graph into two disjoint sets so that the number of edges between vertices in different sets is minimized. Choose all and only those complexity classes that are known to contain the corresponding MINCUT decision problem.",
+      "choices": [
+        "(A) P",
+        "(B) NP",
+        "(C) co-NP",
+        "(D) NP-complete",
+        "(E) NP-hard"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p>最小割（不限 s、t 的 global min cut）可以用多項式時間解：例如對固定點 s 和每個 t 各跑一次 max-flow，或用 Stoer-Wagner / Karger 演算法。所以它在 P。</p><ul><li>P ⊆ NP、P ⊆ co-NP（P 對補集封閉），所以 (A)(B)(C) 都對。</li><li>(D)(E) 錯：若一個 P 問題是 NP-hard，則所有 NP 問題都能歸約到它而變成多項式可解，推出 P = NP，與假設矛盾。</li></ul><p>對照：最<b>大</b>割（MAX-CUT）才是 NP-complete。</p>"
+    },
+    {
+      "id": "al-0088",
+      "topics": [
+        "p-np",
+        "vertex-cover-approx"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 38,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Assume NP ≠ P. The VERTEX-COVER problem is to find a vertex cover of minimum size in a given undirected graph. Choose all and only those complexity classes that are known to contain the corresponding VERTEX-COVER decision problem.",
+      "choices": [
+        "(A) P",
+        "(B) NP",
+        "(C) NP-complete",
+        "(D) NP-hard",
+        "(E) VERTEX-COVER problem has a polynomial-time 2-approximation algorithm."
+      ],
+      "answer": "(B)(C)(D)(E)",
+      "explanation": "<ul><li>判定版本「是否有大小 ≤ k 的 vertex cover」：給一個頂點集合就能檢查每條邊是否被蓋到，在 NP；又可由 3-SAT / CLIQUE 歸約過來，是 <span class=\"term\">NP-complete<small>（NP 完備）</small></span>，自然也是 NP-hard。所以 (B)(C)(D) 對。</li><li>(A) 錯：NP-complete 問題在 P ≠ NP 下不在 P。</li><li>(E) 對：APPROX-VERTEX-COVER：任選一條還沒被蓋的邊 (u, v)，把 u、v 都加入，刪掉所有和它們相連的邊，重複。選到的邊彼此不相鄰（是一個 matching），最佳解至少要為每條這種邊選一個端點，所以結果 ≤ 2 × 最佳。</li></ul>"
+    },
+    {
+      "id": "al-0089",
+      "topics": [
+        "activity-selection",
+        "huffman-coding",
+        "strassen",
+        "optimal-bst"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 39,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Consider the following 10 problems and algorithms.<br>(1) Merge sort for sorting problem<br>(2) Heap sort for sorting problem.<br>(3) Minimum spanning tree problem.<br>(4) Floyd-Marshall algorithm for all pairs shortest path problem.<br>(5) Finding a maximum independent set in a time interval graph.<br>(6) Huffman's algorithm for Huffman code problem.<br>(7) Strassen's matrix multiplication algorithm.<br>(8) Constructing an optimal binary search tree for weighted searching problem, i.e to minimize the expected searching time.<br>(9) Longest Common subsequence problem.<br>(10) The Ford- Fulkerson method for maximum flow problem.<br>Each of the above problems (or algorithms) can be solved by (or classified as) one of the following design techniques<br>1. Divide and Conquer, 2. Dynamic Programming, 3.Greedy method, 4.Others (none of the above three techniques).<br>Among the above 10 problems, there are x, y, z, w of them respectively that can be solved by(or classified as) design technique 1, 2, 3, 4 respectively. Find x, y, z, and w, then choose the following correct ones.",
+      "choices": [
+        "(A) x+y =5",
+        "(B) y+z = 6",
+        "(C) z+w = 4",
+        "(D) x+y+z = 8",
+        "(E) x+z = 5"
+      ],
+      "answer": "(A)(B)(D)(E)（heap sort、Ford-Fulkerson 的歸類待確認）",
+      "explanation": "<div class=\"table-scroll\"><table><tr><th>技巧</th><th>題號</th><th>個數</th></tr><tr><td>1. Divide and Conquer</td><td>(1) merge sort、(7) Strassen</td><td>x = 2</td></tr><tr><td>2. Dynamic Programming</td><td>(4) Floyd-Warshall、(8) optimal BST、(9) LCS</td><td>y = 3</td></tr><tr><td>3. Greedy</td><td>(3) MST（Kruskal / Prim）、(5) 區間圖最大獨立集（就是 activity selection，選最早結束）、(6) Huffman</td><td>z = 3</td></tr><tr><td>4. Others</td><td>(2) heap sort（利用資料結構反覆取最大值）、(10) Ford-Fulkerson（反覆找增廣路徑的 iterative improvement）</td><td>w = 2</td></tr></table></div><p>x + y = 5、y + z = 6、z + w = 5、x + y + z = 8、x + z = 5，所以 (A)(B)(D)(E)，(C) 錯。</p><p>(4) 題目寫 Floyd-Marshall，是 Floyd-Warshall 的筆誤。heap sort 和 Ford-Fulkerson 有人會硬歸類成 greedy，那樣數字會不同；以一般教學的分類為準（待確認）。</p>"
+    },
+    {
+      "id": "al-0090",
+      "topics": [
+        "np-reductions",
+        "p-np"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 40,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Assume P ≠ NP. For each of the following 10 problems, decide whether it is a P-problem, or an NP-hard (or NP-complete) problem, or neither..<br>(1) Find a longest simple path between two nodes, where the given graph has positive edge weights.<br>(2) Find a shortest simple path between two nodes in a directed graph with negative and/or positive edge weights, and containing negative weight cycles.<br>(3) Find a negative weight directed cycle in a weighted directed graph.<br>(4) Find a positive weight directed cycle in a weighted directed graph.<br>(5) Find a largest cycle in a graph, where the edge-weight is 1 for each edge.<br>(6) Find a smallest cycle in a graph, where the edge-weight is 1 for each edge.<br>(7) Find a maximum cut in a flow network.<br>(8) Find a minimum cut in a flow network.<br>(9) Find a maximum independent set in a time interval graph.<br>(10) The 2-CNF-Satisfiability problem.<br>Among, the above 10 problems, x of them are P-problem, y of them are NP-hard (or NP-complete), and z of them are neither. Find x, y, and z, then choose the following correct ones.",
+      "choices": [
+        "(A) x+y+2z = 11",
+        "(B) y+z = 4",
+        "(C) x+2y = 14",
+        "(D) 2x+3z=12",
+        "(E) x+y= 9"
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>P：(3) Bellman-Ford 偵測負環；(4) 權重全取負號後找負環；(6) 從每個點 BFS 求最短環（girth）；(8) 先求 max flow 再找 min cut；(9) 區間圖最大獨立集 = activity selection 的 greedy；(10) 2-SAT 用 implication graph 的 SCC，線性時間。共 x = 6。</li><li>NP-hard：(1) 最長簡單路徑（含 Hamiltonian path）；(2) 有負環時的最短<b>簡單</b>路徑（權重取負就是最長路徑）；(5) 最大環（含 Hamiltonian cycle）；(7) 最大割。共 y = 4。</li><li>兩者都不是：z = 0。</li></ul><p>代入：(A) 6+4+0 = 10 ≠ 11；(B) 4+0 = 4 對；(C) 6+8 = 14 對；(D) 12+0 = 12 對；(E) 10 ≠ 9。</p>"
     }
   ]
 }

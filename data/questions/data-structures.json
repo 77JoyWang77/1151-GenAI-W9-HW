@@ -2696,6 +2696,2608 @@
       "question": "<p>3. [3%] A binary tree stores distinct keys. Based on the following postorder and inorder sequences, please list the keys of nodes at level 3 of the tree from left to right. Note that the root is at level 1.</p><ul><li>Postorder sequence: A B C K D I G J H F E</li><li>Inorder sequence: A C B D K E I G F H J</li></ul><p>Answer format: key1, key2, ...</p>",
       "answer": "C, K, G, H",
       "explanation": "<p>後序最後的 E 是根；中序切成 A C B D K | E | I G F H J。</p><ul><li>左邊：後序 A B C K D，根 D；中序 A C B | D | K，K 是 D 的右子；A C B 的後序 A B C，根 C，A、B 是它的左右子。</li><li>右邊：後序 I G J H F，根 F；中序 I G | F | H J；I G 的後序 I G，根 G、I 是左子；H J 的後序 J H，根 H、J 是右子。</li></ul><pre class=\"formula\">            E\n         /     \\\n        D       F\n       / \\     / \\\n      C   K   G   H\n     / \\     /     \\\n    A   B   I       J</pre><p>第 3 層由左到右：<b>C, K, G, H</b>。（已用程式重建驗算，並確認兩個序列可以一致地切分。）</p>"
+    },
+    {
+      "id": "ds-0128",
+      "topics": [
+        "hash-functions",
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>3. (10%) Assume that you have to store the four strings: \"abcdef\", \"bcdefa\", \"cdefab\", and \"defabc\", in the hash table by using the hashing technique.</p><p>(1) (5%) Consider the hash function: the index for a specific string will be equal to the sum of the ASCII values of the characters modulo 11. Please determine how many collisions if we use this hash function.</p><p>(2) (5%) Consider the hash function: the index for a specific string will be equal to sum of ASCII values of characters multiplied by their respective order in the string after which it is modulo with 11. Please determine how many collisions if we use this hash function.</p><p>Note: The ASCII values of a, b, c, d, e, and f are 97, 98, 99, 100, 101, and 102 respectively.</p>",
+      "answer": "(1) 3 次碰撞（四個字串都落在 index 3）；(2) 0 次碰撞（index 分別是 6、2、4、1）",
+      "explanation": "<p><b>(1) 只加總 ASCII</b>：四個字串都是 a～f 六個字母換個順序，所以總和一樣都是 97+98+99+100+101+102 = 597，597 mod 11 = 3（11×54 = 594）。四個字串全擠在 index 3：第一個放進去沒事，後面三個每個都和已經在那裡的字串撞，所以是 <b>3 次碰撞</b>。這正是「只加總」雜湊的缺點：只要字元組成相同（anagram，換位字），不管順序都會撞。</p><p><b>(2) 乘上位置（從 1 開始）再加總</b>：</p><div class=\"table-scroll\"><table><tr><th>字串</th><th>Σ i·ASCII</th><th>mod 11</th></tr><tr><td>abcdef</td><td>2107</td><td>6</td></tr><tr><td>bcdefa</td><td>2092</td><td>2</td></tr><tr><td>cdefab</td><td>2083</td><td>4</td></tr><tr><td>defabc</td><td>2080</td><td>1</td></tr></table></div><p>例如 abcdef = 1·97 + 2·98 + 3·99 + 4·100 + 5·101 + 6·102 = 2107，2107 = 11×191 + 6。四個 index 都不同，所以 <b>0 次碰撞</b>。把位置也算進去後，字元順序不同的字串就能被分開。（已用程式驗算。）</p><p>小提醒：「碰撞次數」這裡的算法是「新放進去的字串發現位置已被占用」的次數，所以 4 個撞在一起是 3 次，不是 4 次也不是 C(4,2) = 6 對（如果題目問的是「有幾對字串撞在一起」才會是 6）。</p>"
+    },
+    {
+      "id": "ds-0129",
+      "topics": [
+        "complexity-analysis"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>4. (10%) Consider the following algorithm:</p><pre class=\"code\">for (i = 1; i &lt;= 2n; i++)\n    sum = sum + i;\nfor (i = n; i &gt;= 1; i--)\n    sum = sum + i;\ncout &lt;&lt; sum;</pre><p>(1) (5%) What is the output when n = 4?</p><p>(2) (5%) What is the time complexity T(n)?</p>",
+      "answer": "(1) 46（假設 sum 初值為 0）；(2) T(n) = Θ(n)",
+      "explanation": "<p><b>(1)</b> 題目沒寫 sum 的初值，照慣例當作 0。第一個迴圈加 1 到 2n = 8：1+2+…+8 = 36；第二個迴圈從 n = 4 加回 1：4+3+2+1 = 10。輸出 36 + 10 = <b>46</b>。（已用程式驗算。）</p><p><b>(2)</b> 第一個迴圈跑 2n 次、第二個跑 n 次，兩個迴圈是<b>前後串接</b>不是巢狀，所以總共 3n 次常數時間的加法，T(n) = 3n + c = <b>Θ(n)</b>。常見錯誤是看到兩個 for 就寫 O(n²)，要先看它們是不是包在一起。</p>"
+    },
+    {
+      "id": "ds-0130",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf"
+      },
+      "question": "<p>5. (10%) Please show the cost of the minimum cost spanning tree for the following graph.</p><p>（原圖為無向圖，以邊列表表示：）</p><div class=\"table-scroll\"><table><tr><th>邊</th><td>(1,5)</td><td>(1,2)</td><td>(1,6)</td><td>(2,6)</td><td>(2,4)</td><td>(2,3)</td><td>(5,6)</td><td>(6,3)</td><td>(3,4)</td></tr><tr><th>權重</th><td>5</td><td>7</td><td>2</td><td>6</td><td>2</td><td>5</td><td>4</td><td>8</td><td>3</td></tr></table></div>",
+      "answer": "17",
+      "explanation": "<p>用 Kruskal：邊由小到大排序，不會形成 cycle 就加入。</p><div class=\"table-scroll\"><table><tr><th>邊</th><th>權重</th><th>動作</th></tr><tr><td>(1,6)</td><td>2</td><td>加入</td></tr><tr><td>(2,4)</td><td>2</td><td>加入</td></tr><tr><td>(3,4)</td><td>3</td><td>加入</td></tr><tr><td>(5,6)</td><td>4</td><td>加入</td></tr><tr><td>(1,5)</td><td>5</td><td>1、5 已經透過 6 相連，會成環，跳過</td></tr><tr><td>(2,3)</td><td>5</td><td>2、3 已經透過 4 相連，跳過</td></tr><tr><td>(2,6)</td><td>6</td><td>接起 {1,5,6} 和 {2,3,4}，加入</td></tr></table></div><p>6 個頂點需要 5 條邊，到這裡已滿。總成本 2 + 2 + 3 + 4 + 6 = <b>17</b>。（已用程式驗算。）用 Prim 從任一點開始也會得到同樣的 17：MST 的總成本唯一，只是邊的選法可能不唯一。</p>"
+    },
+    {
+      "id": "ds-0131",
+      "topics": [
+        "union-find"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>2) [2%] We rely on the tree data structure to represent a set of elements. Two elements are in the same set if they share the common root. Given two sets as follows, which is true if we union the two sets? Assume the union follows the height union rule.</p><p>（原圖兩棵樹，以「父 → 子」表示：）</p><pre>Set 1：1 → a, 2, 3；a → 4, 5\nSet 2：6 → 7, b, 8；7 → 9, 10；9 → 12；8 → 11</pre>",
+      "choices": [
+        "(A) 一棵樹，根為 6：6 → 1, 7, b, 8；1 → a, 2, 3；a → 4, 5；7 → 9, 10；9 → 12；8 → 11",
+        "(B) 兩棵樹：1 → 2, 3；以及 6 → 7, b, 8；7 → 9, 10；9 → 12；b → a；a → 4, 5；8 → 11",
+        "(C) 一棵樹，根為 1：1 → a, 2, 3, 6；a → 4, 5；6 → 7, b, 8；7 → 9, 10；9 → 12；8 → 11",
+        "(D) 一棵樹，根為 6：6 → 1, a, 7, b, 8；1 → 2, 3；a → 4, 5；7 → 9, 10；9 → 12；8 → 11",
+        "(E) None."
+      ],
+      "answer": "(A)",
+      "explanation": "<p><b>Height union rule（依高度合併）</b>：把<b>比較矮</b>的樹的根接到<b>比較高</b>的樹的根底下，這樣合併後的高度不會增加（兩棵一樣高時才會 +1）。</p><ul><li>Set 1 最長路徑 1 → a → 4，共 3 層。</li><li>Set 2 最長路徑 6 → 7 → 9 → 12，共 4 層。</li></ul><p>所以把根 1 整棵接到 6 底下，其他結構完全不動，合併後仍是 4 層 → <b>(A)</b>。</p><ul><li>(B) 把 a 子樹搬到 b 底下，union 只動根，不會拆開子樹，而且結果仍是兩棵樹。</li><li>(C) 是把高的接到矮的底下，高度會變 5，違反 height rule。</li><li>(D) 把 a 拉成 6 的子節點，看起來像做了 path compression，但 union 本身不會這樣改。</li></ul>"
+    },
+    {
+      "id": "ds-0132",
+      "topics": [
+        "red-black-tree",
+        "2-3-4-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>3) [2%, 3%] You are given the red-black tree in the following, where the dark colored nodes are red nodes. We insert the data item \"62\" into the tree. (i) Which of the followings is true? (ii) Please illustrate its 2-3-4 tree counterpart representation after 62 is inserted.</p><p>（原圖：R 代表紅色節點、B 代表黑色節點）</p><pre>          50(B)\n        /       \\\n    10(B)       80(R)\n               /     \\\n           65(B)     90(B)\n          /     \\\n      60(R)     70(R)</pre>",
+      "choices": [
+        "(A) 65(B) 為根；65 的左子 50(R)、右子 80(R)；50 的子 10(B)、60(B)；60 的右子 62(R)；80 的子 70(B)、90(B)",
+        "(B) 50(B) 為根；50 的子 10(B)、80(R)；80 的子 65(B)、90(B)；65 的子 60(R)、70(R)；60 的右子 62(B)",
+        "(C) 50(B) 為根；50 的子 10(B)、65(R)；65 的子 60(B)、80(B)；60 的右子 62(R)；80 的子 70(R)、90(R)",
+        "(D) 50(B) 為根；50 的子 60(R)、70(R)；60 的子 10(B)、62(B)；70 的子 65(B)、80(B)；80 的右子 90(R)"
+      ],
+      "answer": "(i) (A)；(ii) 2-3-4 tree：根 [50 | 65 | 80]，四個子節點由左到右為 [10]、[60 | 62]、[70]、[90]",
+      "explanation": "<p><b>(i)</b> 62 先照 BST 規則插入：62 &gt; 50 往右、62 &lt; 80 往左、62 &lt; 65 往左、62 &gt; 60 → 成為 60 的右子，新節點塗紅。</p><ol><li>父 60 是紅、叔叔 70 也是紅 → <b>變色</b>：60、70 變黑，祖父 65 變紅。問題往上移到 65。</li><li>65 紅、父 80 也紅，叔叔 10 是黑 → 要旋轉。65 是 80 的<b>左</b>子、80 是 50 的<b>右</b>子，是 RL 型：先對 80 右旋，再對 50 左旋。</li><li>旋轉後 65 當根並塗黑，50、80 塗紅：65(B) 的左子 50(R)（子 10(B)、60(B)，60 的右子 62(R)），右子 80(R)（子 70(B)、90(B)）。</li></ol><p>檢查：每條根到 NIL 的路徑都經過 2 個黑節點（例如 65→50→10、65→50→60→62→NIL、65→80→90），也沒有紅紅相連 → <b>(A)</b>。</p><p>(B) 沒有處理紅紅衝突、還把 62 塗黑（黑高度不一致）；(C)(D) 的黑高度都不一致。</p><p><b>(ii)</b> 紅黑樹轉 2-3-4 tree：每個黑節點和它的紅色子節點合併成同一個 node。65 和紅子 50、80 合成 [50 | 65 | 80]（4-node）；60 和紅子 62 合成 [60 | 62]；10、70、90 各自是 2-node：</p><pre>            [50 | 65 | 80]\n        /      |       |     \\\n    [10]   [60|62]   [70]   [90]</pre><p>所有葉子在同一層，符合 2-3-4 tree 的性質，這也對應到紅黑樹的黑高度一致。</p>"
+    },
+    {
+      "id": "ds-0133",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>4) [4%] You are given a Bloom filter with the three hash functions as follows, where <i>modf</i>(.) returns the fractional part of a floating point number.</p><pre>f1(x) = floor(modf(x * 0.31) * 16)\nf2(x) = floor(modf(x * 0.24) * 16)\nf3(x) = floor(modf(x * 0.13) * 16)</pre><div class=\"table-scroll\"><table><tr><th>Index</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td></tr><tr><th>Value</th><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr></table></div><p>Which of the followings is (are) true?（複選）</p>",
+      "choices": [
+        "(A) 8 is not in",
+        "(B) 8 may be in",
+        "(C) 8 is in",
+        "(D) 9 is not in",
+        "(E) 9 may be in",
+        "(F) 9 is in"
+      ],
+      "answer": "(A)、(E)",
+      "explanation": "<p>Bloom filter（布隆過濾器）查詢：把 x 丟進每個 hash function，<b>只要有一個位置是 0 就一定不在</b>；全部都是 1 只能說「可能在」（可能是別的元素剛好把這些位置設成 1，也就是 false positive）。所以 Bloom filter 永遠不會回答「一定在」，(C)(F) 一定錯。</p><div class=\"table-scroll\"><table><tr><th>x</th><th>f1</th><th>f2</th><th>f3</th></tr><tr><td>8</td><td>8×0.31 = 2.48 → 0.48×16 = 7.68 → 7</td><td>1.92 → 0.92×16 = 14.72 → 14</td><td>1.04 → 0.04×16 = 0.64 → 0</td></tr><tr><td>9</td><td>2.79 → 0.79×16 = 12.64 → 12</td><td>2.16 → 0.16×16 = 2.56 → 2</td><td>1.17 → 0.17×16 = 2.72 → 2</td></tr></table></div><ul><li>8 對到位置 7、14、0，三個都是 0（其實一個 0 就夠）→ <b>8 is not in</b>，(A)。</li><li>9 對到位置 12、2、2，都是 1 → <b>9 may be in</b>，(E)。</li></ul><p>（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0134",
+      "topics": [
+        "b-tree"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>5) [2%] A B-tree is shown in the following. We remove the data items 70, 10, 60 and 95 in order over the B-tree. What is the resultant of B-tree after the deletions?</p><pre>               [50 | 80]\n           /       |        \\\n    [10 | 20]  [60 | 70]  [90 | 95]</pre><p>（每個節點最多 2 個 key、3 個子指標，即 order 3 的 B-tree；葉節點下方為空指標。）</p>",
+      "answer": "根 [50]，兩個子節點 [20] 和 [80 | 90]",
+      "explanation": "<p>order 3 的 B-tree（也就是 2-3 tree）：每個非根節點至少 1 個 key、最多 2 個。刪除時若節點變空，先看相鄰兄弟能不能借（rotation），不能借就和兄弟合併（把父節點的分隔 key 拉下來）。</p><ol><li><b>刪 70</b>：葉 [60 | 70] → [60]，還有 1 個 key，合法。</li><li><b>刪 10</b>：葉 [10 | 20] → [20]，合法。</li><li><b>刪 60</b>：葉 [60] 變空。左兄弟 [20] 只有 1 個 key 借不了；右兄弟 [90 | 95] 有 2 個可以借：父節點的分隔 key 80 下來補空位、90 上去當新的分隔 key。結果根 [50 | 90]，子節點 [20]、[80]、[95]。</li><li><b>刪 95</b>：葉 [95] 變空，只有左兄弟 [80]，只有 1 個 key 不能借 → 合併：把父節點分隔 key 90 拉下來和 80 合成 [80 | 90]。父節點剩 [50]，仍合法。</li></ol><pre>        [50]\n       /    \\\n   [20]    [80 | 90]</pre><p>易錯：刪 60 時直接和左兄弟 [20] 合併也能得到合法的樹，但 B-tree 的標準做法是<b>先借、借不到才合併</b>，借完樹高不變、節點數也不減。</p>"
+    },
+    {
+      "id": "ds-0135",
+      "topics": [
+        "trie"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>6) [2%, 3%] You are given a Patricia as follows. We insert 1001, 1100, 0000 and 0001 in order into the Patricia. (i) Please show the resultant Patricia after the four data items are inserted. (ii) Please also depict its compressed binary trie counterpart.</p><p>（原圖：header 節點 key = 1000、bit number = 0，其 left child 指向節點 0010；節點 0010 的 bit number = 1，left 指標指回自己、right 指標指回 header 1000。）</p>",
+      "answer": "(i) header 1000(0) → 0010(1)；0010(1)：left → 0000(3)，right → 1100(2)；0000(3)：left → 0001(4)，right → 0010（回指）；0001(4)：left → 0000（回指），right → 自己；1100(2)：left → 1001(4)，right → 自己；1001(4)：left → 1000（回指 header），right → 自己。(ii) 見詳解的 compressed binary trie。",
+      "explanation": "<p>由原圖推得 bit 編號規則：最左邊是第 1 bit（0010 在 bit 1 上，第 1 bit 為 0 的走 left 回到自己，所以 0010 在 left 那邊）。Patricia 的節點存「這裡要檢查第幾 bit」，往下走時若碰到 bit number 沒有變大的指標，就是<b>回指（back edge）</b>，停下來比對那個節點的 key。</p><p><b>插入的通則</b>：先搜尋新 key 會停在哪個節點，找出它和那個 key 第一個不同的 bit i；再從頭往下走，停在第一個 bit number ≥ i（或遇到回指）的位置，插入 bit number = i 的新節點；新 key 的第 i bit 是 1 就把 right 指向自己、left 接原本的指標，是 0 則相反。</p><ol><li><b>1001</b>：搜尋 header → 0010(bit1=1 走 right) → 回到 1000。1001 和 1000 第一個不同在 bit 4。插在 0010 的 right：新節點 1001(4)，bit4 = 1 → right 指自己、left 指 1000。</li><li><b>1100</b>：搜尋 0010 →(bit1=1) 1001(4) →(bit4=0) 回 1000。1100 和 1000 第一個不同在 bit 2。往下走到 0010 的 right 時遇到 bit 4 ≥ 2，插在這裡：1100(2)，bit2 = 1 → right 指自己、left 指 1001(4)。</li><li><b>0000</b>：搜尋 0010 →(bit1=0) 回指 0010。0000 和 0010 第一個不同在 bit 3。插在 0010 的 left：0000(3)，bit3 = 0 → left 指自己、right 指 0010。</li><li><b>0001</b>：搜尋 0010 → 0000(3) →(bit3=0) 回指 0000。0001 和 0000 第一個不同在 bit 4。插在 0000 的 left：0001(4)，bit4 = 1 → right 指自己、left 指 0000。</li></ol><p><b>(i) 結果</b>（括號內為 bit number）：</p><pre>1000(0) .left  → 0010(1)\n0010(1) .left  → 0000(3)     .right → 1100(2)\n0000(3) .left  → 0001(4)     .right → 0010  (回指)\n0001(4) .left  → 0000 (回指) .right → 0001  (自己)\n1100(2) .left  → 1001(4)     .right → 1100  (自己)\n1001(4) .left  → 1000 (回指) .right → 1001  (自己)</pre><p><b>(ii) Compressed binary trie</b>：只在真的需要分岔的 bit 放 branch node（標出檢查第幾 bit），葉節點放 key：</p><pre>                 [bit1]\n              0 /      \\ 1\n          [bit3]        [bit2]\n        0 /    \\ 1    0 /    \\ 1\n     [bit4]   0010  [bit4]   1100\n    0 /  \\ 1       0 /  \\ 1\n  0000   0001     1000   1001</pre><p>對照可以看出：Patricia 的 6 個節點剛好對應 compressed trie 的 5 個 branch node 加上 header，每個 branch node 的 bit number 都一樣，這就是 Patricia 「把 compressed trie 的葉子塞進 branch node」的想法。（已用程式模擬插入驗證。）</p>"
+    },
+    {
+      "id": "ds-0136",
+      "topics": [
+        "bfs-dfs"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>7) [2%] Consider the graph as follows. The DFS traversal is performed, starting from node 1. What are the potential sequences for the traversal?（複選）</p><p>（原圖為無向圖，邊為：1-3、1-7、1-8、2-4、2-5、2-8、2-9、3-5、3-6、4-6、7-9）</p>",
+      "choices": [
+        "(A) 1 7 9 2 4 6 3 5 8",
+        "(B) 1 3 6 4 2 5 9 7 8",
+        "(C) 1 7 8 3 5 6 4 2 9",
+        "(D) 1 8 2 4 6 3 5 9 7",
+        "(E) 1 2 5 6 4 2 9 7 8"
+      ],
+      "answer": "(A)、(B)、(D)",
+      "explanation": "<p>判斷一個序列是不是合法 DFS：每拜訪下一個點時，它必須和「目前堆疊頂端的點」相鄰；只有當頂端的點所有鄰居都已拜訪過，才能退回上一層。</p><ul><li><b>(A)</b> 1→7→9→2→4→6→3→5，5 的鄰居 2、3 都走過，一路退回到 2，2 還有 8 沒走 → 2→8。合法。</li><li><b>(B)</b> 1→3→6→4→2→5，5 走完退回 2 → 9 → 7，7 走完一路退回 1 → 8。合法。</li><li><b>(C)</b> 1→7 之後下一個是 8，但 7 和 8 不相鄰；要退回 1 才能去 8，可是 7 還有未拜訪的鄰居 9，不能退。不合法。</li><li><b>(D)</b> 1→8→2→4→6→3→5，退回 2 → 9 → 7。合法。</li><li><b>(E)</b> 1 和 2 不相鄰，而且 2 出現兩次。不合法。</li></ul><p>（已用程式逐一驗證。）</p>"
+    },
+    {
+      "id": "ds-0137",
+      "topics": [
+        "collision-resolution",
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>8) [4%] The following is a hash table with linear probing. Assume the hash function is f(x) = x mod 17 for indexing the hash table. Data items 23, 52, 11, 1, 50, 99, 65, 20, 35, 34 and 82 are inserted into the hash table in order. Please fill the five blanks in the table.</p><div class=\"table-scroll\"><table><tr><th>key</th><th>value</th></tr><tr><td>0</td><td>34</td></tr><tr><td>1</td><td>(A) ?</td></tr><tr><td>2</td><td>(B) ?</td></tr><tr><td>3</td><td>(C) ?</td></tr><tr><td>4</td><td>(D) ?</td></tr><tr><td>5</td><td>(E) ?</td></tr><tr><td>6</td><td>23</td></tr><tr><td>7</td><td></td></tr><tr><td>8</td><td></td></tr><tr><td>9</td><td></td></tr><tr><td>10</td><td></td></tr><tr><td>11</td><td>11</td></tr><tr><td>12</td><td></td></tr><tr><td>13</td><td></td></tr><tr><td>14</td><td>99</td></tr><tr><td>15</td><td>65</td></tr><tr><td>16</td><td>50</td></tr></table></div>",
+      "answer": "(A) 52；(B) 1；(C) 20；(D) 35；(E) 82",
+      "explanation": "<div class=\"table-scroll\"><table><tr><th>插入</th><th>x mod 17</th><th>放到</th><th>說明</th></tr><tr><td>23</td><td>6</td><td>6</td><td></td></tr><tr><td>52</td><td>1</td><td>1</td><td></td></tr><tr><td>11</td><td>11</td><td>11</td><td></td></tr><tr><td>1</td><td>1</td><td>2</td><td>1 被 52 占，往下一格</td></tr><tr><td>50</td><td>16</td><td>16</td><td></td></tr><tr><td>99</td><td>14</td><td>14</td><td></td></tr><tr><td>65</td><td>14</td><td>15</td><td>14 被占</td></tr><tr><td>20</td><td>3</td><td>3</td><td></td></tr><tr><td>35</td><td>1</td><td>4</td><td>1、2、3 都被占</td></tr><tr><td>34</td><td>0</td><td>0</td><td></td></tr><tr><td>82</td><td>14</td><td>5</td><td>14、15、16 被占，繞回 0、1、2、3、4 也都被占，直到 5</td></tr></table></div><p>所以 (A) 52、(B) 1、(C) 20、(D) 35、(E) 82。82 從 14 一路探測到 5，共比較了 9 次，這就是 linear probing 的 <b>primary clustering</b>：0～6 和 14～16 連成一大塊，之後落在這一帶的 key 都要走很遠。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0138",
+      "topics": [
+        "quick-sort"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>9) [1%, 1%, 1%, 1%] The following C program implements Quick sort. Please fill the four missing parts of the program.</p><pre class=\"code\">int Partition(int *arr, int front, int end){\n    int pivot = arr[end];\n    int i = front -1;\n    for (int j = front; j &lt; end; j++) {\n        if (arr[j] &lt; pivot) {\n            _(A)_;\n            swap(&amp;arr[i], &amp;arr[j]);\n        }\n    }\n    i++;\n    swap(&amp;arr[i], &amp;arr[end]);\n    _(B)_;\n}\nvoid QuickSort(int *arr, int front, int end){\n    if (front &lt; end) {\n        int pivot = Partition(arr, front, end);\n        QuickSort(___C___);\n        QuickSort(___D___);\n    }\n}</pre>",
+      "answer": "(A) i++　(B) return i　(C) arr, front, pivot - 1　(D) arr, pivot + 1, end",
+      "explanation": "<p>這是 Lomuto partition：pivot 取最後一個元素，i 指向「&lt; pivot 區」的最後一格。</p><ul><li><b>(A) i++</b>：找到 arr[j] &lt; pivot 時，小於區要多一格，先 i++ 再把 arr[j] 換進 arr[i]。i 從 front − 1 開始，所以第一次 i++ 後剛好是 front。</li><li><b>(B) return i</b>：迴圈結束後 i++ 指到第一個 ≥ pivot 的位置，把 pivot 換過來，pivot 就在最終位置 i，要回傳給 QuickSort 用。</li><li><b>(C) arr, front, pivot - 1</b>、<b>(D) arr, pivot + 1, end</b>：pivot 已經就位，左右兩段都<b>不含</b> pivot 本身。寫成 (arr, front, pivot) 在這個版本可能讓區間大小不變而無窮遞迴（例如所有元素都比 pivot 小時）。</li></ul>"
+    },
+    {
+      "id": "ds-0139",
+      "topics": [
+        "binary-tree-traversal",
+        "recursion"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>10) [2%, 2%] The following data structure represents a binary tree, and it contains a function named \"unknown\".</p><pre class=\"code\">struct node{\n    int data;\n    struct node *left, *right;\n};\n\nvoid unknown(struct node *p) {\n    struct node *q;\n    if (p -&gt; left != NULL) unknown(p-&gt;left);\n    if (p -&gt; right != NULL) unknown(p-&gt;right);\n    q=p-&gt;left;\n    p-&gt;left=p-&gt;right;\n    p-&gt;right=q;\n}</pre><p>(i) Which of the order does the function perform?<br>(A) preorder (B) inorder (C) postorder (D) level order (E) None of the above.</p><p>(ii) You are given the following input. Once the unknown(r) is performed, what is the value of the rightmost leaf node?<br>(A) 7 (B) 6 (C) 3 (D) 2 (E) None of the above</p><p>（原圖，r 指向根 20：）</p><pre>              20\n          /        \\\n        18          15\n       /  \\        /   \\\n     13    12    10     11\n       \\   / \\   / \\    / \\\n        3 6   7 2   4  5   9</pre><p>（3 是 13 的<b>右</b>子節點，13 沒有左子節點。）</p>",
+      "choices": [
+        "(i) (A) preorder　(B) inorder　(C) postorder　(D) level order　(E) None of the above.",
+        "(ii) (A) 7　(B) 6　(C) 3　(D) 2　(E) None of the above"
+      ],
+      "answer": "(i) (C) postorder；(ii) (C) 3",
+      "explanation": "<p><b>(i)</b> 先遞迴處理左子樹、再處理右子樹，最後才處理自己（交換左右指標），這是 <b>postorder</b>。整個函式的效果是把樹做<b>左右鏡像（mirror）</b>。</p><p><b>(ii)</b> 鏡像後原本的「最左」變成「最右」。鏡像樹：</p><pre>              20\n          /        \\\n        15          18\n       /  \\        /   \\\n     11    10    12     13\n    / \\   / \\   / \\    /\n   9   5 4   2 7   6  3</pre><p>由左到右的葉子是 9、5、4、2、7、6、3，最右邊的葉子是 <b>3</b> → (C)。注意 13 原本只有右子 3，鏡像後 3 變成 13 的<b>左</b>子，但它仍然是整棵樹最右邊的葉子。常見錯誤是只看最右邊路徑 20 → 18 → 13，以為要找 13 的右子而選 (E)。</p>"
+    },
+    {
+      "id": "ds-0140",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>11) [2%, 2%, 2%] A job priority queue is implemented using a Min-Heap in which a lower key value represents a higher priority. The jobs are entered and stored in the Min-Heap as shown in the following array Q.</p><div class=\"table-scroll\"><table><tr><th>index</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td></tr><tr><th>key value</th><td>--</td><td>6</td><td>8</td><td>10</td><td>12</td><td>24</td><td>15</td><td>13</td><td>20</td><td>18</td><td>26</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div><p>(i) [Step 1] Next job is extracted from the job queue for execution. What is the value of Q[4] in the remaining job queue?<br>(A) 15 (B) 18 (C) 20 (D) 26 (E) None of the above</p><p>(ii) [Step 2] After Step (1) is executed, next job is extracted from the job queue for execution. What is the value of Q[5] in the remaining job queue?<br>(A) 13 (B) 15 (C) 18 (D) 24 (E) None of the above</p><p>(iii) [Step 3] After step (2) is executed, a new job with priority 11 is inserted in to the job queue. What is the value of Q[9] in the remaining job queue?<br>(A) 18 (B) 20 (C) 24 (D) 26 (E) None of the above</p>",
+      "choices": [
+        "(i) (A) 15　(B) 18　(C) 20　(D) 26　(E) None of the above",
+        "(ii) (A) 13　(B) 15　(C) 18　(D) 24　(E) None of the above",
+        "(iii) (A) 18　(B) 20　(C) 24　(D) 26　(E) None of the above"
+      ],
+      "answer": "(i) (B) 18；(ii) (D) 24；(iii) (A) 18",
+      "explanation": "<p>陣列從 index 1 開始，Q[i] 的子節點是 Q[2i]、Q[2i+1]。</p><p><b>Step 1 delete-min</b>：取出 6，最後一個 26 搬到根，往下和較小的子節點交換：26 vs (8, 10) → 換 8；26 vs Q[4]=12、Q[5]=24 → 換 12；26 vs Q[8]=20、Q[9]=18 → 換 18。結果 [8, 12, 10, 18, 24, 15, 13, 20, 26]，<b>Q[4] = 18</b> → (B)。</p><p><b>Step 2 delete-min</b>：取出 8，最後一個 26 搬到根：26 vs (12, 10) → 換 10（Q[3]）；26 vs Q[6]=15、Q[7]=13 → 換 13。結果 [10, 12, 13, 18, 24, 15, 26, 20]，<b>Q[5] = 24</b> → (D)。</p><p><b>Step 3 insert 11</b>：放在 Q[9]，父節點 Q[4]=18 &gt; 11 → 交換；11 到 Q[4]，父 Q[2]=12 &gt; 11 → 交換；11 到 Q[2]，父 Q[1]=10 &lt; 11 停。結果 [10, 11, 13, 12, 24, 15, 26, 20, 18]，<b>Q[9] = 18</b> → (A)。</p><p>易錯：往下調整時要和<b>兩個子節點中較小的</b>交換，不是固定和左子交換。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0141",
+      "topics": [
+        "advanced-heaps-overview"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf"
+      },
+      "question": "<p>12) [2%, 2%, 2%, 2%] Consider the two missing parts for the decrease key operation in F-heap.</p><pre class=\"code\">DecreaseKey(H, x, k){\n  if k &gt; x.key return \"error\"\n  x.key = k\n  y = x.p     //note: x.p represents the parent node of x\n  if y ≠ NIL and (1) {\n     CUT(H, x, y)\n     CASCADING − CUT(H, y)\n  }\n  if x.key &lt; H.min.key\n     H.min = x\n}\n\nCUT(H, x, y){\n  x.p = (2)\n  x.mark = FALSE\n}\n\nCASCADING − CUT(H, y){\n  z = y.p\n  if z ≠ NIL\n     if y.mark == FALSE\n        y.mark = TRUE\n     else {\n        CUT(H, y, z)\n        CASCADING − CUT(H, z)\n     }\n}</pre><p>(i) Which of the following for (1) is true?<br>(A) x.key &lt; y.key (B) x.key &gt; y.key (C) x.key ≥ y.key (D) x.key ≤ y.key</p><p>(ii) Which of the followings is true for (2)?<br>(A) NIL (B) y (C) x (D) None of the above</p><p>(iii) What is the amortized time complexity of function DecreaseKey?<br>(A) O(1) (B) O(n) (C) O(lg n) (D) O(lg n²)</p><p>(iv) What is the time complexity of inserting node into F-heap?<br>(A) O(1) (B) O(n) (C) O(lg n) (D) O(lg n²)</p>",
+      "choices": [
+        "(i) (A) x.key < y.key　(B) x.key > y.key　(C) x.key ≥ y.key　(D) x.key ≤ y.key",
+        "(ii) (A) NIL　(B) y　(C) x　(D) None of the above",
+        "(iii) (A) O(1)　(B) O(n)　(C) O(lg n)　(D) O(lg n²)",
+        "(iv) (A) O(1)　(B) O(n)　(C) O(lg n)　(D) O(lg n²)"
+      ],
+      "answer": "(i) (A)；(ii) (A)；(iii) (A)；(iv) (A)",
+      "explanation": "<ul><li><b>(i) (A) x.key &lt; y.key</b>：F-heap（Fibonacci heap，費氏堆積）是 min-heap 序。減完 key 之後，只有在 x 比父節點 y <b>更小</b>時才違反 heap 性質，需要把 x 剪下來；相等時沒有違反，不用剪。</li><li><b>(ii) (A) NIL</b>：CUT 把 x 從 y 的子串列移除、加到 root list，x 變成一棵樹的根，所以 parent 設成 NIL，mark 清成 FALSE（原題只列出這兩行，移除與加入 root list、y.degree 減 1 的步驟省略）。</li><li><b>(iii) (A) O(1)</b>：一次 DecreaseKey 可能觸發一連串 cascading cut，實際成本 O(c)，但每次 cascading cut 都會消掉一個 mark；用位能函數 Φ = t(H) + 2m(H)（樹數 + 2 倍標記數）分析，攤銷成本是 <b>O(1)</b>。這是 F-heap 讓 Dijkstra 變成 O(E + V lg V) 的關鍵。</li><li><b>(iv) (A) O(1)</b>：insert 只是把新節點放進 root list、必要時更新 H.min，不做任何合併，O(1)（實際與攤銷都是）。合併的工作延後到 extract-min 才做。</li></ul><p>附註：題目寫「two missing parts」是指 (1)、(2) 兩個空格，(iii)(iv) 是額外的複雜度問題。</p>"
+    },
+    {
+      "id": "ds-0142",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>3. [5%] Given a graph G as depicted as follows. T is minimum spanning tree (MST) of G. Which of the following descriptions is (are) true?（複選）</p><p>（原圖為無向圖，以邊列表表示：）</p><pre>(A,L) 17   (A,B) 13   (L,F) 16   (L,D) 17   (B,F) 20   (B,G) 4   (G,F) 16\n(F,D) 8    (F,H) 9    (D,M) 9    (D,H) 7    (M,E) 9    (H,E) 14</pre>",
+      "choices": [
+        "(A) Perform Prim's algorithm to find the MST, starting from node L. The last edge included into the MST is (A, B).",
+        "(B) The minimum spanning tree for G is unique.",
+        "(C) If let G2 be G by excluding the edge (M, E), then the G2's MST is identical to G's.",
+        "(D) Let G3 be G2 removing the edge (B, F). The MSTs' of G2 and G3 are identical."
+      ],
+      "answer": "(A)、(B)、(D)",
+      "explanation": "<p>先用 Kruskal 找 MST：(B,G)4、(D,H)7、(F,D)8、(F,H)9 會和 F-D-H 成環跳過、(D,M)9、(M,E)9、(A,B)13、(H,E)14 成環跳過、(L,F)16、(G,F)16，到這裡 9 個點用了 8 條邊。T = {BG, DH, FD, DM, ME, AB, LF, GF}，總重 <b>82</b>。</p><ul><li><b>(A) 對</b>：Prim 從 L 開始，依序加入 (L,F)16、(F,D)8、(D,H)7、(D,M)9、(M,E)9、(F,G)16、(G,B)4、(B,A)13。最後一條是 (A,B)。注意 Prim 每次是挑「跨越已選集合與未選集合的最小邊」，所以 (B,G)=4 雖然最小，也要等 G 先被接上才會被選。</li><li><b>(B) 對</b>：權重相同的邊有 (F,H)、(D,M)、(M,E) 都是 9，(L,F)、(G,F) 都是 16，(A,L)、(L,D) 都是 17。逐一檢查：(F,H) 若換進來必須拿掉 (F,D) 或 (D,H)，但它們更輕；(L,F) 與 (G,F) 都必須選（L 的其他邊都是 17，G 那一群只能靠 (G,F)16 或 (B,F)20 接過來）。用程式列舉所有生成樹，總重 82 的只有一棵，所以 MST 唯一。</li><li><b>(C) 錯</b>：拿掉 (M,E) 後 E 只能靠 (H,E)14 接上，G2 的 MST 總重 87，和 G 的不同。</li><li><b>(D) 對</b>：(B,F)=20 本來就不在 G2 的 MST 裡，拿掉不在 MST 裡的邊，MST 不變（仍是 87）。</li></ul>"
+    },
+    {
+      "id": "ds-0143",
+      "topics": [
+        "avl-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>4. [5%] Given an AVL tree as follows, we perform the operations (A), (B), (C), (D) and (E), independently. Which of these operations would result in the tree to be unbalanced, and shall be restructured?（複選）</p><pre>        22\n      /    \\\n    17      35\n      \\       \\\n       20      36</pre>",
+      "choices": [
+        "(A) insert 18",
+        "(B) insert 33",
+        "(C) insert 38",
+        "(D) delete 35",
+        "(E) delete 22"
+      ],
+      "answer": "(A)、(C)",
+      "explanation": "<p>原本 17 和 35 的 balance factor 都是 −1（右邊高 1），22 是 0。每個操作各自獨立做在原樹上：</p><ul><li><b>(A) insert 18</b>：18 &gt; 17、18 &lt; 20，成為 20 的左子。17 的左子樹高 0、右子樹高 2，BF = −2 → <b>不平衡</b>（RL 型，要雙旋轉）。</li><li><b>(B) insert 33</b>：成為 35 的左子，35 的 BF 變 0，沒事。</li><li><b>(C) insert 38</b>：成為 36 的右子，35 的 BF = −2 → <b>不平衡</b>（RR 型，對 35 左旋）。</li><li><b>(D) delete 35</b>：35 只有一個子節點 36，直接用 36 頂上。22 的左子樹高 2、右子樹高 1，BF = 1，仍平衡。</li><li><b>(E) delete 22</b>：用中序前驅 20（或後繼 35）取代根。用 20：20 的左子 17、右子 35(→36)，BF = −1；用 35：35 的左子 17(→20)、右子 36，BF = 1，兩種都平衡。</li></ul>"
+    },
+    {
+      "id": "ds-0144",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>5. [5%] Suppose we have a Red-Black tree as shown below. Let us insert 6, 14 and 11 in order. Which of the following statements is (are) correct?（複選）</p><p>（原圖：方形為黑色、圓形為紅色；以下 B = black、R = red）</p><pre>              10(B)\n           /        \\\n        8(R)        15(B)\n       /   \\       /    \\\n    3(B)   9(B)  13(R)  22(R)\n       \\\n       7(R)</pre>",
+      "choices": [
+        "(A) The resultant Red-Black tree contains 6 red nodes.",
+        "(B) The color of node of value 8 is black.",
+        "(C) The color of node of value 14 is red.",
+        "(D) The parent's value of node of value 7 is 3.",
+        "(E) The children of node of value 10 are red nodes."
+      ],
+      "answer": "(A)、(C)、(E)",
+      "explanation": "<ol><li><b>插入 6</b>：路徑 10 → 8 → 3 → 7，6 成為 7 的左子（紅）。父 7 紅、叔叔（3 的左子）是 NIL 黑 → 要旋轉。6 是 7 的左子、7 是 3 的右子（RL 型）：先對 7 右旋、再對 3 左旋，6 變黑、3 變紅。結果 8 的左子變成 6(B)，6 的子為 3(R)、7(R)。</li><li><b>插入 14</b>：路徑 10 → 15 → 13，14 成為 13 的右子（紅）。父 13 紅、叔叔 22 紅 → 變色：13、22 變黑，15 變紅。15 的父 10 是黑，結束。</li><li><b>插入 11</b>：成為 13 的左子（紅），父 13 是黑，直接結束。</li></ol><pre>              10(B)\n           /        \\\n        8(R)         15(R)\n       /   \\        /     \\\n    6(B)   9(B)   13(B)   22(B)\n    /  \\          /  \\\n  3(R) 7(R)    11(R) 14(R)</pre><ul><li>(A) 對：紅色節點 8、3、7、15、11、14，共 6 個。</li><li>(B) 錯：8 是紅色。</li><li>(C) 對：14 是紅色。</li><li>(D) 錯：7 的父節點是 6。</li><li>(E) 對：10 的兩個子 8、15 都是紅色。</li></ul><p>檢查黑高度：每條根到 NIL 路徑都經過 2 個黑節點（不含 NIL），合法。（已用程式模擬插入驗證。）</p>"
+    },
+    {
+      "id": "ds-0145",
+      "topics": [
+        "m-way-search-tree",
+        "b-tree",
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>6. [5%] Which of the following statements is (are) correct?（複選）</p>",
+      "choices": [
+        "(A) The maximum number of data items stored in an m-way search tree is m<sup>h</sup>-1, where h is the height of the tree.",
+        "(B) An 2-3-4 tree is a B-tree of order 5.",
+        "(C) Any internal node (excluding the root) has at a least ceil(m/2) children in an B-tree of order m.",
+        "(D) The external nodes on the same level in an B-tree.",
+        "(E) An Red-Black tree is a binary tree form of an 2-3 tree."
+      ],
+      "answer": "(A)、(C)、(D)",
+      "explanation": "<ul><li><b>(A) 對</b>：高度 h 的 m-way search tree 最多有 1 + m + … + m<sup>h−1</sup> = (m<sup>h</sup> − 1)/(m − 1) 個節點，每個節點最多 m − 1 個 key，相乘得 m<sup>h</sup> − 1。</li><li><b>(B) 錯</b>：2-3-4 tree 每個節點最多 4 個子節點，是 order <b>4</b> 的 B-tree（同理 2-3 tree 是 order 3）。</li><li><b>(C) 對</b>：order m 的 B-tree，根以外的內部節點至少有 ⌈m/2⌉ 個子節點，這是 B-tree 的定義，保證樹不會太高。</li><li><b>(D) 對</b>：B-tree 所有 external node（失敗節點）都在同一層，也就是完全平衡。原句文法不完整，但意思明確。</li><li><b>(E) 錯</b>：紅黑樹對應的是 <b>2-3-4 tree</b>（一個黑節點加最多兩個紅子 = 一個最多 3 key 的節點）。只有 left-leaning red-black tree 這個變形才對應 2-3 tree。</li></ul>"
+    },
+    {
+      "id": "ds-0146",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>7. [5%] A hash table in size of 10 adopts open addressing with linear probing, where its hash function is defined as h(k)=k%10. The table is initially empty. We insert 6 data items into the table, resulting in the following table. Which of the following choices gives a possible order for inserting the data items to the table?（複選）</p><div class=\"table-scroll\"><table><tr><th>index</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr><tr><th>key</th><td></td><td></td><td>22</td><td>43</td><td>14</td><td>32</td><td>26</td><td>53</td><td></td><td></td></tr></table></div>",
+      "choices": [
+        "(A) 32, 14, 53, 26, 22, 43",
+        "(B) 42, 22, 13, 26, 53, 32",
+        "(C) 22, 43, 14, 32, 53, 26",
+        "(D) 43, 22, 14, 26, 32, 53",
+        "(E) 14, 43, 22, 32, 26, 53"
+      ],
+      "answer": "(D)、(E)",
+      "explanation": "<p>先看每個 key 的「家」：22 → 2、43 → 3、14 → 4、32 → 2、26 → 6、53 → 3。只有 22、43、14、26 待在自己的家，32 被擠到 5、53 被擠到 7，所以：</p><ul><li>22、43、14、26 必須在占它們位置的元素之前進來（尤其 22 要早於 32，43 要早於 53）。</li><li>32 進來時 2、3、4 必須已被占、5 是空的；53 進來時 3～6 都要已被占。</li></ul><ul><li>(A) 32 第一個進來會占 2 → 錯。</li><li>(B) 有 42、13，不是表中的資料 → 錯。</li><li>(C) 53 進來時 6 還空著，53 會落在 6 → 錯。</li><li>(D) 43→3、22→2、14→4、26→6、32 探 2,3,4 → 5、53 探 3,4,5,6 → 7。<b>對</b>。</li><li>(E) 14→4、43→3、22→2、32 → 5、26→6、53 → 7。<b>對</b>。</li></ul><p>（已用程式模擬驗算。）</p>"
+    },
+    {
+      "id": "ds-0147",
+      "topics": [
+        "min-max-heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>8. [5%] Consider an Min-Max heap represented as an array [3, 20, 13, 6, 5, 4, 8, 10, 15, 12, 9, 7]. If we exchange any two values X and Y in the array, which of the choices is (are) NOT Min-Max heap(s)?（複選）</p>",
+      "choices": [
+        "(A) 5 and 7",
+        "(B) 4 and 9",
+        "(C) 8 and 9",
+        "(D) 13 and 9",
+        "(E) 5 and 10"
+      ],
+      "answer": "(B)、(E)",
+      "explanation": "<p>Min-max heap：根在 min level，之後 max、min 交替。min level 的節點 ≤ 子樹中所有值；max level 的節點 ≥ 子樹中所有值。原陣列（index 從 1）：</p><pre>level 1 (min):  3\nlevel 2 (max):  20            13\nlevel 3 (min):  6     5       4     8\nlevel 4 (max):  10 15 12 9    7</pre><p>（6 的子 10、15；5 的子 12、9；4 的子 7。）</p><ul><li>(A) 5↔7：5 移到 4 的子節點位置（max level，沒有子樹，只要 ≤ 13、≥ 4），7 移到 min level 當 12、9 的父 → 7 ≤ 12、9，且 ≤ 20。仍合法。</li><li>(B) 4↔9：9 到 min level 當 7 的父，但 9 &gt; 7，違反 min 性質 → <b>不是</b>。</li><li>(C) 8↔9：9 到 13 底下的 min level 葉子位置，9 ≤ 13 OK；8 到 5 的子節點位置，8 ≥ 5、≤ 20 OK。仍合法。</li><li>(D) 13↔9：9 在 max level 位置，子樹是 4、8、7，都 ≤ 9；13 到 5 底下，13 ≥ 5、≤ 20。仍合法。</li><li>(E) 5↔10：10 到 min level 當 12、9 的父，但 9 &lt; 10 → <b>不是</b>（另外 5 到 6 的子節點位置也比 6 小，同樣違反）。</li></ul><p>（已用程式逐一檢查。）</p>"
+    },
+    {
+      "id": "ds-0148",
+      "topics": [
+        "trie"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>9. [5%] Suppose we have a Patricia trie as shown below. Let us insert 0110 into and then delete 1100 from the trie. What does node 1101 point to?</p><p>（原圖以指標列表表示，括號內為 bit number，bit 由左而右編號 1～4：）</p><pre>0001(0) [header] .left → 1101(1)\n1101(1)  .left → 0011(3)     .right → 1001(2)\n0011(3)  .left → 0001 (回指 header)   .right → 0011 (自己)\n1001(2)  .left → 1000(4)     .right → 1100(4)\n1000(4)  .left → 1000 (自己) .right → 1001 (回指)\n1100(4)  .left → 1100 (自己) .right → 1101 (回指)</pre>",
+      "choices": [
+        "(A) 0001",
+        "(B) 0110",
+        "(C) 0011",
+        "(D) 1001",
+        "(E) 1000"
+      ],
+      "answer": "1101 的 left 指向 0110、right 指向 1001，即 (B) 與 (D)（待確認：題目只問一個答案，命題意圖可能是指 left 指標，即 (B)）",
+      "explanation": "<p><b>插入 0110</b>：搜尋 header → 1101(bit1 = 0，走 left) → 0011(bit3 = 1，走 right) → 回指自己，停在 0011。0110 和 0011 第一個不同的是 bit 2。從頭往下走：1101 的 bit number 1 &lt; 2 繼續，下一個 0011 的 bit number 3 ≥ 2 停下，所以新節點插在 1101 的 left 上：0110(2)，它的 bit 2 是 1 → right 指自己、left 指原本的 0011。</p><p><b>刪除 1100</b>：1100 有一個指向自己的指標（left），這種節點直接拿掉：父節點 1001 原本指向 1100 的 right 指標，改成 1100 的另一個指標所指的對象，也就是回指 1101。</p><p>結果 1101 自己的兩個指標：<b>left → 0110</b>、<b>right → 1001</b>。刪除 1100 只改到 1001 的指標，不影響 1101。選項中同時出現 0110 與 1001，題目又是單數問法，推測命題者想考的是「插入 0110 後，1101 原本指向 0011 的 left 改指向 0110」，答 (B)（待確認）。</p>"
+    },
+    {
+      "id": "ds-0149",
+      "topics": [
+        "trie"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>10. [5%] Please identify which of the following statement(s) is (are) true.（複選）</p>",
+      "choices": [
+        "(A) Tries outperform digital search trees in terms of the number of comparison operations performed.",
+        "(B) Compared with tries, compressed tries take less storage overheads.",
+        "(C) Patricia outperforms compressed tries in terms of storage overheads.",
+        "(D) Both Patricia and digital search trees take the identical complexity of storage overheads.",
+        "(E) Patricia outperforms digital search trees in terms of the number of comparison operations performed."
+      ],
+      "answer": "(A)、(B)、(C)、(D)、(E)（待確認）",
+      "explanation": "<p>這題比較的是 <b>key 的比較次數</b>（一次比較整個 key，成本高）與<b>儲存空間</b>：</p><ul><li><b>(A) 對</b>：digital search tree（數位搜尋樹）每經過一個節點都要拿整個 key 比一次，最多 h 次；trie 在 branch node 只看一個 bit，只有走到 element node 時才比一次 key。</li><li><b>(B) 對</b>：compressed trie 把只有一個子節點的 branch node 去掉，節點數從可能很多降到 n 個 element node + n − 1 個 branch node。</li><li><b>(C) 對</b>：Patricia 把 element 直接放進 branch node，n 個 key 只要 n 個節點（加 header），比 compressed trie 的 2n − 1 個節點少。</li><li><b>(D) 對</b>：兩者都是一個 key 一個節點，空間都是 Θ(n)。</li><li><b>(E) 對</b>：Patricia 往下走時只看 bit，最後遇到回指才比一次 key；DST 每層都比 key。</li></ul><p>五個敘述都成立。全對的選擇題比較少見，這裡依各結構的定義判斷（待確認）。</p>"
+    },
+    {
+      "id": "ds-0150",
+      "topics": [
+        "heap-sort",
+        "heap"
+      ],
+      "level": "exam",
+      "type": "追蹤",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf"
+      },
+      "question": "<p>13. (10%) Illustrate the operation of HEAPSORT on the array S=[5, 13, 2, 25, 7, 17, 20, 8, 4]</p>",
+      "answer": "Build-max-heap 後為 [25, 13, 20, 8, 7, 17, 2, 5, 4]；之後每次把根換到尾端再 heapify，最後得到 [2, 4, 5, 7, 8, 13, 17, 20, 25]",
+      "explanation": "<p><b>第一步：Build-Max-Heap</b>（index 從 1，從 ⌊9/2⌋ = 4 往回對每個內部節點做 max-heapify）：</p><div class=\"table-scroll\"><table><tr><th>處理 i</th><th>動作</th><th>陣列</th></tr><tr><td>4 (25)</td><td>子 8、4 都比較小，不動</td><td>[5, 13, 2, 25, 7, 17, 20, 8, 4]</td></tr><tr><td>3 (2)</td><td>子 17、20，和 20 交換</td><td>[5, 13, 20, 25, 7, 17, 2, 8, 4]</td></tr><tr><td>2 (13)</td><td>子 25、7，和 25 交換；13 再和子 8、4 比，不動</td><td>[5, 25, 20, 13, 7, 17, 2, 8, 4]</td></tr><tr><td>1 (5)</td><td>和 25 交換 → 5 和 13 交換 → 5 和 8 交換</td><td>[25, 13, 20, 8, 7, 17, 2, 5, 4]</td></tr></table></div><p><b>第二步：反覆取最大值</b>：把 A[1] 和 heap 最後一個交換，heap 大小減 1，再對根 max-heapify。（| 右邊是已排好的部分）</p><pre>[20, 13, 17, 8, 7, 4, 2, 5] | 25\n[17, 13, 5, 8, 7, 4, 2]     | 20, 25\n[13, 8, 5, 2, 7, 4]         | 17, 20, 25\n[8, 7, 5, 2, 4]             | 13, 17, 20, 25\n[7, 4, 5, 2]                | 8, 13, 17, 20, 25\n[5, 4, 2]                   | 7, 8, 13, 17, 20, 25\n[4, 2]                      | 5, 7, 8, 13, 17, 20, 25\n[2]                         | 4, 5, 7, 8, 13, 17, 20, 25</pre><p>最終結果 [2, 4, 5, 7, 8, 13, 17, 20, 25]。（已用程式驗算每一步。）Build-heap 是 O(n)，之後 n − 1 次 heapify 各 O(lg n)，總共 O(n lg n)。易錯：build-heap 要從最後一個內部節點<b>往前</b>做，從根往下做會得到錯的 heap。</p>"
+    },
+    {
+      "id": "ds-0151",
+      "topics": [
+        "avl-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Which of the following statements about n-element AVL trees are false?",
+      "choices": [
+        "(A) The time complexity of deleting element with key k is O(1).",
+        "(B) The time complexity of insertion is O(log n).",
+        "(C) If the AVL tree has height = h, then n &gt;= F<sub>h+1</sub> -1, where F<sub>h+1</sub> is the Fibonacci number, i.e., F<sub>h+1</sub>=F<sub>h</sub>+F<sub>h-1</sub>.",
+        "(D) h<sub>L</sub> - h<sub>R</sub> should be 0, where h<sub>L</sub> and h<sub>R</sub> denote the height of the left subtree and the right subtree, respectively."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>題目問的是「錯的」敘述。</p><ul><li>(A) 錯（要選）。刪除要先花 O(log n) 往下找到 k，刪完還要沿路往上檢查平衡、可能旋轉好幾次，整體是 O(log n)，不可能 O(1)。</li><li>(B) 對。AVL tree 的高度是 O(log n)，插入＝往下找位置 O(log n)＋最多一次（單或雙）旋轉 O(1)。</li><li>(C) 對。高度 h（只有根時 h = 1）的 AVL tree 最少有 N<sub>h</sub> = N<sub>h-1</sub> + N<sub>h-2</sub> + 1 個節點，解出來 N<sub>h</sub> = F<sub>h+2</sub> − 1（N<sub>1</sub>=1、N<sub>2</sub>=2、N<sub>3</sub>=4、N<sub>4</sub>=7）。所以 n ≥ F<sub>h+2</sub> − 1 ≥ F<sub>h+1</sub> − 1，題目的不等式比較寬鬆，但仍然成立。就算高度從 0 算起（N(h) = F<sub>h+3</sub> − 1），結論也一樣。</li><li>(D) 錯（要選）。AVL 只要求 |h<sub>L</sub> − h<sub>R</sub>| ≤ 1，balance factor 可以是 −1、0、1，不必剛好是 0；要求每個節點都是 0 就只剩 full binary tree 了。</li></ul>"
+    },
+    {
+      "id": "ds-0152",
+      "topics": [
+        "leftist-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Consider a weight-biased leftist tree (WBLT). Let <b>w</b>(x) be the number of internal nodes in the subtree with root x. Which of the following statements are false?",
+      "choices": [
+        "(A) The length of the rightmost path from internal node x to an external node must be no greater than log<sub>2</sub>(<b>w</b>(x)+1).",
+        "(B) The height of the subtree with root x must be no greater than log<sub>2</sub>(<b>w</b>(x)+1).",
+        "(C) Combining two weight-based leftist trees with a total of n elements is done in time O(log n).",
+        "(D) A max WBLT is a max tree that for every internal node y, <b>w</b>(LeftChild(y)) is greater than or equal to <b>w</b>(RightChild(y))."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>WBLT（weight-biased leftist tree）的條件：每個內部節點的左子樹內部節點數 ≥ 右子樹內部節點數。</p><ul><li>(A) 對。這是 WBLT 的關鍵性質：往右走一步，子樹大小至少少一半，所以最右路徑長度 ≤ log<sub>2</sub>(w(x)+1)。</li><li>(B) 錯（要選）。leftist tree 只限制「右邊」短，左邊可以很長。例如每個節點都只有左子節點的一條鏈（n 個節點），它是合法的 WBLT，但高度是 n，遠大於 log<sub>2</sub>(n+1)。</li><li>(C) 對。合併（meld）只沿著兩棵樹的最右路徑走，兩條路徑長度都是 O(log n)，所以是 O(log n)。</li><li>(D) 對。這就是 max WBLT 的定義：同時是 max tree 又滿足左重右輕。</li></ul>"
+    },
+    {
+      "id": "ds-0153",
+      "topics": [
+        "recursion"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Which of the following statements are true?",
+      "choices": [
+        "(A) In general, a recursive version is less efficient in terms of time and space than a non-recursive version.",
+        "(B) The function <b>F1</b> below is executable (i.e., terminable) for all positive integer x.<pre class=\"code\">Int F1(int x)\n{\n    If x is even then\n        return x/2;\n    else\n        return F1(F1(3x+1));\n}</pre>",
+        "(C) When input data are 21 and 12, the output of function <b>F2</b> is 4, i.e., <b>F2</b>(21, 12)=4.<pre class=\"code\">Int F2(int x, int y)\n{\n    If y=0 then\n        return x;\n    else\n        return F2(y, x mod y);\n}</pre>",
+        "(D) When input data is 5, the output of function <b>F3</b> is 5, i.e., <b>F3</b>(5) =5.<pre class=\"code\">Int F3(int x)\n{\n    Int p, q;\n\n    If x &lt;= 2 then\n        return x;\n    else\n        p=F3(x-2);\n        q=F3(x-3);\n        return p+q;\n}</pre>"
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<ul><li>(A) 對。一般而言 recursion（遞迴）每次呼叫都要建立 stack frame、存參數和返回位址，時間和空間都比等價的迴圈版多。</li><li>(B) 對。x 是偶數直接結束。x 是奇數時 3x+1 是偶數，內層 F1(3x+1) 直接回傳 (3x+1)/2，所以 F1(x) = F1((3x+1)/2)。把 x 寫成 x+1 = 2<sup>k</sup>·m（m 奇數，x 奇數所以 k ≥ 1），則 (3x+1)/2 + 1 = 3·2<sup>k-1</sup>·m，也就是每做一次，x+1 裡的 2 的次方就少 1。最多 k 次之後 x+1 變奇數、x 變偶數，就結束了。例如 F1(7)：7 → 11 → 17 → 26，回傳 13。用程式對 1～199999 全部測過都會停。</li><li>(C) 錯。F2 就是輾轉相除法：F2(21,12) → F2(12,9) → F2(9,3) → F2(3,0) = 3，gcd 是 3 不是 4。</li><li>(D) 錯。F3(5) = F3(3) + F3(2)；F3(3) = F3(1) + F3(0) = 1 + 0 = 1；F3(2) = 2。所以 F3(5) = 1 + 2 = 3，不是 5。</li></ul><p>（B、C、D 都已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0154",
+      "topics": [
+        "array-address"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>In a 2-dimension integer array arr[5][5], which of the followings are equal to arr[3][2]?",
+      "choices": [
+        "(A) *(*arr+17)",
+        "(B) (*(arr+3))[2]",
+        "(C) *((*(arr+3))+2)",
+        "(D) (*arr+3)[2]"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p>arr[5][5] 以 row-major 存放，arr[3][2] 是第 3×5 + 2 = 17 個 int（從 0 算起）。關鍵是分清楚指標的型別：<code>arr+i</code> 一次跳一整列（5 個 int），<code>*arr</code> 是 int*，一次跳 1 個 int。</p><ul><li>(A) 對。<code>*arr</code> 指向 arr[0][0]，往後 17 個 int 就是 arr[3][2]。</li><li>(B) 對。<code>*(arr+3)</code> 是第 3 列，<code>[2]</code> 取第 2 個，就是 arr[3][2]。</li><li>(C) 對。和 (B) 一樣，只是把 [2] 改寫成 <code>*(…+2)</code>。</li><li>(D) 錯。<code>*arr+3</code> 指向 arr[0][3]，再 [2] 是往後 2 個 int，也就是第 5 個 int，等於 arr[1][0]。常見錯誤是把 <code>*arr+3</code> 看成 <code>*(arr+3)</code>。</li></ul>"
+    },
+    {
+      "id": "ds-0155",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Insert the set {23, 12, 34, 46, 28, 11, 6, 7, 0, 33, 30, 45} into an empty hash Table T of size 17. Suppose that the hash function <b>h</b>(k , i) = (k + i) mod 17, where i = 0 to 16. If we remove 46 after inserting the set, which keys should modify their positions?",
+      "choices": [
+        "(A) 11",
+        "(B) 0",
+        "(C) 33",
+        "(D) 45",
+        "(E) 30"
+      ],
+      "answer": "(A)(D)(E)",
+      "explanation": "<p>h(k, i) = (k + i) mod 17 就是 linear probing（線性探測）。依序插入後的表（只列有東西的格子）：</p><div class=\"table-scroll\"><table><tr><th>位置</th><td>0</td><td>1</td><td>2</td><td>6</td><td>7</td><td>8</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td></tr><tr><th>key</th><td>34</td><td>0</td><td>45</td><td>23</td><td>6</td><td>7</td><td>28</td><td>12</td><td>46</td><td>11</td><td>30</td><td>33</td></tr></table></div><p>11（home 11）、30（home 13）、33（home 16）、45（home 11）都因為碰撞被往後擠。刪掉 46 之後位置 13 空出來，如果不處理，之後找 11、30、45 會在 13 停下來誤判「不存在」，所以要把同一串（cluster）裡、home 在空格之前的 key 往前補：</p><ul><li>14 的 11（home 11）→ 補到 13；空格變 14。</li><li>15 的 30（home 13）→ 補到 14；空格變 15。</li><li>16 的 33（home 16）：home 就在自己這格，不動。</li><li>0 的 34、1 的 0（home 0）：home 在空格 15 之後，不動。</li><li>2 的 45（home 11）：從 11 一路探測到 2 會經過 15，所以補到 15。</li><li>3 是空的，結束。</li></ul><p>要移動的是 11、30、45。和「刪掉 46 後把其他 11 個 key 重新插入」得到的表完全一樣（已用程式驗算）。常見錯誤是以為只有緊接在後面的 11 要動，忘了繞回表頭的 45。</p>"
+    },
+    {
+      "id": "ds-0156",
+      "topics": [
+        "quick-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Let T(n) denote the time taken to sort a list of n records. Which of the following statements are false for QuickSort?",
+      "choices": [
+        "(A) T(n) = 2T(n/2) + cn for some constant c in the worst-case scenario.",
+        "(B) T(n) = 4T(n/4) + cn for some constant c in the worst-case scenario.",
+        "(C) T(n) = T(n-1) + cn for some constant c in the worst-case scenario.",
+        "(D) T(n) = 2T(n-2) + cn for some constant c in the best-case scenario."
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<p>QuickSort 每一層 partition 花 cn，差別只在 pivot 把資料切得均不均勻。</p><ul><li>最差情況：pivot 每次都是最大或最小，切成 0 和 n−1，T(n) = T(n−1) + cn，展開得 O(n²)。所以 (C) 對，(A)(B) 描述的是切得很平均的情況，用在 worst case 是錯的。</li><li>最好情況：每次剛好切一半，T(n) = 2T(n/2) + cn = O(n log n)。(D) 的 2T(n−2) 代表兩邊各 n−2 個，總數比 n 還多，根本不是切割，而且解出來是指數級，錯。</li></ul>"
+    },
+    {
+      "id": "ds-0157",
+      "topics": [
+        "activity-network"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>The adjacency list below is for an AOE network. The <b>end</b> field points to a list of adjacent vertices, <b>dur</b> field is the duration of the activity, <b>link</b> field points to another adjacent vertex, <b>vertex</b> field is the id of the adjacent vertex, <b>count</b> filed is the number of immediate predecessors. Which of the following statements are true?<p>（原卷的 adjacency list 圖整理如下：每一列是 count 值，以及 end 所指串列中依序的 (vertex, dur) 節點。）</p><div class=\"table-scroll\"><table><tr><th>vertex</th><th>count</th><th>end 串列 (vertex, dur)</th></tr><tr><td>0</td><td>0</td><td>(1, 5) → (2, 4) → (3, 5)</td></tr><tr><td>1</td><td>1</td><td>(4, 2)</td></tr><tr><td>2</td><td>1</td><td>(4, 3)</td></tr><tr><td>3</td><td>1</td><td>(5, 2)</td></tr><tr><td>4</td><td>2</td><td>(6, 9) → (7, 7)</td></tr><tr><td>5</td><td>1</td><td>(7, 5)</td></tr><tr><td>6</td><td>1</td><td>(8, 2)</td></tr><tr><td>7</td><td>2</td><td>(8, 5)</td></tr><tr><td>8</td><td>2</td><td>0（無）</td></tr></table></div>",
+      "choices": [
+        "(A) The total duration of the critical path is 18.",
+        "(B) Path 0, 1, 4, 6, 8 is not a critical path.",
+        "(C) Path 0, 2, 4, 7, 8 is a critical path.",
+        "(D) The latest time that event 4 (i.e., vertex 4) can occur is 8."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<p>先用拓撲順序算 earliest event time（最早發生時間）ee，再從終點倒推 latest event time（最晚發生時間）le：</p><div class=\"table-scroll\"><table><tr><th>event</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr><tr><th>ee</th><td>0</td><td>5</td><td>4</td><td>5</td><td>7</td><td>7</td><td>16</td><td>14</td><td>19</td></tr><tr><th>le</th><td>0</td><td>5</td><td>4</td><td>7</td><td>7</td><td>9</td><td>17</td><td>14</td><td>19</td></tr></table></div><p>例如 ee[4] = max(5+2, 4+3) = 7；ee[8] = max(16+2, 14+5) = 19；le[4] = min(17−9, 14−7) = 7。</p><ul><li>(A) 錯。整個工程最快 19 才完成，critical path 長度是 19 不是 18。</li><li>(B) 對。0→1→4→6→8 長度 5+2+9+2 = 18 &lt; 19，而且 event 6 的 ee=16、le=17 有 1 單位的鬆弛，不是 critical path。</li><li>(C) 對。0→2→4→7→8 長度 4+3+7+5 = 19，路上每個 event 的 ee = le，是 critical path（0→1→4→7→8 也是，critical path 有兩條）。</li><li>(D) 錯。le[4] = 7，最晚 7 就要發生，不是 8。</li></ul><p>（ee、le 已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0158",
+      "topics": [
+        "shortest-path"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（資料結構與演算法）",
+        "no": "問答-2",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf"
+      },
+      "question": "A weighted graph G=(V, E) is an undirected graph with nonnegative weight assigned to each edge in E. The length of a path in G is the sum of edge weights of the edges in the path. A path P from vertex u to vertex v is said to be shortest if the length of P is smallest for all paths from vertex u to vertex v.<p>(A) (12%) For a weighted graph <i>G</i>=(<i>V</i>, <i>E</i>) and two vertices <i>x</i>, <i>y</i> in <i>V</i>, give an efficient algorithm to find a shortest path from <i>x</i> to <i>y</i>. Analyses the time complexity of the algorithm.</p><p>(B) (13%) Now you are given a weighted graph <i>G</i>=(<i>V</i>, <i>E</i>), a specified vertex <i>s</i> in <i>V</i>, an array <i>d</i>[ ] of size |<i>V</i>|, and it is claimed that for each <i>v</i> in <i>V</i>, <i>d</i>[<i>v</i>] is the length of the shortest path from <i>s</i> to <i>v</i>. The claim may be correct or may be not. Design a linear time algorithm to check whether the claim is correct. Analyses the time complexity of your algorithm and make sure it is linear, that is, the running time of your algorithm must be <i>O</i>(|<i>V</i>|+|<i>E</i>|).</p>",
+      "answer": "(A) 從 x 跑 Dijkstra，同時記錄 predecessor，到 y 被取出時就停，沿 predecessor 倒推出路徑；用 binary heap 是 O((|V|+|E|) log |V|)。(B) 檢查 d[s]=0、每條邊都不能再 relax，且由「tight 邊」（d[v]=d[u]+w(u,v)）構成的子圖從 s 出發能走到所有 d 有限的點、走不到的點 d 都是 ∞；全部成立才正確，O(|V|+|E|)。",
+      "explanation": "<p><b>(A)</b> 權重非負，用 Dijkstra's algorithm（戴克斯特拉演算法）：</p><pre class=\"code\">for each v: dist[v] = ∞, pred[v] = NIL\ndist[x] = 0；把所有點放進 min-priority queue Q（key = dist）\nwhile Q 不空:\n    u = ExtractMin(Q)\n    if u == y: break          // y 的距離已確定\n    for each edge (u, v):\n        if dist[u] + w(u,v) &lt; dist[v]:\n            dist[v] = dist[u] + w(u,v); pred[v] = u\n            DecreaseKey(Q, v)\n沿 pred[] 從 y 倒推回 x，就是一條最短路徑</pre><p>正確性：權重非負，所以被取出的點，距離不可能再被後面的點改小。時間：每個點 ExtractMin 一次、每條邊（無向圖算兩個方向）最多 DecreaseKey 一次。用 binary heap 是 O((|V|+|E|) log |V|)；用陣列找最小值是 O(|V|²)，稠密圖時比較好；用 Fibonacci heap 是 O(|E| + |V| log |V|)。</p><p><b>(B)</b> 不能重跑 Dijkstra（那不是線性）。改成直接驗證 d[] 是不是「最短距離」該有的樣子：</p><ol><li>d[s] 必須是 0。</li><li>對每條邊 (u, v)（兩個方向都檢查）：d[v] ≤ d[u] + w(u, v)。若有一條邊還能 relax，d[v] 一定不是最短距離，回答錯誤。</li><li>把滿足 d[v] = d[u] + w(u, v) 的邊稱為 tight 邊。只用 tight 邊從 s 做一次 BFS／DFS，必須能走到每一個 d 有限的點；走不到的點，d 必須是 ∞（在 G 裡也一定走不到）。</li></ol><p>為什麼這樣就夠：條件 2 讓 d 沿著任何一條從 s 出發的路徑都不會超過路徑長度，所以 d[v] ≤ 真正的最短距離；條件 3 表示每個點都有一條全由 tight 邊組成、從 s 出發的路徑，這條路徑長度剛好是 d[v]，所以 d[v] ≥ 最短距離。兩個合起來就相等。</p><p>常見錯誤：只檢查「每個 v ≠ s 都有一個鄰居 u 使 d[v] = d[u] + w」。有權重 0 的邊時，兩個和 s 不連通的點可以互相當對方的 tight 鄰居、d 都設成 5，這樣會誤判為正確，所以一定要從 s 出發去走 tight 邊。</p><p>時間：條件 1 是 O(1)，條件 2 掃每條邊一次 O(|E|)，條件 3 是一次 BFS O(|V|+|E|)，總共 O(|V|+|E|)，是線性時間。</p>"
+    },
+    {
+      "id": "ds-0159",
+      "topics": [
+        "avl-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Which of the following statements about n-element AVL trees are false?",
+      "choices": [
+        "(A) The time complexity of rebalancing rotation after deleting an element is θ(log n).",
+        "(B) The time complexity of rebalancing rotation after insertion is θ(log n).",
+        "(C) If the AVL tree has height = h, then n &lt;= F<sub>h+2</sub> -1, where F<sub>h+2</sub> is the Fibonacci number, i.e., F<sub>h+2</sub>=F<sub>h+1</sub>+F<sub>h</sub>.",
+        "(D) h<sub>L</sub> - h<sub>R</sub> should be smaller than 1, where h<sub>L</sub> and h<sub>R</sub> denote the height of the left subtree and the right subtree, respectively."
+      ],
+      "answer": "(B)(C)(D)（A 以最差情況解讀）",
+      "explanation": "<p>題目問「錯的」。</p><ul><li>(A) 視為正確。刪除後失衡可能一路往上傳，最差情況每一層都要旋轉一次，旋轉次數是 Θ(log n)。（題目沒寫是哪種情況，這裡依最差情況解讀。）</li><li>(B) 錯（要選）。插入後只要在最低的失衡祖先做一次單旋轉或雙旋轉，那棵子樹的高度就恢復成插入前的樣子，上面不會再失衡，所以旋轉是 O(1)，不是 Θ(log n)。插入和刪除的這個差異是常考點。</li><li>(C) 錯（要選）。F<sub>h+2</sub> − 1 是高度 h 的 AVL tree <b>最少</b>的節點數（只有根時 h = 1：最少 1、2、4、7……個），所以應該是 n ≥ F<sub>h+2</sub> − 1；上限是全滿的 2<sup>h</sup> − 1。</li><li>(D) 錯（要選）。條件是 |h<sub>L</sub> − h<sub>R</sub>| ≤ 1，差 1 是允許的；「smaller than 1」就變成只能是 0 或負數，不對。</li></ul>"
+    },
+    {
+      "id": "ds-0160",
+      "topics": [
+        "leftist-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Consider a height-biased leftist tree (HBLT). Let <b>w</b>(x) be the number of internal nodes in the subtree with root x. Which of the following statements are false?",
+      "choices": [
+        "(A) The length of the lefttmost path from internal node x to an external node must be no greater than log<sub>2</sub>(<b>w</b>(x)+1).",
+        "(B) The height of the subtree with root x must be no greater than log<sub>2</sub>(<b>w</b>(x)+1).",
+        "(C) Removing minimum of an n-element min HBLT is done in time O(log n).",
+        "(D) Melding two n-element min HBLTs is done in time θ(log n)."
+      ],
+      "answer": "(A)(B)（D 待確認）",
+      "explanation": "<p>HBLT（height-biased leftist tree）的條件：每個內部節點左子的 shortest(x)（到外部節點的最短距離）≥ 右子的 shortest。由此可證<b>最右</b>路徑長度 = shortest(x) ≤ log<sub>2</sub>(w(x)+1)。</p><ul><li>(A) 錯（要選）。被限制的是最右路徑，不是最左路徑。左邊可以很長：例如每個節點都只有左子的一條鏈，最左路徑長度是 n，遠大於 log<sub>2</sub>(n+1)。</li><li>(B) 錯（要選）。同一個反例，高度是 n。</li><li>(C) 對。刪掉根之後把左右子樹 meld 起來，meld 是 O(log n)。</li><li>(D) 依出題意圖視為對：meld 只沿兩棵樹的最右路徑走，最右路徑長度 O(log n)，所以是 O(log n)。不過嚴格來說它不是 Θ(log n)：例如左偏的鏈最右路徑只有 1，meld 只要 O(1)。題目把 θ 當 O 用的話 (D) 正確；若嚴格解讀 Θ，(D) 也要選（待確認）。</li></ul>"
+    },
+    {
+      "id": "ds-0161",
+      "topics": [
+        "recursion"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Which of the following statements are false?",
+      "choices": [
+        "(A) The function <b>F1</b> below is executable (i.e., terminable) for all positive integer x.<pre class=\"code\">Int F1(int x)\n{\n    If x is even then\n        return x/2;\n    else\n        return F1(F1(3x+2));\n}</pre>",
+        "(B) When input data are 21 and 12, the output of function <b>F2</b> below is 4.<pre class=\"code\">Int F2(int x, int y)\n{\n    If y=0 then\n        return x;\n    else\n        return F2(y, x mod y);\n}</pre>",
+        "(C) Consider the function <b>F3</b> below. <b>F3</b>(5) is 5.<pre class=\"code\">Int F3(int x)\n{\n    Int p, q;\n\n    If x &lt;= 2 then\n        return x;\n    else\n        p=F3(x-2);\n        q=F3(x-3);\n        return p+q;\n}</pre>",
+        "(D) None of above."
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p>（原卷 (B) 的遞迴呼叫名稱是手寫更正為 F2。）</p><ul><li>(A) 錯（要選）。x 是奇數時，3x+2 也是奇數（奇數×3 還是奇數，再加 2 仍是奇數），所以內層 F1(3x+2) 又會走 else、再呼叫 F1(3(3x+2)+2)……參數永遠是奇數，遞迴永遠不會停。例如 F1(1) → F1(5) → F1(17) → …。只有偶數輸入會結束，所以「對所有正整數都會停」是錯的。</li><li>(B) 錯（要選）。F2 是輾轉相除法：F2(21,12) → F2(12,9) → F2(9,3) → F2(3,0) = 3，不是 4。</li><li>(C) 錯（要選）。F3(5) = F3(3) + F3(2) = (F3(1) + F3(0)) + 2 = (1 + 0) + 2 = 3，不是 5。</li><li>(D) 不選。(A)(B)(C) 都是錯的敘述，答案已經在上面，「None of above」不成立。</li></ul><p>（A 的不終止與 B、C 的數值都已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0162",
+      "topics": [
+        "array-address"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>We have a 2-dimension integer array arr[5][5],<br>Which of the followings are equal to arr[2][3]?",
+      "choices": [
+        "(A) *(*arr+13)",
+        "(B) (*(arr+2))[3]",
+        "(C) *((*(arr+2))+3)",
+        "(D) (*arr+2)[3]"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p>row-major 下 arr[2][3] 是第 2×5 + 3 = 13 個 int（從 0 算）。<code>arr+i</code> 一次跳一列（5 個 int），<code>*arr</code> 是 int*、一次跳 1 個 int。</p><ul><li>(A) 對。<code>*arr</code> 指向 arr[0][0]，往後 13 個 int 就是 arr[2][3]。</li><li>(B) 對。<code>*(arr+2)</code> 是第 2 列，再取 [3]。</li><li>(C) 對。和 (B) 同義，只是把 [3] 寫成 <code>*(…+3)</code>。</li><li>(D) 錯。<code>*arr+2</code> 指向 arr[0][2]，再 [3] 是第 5 個 int，也就是 arr[1][0]。</li></ul>"
+    },
+    {
+      "id": "ds-0163",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>Given an empty hash Table T of size 17 and a set {23, 12, 34, 46, 28, 11, 6, 7, 0, 33, 13, 45} to hash into the table. Suppose that the hash function <b>h</b>(k , i) = (<b>h</b>(k) + i) mod 17, where i = 0 to 16. After deleting 46 from the hash table, which keys should modify their positions?",
+      "choices": [
+        "(A) 11",
+        "(B) 0",
+        "(C) 33",
+        "(D) 45",
+        "(E) 13"
+      ],
+      "answer": "(A)(D)(E)",
+      "explanation": "<p>取 h(k) = k mod 17，h(k, i) = (h(k) + i) mod 17 就是 linear probing（線性探測）。插入完的表（只列有東西的格子）：</p><div class=\"table-scroll\"><table><tr><th>位置</th><td>0</td><td>1</td><td>2</td><td>6</td><td>7</td><td>8</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td></tr><tr><th>key</th><td>34</td><td>0</td><td>45</td><td>23</td><td>6</td><td>7</td><td>28</td><td>12</td><td>46</td><td>11</td><td>13</td><td>33</td></tr></table></div><p>刪掉位置 13 的 46 後，要把同一串裡「home 在空格之前（循環意義下）」的 key 往前補，不然之後搜尋會在空格提早停：</p><ul><li>14 的 11（home 11）→ 移到 13，空格變 14。</li><li>15 的 13（home 13）→ 移到 14，空格變 15。</li><li>16 的 33（home 16）不動；0 的 34、1 的 0（home 0）不動。</li><li>2 的 45（home 11）探測路徑經過 15 → 移到 15。</li><li>3 是空格，結束。</li></ul><p>要移動的是 11、13、45，和刪除後把其他 key 重新插入的結果一致（已用程式驗算）。容易漏掉的是繞回表頭的 45。</p>"
+    },
+    {
+      "id": "ds-0164",
+      "topics": [
+        "activity-network"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（複選題，全對才給分）</p>The adjacency list below is for an AOE network. The <b>end</b> field points to a list of adjacent vertices, <b>dur</b> field is the duration of the activity, <b>link</b> field points to another adjacent vertex, <b>vertex</b> field is the id of the adjacent vertex, <b>count</b> field is the number of immediate predecessors. Which of the following statements are true?<p>（原卷的 adjacency list 圖整理如下；count 欄在原圖中是空白的，vertex 8 的 end 欄為 0。）</p><div class=\"table-scroll\"><table><tr><th>vertex</th><th>end 串列 (vertex, dur)</th></tr><tr><td>0</td><td>(1, 5) → (2, 4) → (3, 5)</td></tr><tr><td>1</td><td>(4, 1)</td></tr><tr><td>2</td><td>(4, 3)</td></tr><tr><td>3</td><td>(5, 2)</td></tr><tr><td>4</td><td>(6, 9) → (7, 7)</td></tr><tr><td>5</td><td>(7, 5)</td></tr><tr><td>6</td><td>(8, 2)</td></tr><tr><td>7</td><td>(8, 5)</td></tr><tr><td>8</td><td>0（無）</td></tr></table></div>",
+      "choices": [
+        "(A) The total duration of the critical path is 17.",
+        "(B) Path 0, 1, 4, 6, 8 is not a critical path.",
+        "(C) Count fields from vertex 0 to vertex 8 should be 0, 1, 1, 1, 2, 2, 1, 2, 2.",
+        "(D) The latest time that event 4 (i.e., vertex 4) can occur is 7."
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<p>先算 earliest event time ee（拓撲順序往前推，取 max）與 latest event time le（從終點往回推，取 min）：</p><div class=\"table-scroll\"><table><tr><th>event</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr><tr><th>ee</th><td>0</td><td>5</td><td>4</td><td>5</td><td>7</td><td>7</td><td>16</td><td>14</td><td>19</td></tr><tr><th>le</th><td>0</td><td>6</td><td>4</td><td>7</td><td>7</td><td>9</td><td>17</td><td>14</td><td>19</td></tr></table></div><ul><li>(A) 錯。ee[8] = max(16+2, 14+5) = 19，critical path 長度是 19。唯一的 critical path 是 0→2→4→7→8（4+3+7+5 = 19）。</li><li>(B) 對。0→1→4→6→8 長 5+1+9+2 = 17 &lt; 19，不是 critical path。</li><li>(C) 錯。count 是 in-degree：vertex 5 只有 3→5 一條進來的邊，count 應該是 1，不是 2。正確是 0, 1, 1, 1, 2, 1, 1, 2, 2。</li><li>(D) 對。le[4] = min(le[6]−9, le[7]−7) = min(8, 7) = 7。</li></ul><p>（ee、le、in-degree 已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0165",
+      "topics": [
+        "sorting-summary"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "<p>（多選題，每個選項單獨計分）</p>Choose the correct statement(s):",
+      "choices": [
+        "(A) The insertion sort algorithm has the worst-case time complexity O(<i>n</i><sup>2</sup>), the average-case time complexity O(<i>n</i><sup>2</sup>), and the best-case time complexity O(<i>n</i>).",
+        "(B) The merge sort algorithm has the worst-case time complexity O(<i>n</i> log <i>n</i>), the average-case time complexity O(<i>n</i> log <i>n</i>), the best-case time complexity O(<i>n</i> log <i>n</i>), and the space complexity O(<i>n</i>).",
+        "(C) The quick sort algorithm has the worst-case time complexity O(<i>n</i> log <i>n</i>), the average-case time complexity O(<i>n</i> log <i>n</i>), and the best-case time complexity O(<i>n</i> log <i>n</i>).",
+        "(D) The heap sort algorithm has the worst-case time complexity O(<i>n</i> log <i>n</i>), the average-case time complexity O(<i>n</i> log <i>n</i>), the best-case time complexity O(<i>n</i> log <i>n</i>), and the space complexity O(<i>n</i>).",
+        "(E) The bubble sort algorithm has the worst-case time complexity O(<i>n</i><sup>2</sup>), the average-case time complexity O(<i>n</i><sup>2</sup>), and the space complexity O(1)."
+      ],
+      "answer": "(A)(B)(E)",
+      "explanation": "<ul><li>(A) 對。已排序時每個元素比一次就停，best O(n)；反序時第 i 個要往前移 i 格，worst/average 都是 O(n²)。</li><li>(B) 對。merge sort 不管資料長怎樣都是對半切 log n 層、每層合併 O(n)，三種情況都是 O(n log n)；合併需要 O(n) 的暫存陣列。</li><li>(C) 錯。quick sort 最差情況（pivot 每次都是最大或最小，例如已排序資料取第一個當 pivot）是 O(n²)。</li><li>(D) 錯。heap sort 時間三種情況都是 O(n log n) 沒問題，但它是 in-place 排序，額外空間只要 O(1)。題目要考的就是 heap sort 和 merge sort 在空間上的差別。</li><li>(E) 對。bubble sort 平均和最差都是 O(n²)，只用常數個暫存變數，空間 O(1)。</li></ul>"
+    },
+    {
+      "id": "ds-0166",
+      "topics": [
+        "minimum-spanning-tree",
+        "union-find"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": "問答-1",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "Given a weighted connected undirected graph <i>G</i>=(<i>V</i>, <i>E</i>) with node set <i>V</i> and edge set <i>E</i>, a subgraph <i>M</i> of <i>G</i> is called a spanning tree of <i>G</i> if <i>M</i> = (<i>V</i>, <i>T</i>), <i>T</i> ⊆ <i>E</i>, and |<i>T</i>|=|<i>V</i>|−1. <i>M</i> is called a minimal spanning tree (MST) of <i>G</i> if <i>M</i> is a spanning tree of <i>G</i> with the minimal total weight. Below is the Prim's MST algorithm to output the MST of a given graph <i>G</i>.<p><b>Algorithm</b>: Prim's MST algorithm<br><b>Input</b>: A weighted connected undirected graph <i>G</i>=(<i>V</i>, <i>E</i>), where |<i>V</i>|=<i>n</i><br><b>Output</b>: The MST <i>M</i>=(<i>V</i>, <i>T</i>) with the minimal total weight, where |<i>T</i>|=<i>n</i>−1<br>1: <i>T</i>←φ<br>2: <i>X</i>←{<i>w</i>}, where <i>w</i> is an arbitrary node in <i>V</i><br>3: <b>while</b> |T| &lt; <i>n</i>−1 <b>do</b><br>4: &nbsp;&nbsp;select an edge (<i>u</i>, <i>v</i>)∈<i>E</i> with the minimal weight such that <i>u</i>∈<i>X</i> and <i>v</i>∈(<i>V</i>−<i>X</i>)<br>5: &nbsp;&nbsp;<i>T</i>←<i>T</i>∪{(<i>u</i>, <i>v</i>)}<br>6: &nbsp;&nbsp;<i>X</i>←<i>X</i>∪{<i>v</i>}<br>7: <b>return</b> <i>M</i>=(<i>V</i>, <i>T</i>)</p><p>Please follow the form of the Prim's MST algorithm to<br>(1) write the well-known Kruskal's MST algorithm (9%) and<br>(2) analyze the worst-case time complexity of the Kruskal's MST algorithm (6%).<br>Note that you should strictly follow the form of the Prim's MST algorithm to write the Kruskal's MST algorithm; otherwise, you will lose some points.</p>",
+      "answer": "Kruskal：邊依權重排序，由小到大取，不形成 cycle（兩端在不同集合）就加入 T 並合併集合，直到 |T| = n−1；worst case O(|E| log |E|) = O(|E| log n)。",
+      "explanation": "<p><b>(1)</b> 照題目 Prim 的格式寫：</p><p><b>Algorithm</b>: Kruskal's MST algorithm<br><b>Input</b>: A weighted connected undirected graph G=(V, E), where |V|=n<br><b>Output</b>: The MST M=(V, T) with the minimal total weight, where |T|=n−1</p><pre class=\"code\">1: T ← φ\n2: sort the edges in E by weight in nondecreasing order;\n   for each v ∈ V: MakeSet(v)          // 每個點自成一個集合\n3: while |T| &lt; n−1 do\n4:     remove the edge (u, v) with the minimal weight from E\n5:     if Find(u) ≠ Find(v) then       // u、v 不在同一棵樹，加了不會成環\n6:         T ← T ∪ {(u, v)}\n7:         Union(Find(u), Find(v))\n8: return M=(V, T)</pre><p>和 Prim 的差別：Prim 一直從「已長出的那棵樹 X」往外挑最小邊；Kruskal 不管目前是幾棵樹（森林），全域挑最小的邊，只要不形成 cycle 就收。判斷 cycle 用 Union-Find（disjoint set，互斥集合）：兩端點的代表元素相同就代表已經連通，再加這條邊會形成 cycle。</p><p><b>(2)</b> 設 |E| = e：</p><ul><li>排序 e 條邊：O(e log e)。</li><li>最差情況 while 迴圈要把 e 條邊都看過，共 2e 次 Find、n−1 次 Union。用 union by rank／weighting rule 加 path compression，總共 O(e·α(n))，α 是成長極慢的反 Ackermann 函數，實際上 ≤ 4；就算只用 weighting rule 也只是 O(e log n)。</li><li>合計 O(e log e)。因為 e ≤ n²，log e ≤ 2 log n，所以也可以寫成 O(e log n)，瓶頸在排序。</li></ul><p>若改用 min-heap 取最小邊：建 heap O(e)，每次取出 O(log e)，最差取 e 次，一樣是 O(e log e)。</p>"
+    },
+    {
+      "id": "ds-0167",
+      "topics": [
+        "union-find"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（資料結構與演算法）",
+        "no": "問答-3",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf"
+      },
+      "question": "(12%) For a set of variables <i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>, … , <i>x</i><sub>n</sub>, you are given some equality constraints, of the form “<i>x</i><sub>i</sub> = <i>x</i><sub>j</sub>” and some disequality constraints, of the form “<i>x</i><sub>i</sub> ≠ <i>x</i><sub>j</sub>”. Is it possible to satisfy all of them? For instance, the constraints :<br><i>x</i><sub>1</sub> = <i>x</i><sub>2</sub>,; <i>x</i><sub>2</sub> = <i>x</i><sub>3</sub>; <i>x</i><sub>3</sub> = <i>x</i><sub>4</sub>; <i>x</i><sub>1</sub> ≠ <i>x</i><sub>4</sub>;<br>cannot be satisfied. Give an efficient algorithm that takes as input <i>m</i> constraints over <i>n</i> variables and decides whether the constraints can be satisfied. Describe the data structure used by your algorithm, and analysis the time complexity of your algorithm.",
+      "answer": "用 Union-Find：先把所有等式的兩邊 Union，再檢查每個不等式 x<sub>i</sub> ≠ x<sub>j</sub> 是否 Find(i) = Find(j)，有就無解，否則可滿足；O(n + m·α(n))。",
+      "explanation": "<p><b>想法</b>：等式有遞移性，所有用等式串起來的變數必須是同一個值，它們形成一個等價類（equivalence class）。不等式只有在兩個變數被迫相等時才會違反。所以：</p><ol><li>MakeSet：每個變數 x<sub>1</sub>…x<sub>n</sub> 各自一個集合。</li><li>第一輪掃過所有 constraint，遇到 x<sub>i</sub> = x<sub>j</sub> 就 Union(Find(i), Find(j))。</li><li>第二輪掃過所有 constraint，遇到 x<sub>i</sub> ≠ x<sub>j</sub> 就檢查：若 Find(i) == Find(j)，代表 x<sub>i</sub>、x<sub>j</sub> 被等式逼成同一個值，回傳「不可滿足」。</li><li>全部通過就回傳「可滿足」：給每個集合一個不同的值（例如集合代表的編號），所有等式都成立（同集合同值），所有不等式也成立（通過檢查表示在不同集合、值不同）。</li></ol><p>一定要先處理完所有等式再檢查不等式，不能邊讀邊檢查，因為後面的等式可能才把兩個變數連起來。以題目為例：Union 完 x<sub>1</sub>～x<sub>4</sub> 都在同一集合，檢查 x<sub>1</sub> ≠ x<sub>4</sub> 時 Find 相同，所以無解。</p><p><b>資料結構</b>：Disjoint-set（Union-Find），用 parent 陣列表示樹狀森林，Union 用 union by rank（或 weighting rule，小樹接到大樹下），Find 用 path compression（collapsing rule）。</p><p><b>時間</b>：MakeSet O(n)；兩輪共 O(m) 次 Union／Find，每次攤銷 O(α(n))，總共 O(n + m·α(n))，幾乎是線性。只用 weighting rule 不做 path compression 的話是 O(n + m log n)。</p>"
+    },
+    {
+      "id": "ds-0168",
+      "topics": [
+        "collision-resolution",
+        "dynamic-hashing"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題）</p>Which of the following isn't open addressing overflow handling?",
+      "choices": [
+        "(A) Linear probing",
+        "(B) dynamic hashing",
+        "(C) rehashing",
+        "(D) quadratic probing"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>open addressing（開放定址）的意思是：發生 overflow 時，在<b>同一張表</b>裡依某個規則找下一個空格，不另外開串列。</p><ul><li>(A) linear probing：依序看 h(k)+1、h(k)+2……，是 open addressing。</li><li>(C) rehashing：準備一連串 hash function h<sub>1</sub>、h<sub>2</sub>……，前一個位置滿了就用下一個函數算新位置（double hashing 是它的代表），還是在同一張表裡找，是 open addressing。</li><li>(D) quadratic probing：看 h(k)±i²，是 open addressing。</li><li>(B) dynamic hashing（動態雜湊，例如 extendible hashing）：用目錄＋bucket，bucket 滿了就分裂、目錄加倍，讓表的大小隨資料動態成長。它解決的是「表的大小」問題，不是在固定表裡探測空格，所以不是 open addressing。</li></ul><p>注意：有些地方把「表太滿時開一張更大的表、全部重新插入」也叫 rehashing，那是另一個意思；這題的 rehashing 指的是用多個 hash function 探測。</p>"
+    },
+    {
+      "id": "ds-0169",
+      "topics": [
+        "quick-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題）</p>Apply Quick sort on a given list [9, 7, 24, 6, 11, 4, 2, 19]. Which of the following two are the resulting sequences of the first phase, when the first element or second element is chosen as pivot?",
+      "choices": [
+        "(A) 4, 7, 2, 6, 9, 11, 24, 19",
+        "(B) 7, 6, 24, 11, 9, 4, 2, 19",
+        "(C) 2, 6, 4, 7, 11, 24, 9, 19",
+        "(D) 7, 6, 4, 2, 9, 24, 11, 19"
+      ],
+      "answer": "(A)(C)（C 的 partition 寫法待確認）",
+      "explanation": "<p>第一輪 partition 結束時，pivot 左邊要全部 ≤ pivot、右邊全部 ≥ pivot。(B) 以 7 或 9 當 pivot 都不成立（9 右邊還有 4、2；7 在最前面卻不是最小），先刪掉。關鍵是用常見的 partition 寫法實際跑一次：</p><ul><li><b>pivot = 第一個元素 9</b>（左右兩個指標往中間掃）：i 從左找 ≥ 9 的數、j 從右找 ≤ 9 的數，交換：24↔2 → [9,7,2,6,11,4,24,19]；11↔4 → [9,7,2,6,4,11,24,19]；i、j 交錯後把 pivot 和 a[j]=4 交換，得到 <b>4, 7, 2, 6, 9, 11, 24, 19</b>，就是 (A)。</li><li><b>pivot = 第二個元素 7</b>：先把 7 換到最前面 [7,9,24,6,11,4,2,19]，再用「一個指標記錄小於 pivot 區的尾端、另一個往右掃」的寫法：依序把 6、4、2 換到前面 → [7,6,4,2,11,24,9,19]，最後 pivot 和小於區最後一個（2）交換，得到 <b>2, 6, 4, 7, 11, 24, 9, 19</b>，就是 (C)。</li><li>(D) 7, 6, 4, 2, 9, 24, 11, 19 雖然也滿足「9 左小右大」，但用常見的兩種 partition 寫法以 9 為 pivot 都得不到這個順序（雙向掃描得到 (A)；單向掃描得到 2, 7, 6, 4, 9, 24, 11, 19），所以不選。</li></ul><p>所以兩個答案是 (A)(C)。要注意的是：同一個 pivot，不同的 partition 寫法第一輪結果會不一樣，(A) 和 (C) 用的寫法並不相同（待確認出題者的寫法）；考試時以「pivot 左邊全 ≤ pivot、右邊全 ≥ pivot」先刪去不合法的選項最保險。（三種寫法都已用程式模擬。）</p>"
+    },
+    {
+      "id": "ds-0170",
+      "topics": [
+        "leftist-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題）</p>A leftist tree is a min tree satisfying that dist(RChild(i)) &lt;= dist(LChild(i)), where dist(j) denotes the number of edges on the shortest path from node j to a leaf node, RChild(i) and LChild(i) denote the right child and left child of node i, respectively. Which of the following statements about leftist trees are correct? (A) The length of path to rightmost leaf is O(log n) for a leftist tree with n nodes. (B) Merging two leftist trees is to merge the right subtree of one tree with the other. (C) Delete min takes O(log n) time. (D) If the path to leftmost leaf has x nodes, then the leftist tree has at least 2<sup>x</sup> − 1 nodes.",
+      "choices": [
+        "(A)",
+        "(B)",
+        "(C)",
+        "(D)"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<ul><li>(A) 對。每個節點右子的 dist 不大於左子，所以往右走的那條路就是最短路徑；若最右路徑有 x 個節點，則上面 x 層全滿，n ≥ 2<sup>x</sup> − 1，得 x ≤ log<sub>2</sub>(n+1)。</li><li>(B) 對。merge 時取根比較小的那棵當新根，把它的<b>右子樹</b>和另一棵遞迴合併，合併完若右邊的 dist 比左邊大，就左右交換。整個過程只沿著最右路徑走。</li><li>(C) 對。刪掉根（最小值）後把左右子樹 merge，merge 是 O(log n)。</li><li>(D) 錯。「x 個節點 → 至少 2<sup>x</sup> − 1 個節點」這個性質是對<b>最右</b>（最短）路徑成立的。最左路徑可以很長，例如每個節點只有左子的一條鏈，最左路徑有 n 個節點，但總共只有 n 個節點，遠小於 2<sup>n</sup> − 1。</li></ul>"
+    },
+    {
+      "id": "ds-0171",
+      "topics": [
+        "radix-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題）</p>Given the input list L = [28, 203, 16, 30, 123, 521, 63, 528, 210, 216, 941, 45]. Which of the following statements is (are) correct? (A) LSD radix sort is a non-comparative sorting algorithm. (B) At the end of the second pass of LSD Radix sort, the sixth element of the resulting chain is 123. (C) At the end of the third pass of LSD Radix sort, the sixth element of the resulting chain is 123. (D) At the end of the first pass of LSD Radix sort, the sixth element of the resulting chain is 63.",
+      "choices": [
+        "(A)",
+        "(B)",
+        "(C)",
+        "(D)"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p>LSD（least significant digit）radix sort 從個位數開始，每一趟依該位數分到 10 個 bucket，同一個 bucket 保持原本的先後順序（stable），再依 bucket 0～9 串起來。</p><div class=\"table-scroll\"><table><tr><th>趟</th><th>結果</th></tr><tr><td>第 1 趟（個位）</td><td>30, 210, 521, 941, 203, <b>123</b>, 63, 45, 16, 216, 28, 528</td></tr><tr><td>第 2 趟（十位）</td><td>203, 210, 16, 216, 521, <b>123</b>, 28, 528, 30, 941, 45, 63</td></tr><tr><td>第 3 趟（百位）</td><td>16, 28, 30, 45, 63, <b>123</b>, 203, 210, 216, 521, 528, 941</td></tr></table></div><ul><li>(A) 對。radix sort 只看每一位的數字決定 bucket，不做 key 之間的比較，所以不受 Ω(n log n) 比較排序下界的限制。</li><li>(B) 對。第 2 趟第 6 個是 123。</li><li>(C) 對。第 3 趟已經完全排好，第 6 小的是 123。</li><li>(D) 錯。第 1 趟第 6 個是 123，63 是第 7 個。常見錯誤是忘了 stable，把同一個 bucket 裡的 203、123、63 排錯順序。</li></ul><p>（三趟結果已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0172",
+      "topics": [
+        "graph-representation",
+        "bfs-dfs"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題）</p>Given an undirected graph <i>G</i>, where n denotes the number of vertices and m denotes the number of edges (m &gt;&gt; n). Which of the following statement(s) is (are) true about the graph <i>G</i>?",
+      "choices": [
+        "(A) If G is represented by an adjacency matrix, the space complexity is O(n<sup>2</sup>).",
+        "(B) If G is represented by an adjacency list, the space complexity is Θ(m).",
+        "(C) If G is represented by an adjacency multilist, the space complexity is Θ(m).",
+        "(D) If G is represented by an adjacency matrix, the time complexity of determining whether G is connected is O(m)."
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<ul><li>(A) 對。adjacency matrix 是 n×n，不管邊多少都佔 n² 格。</li><li>(B) 對。adjacency list 要 n 個串列開頭加上 2m 個節點（無向邊存兩次），是 Θ(n + m)；題目說 m ≫ n，所以就是 Θ(m)。</li><li>(C) 對。adjacency multilist 每條邊只存一個節點（同時掛在兩個端點的串列上），是 Θ(n + m) = Θ(m)。</li><li>(D) 錯。用 matrix 做 DFS/BFS 時，找一個點的所有鄰居都要掃整列 n 格，總共 Θ(n²)。m ≫ n 不代表 m 和 n² 同級（例如 m = n<sup>1.5</sup>），所以不能說是 O(m)。用 adjacency list 才是 O(n + m)。</li></ul>"
+    },
+    {
+      "id": "ds-0173",
+      "topics": [
+        "shortest-path"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf"
+      },
+      "question": "<p>（複選題）</p>Given an n-node undirected graph. Which of the following statements are correct? (A) Single source single destination shortest path algorithm takes O(n<sup>2</sup>) time complexity. (B) Single source multiple destination shortest path algorithm takes O(n<sup>2</sup>) time complexity. (C) All pair shortest path algorithm takes O(n<sup>3</sup>) time complexity. (D) All pair shortest path algorithm takes O(n<sup>2</sup>) time complexity.",
+      "choices": [
+        "(A)",
+        "(B)",
+        "(C)",
+        "(D)"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p>這題預設邊的權重非負。</p><ul><li>(A) 對。單一起點到單一終點沒有比「單一起點到所有點」更快的一般做法，直接跑 Dijkstra（用陣列找最小值）O(n²)，終點被選到時就可以停。</li><li>(B) 對。Dijkstra 用陣列實作：n 次選最小 O(n)、每次更新鄰居 O(n)，共 O(n²)。</li><li>(C) 對。all-pairs 用 Floyd-Warshall 三層迴圈 O(n³)，或跑 n 次 Dijkstra 也是 O(n³)。</li><li>(D) 錯。光是輸出 n² 組距離就要 Ω(n²)，一般的 all-pairs 演算法做不到 O(n²)；常用的都是 O(n³)。</li></ul>"
+    },
+    {
+      "id": "ds-0174",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p><p>（原卷的圖整理如下：無向圖，頂點 A～F，邊與權重如下表。）</p><div class=\"table-scroll\"><table><tr><th>邊</th><td>A–B</td><td>A–C</td><td>B–C</td><td>B–D</td><td>B–F</td><td>C–D</td><td>C–E</td><td>C–F</td><td>D–E</td><td>D–F</td><td>E–F</td></tr><tr><th>權重</th><td>1</td><td>6</td><td>3</td><td>4</td><td>2</td><td>2</td><td>4</td><td>2</td><td>3</td><td>1</td><td>5</td></tr></table></div>Consider the graph above. Which of the following cannot be the edge selection sequence of Kruskal's minimum spanning tree algorithm?",
+      "choices": [
+        "(A) (d, f) (a, b) (d, c) (b, f) (d, e)",
+        "(B) (d, f) (a, b) (b, f) (d, e) (d, c)",
+        "(C) (a, b) (d, f) (b, f) (f, c) (d, e)",
+        "(D) (a, b) (d, f) (d, c) (f, c) (d, e)"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<p>Kruskal 依權重由小到大挑邊，不會形成 cycle 就收。同權重的邊順序可以任意，所以合法的序列可能不只一種。</p><ul><li>權重 1：(a, b)、(d, f)，兩條都收，順序不限。</li><li>權重 2：(b, f)、(c, d)、(c, f)。注意 d–f、f–c、c–d 三條會圍成三角形，(d, f) 已經收了，所以 (c, d) 和 (c, f) <b>只能收一條</b>；(b, f) 一定收。</li><li>權重 3：(b, c) 此時會成環，跳過；(d, e) 收，共 5 條邊完成。</li></ul><p>所以合法序列 = 先兩條權重 1，再 (b, f) 和「(d, c) 或 (f, c) 其中一條」（順序不限），最後 (d, e)。</p><ul><li>(A) 合法。</li><li>(B) 不合法（要選）。權重 3 的 (d, e) 排在權重 2 的 (d, c) 前面，違反由小到大。</li><li>(C) 合法。</li><li>(D) 不合法（要選）。(d, c) 和 (f, c) 都收，加上 (d, f) 會形成 cycle d–c–f–d；而且漏了一定要收的 (b, f)。</li></ul><p>MST 總權重 = 1 + 1 + 2 + 2 + 3 = 9。</p>"
+    },
+    {
+      "id": "ds-0175",
+      "topics": [
+        "sorting-summary",
+        "elementary-sorts",
+        "radix-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Consider the following five sorting algorithms: Quick Sort, Heap Sort, Merge Sort, Insertion Sort and Radix Sort. Which of the following statements are true?",
+      "choices": [
+        "(A) Insertion Sort gives best performance when applied on an array which is sorted or almost sorted (maximum 1 or two elements are misplaced).",
+        "(B) Radix Sort is most efficient to sort string consisting of ASCII characters?",
+        "(C) All these five sorting algorithms are comparison based sorting algorithms.",
+        "(D) All these five sorting algorithms are stable."
+      ],
+      "answer": "(A)(B)（B 待確認）",
+      "explanation": "<ul><li>(A) 對。insertion sort 每個元素只往前移到該放的位置；幾乎排好時每個元素只比 1～2 次，接近 O(n)，五個裡面最快。</li><li>(B) 視為對（待確認）。ASCII 字元只有 256 種，可以直接當 bucket 的編號，用 radix sort（逐字元分配）不需要比較，時間是 O(字串長度 × (n + 256))，對大量字串通常比 O(n log n) 的比較排序快。五個選項裡只有 radix sort 是非比較式，出題意圖應該是它。不過「most efficient」是很強的說法，實際上要看字串長度，有爭議。</li><li>(C) 錯。radix sort 依每一位的值分配到 bucket，不是比較式排序。</li><li>(D) 錯。quick sort 和 heap sort 不 stable（交換會跨過相同的 key）；merge sort、insertion sort、radix sort 是 stable。</li></ul>"
+    },
+    {
+      "id": "ds-0176",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>The following statements about minimum spanning tree (MST) may or may not be correct. Assume that the weighted graph <i>G</i> = (<i>V</i>, <i>E</i>) is undirected and connected. Do not assume that edge weights are distinct unless this is specifically stated. Chose the correct items.",
+      "choices": [
+        "(A) If |<i>E</i>| ≥ |<i>V</i>|−1, and there is a unique heaviest edge, then this edge cannot be part of any MST of <i>G</i>.",
+        "(B) If <i>G</i> has a cycle with a unique heaviest edge <i>e</i>, then <i>e</i> cannot be part of any MST of <i>G</i>.",
+        "(C) If the lightest edge in <i>G</i> is unique, then it must be part of every MST of <i>G</i>.",
+        "(D) If <i>G</i> has a cycle with a unique lightest edge <i>e</i>, then <i>e</i> must be part of some MST of <i>G</i>.",
+        "(E) The shortest path between two nodes is necessarily part of some MST of <i>G</i>."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<ul><li>(A) 錯。如果最重的邊是 bridge（拿掉就不連通），每棵 spanning tree 都一定要用它。例如 G 本身就是一棵樹（|E| = |V|−1），最重的邊當然在 MST 裡。</li><li>(B) 對。cycle property：假設某 MST 含 e，拿掉 e 會把樹分成兩半，cycle 上一定還有另一條邊 e′ 跨過這兩半，而且 e′ 比 e 輕，換成 e′ 得到更輕的 spanning tree，矛盾。</li><li>(C) 對。cut property：設最輕邊 e = (u, v)，任何 MST 若不含 e，加入 e 會形成 cycle，cycle 上其他邊都比 e 重，拿掉其中一條得到更輕的樹，矛盾。所以每棵 MST 都含 e。</li><li>(D) 錯。只是在「某個 cycle」上最輕，不代表全域夠輕。反例：u–v 權重 5、v–x 權重 6、x–u 權重 6（e = (u, v) 是這個 cycle 的唯一最輕邊），另外有 u–y、y–v 兩條權重 1 的邊。MST 會取 u–y、y–v，以及一條權重 6 的邊；(u, v) 在 cycle u–y–v–u 中是唯一最重，不在任何 MST 裡。</li><li>(E) 錯。例如三角形 A–B = 3、B–C = 3、A–C = 4：A 到 C 的最短路徑是邊 A–C（4 &lt; 6），但唯一的 MST 是 A–B、B–C，不含 A–C。</li></ul>"
+    },
+    {
+      "id": "ds-0177",
+      "topics": [
+        "sorting-summary",
+        "sorting-lower-bound"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Which of the following statements about sorting algorithms are incorrect?",
+      "choices": [
+        "(A) The merge sort and quick sort are designed based on the similar algorithm design principle.",
+        "(B) If most of the numbers are in the correct order, quick sort is the best algorithm.",
+        "(C) The worst-case time complexity of quick sort, merge sort, and heap sort is <i>O</i>(<i>n</i>log<i>n</i>).",
+        "(D) The worst-case time complexity and the expected time complexity of both merge sort and heap sort are in the same order.",
+        "(E) No sorting algorithm has time complexity lower than <i>O</i>(<i>n</i>log<i>n</i>)."
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<p>題目問「錯的」。</p><ul><li>(A) 正確。兩者都是 divide and conquer：merge sort 切簡單、合併費工；quick sort 切（partition）費工、合併免費。</li><li>(B) 錯（要選）。資料幾乎排好時，insertion sort 接近 O(n) 最快；quick sort 若取第一個元素當 pivot，反而會退化成 O(n²)。</li><li>(C) 錯（要選）。quick sort 最差是 O(n²)，只有 merge sort 和 heap sort 最差是 O(n log n)。</li><li>(D) 正確。merge sort 和 heap sort 的最差與平均都是 Θ(n log n)。</li><li>(E) 錯（要選）。Ω(n log n) 是<b>比較式</b>排序的下界；counting sort、radix sort 這類非比較式排序在 key 範圍有限時可以 O(n)。</li></ul>"
+    },
+    {
+      "id": "ds-0178",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（資料結構與演算法）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf"
+      },
+      "question": "<p>（複選題，全部答對才給分）</p>Consider a hash table of size 7, with hash function <i>H</i>(<i>k</i>) = <i>k</i> % 7, and pseudo random <i>i</i> = (<i>i</i> + 5) % 7. We want to insert the following keys one by one from left to right.<br>15, 11, 25, 16, 9, 8, 12<br>If random probing is used, which of the following statements are incorrect?",
+      "choices": [
+        "(A) key 25 is at position 4.",
+        "(B) key 16 is at position 0.",
+        "(C) key 9 is at position 0.",
+        "(D) key 8 is at position 6.",
+        "(E) Some key has no place to store in the table."
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<p>碰撞時下一個位置是 (目前位置 + 5) % 7。因為 5 和 7 互質，探測序列會走遍全部 7 格，只要表還有空位就一定放得進去。</p><div class=\"table-scroll\"><table><tr><th>key</th><th>H(k)</th><th>探測過程</th><th>位置</th></tr><tr><td>15</td><td>1</td><td>1 空</td><td>1</td></tr><tr><td>11</td><td>4</td><td>4 空</td><td>4</td></tr><tr><td>25</td><td>4</td><td>4 滿 → 2 空</td><td>2</td></tr><tr><td>16</td><td>2</td><td>2 滿 → 0 空</td><td>0</td></tr><tr><td>9</td><td>2</td><td>2 滿 → 0 滿 → 5 空</td><td>5</td></tr><tr><td>8</td><td>1</td><td>1 滿 → 6 空</td><td>6</td></tr><tr><td>12</td><td>5</td><td>5 滿 → 3 空</td><td>3</td></tr></table></div><p>題目問「錯的」：</p><ul><li>(A) 錯（要選）。25 在位置 2。</li><li>(B) 正確。16 在位置 0。</li><li>(C) 錯（要選）。9 在位置 5；位置 0 已經被 16 佔了。</li><li>(D) 正確。8 在位置 6。</li><li>(E) 錯（要選）。7 個 key 剛好填滿 7 格，每個都有位置。</li></ul><p>（已用程式模擬驗算。）</p>"
+    },
+    {
+      "id": "ds-0179",
+      "topics": [
+        "hash-functions",
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>There are 10 hexadecimal data, 53, 3B, 66, 43, 60, 5B, 7C, 14, 30, 37, inserted in the given order into an empty hash table. The table is implemented using a circular array of 10 slots, and one slot can only have one item. The hash function for the table is h(k) = k mod 9.</p><p>(a) Which data is the first one that occurs a collision?</p>",
+      "choices": [
+        "(A) 43",
+        "(B) 5B",
+        "(C) 14",
+        "(D) 37"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>先把 16 進位換成 10 進位再取 mod 9：</p><div class=\"table-scroll\"><table><tr><th>資料</th><th>10 進位</th><th>h(k)=k mod 9</th></tr><tr><td>53</td><td>83</td><td>2</td></tr><tr><td>3B</td><td>59</td><td>5</td></tr><tr><td>66</td><td>102</td><td>3</td></tr><tr><td>43</td><td>67</td><td>4</td></tr><tr><td>60</td><td>96</td><td>6</td></tr><tr><td>5B</td><td>91</td><td>1</td></tr><tr><td>7C</td><td>124</td><td>7</td></tr><tr><td>14</td><td>20</td><td>2</td></tr><tr><td>30</td><td>48</td><td>3</td></tr><tr><td>37</td><td>55</td><td>1</td></tr></table></div><p>前 7 筆的雜湊值 2、5、3、4、6、1、7 都不一樣；第 8 筆 14 算出 2，和第 1 筆 53 撞在一起，所以第一個發生 <span class=\"term\">Collision<small>（碰撞）</small></span> 的是 14，選 (C)。</p><p>常見錯誤：直接把 14 當十進位算 14 mod 9 = 5，會誤以為和 3B 撞，記得題目說是 hexadecimal。</p>"
+    },
+    {
+      "id": "ds-0180",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>There are 10 hexadecimal data, 53, 3B, 66, 43, 60, 5B, 7C, 14, 30, 37, inserted in the given order into an empty hash table. The table is implemented using a circular array of 10 slots, and one slot can only have one item. The hash function for the table is h(k) = k mod 9.</p><p>(b) If the hash table uses linear probing to resolve collisions and has no resizing mechanism, which position in the array is 37 inserted?</p>",
+      "choices": [
+        "(A) 3",
+        "(B) 8",
+        "(C) 4",
+        "(D) 0"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>注意陣列有 10 格（位置 0～9），但 mod 9 只會產生 0～8，位置 9 只能靠 <span class=\"term\">Linear Probing<small>（線性探測）</small></span> 填到。</p><ul><li>53→2、3B→5、66→3、43→4、60→6、5B→1、7C→7：都直接放進去。</li><li>14 → h=2 被占，往後找 3、4、5、6、7 都被占，放到 8。</li><li>30 → h=3 被占，往後 4、5、6、7、8 都被占，放到 9。</li><li>37 → h=1 被占，往後 2～9 全滿，環狀繞回 0，放到 0。</li></ul><p>所以 37 放在位置 0，選 (D)。這題也看得出線性探測的 primary clustering：位置 1～9 連成一大串，後來的資料越探越久（37 探了 9 次才找到空位）。</p>"
+    },
+    {
+      "id": "ds-0181",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>Given the following graph, try to find its minimum spanning tree.</p><p>（原圖為 9 個頂點 A～I 的無向加權圖，以下用邊表列出全部 19 條邊與權重）</p><div class=\"table-scroll\"><table><tr><th>邊</th><th>權重</th><th>邊</th><th>權重</th></tr><tr><td>F–B</td><td>1</td><td>D–B</td><td>11</td></tr><tr><td>H–C</td><td>2</td><td>D–A</td><td>12</td></tr><tr><td>B–C</td><td>3</td><td>A–C</td><td>13</td></tr><tr><td>I–H</td><td>4</td><td>E–H</td><td>14</td></tr><tr><td>F–I</td><td>5</td><td>G–E</td><td>15</td></tr><tr><td>B–A</td><td>6</td><td>G–D</td><td>16</td></tr><tr><td>E–A</td><td>7</td><td>F–G</td><td>17</td></tr><tr><td>E–C</td><td>8</td><td>I–G</td><td>18</td></tr><tr><td>D–E</td><td>9</td><td>G–H</td><td>19</td></tr><tr><td>F–D</td><td>10</td><td></td><td></td></tr></table></div><p>(a) What is the sixth edge that Kruskal's algorithm includes (the numbering of the inclusion order starts from 1, not 0)?</p>",
+      "choices": [
+        "(A) 6",
+        "(B) 7",
+        "(C) 8",
+        "(D) 9"
+      ],
+      "answer": "(B)",
+      "explanation": "<p><span class=\"term\">Kruskal's Algorithm<small>（Kruskal 演算法）</small></span>把邊由小到大排序，不會形成 cycle 就收：</p><ol><li>1（F–B）收</li><li>2（H–C）收</li><li>3（B–C）收，此時 {F,B,C,H} 連通</li><li>4（I–H）收，{F,B,C,H,I}</li><li>5（F–I）：F 和 I 已經連通（F–B–C–H–I），會形成 cycle，丟掉</li><li>6（B–A）收 → 第 5 條</li><li>7（E–A）收 → 第 6 條</li></ol><p>所以第 6 條被收進的邊權重是 7，選 (B)。最容易錯的就是忘了檢查 5 會成環，誤選 (A) 6。整棵 MST 的邊為 1、2、3、4、6、7、9、15，總重 47。</p>"
+    },
+    {
+      "id": "ds-0182",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>Given the following graph, try to find its minimum spanning tree.</p><p>（原圖為 9 個頂點 A～I 的無向加權圖，以下用邊表列出全部 19 條邊與權重）</p><div class=\"table-scroll\"><table><tr><th>邊</th><th>權重</th><th>邊</th><th>權重</th></tr><tr><td>F–B</td><td>1</td><td>D–B</td><td>11</td></tr><tr><td>H–C</td><td>2</td><td>D–A</td><td>12</td></tr><tr><td>B–C</td><td>3</td><td>A–C</td><td>13</td></tr><tr><td>I–H</td><td>4</td><td>E–H</td><td>14</td></tr><tr><td>F–I</td><td>5</td><td>G–E</td><td>15</td></tr><tr><td>B–A</td><td>6</td><td>G–D</td><td>16</td></tr><tr><td>E–A</td><td>7</td><td>F–G</td><td>17</td></tr><tr><td>E–C</td><td>8</td><td>I–G</td><td>18</td></tr><tr><td>D–E</td><td>9</td><td>G–H</td><td>19</td></tr><tr><td>F–D</td><td>10</td><td></td><td></td></tr></table></div><p>(b) What is the sixth vertex that Prim's algorithm includes if starting from vertex A (the numbering of the inclusion order starts from 1, not 0)?</p>",
+      "choices": [
+        "(A) C",
+        "(B) E",
+        "(C) H",
+        "(D) I"
+      ],
+      "answer": "(D)",
+      "explanation": "<p><span class=\"term\">Prim's Algorithm<small>（Prim 演算法）</small></span>每次從「樹內—樹外」的邊中挑最小的，把樹外那端加進來：</p><ol><li>A（起點）</li><li>A 的邊：B 6、E 7、D 12、C 13 → 加 B（6）</li><li>F–B 1 最小 → 加 F</li><li>B–C 3 最小 → 加 C</li><li>H–C 2 → 加 H</li><li>I–H 4 → 加 I</li></ol><p>起點 A 算第 1 個，第 6 個加入的是 I，選 (D)。之後才是 E（7）、D（9）、G（15）。注意題目明說從 1 開始算，而且起點本身也算一個。</p>"
+    },
+    {
+      "id": "ds-0183",
+      "topics": [
+        "kmp"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "資料結構與演算法(A)",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf"
+      },
+      "question": "<p>The Knuth-Morris-Pratt (KMP) algorithm is an string-matching algorithm. Its core is the prefix function. Given a pattern P[1..m], the prefix function for the pattern P is the function π : {1, 2, …, m} → {0, 1, …, m − 1}. What is π[7] for the following pattern P?</p><div class=\"table-scroll\"><table><tr><th>i</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr><tr><th>P[i]</th><td>a</td><td>b</td><td>a</td><td>b</td><td>a</td><td>b</td><td>a</td><td>b</td><td>c</td><td>a</td></tr><tr><th>π[i]</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>",
+      "choices": [
+        "(A) 4",
+        "(B) 5",
+        "(C) 6",
+        "(D) 7"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>π[q] 是 P[1..q] 中「同時是真前綴、也是後綴」的最長長度（不能等於 q 本身）。</p><p>P[1..7] = abababa。真前綴裡最長又是後綴的是 ababa（長度 5）：前綴 ababa、後綴 ababa 一致；長度 6 的 ababab 和後綴 bababa 不同。所以 π[7] = 5，選 (B)。</p><p>完整的 π 表：0, 0, 1, 2, 3, 4, 5, 6, 0, 1（程式驗算）。常見錯誤是把整個字串本身也算進去而選 (D) 7。</p>"
+    },
+    {
+      "id": "ds-0184",
+      "topics": [
+        "elementary-sorts"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>For each of the following algorithms in the next five problems, what is the tightest asymptotic upper bound for its runtime complexity for n numbers? Please use the following table of (A)-(E) choices when answering.</p><div class=\"table-scroll\"><table><tr><th>(A)</th><th>(B)</th><th>(C)</th><th>(D)</th><th>(E)</th></tr><tr><td>O(1)</td><td>O(lg n)</td><td>O(n)</td><td>O(n lg n)</td><td>O(n<sup>2</sup>)</td></tr></table></div><p>(3 points) Selection sort: expected time?</p>",
+      "choices": [
+        "(A) O(1)",
+        "(B) O(lg n)",
+        "(C) O(n)",
+        "(D) O(n lg n)",
+        "(E) O(n<sup>2</sup>)"
+      ],
+      "answer": "(E)",
+      "explanation": "<p><span class=\"term\">Selection Sort<small>（選擇排序）</small></span>每一輪都要掃過剩下的所有元素找最小值，比較次數固定是 (n−1) + (n−2) + … + 1 = n(n−1)/2，和輸入長什麼樣子無關，所以最好、平均、最差都是 Θ(n²)，選 (E)。</p><p>常見錯誤：以為資料已排序時會比較快；那是 insertion sort 的性質，selection sort 不管怎樣都要掃完。</p>"
+    },
+    {
+      "id": "ds-0185",
+      "topics": [
+        "merge-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>For each of the following algorithms in the next five problems, what is the tightest asymptotic upper bound for its runtime complexity for n numbers? Please use the following table of (A)-(E) choices when answering.</p><div class=\"table-scroll\"><table><tr><th>(A)</th><th>(B)</th><th>(C)</th><th>(D)</th><th>(E)</th></tr><tr><td>O(1)</td><td>O(lg n)</td><td>O(n)</td><td>O(n lg n)</td><td>O(n<sup>2</sup>)</td></tr></table></div><p>(3 points) Merge sort: expected time?</p>",
+      "choices": [
+        "(A) O(1)",
+        "(B) O(lg n)",
+        "(C) O(n)",
+        "(D) O(n lg n)",
+        "(E) O(n<sup>2</sup>)"
+      ],
+      "answer": "(D)",
+      "explanation": "<p><span class=\"term\">Merge Sort<small>（合併排序）</small></span>每次對半切，遞迴式 T(n) = 2T(n/2) + Θ(n)：遞迴深度 lg n 層，每層合併總共處理 n 個元素，總共 Θ(n lg n)。不管輸入如何都一樣，所以期望時間也是 O(n lg n)，選 (D)。</p>"
+    },
+    {
+      "id": "ds-0186",
+      "topics": [
+        "quick-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>For each of the following algorithms in the next five problems, what is the tightest asymptotic upper bound for its runtime complexity for n numbers? Please use the following table of (A)-(E) choices when answering.</p><div class=\"table-scroll\"><table><tr><th>(A)</th><th>(B)</th><th>(C)</th><th>(D)</th><th>(E)</th></tr><tr><td>O(1)</td><td>O(lg n)</td><td>O(n)</td><td>O(n lg n)</td><td>O(n<sup>2</sup>)</td></tr></table></div><p>(3 points) Quick sort: worst-case time?</p>",
+      "choices": [
+        "(A) O(1)",
+        "(B) O(lg n)",
+        "(C) O(n)",
+        "(D) O(n lg n)",
+        "(E) O(n<sup>2</sup>)"
+      ],
+      "answer": "(E)",
+      "explanation": "<p><span class=\"term\">Quick Sort<small>（快速排序）</small></span>最差情況是 pivot 每次都選到最小或最大值，切成 0 和 n−1 兩塊，T(n) = T(n−1) + Θ(n)，展開得 n + (n−1) + … = Θ(n²)，選 (E)。平均或期望才是 O(n lg n)，題目問的是 worst-case，別看錯。</p>"
+    },
+    {
+      "id": "ds-0187",
+      "topics": [
+        "sorting-summary",
+        "merge-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Which of the following is NOT an in-place sorting algorithm (in their standard implementations)?</p>",
+      "choices": [
+        "(A) bubble sort",
+        "(B) insertion sort",
+        "(C) merge sort",
+        "(D) heap sort",
+        "(E) all choices are in-place sorting algorithms"
+      ],
+      "answer": "(C)",
+      "explanation": "<p><span class=\"term\">In-place<small>（原地）</small></span>排序指只用 O(1)（或很少量）的額外空間，直接在原陣列裡交換。</p><ul><li>bubble、insertion：只做相鄰交換或搬移，O(1) 額外空間。</li><li>heap sort：在原陣列上建 heap、把最大值換到尾端，O(1)。</li><li>merge sort：標準陣列版合併時需要一個長度 n 的暫存陣列，額外空間 Θ(n)，不是 in-place。</li></ul><p>選 (C)。</p>"
+    },
+    {
+      "id": "ds-0188",
+      "topics": [
+        "quick-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Consider an array of 8 elements being sorted using quicksort. It has just finished the first pass of partitioning and pivot swapping, thus changing the original array into the following array:</p><pre>[7, 11, 16, 10, 17, 1, 18, 30]</pre><p>How many elements could have been the pivot?</p>",
+      "choices": [
+        "(A) 1",
+        "(B) 2",
+        "(C) 3",
+        "(D) 4",
+        "(E) none of the other choices"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>partition 結束後，pivot 會落在最終位置：左邊全部比它小、右邊全部比它大。逐一檢查：</p><ul><li>7：右邊有 1 比它小，不行。</li><li>11、16、10、17：右邊都有 1（10 左邊還有 11、16），不行。</li><li>1：左邊全部比它大，不行。</li><li>18：左邊 7, 11, 16, 10, 17, 1 都小於 18，右邊 30 比它大，可以。</li><li>30：左邊全部比它小、右邊沒東西，可以。</li></ul><p>只有 18 和 30 兩個可能，選 (B)（程式逐一檢查也是 [18, 30]）。</p>"
+    },
+    {
+      "id": "ds-0189",
+      "topics": [
+        "kmp"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Consider a string of length n, e.g., cbaabcba. We want to add the smallest number of characters to the front of the string to make it a palindrome, e.g., <u>ab</u>cbaabcba. This problem can be solved by first concatenating the string with its inverse with a delimiter #, e.g. cbaabcba<u>#abcbaabc</u>. Then, run the pre-processing routine of the Knuth-Morris-Pratt algorithm on the new string s<sub>0</sub>s<sub>1</sub>⋯s<sub>2n</sub> of length (2n + 1) to get a failure function f<sub>s</sub>(j), which computes the length of the longest prefix of the string s<sub>0</sub>s<sub>1</sub>…s<sub>j</sub> that is also a suffix. After running the pre-processing algorithm, how can we calculate the smallest number of characters that should be added to the front of the original string to make a palindrome?</p>",
+      "choices": [
+        "(A) n − f<sub>s</sub>(n − 1) + 1",
+        "(B) n − f<sub>s</sub>(n)",
+        "(C) n − max<sub>0≤j≤n−1</sub>(f<sub>s</sub>(j))",
+        "(D) n − max<sub>n+1≤j≤2n</sub>(f<sub>s</sub>(j))",
+        "(E) none of the other choices"
+      ],
+      "answer": "(E)",
+      "explanation": "<p>要在前面補最少字元變成回文，等價於找原字串 S 的「最長回文前綴」，長度 L，答案是 n − L。</p><p>在 s = S # reverse(S) 上，f<sub>s</sub>(2n)（整個字串的 failure 值）= 最長的「S 的前綴」同時是「reverse(S) 的後綴」，而 reverse(S) 的後綴反過來就是 S 的前綴，所以它正好是最長回文前綴的長度；# 保證不會跨過中間。答案應為 n − f<sub>s</sub>(2n)。例：cbaabcba 的 f<sub>s</sub>(16) = 6（cbaabc），8 − 6 = 2，和題目的 ab 一致。</p><p>逐一檢查選項：</p><ul><li>(B)：s<sub>n</sub> 是 #，f<sub>s</sub>(n) 一定是 0，算出 n，錯。</li><li>(A)、(C)：只看 S 自己的 failure 值，和回文無關。</li><li>(D)：取中間的最大值會被「S 的前綴在 reverse(S) 中間出現」干擾。反例 S = bbabaabb：s = bbabaabb#bbaababb，f<sub>s</sub> 在後半的最大值是 3（bba 出現在 reverse(S) 開頭），但最長回文前綴只有 bb（長度 2）。(D) 算出 5，正確答案是 6。</li></ul><p>程式窮舉所有長度 ≤ 8 的 {a,b} 字串，n − f<sub>s</sub>(2n) 全部正確，(D) 有反例，所以選 (E)。</p>"
+    },
+    {
+      "id": "ds-0190",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Consider a hash table with f(n) entries with a hash function that can uniformly dispatch items to those entries. Which property below ensures that a successful search can be done in O(1)?</p>",
+      "choices": [
+        "(A) f(n) = O(√n)",
+        "(B) f(n) = O(n)",
+        "(C) f(n) = Ω(√n)",
+        "(D) f(n) = Ω(n)",
+        "(E) none of the other choices"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>n 筆資料均勻分到 f(n) 格，<span class=\"term\">Load Factor<small>（負載因子）</small></span> α = n / f(n)，成功搜尋的期望時間是 Θ(1 + α)。要 O(1) 就需要 α = O(1)，也就是 f(n) ≥ c·n，即 f(n) = Ω(n)，選 (D)。</p><p>(B) O(n) 是上界，f(n) 可以很小（例如常數格），α 就變成 Θ(n)；(C) Ω(√n) 只保證 α = O(√n)，不夠。</p>"
+    },
+    {
+      "id": "ds-0191",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Consider a red-black tree with n internal nodes, where n is even. At most how many of them can be a black node with one red child?</p>",
+      "choices": [
+        "(A) n/2",
+        "(B) n",
+        "(C) ⌊log<sub>2</sub>(n + 1)⌋ − 1",
+        "(D) ⌊log<sub>2</sub>(n + 1)⌋",
+        "(E) none of the other choices"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>設「有一個紅色小孩的黑色節點」有 k 個。每個這樣的黑節點都對應到一個專屬的紅色小孩（不同父親的紅孩子不會重複），所以紅色節點至少 k 個；這些黑節點本身也有 k 個。兩者合起來 2k ≤ n，得 k ≤ n/2，選 (A)。</p><p>這個上界在某些 n 可以達到，例如 n = 2（黑根加一個紅孩子）、n = 8、n = 26；但不是每個偶數都達得到（程式窮舉所有紅黑樹：n = 4 時最多只有 1 個、n = 10 時最多 3 個），題目問的是「at most」，四個公式中只有 n/2 是正確的上界。</p>"
+    },
+    {
+      "id": "ds-0192",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>Consider a red-black tree with n internal nodes, where n is even. At most how many of them can be a black node with one red child?</p><p>(5 points) In the red-black tree with 26 nodes that reaches the solution of the problem above, what is the maximum height of the tree? A tree with one node is assumed to have height 1.</p>",
+      "choices": [
+        "(A) 5",
+        "(B) 6",
+        "(C) 7",
+        "(D) 8",
+        "(E) 9"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>要讓 26 個節點中有 13 個「帶一個紅孩子的黑節點」，就必須恰好 13 黑、13 紅，而且每個黑節點恰好一個紅孩子、每個紅節點都是某個黑節點的唯一紅孩子。</p><p>紅色節點不能相連，所以樹高最多是黑高度的 2 倍左右；13 個黑節點撐起的黑高度最多 3（黑高度 4 至少要 2<sup>4</sup> − 1 = 15 個黑節點）。黑高度 3 時，最長路徑是黑紅黑紅黑紅交錯，高度 3 × 2 = 6。</p><p>程式用 DP 窮舉 26 個節點的所有紅黑樹（記錄黑高度、根顏色、此類節點數、高度），在此類節點數達到 13 的樹中，最大高度是 6，選 (B)。</p>"
+    },
+    {
+      "id": "ds-0193",
+      "topics": [
+        "shortest-path"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) When using Dijkstra's algorithm to solve the single-source shortest problem for a graph having V vertices and E edges, which is INCORRECT?</p>",
+      "choices": [
+        "(A) The search principle is breadth-first.",
+        "(B) It is a greedy algorithm.",
+        "(C) When using an array to implement the min-priority queue, the time complexity is O(V<sup>2</sup>).",
+        "(D) For a dense graph where E = Θ(V<sup>2</sup>), the algorithm can run in O(V<sup>2</sup>) when using the binary min-heap to implement the min-priority queue.",
+        "(E) none of the other choices"
+      ],
+      "answer": "(D)",
+      "explanation": "<p><span class=\"term\">Dijkstra's Algorithm<small>（Dijkstra 演算法）</small></span>每次挑目前距離最小、還沒確定的點（greedy），概念上是加權版的 BFS，一圈一圈往外擴，所以 (A)(B) 都是常見說法。</p><ul><li>(C) 用陣列：V 次 extract-min 各 O(V)，E 次 relax 各 O(1)，共 O(V² + E) = O(V²)，正確。</li><li>(D) 用 binary heap：O((V + E) lg V)；E = Θ(V²) 時是 O(V² lg V)，不是 O(V²)，錯。</li></ul><p>選 (D)。結論：稠密圖用陣列版反而比較快，稀疏圖才用 heap。</p>"
+    },
+    {
+      "id": "ds-0194",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "資料結構與演算法(A)",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf"
+      },
+      "question": "<p>(5 points) Consider the following undirected graph G. Let T be the minimum spanning tree (MST) of the graph. Which is INCORRECT?</p><p>（原圖的邊與權重）(V<sub>4</sub>,V<sub>3</sub>) 20、(V<sub>4</sub>,V<sub>5</sub>) 21、(V<sub>4</sub>,V<sub>1</sub>) 1、(V<sub>3</sub>,V<sub>1</sub>) 3、(V<sub>3</sub>,V<sub>2</sub>) 14、(V<sub>5</sub>,V<sub>1</sub>) 36、(V<sub>1</sub>,V<sub>2</sub>) 8、(V<sub>5</sub>,V<sub>6</sub>) 28、(V<sub>6</sub>,V<sub>1</sub>) 25、(V<sub>1</sub>,V<sub>7</sub>) 16、(V<sub>2</sub>,V<sub>7</sub>) 2、(V<sub>6</sub>,V<sub>7</sub>) 15</p>",
+      "choices": [
+        "(A) Edge (V<sub>1</sub>, V<sub>4</sub>) is in T",
+        "(B) Edge (V<sub>4</sub>, V<sub>5</sub>) is in T",
+        "(C) Let w<sub>4,5</sub> be the weight of (V<sub>4</sub>, V<sub>5</sub>). If we decrease w<sub>4,5</sub> by 16 (i.e., w<sub>4,5</sub> becomes 5), then T remains to be the MST of G",
+        "(D) Let w<sub>2,3</sub> be the weight of (V<sub>2</sub>, V<sub>3</sub>). If we decrease w<sub>2,3</sub> by 10 (i.e., w<sub>2,3</sub> becomes 4), then T remains to be the MST of G",
+        "(E) none of the other choices"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>先用 Kruskal 求 T：1 (V<sub>1</sub>,V<sub>4</sub>)、2 (V<sub>2</sub>,V<sub>7</sub>)、3 (V<sub>1</sub>,V<sub>3</sub>)、8 (V<sub>1</sub>,V<sub>2</sub>)、14 (V<sub>3</sub>,V<sub>2</sub>) 成環跳過、15 (V<sub>6</sub>,V<sub>7</sub>)、16 成環跳過、20 成環跳過、21 (V<sub>4</sub>,V<sub>5</sub>)。T 共 6 條邊、總重 50。</p><ul><li>(A)(B) 正確：(V<sub>1</sub>,V<sub>4</sub>) 和 (V<sub>4</sub>,V<sub>5</sub>) 都在 T 裡。</li><li>(C) 正確：把 T 裡的邊變輕，T 的總重減少 16，其他生成樹最多也只減 16，T 還是最小。</li><li>(D) 錯誤：(V<sub>2</sub>,V<sub>3</sub>) 不在 T 裡，變成 4 之後，加進 T 會和 V<sub>2</sub>–V<sub>1</sub>–V<sub>3</sub> 形成環，環上最重的是 (V<sub>1</sub>,V<sub>2</sub>) 8 &gt; 4，換掉後總重變 46，T 不再是 MST。</li></ul><p>選 (D)。</p>"
+    },
+    {
+      "id": "ds-0195",
+      "topics": [
+        "sorting-summary"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "（複選）<p>Assuming we have n data points. Among the variant characteristics of the data points, please select the correct descriptions.</p>",
+      "choices": [
+        "(A) If the worst-case running time is the most important, <i>merge sort</i> can be a good choice with O(n log n) time.",
+        "(B) If the input happens to be sorted already, <i>bubble sort</i> can be a best choice with O(n) time.",
+        "(C) If the input array is in random order and the average sorting time is most important, <i>quick sort</i> can be a good choice with O(n log n) time.",
+        "(D) If the exchanges of the items in the array are very expensive, <i>selection sort</i> will incur the least \"swaps\" or \"moves\".",
+        "(E) If the input array consists of integers in the range 1…n<sup>k</sup>, <i>radix sort</i> with radix n with O(k log n) time."
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<ul><li>(A) 對：merge sort 最差也是 O(n log n)。</li><li>(B) 對：加上「這一輪沒交換就提早結束」旗標的 bubble sort，已排序時只掃一輪 n−1 次比較，O(n)。</li><li>(C) 對：quick sort 平均 O(n log n)，而且常數小、cache 友善，實務上平均最快。</li><li>(D) 對：selection sort 每輪最多交換一次，總共最多 n−1 次 swap，是常見排序中搬動次數最少的。</li><li>(E) 錯：以 n 為基數，1…n<sup>k</sup> 的數最多 k 位數，每一位用 counting sort 是 O(n + n) = O(n)，總共 O(kn)，不是 O(k log n)。O(k log n) 連把 n 個資料讀一遍都不夠。</li></ul>"
+    },
+    {
+      "id": "ds-0196",
+      "topics": [
+        "b-plus-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "（複選）<p>B+ tree is an extension of B tree. The major differences from B tree are (1) all leaf nodes are linked together in a doubly-linked list, and (2) data points are stored on the leaf nodes only; internal nodes only hold keys and act as routers to the correct leaf node; the left child is smaller than the key and the right child is larger or equal than that. Please find any/all <u>violations</u> of a B+ tree structure in the following diagram. Assume the tree node can at most contain 4 data points (keys).</p><p>（原圖以縮排列出，括號內的 (A)～(E) 是圖上用虛線框標出的節點）</p><pre>root: [20]\n├─ (A) [10]\n│   ├─ [6, 8]\n│   │   ├─ leaf [1, 2, 3]\n│   │   ├─ leaf [6, 7]\n│   │   └─ leaf [8, 9]\n│   └─ (B) [13, 20]\n│       ├─ leaf [10, 11]\n│       ├─ leaf [13, 14]\n│       └─ (C) leaf [20, 21]\n└─ [30, 40]\n    ├─ [22, 27]\n    │   ├─ (D) leaf [22, 23]\n    │   ├─ leaf [24, 25]\n    │   └─ leaf [27, 28]\n    ├─ [33, 36]\n    │   ├─ (E) leaf [30, 31]\n    │   ├─ leaf [33, 34]\n    │   └─ leaf [36, 37]\n    └─ [47, 52]\n        ├─ leaf [40, 43]\n        ├─ leaf [47, 49]\n        └─ leaf [52, 55]</pre>",
+      "choices": [
+        "(A) 節點 [10]",
+        "(B) 節點 [13, 20]",
+        "(C) 葉節點 [20, 21]",
+        "(D) 葉節點 [22, 23]",
+        "(E) 葉節點 [30, 31]"
+      ],
+      "answer": "(A)(B)(C)(D)（(A) 待確認）",
+      "explanation": "<p>規則：key 的左子樹全部 &lt; key，右子樹全部 ≥ key。逐一檢查：</p><ul><li>(B)、(C)：它們在根 20 的<b>左</b>子樹，所有值都必須 &lt; 20，但 [13, 20] 有 20、葉子 [20, 21] 有 20、21，違規。</li><li>(D)：[22, 23] 是 [22, 27] 中 key 22 的左孩子，必須 &lt; 22，但含 22，違規（22 應該在 key 22 的右邊）。</li><li>(E)：[30, 31] 在 [30, 40] 的中間子樹（值域 [30, 40)），又是 [33, 36] 的最左孩子（&lt; 33），30、31 都符合，沒問題。</li><li>(A)：每個節點最多 4 個 key，相當於 order 5，非根的內部節點至少要有 ⌈5/2⌉ = 3 個孩子（2 個 key）；[10] 只有 1 個 key、2 個孩子，違反最少填滿度。</li></ul><p>答案 (A)(B)(C)(D)。（待確認）題目只寫了「最多 4 個 key」，沒有明講最少填滿度；若出題者不考慮下限，(A) 就不算違規。</p>"
+    },
+    {
+      "id": "ds-0197",
+      "topics": [
+        "merge-sort",
+        "heap"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "<p>（單選）In a traditional merge sort, two sorted sub-arrays are combined to form a single, fully sorted array. This is referred to as a <i>2-way merge</i>. The problem at hand is to extend this concept by merging N sorted arrays of integers, where N and M are given integers representing the number of arrays and the number of integers in each array, respectively. Please choose the correct <b>worst-case time complexity</b> of this N-way merge.</p>",
+      "choices": [
+        "(A) O(N log M)",
+        "(B) O(NM log M)",
+        "(C) O(N<sup>2</sup> log M)",
+        "(D) O(NM log N)",
+        "(E) none of the above is correct."
+      ],
+      "answer": "(D)",
+      "explanation": "<p>做法：把 N 個陣列的第一個元素放進大小 N 的 min-heap，每次取出最小值輸出，再把它所屬陣列的下一個元素放進 heap。</p><p>總共要輸出 NM 個元素，每次 extract-min + insert 是 O(log N)（heap 裡永遠最多 N 個元素），所以總共 O(NM log N)，選 (D)。</p><p>另一種做法是兩兩合併、合併 log N 輪，每輪處理 NM 個元素，一樣是 O(NM log N)。常見錯誤是把 log 寫成 log M：log 來自「同時比較的路數」N，不是每個陣列的長度。</p>"
+    },
+    {
+      "id": "ds-0198",
+      "topics": [
+        "avl-tree",
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "（複選）<p>The following is a binary tree and the alphabet on the node is simply the \"name\" (instead of value) of the node. Please select the correct statements from the following:</p><p>（原圖）A 的左孩子 B、右孩子 C；B 的左孩子 D、右孩子 E；C 的左孩子 F、右孩子 G；D 只有右孩子 H；E 只有右孩子 I；F 只有左孩子 J；G 的左孩子 K、右孩子 L；L 只有右孩子 M。</p>",
+      "choices": [
+        "(A) The successor of node B is E.",
+        "(B) The successor of node A is C.",
+        "(C) The tree is not a AVL tree.",
+        "(D) If we remove node J, the result is an AVL tree.",
+        "(E) If we remove node H, the result is an AVL tree."
+      ],
+      "answer": "(A)(E)",
+      "explanation": "<p>中序走訪（successor 指中序的下一個）：D H B E I A J F C K G L M。</p><ul><li>(A) 對：B 的下一個是 E（B 有右子樹，successor 是右子樹最左的點 E）。</li><li>(B) 錯：A 的 successor 是右子樹最左的 J，不是 C。</li></ul><p>算高度（葉子高 1）：H、I、J、K、M = 1；D、E、F、L = 2；B = 3、G = 3；C = 4；A = 5。各點的平衡因子：A 是 3 − 4 = −1、B 是 0、C 是 2 − 3 = −1、G 是 1 − 2 = −1，其餘也都在 ±1 內，所以<b>原樹是 AVL 樹</b>，(C) 錯。</p><ul><li>(D) 錯：拿掉 J 後 F 高度變 1，C 的左右高度 1 對 3，平衡因子 −2，不是 AVL。</li><li>(E) 對：拿掉 H 後 D 高度 1，但 E 仍是 2，B 仍是 3，所有平衡因子都在範圍內，還是 AVL。</li></ul><p>答案 (A)(E)。</p>"
+    },
+    {
+      "id": "ds-0199",
+      "topics": [
+        "collision-resolution",
+        "binary-tree-traversal"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "<p>（單選）Given a list of binary trees T = {t<sub>1</sub>, t<sub>2</sub>, …, t<sub>7</sub>} where each node is 0 or 1 shown as below, we would like to insert these trees into a <b>linear-probing hash table</b> of length N = 11. The hash function f(t) = g(h(t)) mod N, where h(t) is the binary sequence obtained from <i>in-order</i> traversal of tree t and g(·) converts a binary sequence to a decimal number. For instance, g(\"1111111\") = 127. Here's the question: how many collisions occur during the insertion process?</p><p>（原圖每棵都是 7 個節點的完全二元樹，以下依層序列出：根；左孩子、右孩子；再下一層由左到右 4 個）</p><pre>t1: 0 | 0 1 | 0 1 1 0\nt2: 0 | 0 0 | 0 0 1 0\nt3: 1 | 0 1 | 0 0 1 1\nt4: 1 | 0 0 | 0 1 1 0\nt5: 0 | 0 0 | 0 1 0 1\nt6: 1 | 0 0 | 1 1 0 0\nt7: 1 | 1 0 | 0 1 1 0</pre>",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(E)",
+      "explanation": "<p>7 個節點的完全二元樹，中序順序是：左左、左、左右、根、右左、右、右右。</p><div class=\"table-scroll\"><table><tr><th>樹</th><th>中序</th><th>十進位</th><th>mod 11</th><th>放入位置</th></tr><tr><td>t1</td><td>0010110</td><td>22</td><td>0</td><td>0</td></tr><tr><td>t2</td><td>0000100</td><td>4</td><td>4</td><td>4</td></tr><tr><td>t3</td><td>0001111</td><td>15</td><td>4</td><td>4 被占 → 5</td></tr><tr><td>t4</td><td>0011100</td><td>28</td><td>6</td><td>6</td></tr><tr><td>t5</td><td>0010001</td><td>17</td><td>6</td><td>6 被占 → 7</td></tr><tr><td>t6</td><td>1011000</td><td>88</td><td>0</td><td>0 被占 → 1</td></tr><tr><td>t7</td><td>0111100</td><td>60</td><td>5</td><td>5、6、7 被占 → 8</td></tr></table></div><p>t3、t5、t6、t7 這 4 次插入時，算出的位置已經有東西，發生 collision，選 (E)（程式驗算一致）。</p><p>注意：若把 t7 往後探測時又撞到的 6、7 也各算一次，會得到 6 次，不在選項中，所以這裡「collision 次數」是以「發生碰撞的插入」來算。常見錯誤是把層序當成中序直接轉換。</p>"
+    },
+    {
+      "id": "ds-0200",
+      "topics": [
+        "bfs-dfs",
+        "maze"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "（複選）<p><b>DFS advantages:</b> To find a feasible solution to the eight-queen problem, what is/are the reason(s) that we prefer to use DFS (depth-first search) instead of BFS (breadth-first search)?</p>",
+      "choices": [
+        "(A) DFS is more memory efficient.",
+        "(B) DFS can be implemented using a stack.",
+        "(C) DFS usually reaches the terminal states of \"good\" or \"bad\" faster.",
+        "(D) DFS is conceptually simpler than BFS.",
+        "(E) BFS cannot be implemented using a stack."
+      ],
+      "answer": "(A)(C)（待確認）",
+      "explanation": "<p>八皇后的搜尋樹深度固定 8（每列放一個），但寬度很大。要找「一個」可行解：</p><ul><li>(A) 是理由：DFS 只要記住目前這條路徑（深度 8），BFS 要把整層的部分解都存起來，同一層可能上千個狀態。</li><li>(C) 是理由：DFS 一路往下，很快就走到「放滿 8 個（good）」或「放不下去（bad）」的終端狀態，可以馬上回溯；BFS 要把每一層都展開完才會碰到終端狀態。</li><li>(B)、(E) 本身是對的敘述，但不是「偏好 DFS」的理由，只是實作方式。</li><li>(D) 兩者觀念難度差不多，不是理由。</li></ul><p>（待確認）官方未公布答案；(B)(E) 是否算進「理由」有解讀空間，這裡依題意「為什麼偏好 DFS」取 (A)(C)。</p>"
+    },
+    {
+      "id": "ds-0201",
+      "topics": [
+        "shortest-path"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "（複選）<p><b>Properties of shortest path problem:</b> Which of the following statements is/are correct?</p>",
+      "choices": [
+        "(A) Dijkstra's algorithm can be applied to any directed graph with no negative cycle.",
+        "(B) The heap data structure is likely to be used in Dijkstra's algorithm.",
+        "(C) Floyd-Warshall algorithm can be applied to any directed graph with negative weights.",
+        "(D) Floyd-Warshall algorithm is based on the concept of dynamic programming.",
+        "(E) Every shortest path in a weighted directed graph G will not change if an extra weight is added on every edge of G"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯：Dijkstra 要求<b>所有邊權重非負</b>，光是沒有負環不夠（有負邊時，已確定的點可能之後被更短的路徑更新）。沒有負環但有負邊要用 Bellman-Ford。</li><li>(B) 對：用 min-heap 當 priority queue，時間 O((V + E) log V)。</li><li>(C) 錯：Floyd-Warshall 可以處理負權重，但前提是沒有負環；「any directed graph with negative weights」包含有負環的圖，那時最短路徑沒有定義。</li><li>(D) 對：d<sup>(k)</sup><sub>ij</sub> = min(d<sup>(k−1)</sup><sub>ij</sub>, d<sup>(k−1)</sup><sub>ik</sub> + d<sup>(k−1)</sup><sub>kj</sub>)，以「可經過的中繼點集合」為子問題的 DP。</li><li>(E) 錯：每條邊加 c，邊數 k 的路徑增加 kc，邊數不同的路徑增加量不同，最短路徑可能改變。例如 1 條邊權重 3 對上 2 條邊各 1，各加 2 後變成 5 對 6，最短路換人。</li></ul>"
+    },
+    {
+      "id": "ds-0202",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "（複選）<p><b>Properties of min. spanning tree (MST):</b> Let T be a MST of a weighted graph G with at least 3 vertices. Which of the following statements is/are correct?</p>",
+      "choices": [
+        "(A) Given an edge e in G but not in T, we can form a cycle by putting e to T. Then e has the largest weight among edges in C.",
+        "(B) If we partition G into two subsets, and let e be the smallest-weight edge across the partition. Then e belongs to some MST in G.",
+        "(C) The edge with the smallest weight in G must belong to some MST of G.",
+        "(D) The edge with the second smallest weight in G must belong to some MST of G.",
+        "(E) The edge with the third smallest weight in G must belong to some MST of G."
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<ul><li>(A) 對（cycle property）：若 C 上有比 e 更重的邊 f，把 f 換成 e 會得到更輕的生成樹，和 T 是 MST 矛盾；所以 e 的權重 ≥ C 上所有邊（有同重時並列最大）。</li><li>(B) 對（cut property）：任何跨越切割的最小邊都屬於某棵 MST，這就是 Prim、Kruskal 正確性的基礎。</li><li>(C) 對：Kruskal 第一條一定收最小的邊。</li><li>(D) 對：兩條邊在簡單圖中不可能形成環，Kruskal 第二條一定也收。</li><li>(E) 錯：第三小的邊可能和前兩條形成三角形，Kruskal 會丟掉它。例如三角形邊權 1、2、3，邊 3 不在任何 MST 中。</li></ul>"
+    },
+    {
+      "id": "ds-0203",
+      "topics": [
+        "singly-linked-list",
+        "heap",
+        "merge-sort"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "<p>(21 points) Given k singly linked lists, each of which has n nodes. The numbers in the nodes of the i-th list are given by a<sub>i,1</sub>, a<sub>i,2</sub>, …, a<sub>i,n</sub>, as shown in the figure below. Each of the k lists has the numbers sorted in non-decreasing order, i.e., a<sub>i,1</sub> ≤ a<sub>i,2</sub> ≤ ⋯ ≤ a<sub>i,n</sub>, where i is the index of the list. Professor Q asks the students to develop an algorithm to merge these k lists into one singly linked list sorted in non-decreasing order. Three students have come up with different algorithms, which are given below in pseudo code.</p><p>（原圖：list 1 ～ list k 各有一個 head 指向 a<sub>i,1</sub> → a<sub>i,2</sub> → a<sub>i,3</sub> → … → a<sub>i,n</sub>，最後一個節點的 next 為 NULL）</p><p>Student A:</p><pre>L1. Create an empty singly linked list S to collect the result.\nL2. DO\nL3.     Iterate over the numbers in the head nodes of the k lists, and find\n        the node with the smallest number, denoted as node M.\nL4.     Remove node M from the original list, and insert it into the result\n        list S from the tail.\nL5. UNTIL all original k lists are empty\nL6. Return the result list S, which contains all nodes from the original k\n    lists and sorted in non-decreasing order.</pre><p>Student B:</p><pre>L1. Create an empty singly linked list S to collect the result.\nL2. Create an empty min heap H.\nL3. Remove the k head nodes from the k lists and insert them into H. Each\n    node in H also contains the index number i of the list where it is from.\nL4. DO\nL5.     Remove the min node M from the heap. Insert this node into S from\n        the tail. Take note of the index number stored in M, denoted as m.\nL6.     If list m is not empty, remove the head node from list m and insert\n        it into H.\nL7. WHILE H is not empty\nL8. Return the result list S, which contains all nodes from the original k\n    lists and sorted in non-decreasing order.</pre><p>Student C:<br>Call the recursive divide-and-conquer function MergeTwoGroupLists (<i>k sorted linked lists</i>). The return value of the function is a list containing all nodes from the original k lists and sorted in non-decreasing order.</p><pre>L1. Function MergeTwoGroupLists (m sorted linked lists)\nL2.     If m==1 then return the only list from the input.\nL3.     Divide the input m lists into two groups of lists, with ⌈m/2⌉ and ⌊m/2⌋\n        lists, respectively.\nL4.     Recursively call MergeTwoGroupLists for each of these two groups of\n        lists, merging the first group of the lists into one sorted list, S1, and the\n        second group of the lists into one sorted list, S2.\nL5.     Merge the two sorted lists S1 and S2 into one sorted list S.\nL6.     Return S.</pre><p>For each of these three algorithms, analyze and give their asymptotic worst-case running times with <b>the big-O notation</b> and <b>in terms of k and n.</b></p><p>Note:</p><ul><li>Lower-order terms and constant factors (excluding k and n) should be removed in the big-O notation in the answer.</li><li>The bound in the answer needs to be tight.</li><li>Only the final result will be graded and only fully correct answers will be given points. Please clearly mark your final result in the answer sheet.</li></ul>",
+      "answer": "Student A：O(k²n)；Student B：O(kn log k)；Student C：O(kn log k)",
+      "explanation": "<p>總共有 kn 個節點要搬到 S。</p><ul><li><b>Student A</b>：每搬一個節點都要掃 k 個 head 找最小值，O(k)；搬 kn 次，總共 O(k · kn) = O(k²n)。從 tail 插入要維護 tail 指標，O(1)。</li><li><b>Student B</b>：建 heap 放 k 個點 O(k)（逐一插入是 O(k log k)）；之後每個節點進出 heap 各一次，heap 大小永遠 ≤ k，每次 O(log k)，總共 O(kn log k)。</li><li><b>Student C</b>：遞迴樹有 ⌈log k⌉ 層，每一層的合併合起來剛好處理全部 kn 個節點、各 O(1)，所以每層 O(kn)，總共 O(kn log k)。遞迴式 T(k) = 2T(k/2) + O(kn)。</li></ul><p>常見錯誤：把 Student C 想成「依序兩兩合併」（先合併 1、2，結果再和 3 合併…），那樣是 O(k²n)；分組對半合併才是 O(kn log k)。</p>"
+    },
+    {
+      "id": "ds-0204",
+      "topics": [
+        "kmp"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "資料結構與演算法",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf"
+      },
+      "question": "<p>(9 points) The pseudo code function to compute the prefix function in the Knuth-Morris-Pratt (KMP) string matching algorithm is given below. Given a pattern string P[1..m], the prefix function for this pattern P is the function π: {1, 2, …, m} → {0, 1, …, m − 1} such that π[q] is the length of the longest prefix of P that is a proper suffix of P<sub>q</sub>, where P<sub>q</sub> denotes the q-character prefix of the string P. For pattern string P=ABACABACABACABAD, how many times is <b>line 7</b> executed? (Note: only the final answer will be graded and only fully correct answer will be given points)</p><pre>COMPUTE-PREFIX-FUNCTION(P)\n1   m = P.length\n2   let π[1..m] be a new array\n3   π[1] = 0\n4   k = 0\n5   for q = 2 to m\n6       while k &gt; 0 and P[k + 1] ≠ P[q]\n7           k = π[k]\n8       if P[k + 1] == P[q]\n9           k = k + 1\n10      π[q] = k\n11  return π</pre>",
+      "answer": "5 次",
+      "explanation": "<p>P = A B A C A B A C A B A C A B A D（m = 16）。算出 π：</p><div class=\"table-scroll\"><table><tr><th>q</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td></tr><tr><th>P[q]</th><td>A</td><td>B</td><td>A</td><td>C</td><td>A</td><td>B</td><td>A</td><td>C</td><td>A</td><td>B</td><td>A</td><td>C</td><td>A</td><td>B</td><td>A</td><td>D</td></tr><tr><th>π[q]</th><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>0</td></tr></table></div><p>line 7 只在「k &gt; 0 而且下一個字元對不上」時執行：</p><ul><li>q = 4（C）：進來時 k = 1，P[2] = B ≠ C，執行 k = π[1] = 0，<b>1 次</b>。</li><li>q = 5～15：每次都直接對上，k 一路加 1，不執行 line 7。</li><li>q = 16（D）：進來時 k = 11，P[12] = C ≠ D → k = π[11] = 7；P[8] = C ≠ D → k = π[7] = 3；P[4] = C ≠ D → k = π[3] = 1；P[2] = B ≠ D → k = π[1] = 0，<b>4 次</b>。</li></ul><p>共 1 + 4 = 5 次（程式實際執行計數也是 5）。這也印證了均攤分析：k 總共只增加 11 次，所以 line 7 的總次數不會超過 11。</p>"
+    },
+    {
+      "id": "ds-0205",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Which of the following statement(s) is(are) true about red-black trees?",
+      "choices": [
+        "(A) Red-black trees are not search trees.",
+        "(B) An external node must be black.",
+        "(C) It is possible that the path from the root to an external node has two consecutive black nodes.",
+        "(D) Every path from the root to an external node has the same number of red nodes.",
+        "(E) It takes O(1) time to insert a key to the red-black tree."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<p><span class=\"term\">Red-Black Tree<small>（紅黑樹）</small></span>本身就是一種平衡的二元搜尋樹，所以 (A) 錯。</p><ul><li>(B) 對：外部節點（NIL）規定一律是黑色。</li><li>(C) 對：規則只禁止「紅紅相連」，黑黑相連完全合法，例如只有黑節點的完全平衡樹。</li><li>(D) 錯：每條路徑上相同的是<b>黑色</b>節點數（black-height），紅色數可以不同。</li><li>(E) 錯：插入要先往下找位置，樹高是 O(log n)，所以插入是 O(log n)；只有插入後的旋轉次數是 O(1)（最多 2 次），別把兩者搞混。</li></ul>"
+    },
+    {
+      "id": "ds-0206",
+      "topics": [
+        "radix-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Consider radix sort of a list of positive integers, with each decimal digit as a key. Assume that we proceed in a least-significant-digit-first manner, and we want to sort the list from small to large. Let the initial list of integers be<br>312, 256, 19, 713, 44, 608, 210, 909",
+      "choices": [
+        "(A) After the first pass, only one of the first four numbers in the list is less than 200.",
+        "(B) The last number in the list after the second pass is 256.",
+        "(C) 44 is among the last four numbers of the list after the second pass.",
+        "(D) It is possible to have radix sort run with linear time complexity with respect to the length of the list to be sorted."
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<p>LSD radix sort 每一趟依某一位數做<b>穩定</b>排序（同一位數的元素保持原來順序）。</p><ul><li>第 1 趟（個位）：210, 312, 713, 44, 256, 608, 19, 909。前四個是 210, 312, 713, 44，只有 44 &lt; 200，(A) 對。</li><li>第 2 趟（十位）：608, 909（十位 0）、210, 312, 713, 19（十位 1）、44（4）、256（5）。最後一個是 256，(B) 對；最後四個是 713, 19, 44, 256，44 在裡面，(C) 對。</li><li>(D) 對：位數 d 固定、基底 r 固定時，時間是 O(d(n + r)) = O(n)，對資料長度是線性的。</li></ul><p>常見錯誤：第 2 趟忘了保持第 1 趟的相對順序（例如把 19 排在 210 前面），那就不是穩定排序了。</p>"
+    },
+    {
+      "id": "ds-0207",
+      "topics": [
+        "sorting-summary",
+        "quick-sort",
+        "merge-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Which of the following sorting algorithm(s), using typical implementation, apply the divide-and-conquer approach?",
+      "choices": [
+        "(A) Quick Sort",
+        "(B) Heap Sort",
+        "(C) Selection Sort",
+        "(D) Insertion Sort",
+        "(E) Merge Sort"
+      ],
+      "answer": "(A)(E)",
+      "explanation": "<p><span class=\"term\">Divide and Conquer<small>（分治法）</small></span>是「切成子問題 → 遞迴解 → 合併」。</p><ul><li>Quick Sort：用 pivot 切成兩邊再遞迴，屬於分治（工作量在「切」）。</li><li>Merge Sort：對半切、遞迴排好再合併，屬於分治（工作量在「合」）。</li><li>Heap Sort、Selection Sort、Insertion Sort 都是一個一個把元素放到定位的迭代式做法，不是分治。</li></ul>"
+    },
+    {
+      "id": "ds-0208",
+      "topics": [
+        "shortest-path"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Let G = (V, E) be an undirected connected graph, where each edge e has a given length l(e) &gt; 0. Let s be a fixed vertex of this graph and let δ(v) be the length of a shortest path from s to v. Which of the following statement(s) is(are) correct?",
+      "choices": [
+        "(A) For each vertex v≠s, there is an incident edge e=(u,v) such that δ(v) = δ(u) + l(e).",
+        "(B) For each vertex v≠s, choose one incident edge e=(u,v) such that δ(v) = δ(u) + l(e); the collection of these edges forms a spanning tree of G.",
+        "(C) For each vertex v≠s, choose one incident edge e=(u,v) such that δ(v) = δ(u) + l(e); the collection of these edges forms a minimum weight spanning tree of G.",
+        "(D) δ(v) &gt; δ(u) + l(e) for some edge e=(u,v).",
+        "(E) δ(v) ≤ δ(u) + l(e) for every edge e=(u,v)."
+      ],
+      "answer": "(A)(B)(E)",
+      "explanation": "<ul><li>(A) 對：取 s 到 v 的一條最短路徑，最後一條邊 (u, v) 前面那段就是 s 到 u 的最短路徑，所以 δ(v) = δ(u) + l(e)。</li><li>(B) 對：因為 l(e) &gt; 0，選到的 u 一定滿足 δ(u) &lt; δ(v)，沿著選的邊往回走距離嚴格遞減，不會繞圈，最後一定回到 s。n − 1 個點各選一條邊、共 n − 1 條、沒有 cycle 又連通，就是一棵 spanning tree（最短路徑樹）。</li><li>(C) 錯：最短路徑樹不一定是 MST。例如三角形 s–a 長 2、s–b 長 2、a–b 長 1：最短路徑樹選 s–a、s–b 總重 4，但 MST 是 s–a、a–b 總重 3。</li><li>(D) 錯、(E) 對：如果 δ(v) &gt; δ(u) + l(e)，走「s 到 u 的最短路徑再接 e」就比 δ(v) 還短，矛盾。這就是三角不等式。</li></ul>"
+    },
+    {
+      "id": "ds-0209",
+      "topics": [
+        "b-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Consider a B-tree with minimum degree of 3. Keys in the same node are stored in ascending order. The median key is used to split a full node. Initially the B-tree is empty. We then build the B-tree by inserting the keys 5, 6, 4, 2, 1, 7, 8, and 10 one by one in the given order. The following statements are independent from each other and all start from the same tree. Which of the following statement(s) is(are) true?",
+      "choices": [
+        "(A) If 9 is inserted into the B-tree, the height of the B-tree is changed.",
+        "(B) If 3 is inserted into the B-tree, the height of the B-tree is not changed.",
+        "(C) The keys 7 and 10 are not in the same node.",
+        "(D) The keys 1 and 2 are not in the same node."
+      ],
+      "answer": "(B)",
+      "explanation": "<p><span class=\"term\">Minimum Degree<small>（最小分支度）</small></span> t = 3 表示每個節點最多 2t − 1 = 5 個 key，滿了就用中位數分裂。</p><ul><li>插入 5, 6, 4, 2, 1：根節點變成 [1, 2, 4, 5, 6]，剛好滿。</li><li>插入 7：根已滿，先用中位數 4 分裂 → 根 [4]，子節點 [1, 2] 與 [5, 6]；7 放進 [5, 6, 7]。</li><li>插入 8、10：右子變成 [5, 6, 7, 8, 10]。</li></ul><p>最後的樹：根 [4]，左子 [1, 2]，右子 [5, 6, 7, 8, 10]。</p><ul><li>(A) 錯：插入 9 時右子已滿，分裂出中位數 7 上到根 → 根 [4, 7]，子節點 [1, 2]、[5, 6]、[8, 9, 10]，高度不變。</li><li>(B) 對：3 放進 [1, 2, 3]，不必分裂。</li><li>(C) 錯：7 和 10 都在右子。</li><li>(D) 錯：1 和 2 都在左子。</li></ul>"
+    },
+    {
+      "id": "ds-0210",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）For the given weighted graph to the right, let x and y be the total weights of its minimum spanning tree and its second best minimum spanning tree, respectively. Which of the following statement(s) is(are) true?<br>（原圖為 9 個頂點的無向圖，以邊列表描述如下。外圈頂點：T（上）、L1（左上）、L2（左下）、R1（右上）、R2（右下）、B（下）；內部三角形頂點：I1（上）、I2（左）、I3（右）。）<pre>T–L1: 4    T–R1: 3    T–I1: 14\nL1–L2: 8   R1–R2: 1   R2–B: 6\nI1–I2: 2   I1–I3: 7   I2–I3: 12\nI2–L2: 16  I3–R2: 5</pre>",
+      "choices": [
+        "(A) y − x = 7",
+        "(B) y − x = 5",
+        "(C) x + y = 77",
+        "(D) 2y − x = 51",
+        "(E) 2x − y = 31"
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<p>先用 Kruskal 找 <span class=\"term\">Minimum Spanning Tree<small>（最小生成樹）</small></span>：依權重 1, 2, 3, 4, 5, 6, 7, 8 選的邊都不會形成 cycle，9 個點剛好需要 8 條邊，所以 x = 1+2+3+4+5+6+7+8 = 36。</p><p>Second best MST = 加入一條非樹邊、拿掉它形成的 cycle 上最大的樹邊，取增加量最小者：</p><ul><li>加 12（I2–I3）：cycle I2–I1–I3，拿掉 7，增加 5。</li><li>加 14（T–I1）：cycle T–R1–R2–I3–I1，最大樹邊 7，增加 7。</li><li>加 16（I2–L2）：cycle 上最大樹邊 8，增加 8。</li></ul><p>最小增加量 5，所以 y = 41（程式窮舉所有生成樹驗證：最小兩個總重是 36、41）。</p><p>y − x = 5、x + y = 77、2y − x = 46、2x − y = 31，所以 (B)(C)(E)。</p>"
+    },
+    {
+      "id": "ds-0211",
+      "topics": [
+        "merge-sort",
+        "heap-sort",
+        "sorting-summary"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Divide and conquer for sorting: Given a set of n integers, where n is exact power of 2:",
+      "choices": [
+        "(A) If I divide the n integers into 4 equal parts, conquer the 4 parts recursively, and merge the 4 parts into a sorted sequence in linear time, I get the sorted sequence in O(n log n) time.",
+        "(B) If I divide the n integers into 2 equal parts, sort the 2 parts using selection sort, I get the sorted sequence in O(n<sup>2</sup>) time.",
+        "(C) If I divide the n integers into 2 equal parts, sort the 2 parts using heap-sort, I get the sorted sequence in O(n log n) time.",
+        "(D) Let lg n represent base-2 logarithm. If I divide the n integers into ⌈n / lg n⌉ parts with each part except the last part having m integers (m ≤ lg n), sort each part using heap-sort, and merge the ⌈n / lg n⌉ parts, I get the sorted sequence in O(n log log n) time."
+      ],
+      "answer": "(A)（待確認：(B)(C) 是否算對取決於是否默認有合併步驟）",
+      "explanation": "<ul><li>(A) 對：T(n) = 4T(n/4) + Θ(n)，依 Master Theorem a = 4、b = 4，n<sup>log<sub>4</sub>4</sup> = n，屬於第二種情況，T(n) = Θ(n log n)。</li><li>(B)(C)：題目只說「切兩半、各自排序」，<b>沒有合併</b>。兩半各自排好不代表整體已排好（例如 [3, 4 | 1, 2]），照字面看不會得到排好的序列，所以判為錯。如果默認後面還有一個線性合併，則 (B) 的 O(n²)、(C) 的 O(n log n) 在時間上都成立。這點有爭議（待確認）。</li><li>(D) 錯：每段 lg n 個用 heap sort 共 (n/lg n)·O(lg n · lg lg n) = O(n lg lg n)；但要合併 k = n/lg n 段，k-way merge 用 heap 需要 O(n log k) = O(n log n)，合併成本拉高到 O(n log n)。何況比較式排序有 Ω(n log n) 下界，不可能 O(n log log n)。</li></ul>"
+    },
+    {
+      "id": "ds-0212",
+      "topics": [
+        "shortest-path",
+        "activity-network"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 23,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）For the given directed weighted graph below:<br>（原圖以邊列表描述，u → v: 權重）<pre>U → Q: 3    U → T: 50\nQ → P: 4    P → T: 6\nR → Q: 8    R → P: 5    R → T: 40\nS → U: 20   S → R: 25</pre>",
+      "choices": [
+        "(A) In every topological sort of the graph, R has to appear after U.",
+        "(B) The path from S to T with the most total weight includes four edges.",
+        "(C) The path from S to T found by Dijkstra's algorithm contains three edges.",
+        "(D) If we add an edge from P to U with weight=0, we can still obtain a valid topological sort.",
+        "(E) If we add an edge from P to U with weight=0, the Dijkstra's algorithm will still find the same path from S to T as before the edge is added."
+      ],
+      "answer": "(E)",
+      "explanation": "<p>S 到 T 的所有路徑（程式列舉）：S→U→T = 70、S→U→Q→P→T = 33、S→R→T = 65、S→R→Q→P→T = 43、S→R→P→T = 36。</p><ul><li>(A) 錯：U 和 R 之間沒有任何路徑，兩者在 <span class=\"term\">Topological Sort<small>（拓樸排序）</small></span>中誰先都可以，例如 S, R, U, Q, P, T。</li><li>(B) 錯：最重的是 S→U→T（70），只有 2 條邊。</li><li>(C) 錯：最短的是 S→U→Q→P→T（33），有 4 條邊。</li><li>(D) 錯：加了 P→U 後 U→Q→P→U 形成 cycle，有 cycle 的圖不存在拓樸排序。</li><li>(E) 對：新邊權重 0 ≥ 0，Dijkstra 仍然正確；從 P 回到 U 只會產生更長的路徑，最短路徑還是 33 那條。</li></ul>"
+    },
+    {
+      "id": "ds-0213",
+      "topics": [
+        "hash-functions",
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 24,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）The hash function [h(key) = key mod m] is used to map any integer key to one of the slots, indexed 0, …, m−1, of a hash table of m slots.",
+      "choices": [
+        "(A) If m is 5, there is just one occurrence of collision among these keys: 1, 2, 4, 6, 8.",
+        "(B) Collision does not happen as long as the load factor is less than 0.5.",
+        "(C) Consider a hash table where m is 5 and uses chaining to handle collisions. The table is initially empty. After we insert the keys 1, 2, 4, 6, 8 into the table in the given order, key 8 is in the slot indexed 3.",
+        "(D) Consider a hash table where m is 5 and uses open dressing with linear probing to handle collisions. The table is initially empty. After we insert the keys 1, 2, 4, 6, 8 into the table in the given order, key 8 is in the slot indexed 0."
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<p>h 值：1→1、2→2、4→4、6→1、8→3。</p><ul><li>(A) 對：只有 6 和 1 撞在 slot 1，一次碰撞。</li><li>(B) 錯：load factor 再低，兩個 key 的 h 值相同就會碰撞（例如 1 和 6）。</li><li>(C) 對：chaining 不會搬家，8 就在 slot 3。</li><li>(D) 對：linear probing 依序放：1→1、2→2、4→4；6 從 1 開始找，1、2 被占，放 3；8 從 3 開始，3、4 被占，繞回 0。最終表為 [8, 1, 2, 6, 4]（程式驗證）。</li></ul><p>題目的 open dressing 是 open addressing 的筆誤。</p>"
+    },
+    {
+      "id": "ds-0214",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 25,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）A red-black tree is initially empty. Now four keys are inserted in the order of 5, 3, 8, 2. Which of the following statement(s) is(are) true about the resulting red-black tree?",
+      "choices": [
+        "(A) There are no more than 4 external nodes.",
+        "(B) There are two red nodes.",
+        "(C) The node 8 is black.",
+        "(D) Exactly one rotation operation occurs during the insertion of the four nodes.",
+        "(E) Nodes 2 and 3 have different colors."
+      ],
+      "answer": "(C)(E)",
+      "explanation": "<ul><li>插 5：根，塗黑。插 3、8：紅色，分別在 5 的左右，沒有違規。</li><li>插 2：紅色，掛在 3 的左邊；父 3 紅、叔叔 8 也紅 → 屬於「叔叔紅」的情況，只要<b>變色</b>：3、8 變黑，5 變紅；5 是根再塗回黑。</li></ul><p>結果：5 黑（根）、3 黑、8 黑、2 紅。</p><ul><li>(A) 錯：4 個內部節點的二元樹有 4 + 1 = 5 個外部節點。</li><li>(B) 錯：只有 2 是紅的。</li><li>(C) 對。</li><li>(D) 錯：全程只有變色，沒有旋轉。</li><li>(E) 對：2 紅、3 黑。</li></ul>"
+    },
+    {
+      "id": "ds-0215",
+      "topics": [
+        "union-find"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 26,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf"
+      },
+      "question": "（複選）Consider the following sequence of operations for disjoint sets (there is no set initially):<br>Make-Set('a'), Make-Set('b'), Make-Set('c'), Union('b','c'), Make-Set('d'), Make-Set('e'), Make-Set('f'), Union('e','f'), Union('a','b'), Union('a','f')<br>Which of the following statement(s) is(are) true after this sequence of operations?",
+      "choices": [
+        "(A) There are two sets.",
+        "(B) Find-Set('b') and Find-Set('f') return the same node.",
+        "(C) Find-Set('c') and Find-Set('d') return the same node.",
+        "(D) Each union operation takes constant time."
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<p>追蹤集合：{b, c} → {e, f} → {a, b, c} → {a, b, c, e, f}，另外 d 自己一組。</p><ul><li>(A) 對：{a, b, c, e, f} 與 {d}，共 2 個集合。</li><li>(B) 對：b、f 同一集合，Find-Set 回傳同一個代表。</li><li>(C) 錯：d 是獨立集合。</li><li>(D) 錯：Union(x, y) 要先 Find 出兩個代表再連接，Find 需要沿著樹往上走，不是常數時間（加上 union by rank 與 path compression 也只是攤銷 O(α(n))）。</li></ul>"
+    },
+    {
+      "id": "ds-0216",
+      "topics": [
+        "avl-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（本題接續第 1 題）第 1 題：Given the following AVL tree, insert a node of \"61\" while keeping it an AVL tree.<pre>原 AVL tree（括號內為左子、右子；- 表示空）：\n45( 22( 7, 31(-, 39) ), 73( 58(-, 65), 79 ) )</pre>第 2 題：（複選）Following the result of the above, delete \"7\" while keeping it an AVL tree. Which of the following statement(s) is(are) true.",
+      "choices": [
+        "(A) Node of 22 and 39 are children of node 31.",
+        "(B) Node of 22 is ancestor of node 31.",
+        "(C) Node of 39 is not a leaf node.",
+        "(D) Node of 39 and 61 are at the same level."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p><b>先做第 1 題的插入</b>：61 &gt; 45 往右、&lt; 73 往左到 58、&gt; 58 往右到 65、&lt; 65 放在 65 的左邊。往上檢查平衡因子（左高 − 右高）：58 的左邊空（高 −1）、右邊 65–61 高 1，差 −2 → 不平衡。路徑是「右、左」，屬於 <span class=\"term\">RL Rotation<small>（右左旋轉）</small></span>：61 升上來，左子 58、右子 65。73 和 45 檢查後都平衡。</p><p>插入後：45( 22( 7, 31(-, 39) ), 73( 61(58, 65), 79 ) )。</p><p><b>刪除 7</b>：22 的左邊變空（高 −1）、右邊 31–39 高 1，差 −2 → 不平衡。31 的平衡因子是 −1（偏右），屬於 RR 情況，對 22 做一次左旋：31 升上來，左子 22、右子 39。45 的左子樹高 1、右子樹高 2，仍平衡。</p><p>結果：45( 31(22, 39), 73( 61(58, 65), 79 ) )。</p><ul><li>(A) 對：22、39 是 31 的左右子。</li><li>(B) 錯：反過來，31 是 22 的父節點。</li><li>(C) 錯：39 是葉節點。</li><li>(D) 對：39 和 61 都在根往下第 2 層。</li></ul>"
+    },
+    {
+      "id": "ds-0217",
+      "topics": [
+        "avl-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Which of the following statements are true about AVL trees? n is the number of nodes.",
+      "choices": [
+        "(A) AVL trees are not search trees.",
+        "(B) The worst-case performance for searching is O(n).",
+        "(C) Traversing an AVL tree takes O(log(n)) time.",
+        "(D) Inserting a node takes O(log(n)) time.",
+        "(E) AVL trees provide faster lookups than Red Black Trees."
+      ],
+      "answer": "(D)(E)",
+      "explanation": "<ul><li>(A) 錯：AVL tree 是加上平衡條件的 BST。</li><li>(B) 錯：AVL 的高度最多約 1.44 log n，搜尋最差也是 O(log n)；O(n) 是一般 BST 退化成鏈的情況。</li><li>(C) 錯：走訪每個節點都要拜訪一次，必定 Θ(n)。</li><li>(D) 對：往下找 O(log n)，往回調整最多 O(log n) 個節點。</li><li>(E) 對：AVL 的平衡條件比紅黑樹嚴格（高度 ≤ 1.44 log n，紅黑樹 ≤ 2 log n），樹比較矮，查詢通常比較快；代價是插入刪除時旋轉比較多。</li></ul>"
+    },
+    {
+      "id": "ds-0218",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Please refer to the following graph and solve the minimum spanning tree (MST) using <b>Kruskal's algorithm</b>. Which of the following statements are true?<br>（原圖以無向邊列表描述，頂點 0～8）<pre>0–1: 8    0–2: 12   1–2: 13   2–6: 21\n2–3: 14   1–3: 25   1–4: 9    3–4: 20\n3–6: 12   6–8: 11   3–8: 16   3–5: 8\n3–7: 12   8–7: 9    4–5: 19   5–7: 11</pre>",
+      "choices": [
+        "(A) The sum of the weight of all edges in the MST is 85.",
+        "(B) Node 0 connects to node 7 through exactly node 2, 3 in the MST.",
+        "(C) The sum of the weight of all edges connecting node 3 in MST is 22.",
+        "(D) There are 9 edges in total in the MST."
+      ],
+      "answer": "(C)",
+      "explanation": "<p>Kruskal 依權重由小到大挑邊，形成 cycle 就跳過：</p><ul><li>8：0–1 選、3–5 選</li><li>9：1–4 選、8–7 選</li><li>11：6–8 選、5–7 選（此時 {3, 5, 6, 7, 8} 已連在一起）</li><li>12：0–2 選；3–6、3–7 兩端已連通，跳過</li><li>13：1–2 已連通跳過；14：2–3 選，兩大塊接起來，9 個點、8 條邊完成</li></ul><p>MST 總重 = 8+8+9+9+11+11+12+14 = 82（程式驗證）。</p><ul><li>(A) 錯：是 82 不是 85。</li><li>(B) 錯：0 到 7 的路徑是 0–2–3–5–7，中間經過 2、3、5 三個點。</li><li>(C) 對：連到 3 的 MST 邊只有 3–5（8）和 2–3（14），合計 22。</li><li>(D) 錯：n 個頂點的生成樹固定有 n − 1 = 8 條邊。</li></ul>"
+    },
+    {
+      "id": "ds-0219",
+      "topics": [
+        "shortest-path"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Please refer to the following pseudo code and find which statements are true.<pre class=\"code\">1   function f(Graph, source):\n2      for each vertex v in Graph:    // Initialization\n3          dist[v] := infinity\n4          previous[v] := undefined\n5      dist[source] := 0\n6      Q := the set of all nodes in Graph\n7      while Q is not empty:            // main loop\n8          u := node in Q with smallest dist[ ]\n9          remove u from Q\n10         for each neighbor v of u:\n11             alt := dist[u] + dist_between(u, v)\n12             if alt &lt; dist[v]\n13                 dist[v] := alt\n14                 previous[v] := u\n15     return previous[ ]</pre>",
+      "choices": [
+        "(A) The time complexity in this code is O(v<sup>2</sup>).",
+        "(B) The code is about finding longest path using Bellman Ford's algorithm.",
+        "(C) It works for the graphs containing negative circles.",
+        "(D) It works for weighted graphs."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>每輪取出 dist 最小的點再鬆弛鄰居，這是 <span class=\"term\">Dijkstra's Algorithm<small>（Dijkstra 演算法）</small></span>，求的是最短路徑。</p><ul><li>(A) 對：Q 用一般集合，第 8 行找最小值要掃 O(V)，做 V 輪 → O(V²)；鬆弛總共 O(E) ≤ O(V²)。</li><li>(B) 錯：不是最長路徑，也不是 Bellman-Ford（Bellman-Ford 是所有邊鬆弛 V − 1 輪）。</li><li>(C) 錯：Dijkstra 假設邊權非負；有負環時最短路徑根本沒定義，連負邊都可能算錯。</li><li>(D) 對：它就是為（非負）加權圖設計的。</li></ul>"
+    },
+    {
+      "id": "ds-0220",
+      "topics": [
+        "hash-functions",
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）The hash function [h(key) = key mod m] is used to map any integer key to one of the slots, indexed 0, ..., m-1, of a hash table of m slots.",
+      "choices": [
+        "(A) If m is 7, there is just one occurrence of collision among these keys: 1, 2, 4, 6, 8, 12, 15.",
+        "(B) Consider using chaining to handle collisions. The table is initially empty. After inserting the keys 1, 2, 4, 6, 8, 12 into the table in the given order, key 12 is in the slot indexed 5.",
+        "(C) Consider using open dressing with linear probing to handle collisions. The table is initially empty. After we insert the keys 1, 2, 4, 6, 8, 12, 15 into the table in the given order, key 15 is in the slot indexed 0.",
+        "(D) Let using quadratic probing to handle collisions. The table is initially empty. After we insert the keys 1, 2, 4, 6, 8, 12, 15 into the table in the given order, key 12 is in the slot indexed 0."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<p>以 m = 7 計算 h 值：1→1、2→2、4→4、6→6、8→1、12→5、15→1。</p><ul><li>(A) 錯：8 和 15 都撞到 slot 1，至少兩次碰撞。</li><li>(B) 對：chaining 不搬家，12 在 slot 5。</li><li>(C) 對：linear probing：8 試 1、2 被占 → 3；12 → 5；15 試 1、2、3、4、5、6 都被占 → 繞回 0。最終表 [15, 1, 2, 8, 4, 12, 6]。</li><li>(D) 對：quadratic probing 試 h + i²：8 試 1、2 被占、1+4 = 5 空 → 放 5；12 試 5（被 8 占）、6 被占、5+4 = 9 mod 7 = 2 被占、5+9 = 14 mod 7 = 0 空 → 放 0。</li></ul><p>兩種 probing 的結果都用程式模擬過。題目的 open dressing 是 open addressing 的筆誤。</p>"
+    },
+    {
+      "id": "ds-0221",
+      "topics": [
+        "shortest-path"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）For the directed weighted graph below, compute the shortest paths using Dijkstra's algorithm with node b as the source node. Which of the following statement(s) is(are) true?<br>（原圖以有向邊列表描述，u → v: 權重）<pre>a → d: 2   a → b: 1   c → a: 9\nb → c: 2   c → b: 1   c → e: 1   e → c: 3\nb → f: 8   c → f: 4   b → g: 6   e → g: 8\nf → g: 3   g → f: 1   f → h: 6   h → g: 9\ne → h: 7</pre>",
+      "choices": [
+        "(A) The shortest path from b to d is of the highest weight among all shortest paths of b to the other nodes.",
+        "(B) The paths from b to a, b to e, and b to f are of the same number of edges.",
+        "(C) The total weight of the path from b to h is 10.",
+        "(D) The longest number of edges in all shortest paths from b to the other nodes is four."
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p>從 b 跑 Dijkstra（程式驗證）：</p><div class=\"table-scroll\"><table><tr><th>點</th><th>距離</th><th>路徑</th></tr><tr><td>c</td><td>2</td><td>b→c</td></tr><tr><td>e</td><td>3</td><td>b→c→e</td></tr><tr><td>f</td><td>6</td><td>b→c→f</td></tr><tr><td>g</td><td>6</td><td>b→g</td></tr><tr><td>h</td><td>10</td><td>b→c→e→h</td></tr><tr><td>a</td><td>11</td><td>b→c→a</td></tr><tr><td>d</td><td>13</td><td>b→c→a→d</td></tr></table></div><ul><li>(A) 對：d 的 13 最大。</li><li>(B) 對：到 a、e、f 都是 2 條邊。</li><li>(C) 對：b→c→e→h = 2 + 1 + 7 = 10。</li><li>(D) 錯：最多邊數是 3（到 h 與到 d），不是 4。</li></ul>"
+    },
+    {
+      "id": "ds-0222",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）A red-black tree is initially empty. Now four keys are inserted in the order of 5, 2, 7, 3, 4. Which of the following statement(s) is(are) true about the resulting red-black tree?",
+      "choices": [
+        "(A) There are more than 6 external nodes.",
+        "(B) There are two red nodes.",
+        "(C) The node 3 is black.",
+        "(D) There are two rotation operations occurring during the insertion of the five nodes.",
+        "(E) Nodes 3 and 4 have different colors."
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<p>題目寫 four keys，但實際列了 5 個 key（選項 (D) 也說 five nodes），以 5 個來做。</p><ul><li>插 5：根，黑。插 2、7：紅，分別在左右。</li><li>插 3：掛在 2 的右邊；父 2 紅、叔叔 7 紅 → 只變色：2、7 變黑，5 變紅後因為是根再塗黑。</li><li>插 4：掛在 3 的右邊；父 3 紅、叔叔（2 的左子 NIL）黑，而且 2→3→4 一路向右，是 RR 型 → 對 2 左旋一次並交換顏色：3 黑、2 紅。</li></ul><p>結果：5 黑，左子 3 黑（左 2 紅、右 4 紅），右子 7 黑。</p><ul><li>(A) 錯：5 個內部節點 → 6 個外部節點，不是「多於 6」。</li><li>(B) 對：紅色是 2 和 4。</li><li>(C) 對。</li><li>(D) 錯：只旋轉 1 次。</li><li>(E) 對：3 黑、4 紅。</li></ul>"
+    },
+    {
+      "id": "ds-0223",
+      "topics": [
+        "bfs-dfs",
+        "graph-representation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Which of the following statement(s) is(are) true?",
+      "choices": [
+        "(A) In the Breadth First traversal, we process all of a node's descendants before we move to an adjacent node.",
+        "(B) A directed graph is strongly connected if there is a path from each vertex to every other node in the digraph.",
+        "(C) Stack is used to hold nodes in breadth first search of a graph.",
+        "(D) A graph is said to be complete if there is no edge between every pair of nodes."
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(A) 錯：先把一個點的後代全部處理完才換鄰居，是 DFS 的行為；BFS 是一層一層往外擴。</li><li>(B) 對：這就是 <span class=\"term\">Strongly Connected<small>（強連通）</small></span>的定義：任兩點 u、v 之間 u 到 v、v 到 u 都有路徑。</li><li>(C) 錯：BFS 用 queue，DFS 才用 stack（或遞迴）。</li><li>(D) 錯：complete graph 是<b>每一對</b>頂點之間都有邊。</li></ul>"
+    },
+    {
+      "id": "ds-0224",
+      "topics": [
+        "elementary-sorts"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 23,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）The insertion sort algorithm in the following sorts the elements in <code>arr[0..n-1]</code>. Which of the followings are true?<pre class=\"code\">1   void insertionSort(int arr[], int n)\n2   {\n3      int i, key, j;\n4      for (i = 1; i &lt; n; i++)\n5      {\n6          /* MISSING CODE */\n7          j = i - 1;\n8\n9          while (j &gt;= 0 &amp;&amp; arr[j] &lt;= key)\n10         {\n11             arr[j + 1] = arr[j];\n12             j = j - 1;\n13         }\n14         arr[j + 1] = key;\n15     }\n16  }</pre>",
+      "choices": [
+        "(A) The missing code at Line 6 is \"key = arr[i-1]\"",
+        "(B) The missing code at Line 6 is \"key = arr[i]\"",
+        "(C) The algorithm sorts arr[0..n-1] in ascending order",
+        "(D) The insertion sort algorithm is a stable sorting algorithm",
+        "(E) None of the above are true"
+      ],
+      "answer": "(B)（(D) 待確認）",
+      "explanation": "<ul><li>(B) 對、(A) 錯：每一輪要把 arr[i] 插入前面已排好的 arr[0..i−1]，所以 key = arr[i]。</li><li>(C) 錯：while 條件是 arr[j] &lt;= key 就往後搬，也就是比 key <b>小或相等</b>的都往後移，key 會停在比它大的元素後面 → 由大到小（descending）。</li><li>(D)：一般的插入排序（條件用嚴格的 &gt; 或 &lt;）是穩定的；但這份程式用 &lt;=，遇到相等的元素也會往後搬，key 會跳到相等元素的前面，所以<b>這份程式</b>不穩定。用程式測 [(2,x), (1,a), (2,y)] 得到 [(2,y), (2,x), (1,a)]，兩個 2 的順序對調了。若 (D) 指的是一般的插入排序演算法則為真，題意有歧義（待確認）；以題目給的程式來看判為錯。</li></ul>"
+    },
+    {
+      "id": "ds-0225",
+      "topics": [
+        "quick-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 25,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Following is the quicksort algorithm from Wikipedia (https://en.wikipedia.org/wiki/Quicksort). Assume that the input array A has n elements. Which of the following statements are true?<pre class=\"code\">// Sorts a (portion of an) array, divides it into partitions, then sorts those\nalgorithm quicksort(A, lo, hi) is\n  if lo &gt;= 0 &amp;&amp; hi &gt;= 0 &amp;&amp; lo &lt; hi then\n    p := partition(A, lo, hi)\n    quicksort(A, lo, p - 1)\n    quicksort(A, p + 1, hi)\n\n// Divides array into two partitions\nalgorithm partition(A, lo, hi) is\n  pivot := A[hi]\n\n  i := lo - 1\n\n  for k := lo to hi do\n    if A[k] &lt;= pivot then\n      i := i + 1\n      swap A[i] with A[k]\n  return i</pre>",
+      "choices": [
+        "(A) If the numbers in A are already sorted in ascending order, the running time of the quicksort algorithm will be Θ(n<sup>2</sup>).",
+        "(B) If the numbers in A are already sorted in descending order, the running time of the quicksort algorithm will be Θ(n<sup>2</sup>).",
+        "(C) If the numbers in A are all identical, the running time of the quicksort algorithm will be Θ(n<sup>2</sup>).",
+        "(D) There are Θ(n) calls to <code>partition</code>.",
+        "(E) The depth of recursion is Θ(n)."
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<p>這是 <span class=\"term\">Lomuto Partition<small>（Lomuto 分割）</small></span>：pivot 取最後一個，&lt;= pivot 的都丟到左邊。</p><ul><li>(A) 對：升序時 pivot 是最大值，切成 n − 1 和 0，總比較 Θ(n²)。</li><li>(B) 對：降序時 pivot 是最小值，同樣每次只少一個元素，Θ(n²)。</li><li>(C) 對：全部相同時每個元素都 &lt;= pivot，pivot 被放在最右邊，切成 n − 1 和 0，Θ(n²)。這是 Lomuto 的著名弱點。</li><li>(D) 對：每次 partition 都會把一個 pivot 放到最終位置，之後不再參與，所以最多 n 次；而大小 ≥ 2 的子陣列才會呼叫，最少也有約 n/3 次，因此不論輸入如何都是 Θ(n)。</li><li>(E) 錯：Θ(n) 只是最差情況；隨機資料時遞迴深度是 Θ(log n)。</li></ul><p>程式模擬 n = 400：升序、降序、全相同時 partition 次數 399、深度 399、比較 80199 次；隨機時 partition 273 次、深度只有 17。</p>"
+    },
+    {
+      "id": "ds-0226",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 26,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Assume we have N keys stored in an open-addressing hash table with N slots, which of the following statements are true? (the hash function can be computed in O(1) time)",
+      "choices": [
+        "(A) Finding the largest key can be done in O(N) time in the worst-case",
+        "(B) Finding the successor key (the smallest key that is larger than a given key) in the table can be done in O(N lgN) time in the worst-case",
+        "(C) With proper selection of hash function, the worst-case search time can be O(1)",
+        "(D) It is not possible to store N keys in an open-addressing hash table with N slots",
+        "(E) None of the above are true"
+      ],
+      "answer": "(A)(B)（(C) 待確認）",
+      "explanation": "<ul><li>(A) 對：hash table 不維持順序，但把 N 個 slot 全掃一遍就能找到最大值，O(N)。</li><li>(B) 對：同樣掃一遍、記下「比給定 key 大的最小值」即可 O(N)，當然也在 O(N lg N) 以內（Big-O 是上界）。</li><li>(C)：一般情況下 hash 的最差搜尋是 O(N)（所有 key 擠成一串）。不過對一組<b>事先固定</b>的 key，理論上可以設計 perfect hash function 讓每個 key 直接落在不同 slot，最差 O(1)。題意偏向問一般情況，判為錯（待確認）。</li><li>(D) 錯：load factor = 1 時表剛好滿，還是放得下，只是再插入就不行。</li><li>(E) 錯。</li></ul>"
+    },
+    {
+      "id": "ds-0227",
+      "topics": [
+        "collision-resolution",
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 27,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Assume we use chaining to handle collision in hash table T, which has 5 slots and uses the hash function h(k)= k mod 5. (i.e., k is placed at T[h(k)]). If we insert 7, 1, 10, 12, 2, 55, and 5 to the hash table, which of the table slot will have more than two keys?",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<p>逐一算 h(k) = k mod 5：7→2、1→1、10→0、12→2、2→2、55→0、5→0。</p><ul><li>slot 0：10, 55, 5（3 個）</li><li>slot 1：1（1 個）</li><li>slot 2：7, 12, 2（3 個）</li><li>slot 3、4：空</li></ul><p>「more than two」是 ≥ 3 個，所以是 slot 0 和 slot 2。</p>"
+    },
+    {
+      "id": "ds-0228",
+      "topics": [
+        "avl-tree",
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 29,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Assume we are going to do a tree rotation (could be a left-rotate or a right-rotate) on the root node for each of the following binary search tree. Which of the binary search trees might become taller (the height of tree gets increased) after the rotation?<br>（原圖以括號表示：節點(左子, 右子)，- 表示空）<pre>(A) 2( 1, 4(3, -) )\n(B) 3( 2(1, -), 4 )\n(C) 4( 3( 2(1, -), - ), - )\n(D) 3( 1(-, 2), 4 )\n(E) 4( 2(1, 3), 5 )</pre>",
+      "choices": [
+        "(A)",
+        "(B)",
+        "(C)",
+        "(D)",
+        "(E)"
+      ],
+      "answer": "(A)(B)(D)(E)",
+      "explanation": "<p>對根做旋轉時，往上升的那一側子樹整體高度 −1，降下去的那一側 +1。只要「被壓下去的那一側」原本就是最深的，或旋轉後變成最深的，高度就會增加。高度以邊數計：</p><ul><li>(A) 原高 2。右旋：1 成為根，右子 2(-, 4(3)) → 1→2→4→3，高 3，變高。</li><li>(B) 原高 2。左旋：4 成為根，左子 3(2(1), -) → 4→3→2→1，高 3，變高。</li><li>(C) 原高 3。根沒有右子，只能右旋：3 成為根，左 2(1)、右 4，高 2，變矮；不可能變高。</li><li>(D) 原高 2。左旋：4 成為根，左子 3(1(-, 2), -) → 4→3→1→2，高 3，變高。</li><li>(E) 原高 2。左旋：5 成為根，左子 4(2(1, 3)) → 高 3，變高。</li></ul>"
+    },
+    {
+      "id": "ds-0229",
+      "topics": [
+        "avl-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 30,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Given the AVL TREE below, which of the following operations would make the tree unbalanced?<br>（原圖以括號表示：節點(左子, 右子)，- 表示空；原圖各節點旁標有平衡因子）<pre>10( 7( 3(1, 5), 8 ), 40( 30( 20(-, 25), 35 ), 45(-, 60) ) )</pre>",
+      "choices": [
+        "(A) Insertion of key 4",
+        "(B) Insertion of key 9",
+        "(C) Insertion of key 29",
+        "(D) Deletion of key 1",
+        "(E) Deletion of key 60"
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<p>平衡因子 = 左子樹高 − 右子樹高，絕對值超過 1 就不平衡。原本：7 的左子樹（3）高 1、右子樹（8）高 0；40 的左（30）高 2、右（45）高 1。</p><ul><li>(A) 插 4：10→7→3→5→放 5 的左邊。3 的子樹高變 2，7 的左高 2、右高 0，差 2 → 不平衡。</li><li>(B) 插 9：放 8 的右邊，7 左右都高 1，往上也沒問題 → 仍平衡。</li><li>(C) 插 29：10→40→30→20→25→放 25 的右邊。20 的左空（−1）、右高 1，差 −2 → 不平衡。</li><li>(D) 刪 1：3 只剩右子 5，3 仍高 1，7 不受影響 → 仍平衡。</li><li>(E) 刪 60：45 變成葉子高 0，40 的左高 2、右高 0，差 2 → 不平衡。</li></ul>"
+    },
+    {
+      "id": "ds-0230",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 33,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Minimum Spanning trees: Which of the following statements is (or are) correct?",
+      "choices": [
+        "(A) If an edge is contained in some minimum spanning tree, then it is a light edge crossing some cut of the graph. (Definition: An edge is a light edge crossing a cut if its weight is the minimum of any edge crossing the cut.)",
+        "(B) If a graph has a unique minimum spanning tree then, for every cut of the graph, there is a unique light edge crossing the cut.",
+        "(C) If, for every cut of the graph, there is a unique light edge crossing the cut, then the graph has a unique minimum spanning tree",
+        "(D) Let e be a maximum-weight edge on some cycle of the graph G= (V, E), then there is a minimum spanning tree of G'=(V, E-{e}) that is also a minimum spanning tree of G=(V, E).",
+        "(E) If an edge is a light edge crossing some cut of the graph, then it is contained in every minimum spanning tree."
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<ul><li>(A) 對：設 e = (u, v) 在某棵 MST T 裡，把 e 從 T 拿掉，T 斷成兩塊，這就是一個 cut。若有更輕的邊跨過這個 cut，換進來會得到更輕的生成樹，矛盾，所以 e 是這個 cut 的 light edge。</li><li>(B) 錯：反例：圖本身就是一條路徑 a–b–c，兩條邊權重都是 1。MST 只有一棵（就是整張圖），但 cut {b} | {a, c} 有兩條權重 1 的 light edge。</li><li>(C) 對：若有兩棵不同的 MST，取只在 T<sub>1</sub> 中的邊 e，用拿掉 e 的 cut 討論，可推出該 cut 有兩條同權重的 light edge，矛盾。</li><li>(D) 對：這是 cycle property：cycle 上權重最大的邊，總存在一棵 MST 不用它，所以刪掉 e 後的圖仍然有一棵 G 的 MST。</li><li>(E) 錯：cut 的 light edge 只保證「存在某棵 MST」包含它；如果 cut 上有好幾條同權重的 light edge，就不會每棵 MST 都包含同一條。</li></ul>"
+    },
+    {
+      "id": "ds-0231",
+      "topics": [
+        "graph-representation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 35,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf"
+      },
+      "question": "（複選）Let G=( V, E ) be an undirected graph with n vertices, where n &gt;1, and M be the adjacency- matrix of G. Which of the following statement(s) is ( are) correct?",
+      "choices": [
+        "(A) M is a symmetric matrix.",
+        "(B) The degree of vertex i is equal to the ith row sum.",
+        "(C) The number of edges of G is equal to Σ<sub>i=1</sub><sup>n</sup> Σ<sub>j=1</sub><sup>n</sup> M(i, j)",
+        "(D) The graph has an even number of vertices of odd degree.",
+        "(E) The graph has an even number of vertices of even degree. (Note that 0 is defined as an even number.)"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) 對：無向邊 (i, j) 同時讓 M(i, j) = M(j, i) = 1。</li><li>(B) 對：第 i 列的 1 就是和 i 相鄰的點，加起來是 degree（簡單圖，沒有自迴圈）。</li><li>(C) 錯：每條邊被算兩次（M(i, j) 與 M(j, i)），全部加總 = 2|E|。</li><li>(D) 對：<span class=\"term\">Handshaking Lemma<small>（握手定理）</small></span>：所有 degree 總和 = 2|E| 是偶數，所以奇數 degree 的點一定有偶數個。</li><li>(E) 錯：偶數 degree 的點數 = n − 奇數 degree 點數，n 是奇數時就是奇數個。例如 3 個點、沒有邊，3 個點的 degree 都是 0。</li></ul>"
     }
   ]
 }
