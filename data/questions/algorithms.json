@@ -3388,6 +3388,295 @@
       "question": "Consider the following optimization problem. Alex is a wizard and he wants to cast spells to grow the height of a tower. Alex has n types of spells, denoted by (a<sub>i</sub>, b<sub>i</sub>, k<sub>i</sub>) for 1 ≤ i ≤ n, where a<sub>i</sub>, b<sub>i</sub> ≥ 1.<br>（原卷此處有巫師與高塔的示意插圖）<br>If Alex casts the i<sup>th</sup>-type of spell in the beginning of a round, the height of the tower grows by a<sub>i</sub> immediately. Then, when it comes to the end of each round for the next k<sub>i</sub> rounds, including the round Alex casts the spell, the height of the tower shrinks by b<sub>i</sub>.<br>The effect of the spells can stack. So, at the end of each round, the height the tower shrinks is equal to the sum of b<sub>i</sub> for all spell i that is still in effect.<br>Alex can cast at most one spell in each round, and each spell can be cast at most once. Alex can choose any subset of spells he wants and cast them in any order he likes. The tower starts at height zero. The problem is to compute the <i>maximum record height</i> of the tower that Alex can make.<br>(a) (2%) Suppose that n = 4 and the spells are (5, 3, 2), (10, 9, 2), (20, 33, 1), and (30, 115, 1). What is the maximum record height of the tower Alex can make?<br>(b) (3%) Define the following notions. For any 1 ≤ i, j ≤ n,<ul><li>Let A(i, j) denote the maximum record height of the tower, if (i) only the first i spells are considered and (ii) j spells are in effect when the value A(i, j) is attained.</li><li>Let B(i, j) denote the maximum record height of the tower, if (i) only the first i spells are considered, (ii) j spells, including the i<sup>th</sup> spell, are in effect when the value B(i, j) is attained, and (iii) the i<sup>th</sup> spell is cast at the first round.</li></ul>A(i, j) and B(i, j) are defined to be −∞ if it is not possible. Based on the optimal substructure, write down the recurrence formula for A(i, j) and B(i, j), as is done in Question 25-(b). If needed, you may state explicitly and assume that (a<sub>i</sub>, b<sub>i</sub>, k<sub>i</sub>) are sorted in a particular order.",
       "answer": "(a) 32；(b) 將咒語依 b<sub>i</sub> 由大到小排序後，B(i, j) = A(i−1, j−1) + a<sub>i</sub> − (j−1)b<sub>i</sub>（需 1 ≤ j ≤ k<sub>i</sub>，否則 −∞）；A(i, j) = max( A(i−1, j), A(i−1, j) + a<sub>i</sub> − k<sub>i</sub>b<sub>i</sub>, B(i, j) )，A(0, 0) = 0、A(0, j&gt;0) = −∞（待確認）",
       "explanation": "<p><b>先看結構</b>：最高紀錄一定出現在某一輪開頭剛施完咒的瞬間。在那一刻，每個用過的咒語分兩種：</p><ul><li><b>已失效</b>：它的 k<sub>i</sub> 輪都扣完了，淨貢獻 a<sub>i</sub> − k<sub>i</sub>b<sub>i</sub>。只有淨貢獻 &gt; 0 才值得用，而且可以在很早之前施放。</li><li><b>仍有效</b>：在紀錄時刻前 d 輪施放（d = 0 表示就在這一輪），已經被扣了 d 次，貢獻 a<sub>i</sub> − d·b<sub>i</sub>，而且必須 d &lt; k<sub>i</sub>。</li></ul><p>仍有效的 j 個咒語一定是在最後 j 輪連續施放（中間空一輪只會多扣），位置 d = j−1, …, 1, 0。b 大的應該放在越晚（d 越小），否則交換兩者可以少扣。</p><p><b>(a)</b> 只有 (5, 3, 2) 的 k = 2 能撐過一輪以上。候選：</p><ul><li>第 1 輪放 (5, 3, 2)：高度 5，輪末扣 3 → 2；第 2 輪放 (30, 115, 1)：2 + 30 = <b>32</b>。</li><li>(10, 9, 2) 接 (30, 115, 1)：10 − 9 + 30 = 31。</li><li>三個連放需要最早那個 k ≥ 3，沒有；而所有咒語的淨貢獻 a − kb 都 ≤ 0（例如 5 − 6 = −1），不值得當「已失效」用。</li></ul><p>最大紀錄高度 32（程式窮舉所有施放輪次驗證）。</p><p><b>(b)</b> 假設咒語已依 b<sub>i</sub> <b>由大到小</b>排序，於是在前 i 個咒語中，第 i 個的 b 最小，若它在「有效窗口」中，就該是最早施放的那一個（第一輪），被扣 j − 1 次：</p><pre class=\"formula\">B(i, j) = A(i−1, j−1) + a_i − (j−1)·b_i      若 1 ≤ j ≤ k_i（仍有效需 j−1 &lt; k_i）\n        = −∞                                否則\n\nA(i, j) = max( A(i−1, j),                     // 不用第 i 個咒語\n               A(i−1, j) + a_i − k_i·b_i,     // 第 i 個咒語早早施放且已失效\n               B(i, j) )                      // 第 i 個咒語在有效窗口的第一輪\n\nA(0, 0) = 0，A(0, j) = −∞（j &gt; 0）\n答案 = max over j of A(n, j)</pre><p>這組遞迴式已用程式在 300 組隨機小測資上與窮舉結果比對，全部一致。不過原題 A、B 的確切預期寫法（例如排序方向）沒有官方答案，標示待確認。</p>"
+    },
+    {
+      "id": "al-0147",
+      "topics": [
+        "asymptotic-notation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) For positive functions f(n) and g(n) on ℕ. If f(n) = O(g(n)) and f(n) = Ω(1), how many of the following statements are true?</p><ul><li>g(n) = Ω(f(n))</li><li>f(n) · log(1 + f(n)) = O(g(n) · log(1 + g(n)))</li><li>2<sup>f(n)</sup> = O(2<sup>g(n)</sup>)</li><li>(f(n))<sup>k</sup> = O((g(n))<sup>k</sup>) for any 0 &lt; k &lt; 1</li></ul>",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>已知 f ≤ c·g（n 夠大），且 f ≥ ε &gt; 0。</p><ol><li>對：O 和 Ω 互為對偶。</li><li>對：x log(1 + x) 遞增，f log(1 + f) ≤ cg · log(1 + cg) ≤ cg · (log(1 + g) + log c′)；而 g ≥ f/c ≥ ε/c，log(1 + g) 有正的下界，常數項可以併進去，所以是 O(g log(1 + g))。這也是題目給 f = Ω(1) 的用意。</li><li>錯：f = 2n、g = n，2<sup>2n</sup> = 4<sup>n</sup> 不是 O(2<sup>n</sup>)。常數倍放到指數上就變成多項式倍數了。</li><li>對：f<sup>k</sup> ≤ c<sup>k</sup>g<sup>k</sup>。</li></ol><p>共 3 個為真，選 (D)。</p>"
+    },
+    {
+      "id": "al-0148",
+      "topics": [
+        "strassen",
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) In 2022, DeepMind's AlphaTensor discovered a new state-of-the-art strategy for multiplying two 4 × 4 matrices using only 47 multiplications (under a special arithmetic) instead of the original 49. By integrating this method into a standard divide-and-conquer framework, the complexity of multiplying two n × n matrices is reduced to O(n<sup>k</sup>). Compute k based on the above information to get the tightest upper bound.</p>",
+      "choices": [
+        "(A) log<sub>2</sub> 47",
+        "(B) log<sub>4</sub>(47 + 49)",
+        "(C) log<sub>4</sub> 47",
+        "(D) log<sub>16</sub>(47 + 49)",
+        "(E) log<sub>16</sub> 47"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>把 n × n 矩陣切成 4 × 4 個 (n/4) × (n/4) 的區塊，用 47 次區塊乘法加上 Θ(n²) 的加減：T(n) = 47T(n/4) + Θ(n²)。</p><p>log<sub>4</sub> 47 ≈ 2.777 &gt; 2，主定理 case 1，T(n) = Θ(n<sup>log₄47</sup>)，選 (C)。比較：原本的 49 = 7² 次正是 Strassen 用兩層得到的，log<sub>4</sub>49 = log<sub>2</sub>7 ≈ 2.807。(A) 錯在把每次切的大小當成一半。</p>"
+    },
+    {
+      "id": "al-0149",
+      "topics": [
+        "indicator-random-variables"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Which of the following □ generates a uniformly random permutation of an array A of size n in place, assuming that RANDOM(ℓ, r) returns an integer chosen uniformly at random from {ℓ, ℓ+1, …, r−1, r}?</p><pre>RANDOM-PERMUTE(A)\n1  for i = 1 to n\n2      □\n3      if a ≤ b\n4          swap A[i] with A[RANDOM(a, b)]</pre>",
+      "choices": [
+        "(A) a = RANDOM(1, n), b = RANDOM(a, n)",
+        "(B) a = 1, b = i − 1",
+        "(C) a = i, b = n",
+        "(D) a = i + 1, b = n",
+        "(E) a = 1, b = n"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>(C) 就是 <span class=\"term\">Fisher-Yates Shuffle<small>（洗牌演算法）</small></span>：第 i 輪從 A[i..n] 中均勻挑一個放到位置 i，可能結果數 n · (n−1) ⋯ 1 = n!，每種排列恰好對應一組選擇，所以是均勻的。</p><ul><li>(D) 不讓 A[i] 留在原地（Sattolo 演算法），只會產生循環排列。</li><li>(E) 每輪從全部 n 個挑，共 n<sup>n</sup> 種結果，n<sup>n</sup> 不是 n! 的倍數（n ≥ 3），不可能均勻。</li><li>(B) i = 1 時不交換，之後往前挑，同樣有 (n−1)! 種結果，數量不對；(A) 的機率分布更不均勻。</li></ul>"
+    },
+    {
+      "id": "al-0150",
+      "topics": [
+        "p-np",
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Which of the following statements is known to be true?</p>",
+      "choices": [
+        "(A) Every NP-hard problem is polynomial-time reducible to every problem in NP.",
+        "(B) Every NP-complete problem is polynomial-time reducible to every problem in NP.",
+        "(C) Every problem solvable in polynomial time is polynomial-time reducible to every problem in NP.",
+        "(D) Every problem solvable in exponential time is polynomial-time reducible to every problem in NP.",
+        "(E) None of the other choices."
+      ],
+      "answer": "(E)",
+      "explanation": "<p>關鍵：NP 裡有兩個「平凡」語言 ∅（全部答 No）和 Σ*（全部答 Yes）。任何非平凡問題都不可能歸約到它們，因為歸約必須把 Yes 實例送到 Yes、No 實例送到 No，而 ∅ 根本沒有 Yes 實例。</p><ul><li>(A)(B) 錯：SAT 不能歸約到 ∅；而且就算排除平凡語言，這也等於說 NP-complete 歸約到 P 的問題，會推得 P = NP，未知。</li><li>(C) 錯：同樣卡在 ∅、Σ*。（排除這兩個之後才成立：P 的問題可以先自己解完、再輸出目標問題固定的 Yes/No 實例）</li><li>(D) 錯：EXP 有比 NP 更難的問題（時間階層定理），不可能全部歸約進 NP。</li></ul><p>選 (E)。</p>"
+    },
+    {
+      "id": "al-0151",
+      "topics": [
+        "p-np",
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) How many of the statements below are known to be true?</p><ul><li>Every problem in NP is polynomial-time reducible to some NP-hard problem.</li><li>Every problem in NP is polynomial-time reducible to some NP-complete problem.</li><li>Every problem in NP is polynomial-time reducible to some problem solvable within polynomial time.</li><li>Every problem in NP is polynomial-time reducible to some problem solvable within exponential time.</li></ul>",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(D)",
+      "explanation": "<ol><li>對：SAT 是 NP-hard，依定義所有 NP 問題都能歸約到它。</li><li>對：同上，SAT 也是 NP-complete。</li><li>未知：若成立，P 對多項式歸約封閉，會推得 NP ⊆ P，也就是 P = NP。</li><li>對：NP ⊆ EXP（枚舉所有證書），每個 NP 問題歸約到自己，而它本身就能在指數時間內解。</li></ol><p>已知為真的有 3 個，選 (D)。</p>"
+    },
+    {
+      "id": "al-0152",
+      "topics": [
+        "bipartite-matching"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) A company needs to assign <b>3 workers</b> to <b>3 tasks</b>. Each worker can perform only the tasks listed below:</p><ul><li>Worker W<sub>1</sub>: Tasks T<sub>1</sub>, T<sub>2</sub></li><li>Worker W<sub>2</sub>: Task T<sub>1</sub></li><li>Worker W<sub>3</sub>: Tasks T<sub>2</sub>, T<sub>3</sub></li></ul><p>Each worker can be assigned to at most one task, and each task to at most one worker. Which of the following statements is true?</p>",
+      "choices": [
+        "(A) The maximum matching has size 2.",
+        "(B) The maximum matching has size 1.",
+        "(C) No matching exists.",
+        "(D) There are exactly two distinct maximum matchings.",
+        "(E) There exists a perfect matching."
+      ],
+      "answer": "(E)",
+      "explanation": "<p>W<sub>2</sub> 只能做 T<sub>1</sub>，所以 W<sub>2</sub>–T<sub>1</sub>；W<sub>1</sub> 只剩 T<sub>2</sub>；W<sub>3</sub> 只剩 T<sub>3</sub>。得到 {W<sub>1</sub>–T<sub>2</sub>, W<sub>2</sub>–T<sub>1</sub>, W<sub>3</sub>–T<sub>3</sub>}，大小 3，是 <span class=\"term\">Perfect Matching<small>（完美匹配）</small></span>，選 (E)。</p><p>而且推導過程每一步都是被迫的，最大匹配唯一，(D) 錯；(A)(B)(C) 都低估了。</p>"
+    },
+    {
+      "id": "al-0153",
+      "topics": [
+        "recurrence-methods"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Which property of the root of unity W<sub>n</sub> = e<sup>2πi/n</sup>, where n is a power of 2, allows the Cooley-Tukey fast-fourier transform algorithm to achieve its speedup in time complexity?</p>",
+      "choices": [
+        "(A) <b>The Magnitude Property:</b> |W<sub>n</sub><sup>k</sup>| = 1 for all k.",
+        "(B) <b>The Symmetry Property:</b> W<sub>n</sub><sup>k+n/2</sup> = −W<sub>n</sub><sup>k</sup>, allowing dividing the problem into even/odd sub-problems.",
+        "(C) <b>The Orthogonality Property:</b> The sum of all roots Σ<sub>k=0</sub><sup>N−1</sup> W<sub>n</sub><sup>k</sup> = 0.",
+        "(D) <b>The Conjugate Property:</b> W<sub>n</sub><sup>n−k</sup> = conj(W<sub>n</sub><sup>k</sup>).",
+        "(E) <b>The Count Property:</b> There are exactly n unique roots W<sub>n</sub><sup>k</sup> across all k."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>FFT 把多項式拆成偶數項和奇數項：A(x) = A<sub>even</sub>(x²) + x · A<sub>odd</sub>(x²)。因為 W<sub>n</sub><sup>k+n/2</sup> = −W<sub>n</sub><sup>k</sup>（halving lemma 的來源），第 k 和第 k + n/2 個點只差一個正負號，共用同一組 A<sub>even</sub>、A<sub>odd</sub> 的值，於是 n 個點只要算兩個 n/2 大小的子問題，T(n) = 2T(n/2) + Θ(n) = Θ(n log n)，選 (B)。</p><p>(C) 是逆轉換（inverse DFT）用到的性質，不是加速的來源。（選項 (D) 原卷以上橫線表示共軛）</p>"
+    },
+    {
+      "id": "al-0154",
+      "topics": [
+        "linear-time-sorting"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Bucket sort has an expected linear runtime, O(n), under which of the following fundamental conditions?</p>",
+      "choices": [
+        "(A) The input values are uniformly distributed over the interval.",
+        "(B) The input array is already sorted.",
+        "(C) All elements are placed in a single bucket.",
+        "(D) The number of buckets is the same as the number of input elements.",
+        "(E) The number of buckets is smaller than the number of input elements."
+      ],
+      "answer": "(A)",
+      "explanation": "<p>Bucket sort 的期望線性時間建立在「輸入均勻分布」這個機率假設上：這樣每桶期望 O(1) 個元素，各桶用 insertion sort 的期望總成本才是 O(n)。題目問「fundamental condition」，選 (A)。</p><p>(D) 桶數 Θ(n) 也是分析中的設定，但光有 n 個桶而資料不均勻（例如全部落在同一桶，也就是 (C)）就會退化成 O(n²)，所以最根本的是分布假設。（待確認：若視為複選，(D) 也可能被接受）</p>"
+    },
+    {
+      "id": "al-0155",
+      "topics": [
+        "order-statistics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Which algorithm guarantees finding the median (the n/2-th order statistic) of an array of n elements in O(n) worst-case time?</p>",
+      "choices": [
+        "(A) Sorting the array and then picking the median.",
+        "(B) Quickselect using random pivots.",
+        "(C) Using a max-heap or min-heap to extract the median.",
+        "(D) The median-of-medians selection algorithm.",
+        "(E) None of the other choices."
+      ],
+      "answer": "(D)",
+      "explanation": "<p><span class=\"term\">Median of Medians<small>（中位數的中位數）</small></span>：每 5 個一組取中位數，再遞迴找這些中位數的中位數當 pivot，保證至少約 3n/10 的元素在 pivot 兩側，T(n) ≤ T(n/5) + T(7n/10) + O(n)，因為 1/5 + 7/10 &lt; 1，最差 O(n)，選 (D)。</p><p>(A) O(n log n)；(B) 期望 O(n)、最差 O(n²)；(C) 建 heap O(n) 但要 extract n/2 次，O(n log n)。</p>"
+    },
+    {
+      "id": "al-0156",
+      "topics": [
+        "huffman-coding"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Which of the following properties is true for <i>some</i> optimal prefix-free binary code and directly justifies the greedy choice made in the Huffman algorithm?</p>",
+      "choices": [
+        "(A) The two symbols with the lowest frequencies must appear at the same depth in the code tree.",
+        "(B) The symbol with the lowest frequency must be assigned the longest codeword, but the symbol with the second smallest frequency need not be.",
+        "(C) All leaves at the maximum depth must correspond to symbols with the lowest frequency.",
+        "(D) The two symbols with the lowest frequencies must have equal codeword lengths, but they need not share the same parent.",
+        "(E) The two symbols with the lowest frequencies must be siblings at the maximum depth of the code tree."
+      ],
+      "answer": "(E)",
+      "explanation": "<p>Huffman 的 greedy-choice 引理：存在一棵最佳前綴碼樹，其中頻率最低的兩個符號 x、y 是<b>同一個父親底下</b>、位於<b>最深層</b>的兄弟。證明用交換論證：把最深的一對兄弟換成 x、y，總成本不會增加。這正是 Huffman「先合併最小的兩個」的依據，選 (E)。</p><p>(A)(D) 只講同深度、不講兄弟，不足以支撐「合併成一個節點」的動作；(B)(C) 敘述不正確或不夠。注意題目說「for <i>some</i> optimal code」：同頻率時最佳樹不唯一，只保證存在一棵滿足 (E)。</p>"
+    },
+    {
+      "id": "al-0157",
+      "topics": [
+        "amortized-analysis"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Consider a dynamic table that: (1) starts empty with capacity 1; (2) doubles its capacity when full; (3) shrinks its capacity by a factor of 1/2 when the capacity ≥ 4 and the number of stored elements falls below one quarter of the capacity. Assume that inserting or deleting an element costs 1, and resizing a table of size k costs Θ(k). Which statement is true when considering n insertion and removal operations?</p>",
+      "choices": [
+        "(A) The worst-case cost of any single operation is O(1), so amortized analysis is unnecessary.",
+        "(B) Using aggregate analysis, the amortized cost per operation is Θ(log n).",
+        "(C) If shrinking were performed when the table becomes half full instead of one quarter full, the amortized cost would still remain O(1).",
+        "(D) With the one-quarter shrinking rule, the amortized cost per operation is O(1), but shrinking more aggressively to half capacity when the table is half-full can destroy this bound.",
+        "(E) The amortized cost depends on the order of operations and cannot be bounded independently of the operation sequence."
+      ],
+      "answer": "(D)",
+      "explanation": "<p>「滿了翻倍、不到 1/4 才減半」：每次調整後 α 落在 1/2，距離下一次擴張或縮小都至少還要 Θ(容量) 次操作，可以用位能 Φ = 2·num − size（α ≥ 1/2）或 size/2 − num（α &lt; 1/2）證出每次均攤 O(1)。</p><p>若改成「一半滿就減半」：在容量 k 滿時插入擴成 2k，刪一個就掉到一半以下又縮回 k，交替插入、刪除每次都花 Θ(k)，n 次操作總共 Θ(n²)。所以 (D) 對、(C) 錯。</p><p>(A) 單次擴張就 Θ(n)；(B) 均攤是 O(1)；(E) 均攤分析的意義就是對任何操作序列都有同一個上界。</p>"
     }
   ]
 }

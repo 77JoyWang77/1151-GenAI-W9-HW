@@ -7046,6 +7046,267 @@
       "question": "(10%) Consider a fixed positive integer k and a sequence of positive real numbers a<sub>1</sub>, ⋯, a<sub>k</sub>, b<sub>1</sub>, ⋯ b<sub>k</sub>, where a<sub>i</sub> &gt; 0, b<sub>i</sub> &gt; 1 for 1 ≤ i ≤ k, such that Σ<sub>i=1</sub><sup>k</sup> a<sub>i</sub>/b<sub>i</sub><sup>r</sup> = 1. (A) [5%] Prove such r exists. (B) [5%] Design an efficient procedure to find the real number r with error within 10<sup>−6</sup>. (Note: If you don't answer part (A) correctly, then you will not earn any point from this problem!)",
       "answer": "(A) f(r) = Σ a<sub>i</sub> b<sub>i</sub><sup>−r</sup> 連續、嚴格遞減，r → −∞ 時 → ∞，r → ∞ 時 → 0，由中間值定理存在唯一 r 使 f(r) = 1；(B) 先找出 f(lo) ≥ 1 ≥ f(hi) 的區間，再用二分法（bisection），約 log<sub>2</sub>((hi − lo)/10<sup>−6</sup>) 輪，每輪 O(k)。",
       "explanation": "<p><b>(A) 存在性</b>：令 f(r) = Σ a<sub>i</sub> · b<sub>i</sub><sup>−r</sup>。</p><ul><li>每一項 a<sub>i</sub> b<sub>i</sub><sup>−r</sup> = a<sub>i</sub> e<sup>−r ln b<sub>i</sub></sup>，因為 a<sub>i</sub> &gt; 0、ln b<sub>i</sub> &gt; 0，它是 r 的連續、嚴格遞減函數，所以 f 也連續、嚴格遞減。</li><li>r → +∞ 時每項 → 0，所以 f(r) → 0 &lt; 1。</li><li>r → −∞ 時每項 → +∞，所以 f(r) → +∞ &gt; 1。</li></ul><p>由 <span class=\"term\">Intermediate Value Theorem<small>（中間值定理）</small></span>，存在 r 使 f(r) = 1；又因嚴格遞減，這個 r 是<b>唯一</b>的。這一步一定要用到 b<sub>i</sub> &gt; 1，若 b<sub>i</sub> = 1，那一項就是常數，不再遞減。</p><p><b>(B) 演算法</b>：</p><ol><li>找初始區間：令 A = Σa<sub>i</sub>、b<sub>min</sub> = min b<sub>i</sub>、b<sub>max</sub> = max b<sub>i</sub>。若 A ≥ 1，則 lo = 0（f(0) = A ≥ 1），hi = log A / log b<sub>min</sub>（此時每項 ≤ a<sub>i</sub> b<sub>min</sub><sup>−hi</sup>，總和 ≤ 1）。若 A &lt; 1，對稱地取 hi = 0、lo = log A / log b<sub>max</sub>（負數）。也可以從 [−1, 1] 開始每次把寬度加倍，直到 f(lo) ≥ 1 ≥ f(hi)。</li><li>二分：取 mid = (lo + hi)/2，算 f(mid)（O(k)）；若 f(mid) &gt; 1 表示 r 在右邊，lo = mid，否則 hi = mid。</li><li>重複到 hi − lo &lt; 10<sup>−6</sup>，輸出 mid。</li></ol><p>因為 f 單調，二分法每輪把含根區間減半，需要 ⌈log<sub>2</sub>((hi − lo)/10<sup>−6</sup>)⌉ 輪，例如初始寬度 100 只要約 27 輪，總時間 O(k · log(寬度/10<sup>−6</sup>))。</p>"
+    },
+    {
+      "id": "ds-0304",
+      "topics": [
+        "kmp"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Given the string S = wuwvwuuv, compute the Knuth-Morris-Pratt failure function π[0…7], where π[i] is the length of the longest proper prefix of S[0…i] which is also a suffix of S[0…i]. Which of the following is correct?</p>",
+      "choices": [
+        "(A) π = [0, 0, 1, 0, 1, 2, 0, 0]",
+        "(B) π = [0, 0, 1, 0, 1, 2, 2, 3]",
+        "(C) π = [0, 1, 0, 1, 2, 0, 1, 2]",
+        "(D) π = [0, 0, 0, 1, 1, 2, 3, 3]",
+        "(E) π = [0, 0, 1, 1, 2, 2, 2, 3]"
+      ],
+      "answer": "(A)",
+      "explanation": "<div class=\"table-scroll\"><table><tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr><tr><th>S[i]</th><td>w</td><td>u</td><td>w</td><td>v</td><td>w</td><td>u</td><td>u</td><td>v</td></tr><tr><th>π[i]</th><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>2</td><td>0</td><td>0</td></tr></table></div><ul><li>i = 2：wuw 的前後綴 w 相同，1。</li><li>i = 3：結尾 v，前綴開頭是 w，0。</li><li>i = 4、5：wuwvw、wuwvwu 的後綴 w、wu 對上前綴，1、2。</li><li>i = 6：原本長度 2 的 wu 想延伸成 wuw，但 S[6] = u ≠ w；退回 π[1] = 0，再比 S[0] = w ≠ u，得 0。</li><li>i = 7：v ≠ w，0。</li></ul><p>選 (A)，程式驗算一致。陷阱是 i = 6 時誤以為 u 能接上而寫成 2 或 3。</p>"
+    },
+    {
+      "id": "ds-0305",
+      "topics": [
+        "quick-sort"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Which pivot selection strategy in Quicksort is usually the most effective at avoiding the O(n<sup>2</sup>) worst-case runtime across arbitrary input distributions?</p>",
+      "choices": [
+        "(A) Always select the first element.",
+        "(B) Always select the maximum element.",
+        "(C) Select a random element.",
+        "(D) Select the maximum of the first and last elements.",
+        "(E) Pivot selection does not change the algorithm's execution time."
+      ],
+      "answer": "(C)",
+      "explanation": "<p>固定規則（取第一個、取首尾較大者）都存在特定輸入（例如已排序）讓 pivot 每次都很偏，退化成 O(n²)；取最大值更是每次必定最差。隨機挑 pivot 讓「壞情況」和輸入長相無關，對任何輸入期望時間都是 O(n log n)，選 (C)。(E) 錯，pivot 直接決定切割平衡度。</p>"
+    },
+    {
+      "id": "ds-0306",
+      "topics": [
+        "collision-resolution",
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Most hash table implementations (such as Java's HashMap) resize the underlying array when the load factor α exceeds a certain threshold (typically 0.75). Why is this resizing operation necessary for a hash table that uses separate chaining?</p>",
+      "choices": [
+        "(A) <b>Saturation:</b> To prevent the table from reaching a load factor of 1.0, at which point inserting a new element would be impossible.",
+        "(B) <b>Ordering:</b> To re-sort the keys alphabetically during the transfer, enabling the use of binary search for future lookups.",
+        "(C) <b>Complexity:</b> To prevent the average length of the linked lists (collision chains) from growing linearly with the number of elements, thereby maintaining O(1) average access time.",
+        "(D) <b>Uniqueness:</b> To redistribute the keys across a larger range so that all existing collisions are permanently eliminated.",
+        "(E) <b>Memory contiguity:</b> To ensure that all elements in the linked lists are stored in adjacent memory addresses, minimizing CPU cache misses and memory fragmentation."
+      ],
+      "answer": "(C)",
+      "explanation": "<p><span class=\"term\">Separate Chaining<small>（鏈結法）</small></span>的平均串列長度就是 α = n/m。若 m 固定，α 隨 n 線性成長，搜尋期望 Θ(1 + α) 也跟著變大；擴容讓 α 維持在常數以下，平均存取 O(1)，選 (C)。</p><p>(A) 錯：鏈結法 α 可以超過 1，永遠插得進去（那是 open addressing 的問題）；(B)(E) 和雜湊無關；(D) 擴容後還是可能碰撞，不會「永久消除」。</p>"
+    },
+    {
+      "id": "ds-0307",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Assume that there are K possible keys {1, 2, …, K} and m hash table slots {0, 1, …, m − 1} with m &gt; 1. In double hashing, the probe sequence is</p><pre>h(k, i) = (h1(k) + i·h2(k)) mod m.</pre><p>For a fixed key k, we want the sequence h(k, 0), h(k, 1), … to visit all m table slots before repeating, so that insertion succeeds whenever the table is not full. Which of the following conditions is necessary and sufficient for this property (for that key k)?</p>",
+      "choices": [
+        "(A) m must be prime.",
+        "(B) h<sub>2</sub>(k) must be odd.",
+        "(C) gcd(h<sub>2</sub>(k), m) = 1.",
+        "(D) The first hash function h<sub>1</sub> must be injective (one-to-one) from {1, 2, …, K} to {0, 1, …, m − 1}.",
+        "(E) None of the other choices."
+      ],
+      "answer": "(C)",
+      "explanation": "<p>i·h<sub>2</sub>(k) mod m 走過的位置個數是 m / gcd(h<sub>2</sub>(k), m)。要走遍全部 m 格，充要條件就是 gcd(h<sub>2</sub>(k), m) = 1，選 (C)。</p><p>(A)「m 是質數」只是常見的<b>充分</b>做法（加上 h<sub>2</sub> 不為 0），不是必要；(B)「h<sub>2</sub> 為奇數」在 m 是 2 的冪時才充分，例如 m = 9、h<sub>2</sub> = 3 是奇數卻只走 3 格；(D) 和探測序列能否走遍無關。</p>"
+    },
+    {
+      "id": "ds-0308",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Consider the Binary Search Tree in Figure 1. If node 66 is removed (replacing it with its in-order successor), what is the resulting <i>preorder</i> traversal sequence?</p><p>（Figure 1：根 56；56 的左孩子 23、右孩子 66；23 的左孩子 3；66 的左孩子 57、右孩子 72）</p>",
+      "choices": [
+        "(A) 3, 23, 56, 57, 72.",
+        "(B) 56, 23, 3, 72, 57.",
+        "(C) 3, 23, 57, 72, 56.",
+        "(D) 56, 23, 57, 72, 3.",
+        "(E) None of the other choices."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>66 有兩個孩子，用中序後繼（右子樹最小值）取代：66 的右子樹只有 72，後繼就是 72。72 搬上來取代 66，原本 66 的左孩子 57 變成 72 的左孩子。</p><pre>        56\n       /  \\\n     23    72\n    /     /\n   3     57</pre><p>前序（根、左、右）：56, 23, 3, 72, 57，選 (B)。(A) 是刪除後的中序，小心別搞混。</p>"
+    },
+    {
+      "id": "ds-0309",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Consider a red–black tree augmented for dynamic order statistics by storing, at each node x, the attribute</p><pre>x.size = number of nodes in the subtree rooted at x, including x itself.</pre><p>Which of the following statements is correct?</p>",
+      "choices": [
+        "(A) During insertion, the size field needs to be updated only along the path from the root to the inserted node; rotations do not require any update to size.",
+        "(B) During a left or right rotation, the size fields of exactly two nodes can be recomputed in O(1) time using their children's sizes.",
+        "(C) The SELECT(i) operation (finding the i-th smallest key) requires O(log n) extra space due to recursion.",
+        "(D) Maintaining the size field may violate the red–black tree properties and thus requires additional recoloring rules.",
+        "(E) The presence of duplicate keys makes it impossible to support SELECT(i) correctly using subtree sizes."
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(B) 對：旋轉只改變兩個節點的父子關係，其他子樹整塊不變，所以只要更新這兩個節點：y.size = x.size（原本的整棵），x.size = x.left.size + x.right.size + 1，O(1)。</li><li>(A) 錯：插入後的 fixup 會做旋轉，旋轉一定要更新 size。</li><li>(C) 錯：SELECT 可以寫成迴圈，只要 O(1) 額外空間；「需要」O(log n) 不對。</li><li>(D) 錯：size 是附加資訊，不影響顏色規則。</li><li>(E) 錯：SELECT 靠的是子樹大小和位置，有重複 key 一樣能找出第 i 小。</li></ul>"
+    },
+    {
+      "id": "ds-0310",
+      "topics": [
+        "b-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 21,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Let T be a B-tree of minimum degree t ≥ 2. During the deletion of a key k from an internal node x, suppose k is stored in x at index i. Which of the following actions correctly preserves all B-tree invariants before the recursive deletion proceeds?</p>",
+      "choices": [
+        "(A) Always replace k with its inorder predecessor from the left subtree, regardless of the number of keys in the subtrees.",
+        "(B) Replace k with either the predecessor or successor arbitrarily, since both choices always produce valid B-trees.",
+        "(C) Merge the two children of k immediately, even if both have at least t keys.",
+        "(D) Delete k directly from node x and rebalance only if an underflow occurs afterward.",
+        "(E) Replace k with the key preceeding k in the left child if the left child has at least t keys; otherwise, replace it with the key following k if the right child has at least t keys."
+      ],
+      "answer": "(E)",
+      "explanation": "<p>單趟（top-down）刪除的原則是：往下走進的子節點至少要有 t 個 key，才保證遞迴刪除後不會低於 t − 1。</p><ul><li>左孩子 ≥ t 個 key：用前驅取代 k，再到左子樹遞迴刪前驅。</li><li>否則右孩子 ≥ t：用後繼取代、到右子樹刪。</li><li>兩邊都只有 t − 1：把 k 和兩個孩子合併成 2t − 1 個 key 的節點，再遞迴。</li></ul><p>(E) 正是前兩步，選 (E)。(A)(B) 不檢查孩子的 key 數，可能造成 underflow；(C) 兩邊都夠時合併會超過上限 2t − 1；(D) 內部節點直接刪 key 會少一個分隔鍵，孩子數和 key 數對不上。</p>"
+    },
+    {
+      "id": "ds-0311",
+      "topics": [
+        "union-find"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 23,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Consider the linked-list representation of disjoint sets, where: (1) Each set is represented by a linked list; (2) Each element stores a pointer to the set's representative; (3) UNION(x, y) appends the shorter list to the longer list (union by size); (4) FIND-SET(x) runs in O(1) time. Suppose we start with n singleton sets and perform any sequence of m operations consisting of UNION and FIND-SET, using union by size. Which of the following statements is correct?</p>",
+      "choices": [
+        "(A) The total time for all UNION operations is Θ(n<sup>2</sup>), regardless of how unions are ordered.",
+        "(B) The total running time of all operations is O(m log n), because FIND-SET dominates.",
+        "(C) Using union by size makes UNION amortized O(1), yielding total time O(m).",
+        "(D) The total time of all operations is O(m + n), because each operation touches at most a constant number of elements.",
+        "(E) Each element's representative pointer can be updated at most log n times, so all UNION operations take O(n log n) time in total."
+      ],
+      "answer": "(E)",
+      "explanation": "<p>某元素的代表指標被更新，代表它在較短（較小）的那個串列，合併後它所在集合大小至少翻倍。集合大小最多 n，所以每個元素最多被更新 ⌊log n⌋ 次，所有 UNION 的總成本 O(n log n)，總時間 O(m + n log n)，選 (E)。</p><p>(A) 有 union by size 就不會到 Θ(n²)；(B) FIND-SET 每次 O(1)，不會主導；(C)(D) 單次 UNION 最多要更新 n/2 個指標，不是常數。</p>"
+    },
+    {
+      "id": "ds-0312",
+      "topics": [
+        "bfs-dfs"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 24,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Let G = (V, E) be a directed graph represented using adjacency lists without edge weights. A standard Breadth-First Search (BFS) is run from a source vertex s, producing distance labels d[v] for all reachable vertices v. Which of the following statements is always true?</p>",
+      "choices": [
+        "(A) For every edge (u, v) ∈ E, we must have d[v] ≤ d[u] + 1.",
+        "(B) If d[v] = d[u] + 1, then (u, v) must be a tree edge in the BFS tree.",
+        "(C) In a directed graph, BFS always produces a shortest-path tree that is also a topological ordering of the reachable subgraph.",
+        "(D) If the graph is represented by an adjacency matrix instead of adjacency lists, BFS may compute incorrect distances due to repeated edge relaxations.",
+        "(E) If BFS discovers vertices in the order v<sub>1</sub>, v<sub>2</sub>, …, v<sub>k</sub>, then this order is a shortest-path ordering for all pairs of vertices."
+      ],
+      "answer": "(A)（待確認）",
+      "explanation": "<ul><li>(A) 對（u、v 都可達時）：d[v] 是最短距離，從 s 走到 u 再走邊 (u, v) 就是一條長 d[u] + 1 的路，最短距離不會更長。若 u 不可達，d[u] 沒有定義（或視為 ∞），不等式也成立。</li><li>(B) 錯：v 可能有好幾個距離 d[v] − 1 的前驅，BFS 樹只選最先發現它的那一個。</li><li>(C) 錯：有環的圖沒有拓撲順序，BFS 順序也不保證邊都往後指。</li><li>(D) 錯：改用鄰接矩陣只會讓時間變 O(V²)，距離仍然正確；BFS 也沒有「relax」。</li><li>(E) 錯：發現順序只代表離 s 的距離，不是任意兩點的最短路徑。</li></ul><p>（待確認）(A) 嚴格來說只對「u 可達」時有意義，題目只為可達點定義 d，這裡依此理解選 (A)。</p>"
+    },
+    {
+      "id": "ds-0313",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "資料結構與演算法",
+        "no": 25,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf"
+      },
+      "question": "<p>(4 points) Let G = (V, E) be a connected, undirected, weighted graph with distinct and positive edge weights. Let A ⊆ E be a subset of edges that is contained in some minimum spanning tree of G. Which of the following statements is always true?</p>",
+      "choices": [
+        "(A) Any minimum-weight edge in the graph is safe for A.",
+        "(B) For any cut (S, V∖S), the lightest edge crossing the cut is safe for A, regardless of whether the cut respects A.",
+        "(C) If an edge e is the lightest edge on some cycle in G, then e must belong to every minimum spanning tree (MST).",
+        "(D) If a cut (S, V∖S) respects A, then the lightest edge crossing this cut is safe for A.",
+        "(E) Any edge chosen by Prim's algorithm from an arbitrary start vertex is safe for every subset A ⊆ E."
+      ],
+      "answer": "(D)",
+      "explanation": "<p>「safe for A」：把邊加進 A 之後，A 仍包含於某棵 MST。</p><ul><li>(D) 對：這正是 cut property 的定理（尊重 A 的切割上的最輕邊是 safe edge），也是 Prim、Kruskal 的正確性基礎。</li><li>(A) 錯：全圖最輕的邊若已在 A 裡，再加一次沒意義；更一般地「任何最輕邊」並不保證和 A 相容。</li><li>(B) 錯：切割若不尊重 A（A 中有邊跨過），最輕的跨越邊可能就是 A 外的某條，加進去和 A 形成環。</li><li>(C) 錯：環上最<b>輕</b>的邊不一定在 MST，例如它可能和其他更輕的邊（不在這個環上）組成另一個環並是那個環的最重邊。正確的 cycle property 是「環上最重的邊不在任何 MST」。</li><li>(E) 錯：Prim 選的邊只對 Prim 自己累積的 A 是 safe，不是對「任意子集 A」。</li></ul>"
     }
   ]
 }
