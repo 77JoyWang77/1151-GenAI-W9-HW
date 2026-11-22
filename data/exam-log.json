@@ -1,0 +1,920 @@
+{
+  "_說明": "每份已匯入的考卷一筆：skipped 列出不收的題號與原因。已收的題目在 data/questions/，標了（待確認）的題目可在題目內容中搜尋。",
+  "papers": [
+    {
+      "school": "國立臺灣大學",
+      "year": 110,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 3,
+          "subject": "operating-systems",
+          "reason": "答案不唯一：選項有不存在的排程演算法名稱，I/O burst 模型有多種解讀（待依新規則重新評估）"
+        },
+        {
+          "no": 4,
+          "subject": "operating-systems",
+          "reason": "答案不唯一：取決於實際量測數據（待依新規則重新評估）"
+        }
+      ]
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 111,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 3,
+          "subject": "operating-systems",
+          "reason": "看不清楚：流程圖中的圓圈字母在掃描中整塊變黑"
+        }
+      ]
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 112,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 113,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 5,
+          "subject": "computer-organization",
+          "reason": "需要三頁外部新聞全文才能作答"
+        },
+        {
+          "no": 6,
+          "subject": "computer-organization",
+          "reason": "需要三頁外部新聞全文與彩色氣泡圖，灰階掃描無法分辨"
+        }
+      ]
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 110,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 111,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 112,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 110,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_110_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 111,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_111_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 112,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_112_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 113,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_113_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 114,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_114_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": [
+        {
+          "no": 3,
+          "subject": "algorithms",
+          "reason": "不屬於六科：DNA 序列的 c-means 分群（機器學習）"
+        }
+      ]
+    },
+    {
+      "school": "國立臺灣大學",
+      "year": 115,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_115_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": [
+        {
+          "no": 22,
+          "subject": "algorithms",
+          "reason": "題目有錯：五個選項照字面都不正確（反例 X=ab、Y=ba）"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 110,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 111,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 27,
+          "subject": "computer-organization",
+          "reason": "依題目假設算出的答案不在選項中"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 112,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 113,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 30,
+          "subject": "computer-organization",
+          "reason": "依題目資料算出的 CPI 不在選項中"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 114,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 115,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 14,
+          "subject": "computer-organization",
+          "reason": "答案不唯一：取決於乘除法硬體的實作細節（待依新規則重新評估）"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 110,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": [
+        {
+          "no": "9(d)",
+          "subject": "linear-algebra",
+          "reason": "題目有錯：b 是 2×2 矩陣、u 是向量，無法投影"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 111,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 112,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": [
+        {
+          "no": "9-1",
+          "subject": "discrete-math",
+          "reason": "資料矛盾：10 個頂點的簡單平面圖不可能每點 degree 14"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 113,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 114,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 115,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 110,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_110_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 111,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_111_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": [
+        {
+          "no": 1,
+          "subject": "data-structures",
+          "reason": "題目有錯：插入 61 後 (A)～(D) 都不成立"
+        },
+        {
+          "no": "12–17",
+          "subject": "data-structures",
+          "reason": "題意不明（待依新規則重新評估）"
+        },
+        {
+          "no": 24,
+          "subject": "data-structures",
+          "reason": "題目有錯：parent 公式前後不一致"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 112,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_112_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": [
+        {
+          "no": 11,
+          "subject": "data-structures",
+          "reason": "題意不明：heap 原內容與「存入 15 個元素」沒有交代（待依新規則重新評估）"
+        },
+        {
+          "no": 19,
+          "subject": "algorithms",
+          "reason": "題意不明：路由器數量不限時「最小功耗」定義不清（待依新規則重新評估）"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 113,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_113_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 114,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": [
+        {
+          "no": 7,
+          "subject": "data-structures",
+          "reason": "資料矛盾：V 包含 F，但圖上沒有 F"
+        }
+      ]
+    },
+    {
+      "school": "國立陽明交通大學",
+      "year": 115,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/nycu_115_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 110,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 15,
+          "subject": "operating-systems",
+          "reason": "不屬於六科：計算機網路（IPv6、DHCP、NAT、DNS）"
+        }
+      ]
+    },
+    {
+      "school": "國立中央大學",
+      "year": 111,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 18,
+          "subject": "operating-systems",
+          "reason": "不屬於六科：計算機網路（BGP、HTTP/TLS、ARP）"
+        }
+      ]
+    },
+    {
+      "school": "國立中央大學",
+      "year": 112,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 13,
+          "subject": "operating-systems",
+          "reason": "不屬於六科：計算機網路（SDN、DNS、IETF）"
+        }
+      ]
+    },
+    {
+      "school": "國立中央大學",
+      "year": 113,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 114,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 115,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 110,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": [
+        {
+          "no": 10,
+          "subject": "discrete-math",
+          "reason": "題目有錯：卷上註明送分，選項皆不正確"
+        },
+        {
+          "no": "21–25",
+          "subject": "linear-algebra",
+          "reason": "資料與題意不符：五個敘述在任何讀法下都不成立"
+        }
+      ]
+    },
+    {
+      "school": "國立中央大學",
+      "year": 111,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 112,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 113,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": [
+        {
+          "no": 9,
+          "subject": "linear-algebra",
+          "reason": "答案不唯一：特徵空間二維，K 隨自由參數改變（待依新規則重新評估）"
+        }
+      ]
+    },
+    {
+      "school": "國立中央大學",
+      "year": 114,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": [
+        {
+          "no": 15,
+          "subject": "discrete-math",
+          "reason": "題目有錯：遞迴式為齊次，但選項都含非齊次項"
+        },
+        {
+          "no": 4,
+          "subject": "linear-algebra",
+          "reason": "答案不唯一：U 的欄序與相位不唯一，K 可能為 0、1、2（待依新規則重新評估）"
+        }
+      ]
+    },
+    {
+      "school": "國立中央大學",
+      "year": 115,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 110,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_110_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 111,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_111_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 112,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_112_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立中央大學",
+      "year": 113,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_113_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": [
+        {
+          "no": 6,
+          "subject": "data-structures",
+          "reason": "資料矛盾：權重矩陣不對稱（W04=5、W40=4）"
+        },
+        {
+          "no": 10,
+          "subject": "data-structures",
+          "reason": "題目有錯：題目提到的 x、y 不在程式碼中"
+        }
+      ]
+    },
+    {
+      "school": "國立中央大學",
+      "year": 114,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncu_114_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": [
+        {
+          "no": "8–10",
+          "subject": "algorithms",
+          "reason": "題目有錯：程式碼與題意不一致（UAV Refuel）"
+        }
+      ]
+    },
+    {
+      "school": "國立中央大學",
+      "year": 115,
+      "paper": "software",
+      "url": "https://ir.lib.ncu.edu.tw:444/cexamn/exam/EC02_115_01.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 110,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_110_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 111,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_111_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 112,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 113,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 114,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_114_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 115,
+      "paper": "hardware",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 110,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 111,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 112,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 113,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": [
+        {
+          "no": 5,
+          "subject": "discrete-math",
+          "reason": "資料矛盾：度數和為 19，10 個頂點的樹應為 18"
+        }
+      ]
+    },
+    {
+      "school": "國立成功大學",
+      "year": 114,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 115,
+      "paper": "math",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 110,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_110_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 111,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_111_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 112,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_112_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 113,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_113_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    },
+    {
+      "school": "國立成功大學",
+      "year": 114,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_114_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": [
+        {
+          "no": 1,
+          "subject": "data-structures",
+          "reason": "題目有錯：模擬結果不符任何選項"
+        }
+      ]
+    },
+    {
+      "school": "國立成功大學",
+      "year": 115,
+      "paper": "software",
+      "url": "https://files.cstoolman.com/exam-papers/ncku_115_software.pdf",
+      "subjects": [
+        "data-structures",
+        "algorithms"
+      ],
+      "skipped": []
+    }
+  ]
+}

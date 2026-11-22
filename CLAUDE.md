@@ -75,6 +75,7 @@
 ├── data/
 │   ├── subjects.json             ← 科目登錄表
 │   ├── questions/<subject-id>.json  ← 題庫：原創練習題與考古題（第 7 節）
+│   ├── exam-log.json             ← 已匯入的考卷與不收的題目、原因（第 7.1 節）
 │   └── <subject-id>.json         ← 該科的參考書、章節、主題登錄表
 ├── subjects/
 │   └── <subject-id>/
@@ -99,7 +100,8 @@
 └── scripts/
     ├── check.py                  ← 檢查所有科目與主題是否符合本文件
     ├── header.py                 ← 產生全站統一頁首（6.6）
-    └── stamp.py                  ← 替 CSS / JS 加版本號（4）
+    ├── stamp.py                  ← 替 CSS / JS 加版本號（4）
+    └── exam/                     ← 考古題匯入工具：OCR、檢查、合併、裁圖、預覽（第 11 節）
 ```
 
 - 所有 id：**小寫英文 kebab-case**，用最常見的英文名稱。✅ `binary-search-tree` ❌ `BST`、`二元樹`、`topic1`
@@ -244,20 +246,50 @@
 
 ### 7.1 匯入考古題
 
-考古題**照原題全文收錄**，並寫自己的詳解。步驟：
+考古題**照原題全文收錄**，並寫自己的詳解。工具在 `scripts/exam/`（見第 11 節的流程）。
 
-1. 考古題來源只有兩種：使用者提供的檔案（PDF 或圖片），或 AI 從**使用者指定**的考古題網站（例如學校圖書館考古題系統）取得的原卷。**不可憑印象寫出或編造題目、學校、年份、題號**；從網站取得時，`source.url` 一定要填原卷網址。
-   - 掃描檔先用 OCR 找出題目位置，但收錄的文字一律對照原卷圖片逐字確認，不能直接用 OCR 結果。
-   - 題目本身有錯（例如公式與資料矛盾）、或圖上的手寫註記蓋住題目內容、無法確認原字的題目先不收，回報時列出來。
-2. 逐題拆開：題目全文照錄（包含選項、表格）。有圖的題目一定要附圖，不能因為有圖就不收：
-   - 樹、圖、陣列、小表格這類結構簡單的圖，用 viz-core 的 Frame 格式重畫：`<figure class="fig"><div class="q-fig" data-spec="{Frame JSON}"></div><figcaption>…</figcaption></figure>`，`site.js` 會用 Player 畫出來，和主題頁的靜態圖同一套風格與狀態色。
-   - 電路、datapath、波形、長篇圖表這類難以重畫的，從原卷裁切成 PNG（灰階、寬 ≤ 1100px），放在 `assets/exam-img/<subject-id>/<學校>-<年>-q<題號>.png`，寫成 `<figure class="fig"><img class="q-img" data-src="assets/exam-img/…" alt="原卷附圖"><figcaption>…</figcaption></figure>`（`data-src` 相對網站根目錄，由 `site.js` 補上路徑；深色模式會自動反相）。
-   - 圖上有考生的手寫註記（答案、塗改）時，裁切前先塗白遮掉；遮掉後題目仍完整才收。
-3. 標上 `topics`（可多個）、`type`，`level` 一律為 `"exam"`。
-4. 填 `source`：`{ "kind": "exam", "school": "國立臺灣大學", "year": 113, "dept": "資訊工程學系", "no": 3, "url": "官方檔案連結（有的話）" }`。`school`、`year`、`dept`、`no` 必填。
-5. 自己寫詳解，計算題用程式驗算；看不清楚或不確定的地方標「（待確認）」並回報使用者。
-6. 題目用到的主題如果還沒有頁面，仍然可以先收錄（題庫頁看得到），主題頁做好後會自動出現。
-7. 執行 `python scripts/check.py` 檢查格式。
+**1. 來源**
+- 只有兩種：使用者提供的檔案（PDF 或圖片），或 AI 從**使用者指定**的考古題網站（例如學校圖書館考古題系統）取得的原卷。**不可憑印象寫出或編造題目、學校、年份、題號**；`source.url` 一定要填原卷網址。
+- 掃描檔先用 OCR（`scripts/exam/ocr.sh`）找出題目位置，但收錄的文字一律對照原卷圖片逐字確認，不能直接用 OCR 結果。
+
+**2. 收不收（同一套標準，不要每次自己判斷）**
+
+| 情況 | 處理 |
+|---|---|
+| 至少有一種合理解讀能算出選項中的答案（題意有歧義、單選題有兩個選項說得通） | **收**。答案取最合理的解讀，詳解寫出每種解讀各得到什麼，答案後面標「（待確認）」 |
+| 任何解讀都對不上選項、資料自相矛盾、卷上註明送分 | 不收 |
+| 圖上的手寫註記或掃描瑕疵蓋住題目內容，無法確認原字 | 不收 |
+| 要讀卷外的長篇資料（新聞全文、外部量測結果）才能作答 | 不收 |
+| 不屬於六科（例如計算機網路、機器學習） | 不收 |
+| 有圖 | **一定要收**，照第 3 點附圖 |
+
+不收的題目一律登錄在 `data/exam-log.json`（題號＋原因），不能只寫在回報裡。
+
+**3. 題目內容**
+- 題目全文照錄（包含選項、表格）。英文題目照英文，不翻譯。
+- **卷上的筆誤**：原文照錄，在題目裡加「（註：原卷寫 X，應為 Y）」，詳解再說明。
+- **承上題**：題目開頭補一段前一題的必要題幹（「（承上題：……）」），讓這題單獨看也能作答。
+- **複選題**：題目開頭寫「（複選）」，答案列出所有正確選項。
+- **有圖的題目**：
+  - 樹、圖、陣列、小表格這類結構簡單的圖，用 viz-core 的 Frame 格式重畫：`<figure class="fig"><div class="q-fig" data-spec="{Frame JSON}"></div><figcaption>…</figcaption></figure>`，`site.js` 會用 Player 畫出來，和主題頁的靜態圖同一套風格與狀態色。重畫的圖不要用狀態色洩漏答案。
+  - 電路、datapath、波形、長篇圖表這類難以重畫的，從原卷裁切成 PNG（灰階、寬 ≤ 1100px），放在 `assets/exam-img/<subject-id>/<學校>-<年>-q<題號>.png`，寫成 `<figure class="fig"><img class="q-img" data-src="assets/exam-img/…" alt="原卷附圖"><figcaption>…</figcaption></figure>`（`data-src` 相對網站根目錄，由 `site.js` 補上路徑；深色模式會自動反相）。只裁圖本身，題目文字仍要照錄成文字。
+  - 圖上有考生的手寫註記（答案、圈選、塗改）時，裁切前先塗白遮掉，或改用重畫。
+
+**4. 分類**
+- **分科**：軟體卷要拆成資料結構與演算法。結構本身（陣列、串列、樹、heap、雜湊、圖的表示與走訪、排序的過程）歸 `data-structures`；設計與分析（複雜度、遞迴式、DP、greedy、網路流、NP、隨機化、均攤分析）歸 `algorithms`。數學卷、硬體卷照內容分到離散／線代、計組／作業系統。
+- **topics**：可以標多個。**沒有合適的主題時，先在 `data/<subject-id>.json` 新增一個 `planned` 主題**，不要硬塞進相近的主題。
+- `type` 照題目性質，`level` 一律為 `"exam"`。
+
+**5. source**
+- `{ "kind": "exam", "school": "國立臺灣大學", "year": 113, "dept": "…", "no": 3, "url": "原卷網址" }`，`school`、`year`、`dept`、`no` 必填。
+- `dept`：照該年卷頭的系所／科目寫，同一學校不同年份卷頭不同就分開寫。
+- `no`：用卷上的題號。大題下的小題寫 `"3-(a)"`；卷上分成幾個部分（例如問答、單選、複選）就加部分編號 `"I-3"`、`"II-1"`；同一份考卷內格式要一致。合併收錄的幾題寫 `"21-23"`。
+
+**6. 詳解與驗算**
+- 自己寫詳解，寫推導過程；計算、追蹤題一定用程式驗算。看不清楚或不確定的地方標「（待確認）」並回報使用者。
+- 題目用到的主題如果還沒有頁面，仍然可以先收錄（題庫頁看得到），主題頁做好後會自動出現。
+
+**7.** 執行 `python scripts/check.py` 檢查格式（會檢查題目圖片存在、每份考卷都登錄在 `data/exam-log.json`）。
 
 ---
 
@@ -466,7 +498,23 @@ figure("bst-valid-invalid", () => ({
 
 ### 匯入考古題
 
-照第 7.1 節。完成後回報：匯入幾題、對應到哪些主題、哪些題目標了「（待確認）」。
+照第 7.1 節的標準，用 `scripts/exam/` 的工具：
+
+1. **登錄考卷**：在 `data/exam-log.json` 新增這份考卷（school、year、paper、url、subjects、skipped）。
+2. **OCR**：`sh scripts/exam/ocr.sh <paper.pdf>`，頁面圖放在 repo 外的 `$EXAM_PAGES`（預設 `~/exams/img`），不要把整份掃描檔放進 repo。
+3. **寫題目模組**：每份考卷 × 每科一個 Python 檔（放在 repo 外），格式：
+   ```python
+   SCHOOL = "國立中央大學"; DEPT = "資工類（資料結構與演算法）"
+   def U(y): return f"https://…/ncu_{y}_software.pdf"
+   Q = [dict(year=113, no=3, topics=["heap"], type="選擇", question="…", choices=["(A) …"], answer="(B)", explanation="<p>…</p>")]
+   SKIP = [dict(year=113, no=10, reason="題目有錯：…")]
+   ```
+   有圖時用 `scripts/exam/qfig.py` 的 `crop()`、`img_html()`、`fig_html()`。
+4. **檢查**：`python scripts/exam/validate.py <subject-id> <模組>`；有圖時再跑 `python scripts/exam/qpreview.py <模組> <輸出資料夾>`，看淺色、深色截圖。
+5. **合併**：`python scripts/exam/import_exq.py <subject-id> <模組…>`。依（學校, 年, 題號）去重，題號自動接在題庫最大號後面，`SKIP` 會寫進 `data/exam-log.json`。已收的題目要修改時用 `sync_exq.py` 覆蓋，不要手改。
+6. **push 前先 `git fetch`**：遠端題庫有變動（例如另一個 session 新增了題目）時，先以遠端版本為準，再重跑 `import_exq.py`，讓題號往後接，不要讓題號撞號。
+7. **大量匯入**（很多份考卷）可以分給多個子代理平行處理：每個子代理只寫題目模組，不碰 repo；每做完一份考卷就存檔並跑 `validate.py`，避免中途被中斷時白做；由主代理統一合併、檢查、push。
+8. 回報：匯入幾題、對應到哪些主題、不收的題目與原因、哪些題目標了「（待確認）」。
 
 ### 開始一個新科目
 

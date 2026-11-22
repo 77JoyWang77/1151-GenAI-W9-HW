@@ -156,6 +156,29 @@ def check_questions(subject_id, topic_ids, errors):
     QUESTIONS[subject_id] = data["questions"]
 
 
+def check_exam_log(errors):
+    """data/exam-log.json：每份已匯入的考卷都要登錄，不收的題目要寫原因（第 7.1 節）"""
+    path = ROOT / "data" / "exam-log.json"
+    if not path.exists():
+        errors.append("[exam-log] 缺少 data/exam-log.json")
+        return
+    log = json.loads(path.read_text(encoding="utf-8"))
+    known = set()
+    for p in log.get("papers", []):
+        for k in ("school", "year", "paper", "url", "subjects", "skipped"):
+            if k not in p:
+                errors.append(f"[exam-log] 考卷 {p.get('school')} {p.get('year')} 缺少欄位 {k}")
+        known.add((p.get("school"), p.get("year"), p.get("url")))
+        for x in p.get("skipped", []):
+            if not x.get("reason") or "no" not in x:
+                errors.append(f"[exam-log] {p.get('school')} {p.get('year')} {p.get('paper')} 的不收題目要有 no 和 reason")
+    for sid, qs in QUESTIONS.items():
+        for q in qs:
+            src = q.get("source", {})
+            if src.get("kind") == "exam" and (src.get("school"), src.get("year"), src.get("url")) not in known:
+                errors.append(f"[questions/{q.get('id')}] 考卷沒有登錄在 data/exam-log.json")
+
+
 def load(path):
     return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
@@ -360,6 +383,7 @@ def main():
     if "body[data-chno=" in css:
         errors.append("[css] 不要依章節（data-chno）設定不同的 --accent，全站統一用品牌色")
 
+    check_exam_log(errors)
     if errors:
         print("\n".join(errors))
         print(f"\n✗ {len(errors)} 個問題")
