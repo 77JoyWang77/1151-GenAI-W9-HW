@@ -156,6 +156,19 @@ def check_questions(subject_id, topic_ids, errors):
     QUESTIONS[subject_id] = data["questions"]
 
 
+def check_exam_pdfs(errors):
+    """設定環境變數 EXAM_PDFS=<考卷資料夾> 時，資料夾裡每份 <school>_<year>_<卷別>.pdf 都要登錄在 data/exam-log.json（避免整份漏收）"""
+    import os
+    folder = os.environ.get("EXAM_PDFS")
+    if not folder:
+        return
+    ids = {p.get("id") for p in json.loads((ROOT / "data" / "exam-log.json").read_text(encoding="utf-8")).get("papers", [])}
+    for pdf in sorted(Path(folder).rglob("*.pdf")):
+        m = re.fullmatch(r"([a-z]+)_(\d+)_([a-z]+)", pdf.stem)
+        if m and f"{m[1]}-{m[2]}-{m[3]}" not in ids:
+            errors.append(f"[exam-log] 考卷 {pdf.name} 沒有登錄在 data/exam-log.json（還沒匯入？）")
+
+
 def check_exam_log(errors):
     """data/exam-log.json：每份已匯入的考卷都要登錄，不收的題目要寫原因（第 7.1 節）；
     考古卷頁（第 7.2 節）靠 id 和題目的 source.paper 把整份卷組回來"""
@@ -414,6 +427,7 @@ def main():
         errors.append("[css] 不要依章節（data-chno）設定不同的 --accent，全站統一用品牌色")
 
     check_exam_log(errors)
+    check_exam_pdfs(errors)
     if errors:
         print("\n".join(errors))
         print(f"\n✗ {len(errors)} 個問題")

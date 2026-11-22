@@ -296,7 +296,7 @@
 - 自己寫詳解，寫推導過程；計算、追蹤題一定用程式驗算。看不清楚或不確定的地方標「（待確認）」並回報使用者。
 - 題目用到的主題如果還沒有頁面，仍然可以先收錄（題庫頁看得到），主題頁做好後會自動出現。
 
-**7.** 執行 `python scripts/check.py` 檢查格式（會檢查題目圖片存在、每份考卷都登錄在 `data/exam-log.json`、每題的 `paper` 對得到考卷、同一份卷的題號不重複、不收的題號沒有同時被收錄）。
+**7.** 執行 `python scripts/check.py` 檢查格式；匯入整批考卷後再用 `EXAM_PDFS=<考卷資料夾> python scripts/check.py`，確認資料夾裡每份 PDF 都登錄了，沒有整份漏收（會檢查題目圖片存在、每份考卷都登錄在 `data/exam-log.json`、每題的 `paper` 對得到考卷、同一份卷的題號不重複、不收的題號沒有同時被收錄）。
 
 ### 7.2 考古卷頁（`exams/`）
 
@@ -544,7 +544,7 @@ figure("bst-valid-invalid", () => ({
 
 照第 7.1 節的標準，用 `scripts/exam/` 的工具：
 
-1. **登錄考卷**：在 `data/exam-log.json` 新增這份考卷（id、school、year、paper、title、url、subjects、skipped；id 用 `_common.paper_id()` 產生，見第 7.2 節）。
+1. **登錄考卷**：先列出考卷資料夾裡**實際有哪些檔案**，不要憑印象判斷某校某年有沒有卷。在 `data/exam-log.json` 新增這份考卷（id、school、year、paper、title、url、subjects、skipped；id 用 `_common.paper_id()` 產生，見第 7.2 節）。
 2. **OCR**：`sh scripts/exam/ocr.sh <paper.pdf>`，頁面圖放在 repo 外的 `$EXAM_PAGES`（預設 `~/exams/img`），不要把整份掃描檔放進 repo。
 3. **寫題目模組**：每份考卷 × 每科一個 Python 檔（放在 repo 外），格式：
    ```python
