@@ -2768,7 +2768,7 @@
         "E. If an NP-complete problem admits a polynomial-time approximation scheme (PTAS), then P = NP."
       ],
       "answer": "A、B",
-      "explanation": "<ul><li>A. 對。decision 版本是「最佳值是否 ≤ k（或 ≥ k）」，算出最佳解後和 k 比較一次就知道，所以至少一樣容易。</li><li>B. 對。L 是 NP-hard：任何 A ∈ NP 都有 A ≤<sub>p</sub> L；L ∈ coNP，而 coNP 對多項式 reduction 封閉，所以 A ∈ coNP，得 NP ⊆ coNP。對兩邊取補集又得 coNP ⊆ NP，所以 NP = coNP。</li><li>C. 不一定。若某 NPC 問題的補集也是 NPC，則該補集 ∈ NP 又是 coNP-complete 問題的補… 推出 NP = coNP，這是未解問題，所以不是「必然」成立。</li><li>D. 錯。A ≤<sub>p</sub> B 只推得 B 是 NP-hard；B 不一定在 NP 裡（例如 B 可能是 halting problem），所以不一定是 NP-complete。</li><li>E. 錯。knapsack 的最佳化版本是 NP-hard（decision 版本是 NPC），但它有 FPTAS（比 PTAS 更強），並不會推出 P = NP。真正會推出 P = NP 的是「某些問題（例如一般 TSP）有常數倍近似」這類結果。</li></ul>"
+      "explanation": "<ul><li>A. 對。decision 版本是「最佳值是否 ≤ k（或 ≥ k）」，算出最佳解後和 k 比較一次就知道，所以至少一樣容易。</li><li>B. 對。L 是 NP-hard：任何 A ∈ NP 都有 A ≤<sub>p</sub> L；L ∈ coNP，而 coNP 對多項式 reduction 封閉，所以 A ∈ coNP，得 NP ⊆ coNP。對兩邊取補集又得 coNP ⊆ NP，所以 NP = coNP。</li><li>C. 不一定。若某 NPC 問題 L 的補集也是 NPC，那補集就在 NP 裡，也就是 L ∈ coNP；L 又是 NP-hard，套用 B 的推理就得到 NP = coNP。NP 是否等於 coNP 目前還沒有人證明出來，所以這件事不是「必然」成立。</li><li>D. 錯。A ≤<sub>p</sub> B 只推得 B 是 NP-hard；B 不一定在 NP 裡（例如 B 可能是 halting problem），所以不一定是 NP-complete。</li><li>E. 錯。knapsack 的最佳化版本是 NP-hard（decision 版本是 NPC），但它有 FPTAS（比 PTAS 更強），並不會推出 P = NP。真正會推出 P = NP 的是「某些問題（例如一般 TSP）有常數倍近似」這類結果。</li></ul>"
     },
     {
       "id": "al-0121",
