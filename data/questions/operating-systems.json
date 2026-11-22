@@ -3522,6 +3522,917 @@
       "question": "作業系統 二、簡答題 2. (12%) Read the following description about the LSM tree and answer the questions.<p>An LSM-tree is a disk-oriented data structure that improves write efficiency by buffering updates in memory and flushing them to disk in batches. By doing so, it turns many small random writes into fewer sequential writes, which is especially beneficial for write-heavy workloads.</p><p>LevelDB is a popular open-source LSM-tree based key-value store. New updates are first appended to a write-ahead log (WAL) for crash recovery, then inserted into an in-memory MemTable (typically a skip list). When the MemTable becomes full, it is frozen as an Immutable MemTable, and a new MemTable is created for incoming writes. The Immutable MemTable is then flushed to disk as an SSTable, where keys are stored in sorted order.</p><p>On disk, LevelDB organizes SSTables into multiple levels (L0, L1, ...). Data is first flushed into L0, where SSTables may overlap in key ranges. When L0 grows beyond a threshold, LevelDB triggers compaction: it selects one or more SSTables from level Li and merges them with overlapping SSTables in level Li+1 using a merge-sort. The merged output is written as new SSTables in Li+1. From L1 onward, SSTables are maintained to be non-overlapping within each level.</p><p>Deletes are handled using tombstones. A delete inserts a marker rather than immediately removing data. During compaction, entries covered by tombstones are dropped, which permanently removes the data. Reads search for the newest version first, checking the MemTable, then the Immutable MemTable, then SSTables from L0 down to deeper levels until the key is found or confirmed absent.</p><p>Figure（以文字描述）：Memory 中有 Memtable 與 Immutable Memtable；寫入的 Key-Value 先 (1) 寫入 Disk 上的 WAL，再 (2) 插入 Memtable，(3) Memtable 轉換（Conversion）為 Immutable Memtable，(4) Flush 到 Disk 的 Level L0，(5) Compaction 由 L0 合併到 L1、L1 合併到 L2，一路到最高層 Level L6；每層由多個 SSTable 組成。</p><p>(a) (4%) Explain where write amplification comes from in an LSM-tree KV store such as LevelDB. Your answer should connect amplification to the maintenance workflow described above.</p><p>(b) (4%) Explain where read amplification comes from in an LSM-tree KV store. In particular, why can L0 increase the number of files a lookup must examine?</p><p>(c) (4%) Under what conditions does compaction become the bottleneck and lead to higher tail latency or write stalls? Describe the situation using the LSM maintenance workflow (MemTable, Immutable MemTable, flush to L0, and compaction across levels).</p>",
       "answer": "(a) 同一筆資料被寫入 WAL、flush 成 L0 SSTable，之後每往下一層 compaction 都被讀出、合併、重寫一次　(b) 一次查詢可能要查 MemTable、Immutable MemTable、L0 每個重疊的 SSTable 和每一層各一個 SSTable　(c) 寫入速度超過 flush 與 compaction 的速度，L0 檔案堆積到門檻時 LevelDB 會減速或暫停寫入",
       "explanation": "<p><b>(a) Write amplification（寫入放大）</b>：使用者寫一次，磁碟實際寫了好幾次：</p><ol><li>先寫一次 WAL。</li><li>MemTable 變成 Immutable 後 flush 成 L0 的 SSTable，又寫一次。</li><li>之後每次 compaction 都把 Li 的資料和 Li+1 重疊的 SSTable 一起讀出、merge-sort、整個重寫成新的 Li+1 SSTable。資料每往下一層就被重寫一次，而且因為下一層大約是上一層的 10 倍，合併一個上層檔案往往要連帶重寫好幾個下層檔案。</li></ol><p>層數越多，放大倍數越大（LevelDB 常見十幾到數十倍）。tombstone 和被覆蓋的舊版本在被 compaction 丟掉之前也會被搬來搬去。</p><p><b>(b) Read amplification（讀取放大）</b>：一筆 key 可能在任何地方，查詢要依序找 MemTable → Immutable MemTable → L0 → L1 → …，直到找到或確定不存在。L1 以下每層的 SSTable 互不重疊，每層只要查一個檔案；但 <b>L0 的 SSTable 是直接從 MemTable flush 下來的，key 範圍互相重疊</b>，同一個 key 可能在任何一個 L0 檔案裡，必須把 L0 的每個檔案都檢查一次（由新到舊）。L0 檔案越多，一次查詢要讀的檔案越多；查詢不存在的 key 時最慘，要一路查到最底層（Bloom filter 可以減輕）。</p><p><b>(c) Compaction 變成瓶頸</b>：當寫入速度長時間超過背景 flush 和 compaction 的處理速度時：</p><ol><li>MemTable 很快寫滿變成 Immutable，但前一個 Immutable MemTable 還沒 flush 完，新的寫入就只能等（write stall）。</li><li>flush 不斷產生 L0 檔案，而 L0 → L1 的 compaction 跟不上，L0 檔案越積越多；LevelDB 在 L0 檔案數超過門檻時先刻意減慢寫入（slowdown），再多就直接停止寫入（stop），直到 compaction 追上。</li><li>compaction 本身佔用大量磁碟頻寬與 CPU，和前景讀寫搶資源；而且下層也可能超過大小限制，觸發連鎖的 compaction。</li></ol><p>結果就是平時延遲很低，偶爾卻有請求要等很久，形成明顯的 tail latency 和寫入停頓。</p>"
+    },
+    {
+      "id": "os-0147",
+      "topics": [
+        "file-system-interface"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）For different directory structures, which of following statements are true?</p>",
+      "choices": [
+        "(a) A tree-structured directory prohibits the sharing of files or subdirectories by symbolic links.",
+        "(b) General graph directory structures may suffer from the problem of having dangling pointers to non-existent files.",
+        "(c) Acyclic-graph directory structures may have the problem that file's reference count is not 0, but it cannot be accessed.",
+        "(d) Garbage collection is to recover unused disk space. It is necessary only when there are possible cycles in the directory structures."
+      ],
+      "answer": "(a)(b)(d)（(b) 待確認）",
+      "explanation": "<p><b>(a) 對</b>：tree-structured（樹狀）目錄每個檔案只有一條路徑，不允許用 link 共享；允許共享就變成 acyclic graph（無環圖）。<br>\n<b>(b) 對</b>：一般圖目錄也用 link 共享，刪掉原檔後 symbolic link 仍指向不存在的檔案，就是 dangling pointer（懸置指標）。（這個問題在 acyclic graph 也會發生，選項只說 may suffer，判為對；待確認。）<br>\n<b>(c) 錯</b>：reference count 不為 0 卻無法存取，是因為<b>環</b>：一群目錄互相參照、但已經沒有從根目錄到它們的路徑。這是 general graph 才有的問題，acyclic graph 沒有環就不會發生。<br>\n<b>(d) 對</b>：garbage collection（垃圾回收）走訪整個檔案系統標記可到達的檔案，回收其餘空間；很花時間，只有在可能有環（reference count 失效）時才需要。</p>"
+    },
+    {
+      "id": "os-0148",
+      "topics": [
+        "page-replacement",
+        "thrashing"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）Assume there are four frames in the system. Given the memory reference patterns as follows (in terms of frame number): 50, 40, 80, 20, 50, 10, 80, 40. Which of following statements are true?</p>",
+      "choices": [
+        "(a) There are 5 page faults if LRU (least recently used) replacement algorithm is used.",
+        "(b) There are 5 page faults if optimal page-replacement algorithm is used.",
+        "(c) LRU can never exhibit Belady's anomaly.",
+        "(d) A process is thrashing if it spends more time in paging than execution. The effects of thrashing can be limited by using a global replacement algorithm."
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<p><b>LRU</b>：50、40、80、20 前 4 次都 fault（4 次）；50 hit；10 fault，踢最久沒用的 40（5 次）；80 hit；40 fault，踢最久沒用的 20（6 次）。共 <b>6</b> 次 → (a) 錯。</p>\n<p><b>OPT</b>：前 4 次 fault；50 hit；10 fault，看未來：80、40 都還會用，20 和 50 不會再用，踢 20（5 次）；80、40 都 hit。共 <b>5</b> 次 → (b) 對。兩個數字都已用程式模擬確認。</p>\n<p><b>(c) 對</b>：LRU 是 stack algorithm（堆疊演算法）：n 個 frame 時記憶體裡的頁集合一定是 n+1 個 frame 時的子集合，所以 frame 增加 fault 不會變多。<br>\n<b>(d) 錯</b>：thrashing 的定義對，但要限制它的影響應該用 <b>local</b> replacement：每個 process 只能從自己的 frame 中置換，一個 process thrashing 時不會去搶別人的 frame 而拖垮全部。global replacement 反而會讓 thrashing 擴散。</p>"
+    },
+    {
+      "id": "os-0149",
+      "topics": [
+        "file-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）Assume both index block and data block use the same block size of 1K bytes and assume each entry of the index block consists of 4 bytes. Which of following statements are true?</p>",
+      "choices": [
+        "(a) The maximum file size that can be supported for single-level indexed allocation is 2<sup>18</sup> bytes.",
+        "(b) Two-level indexed allocation uses a first-level index block to point to a set of second-level index blocks. The maximum file size that can be supported by a two-level indexed allocation is 2<sup>26</sup> bytes.",
+        "(c) Both linked allocation and indexed allocation do not suffer from external fragmentation.",
+        "(d) For an application requiring direct access, it is better to use linked allocation than indexed allocation."
+      ],
+      "answer": "(a)(b)(c)",
+      "explanation": "<p>一個 index block 有 1K / 4 = 256 = 2<sup>8</sup> 個 entry。</p>\n<p><b>(a) 對</b>：單層 index 最多指 2<sup>8</sup> 個 data block，每塊 2<sup>10</sup> bytes → 2<sup>18</sup> bytes = 256 KB。<br>\n<b>(b) 對</b>：兩層是 2<sup>8</sup> × 2<sup>8</sup> 個 data block → 2<sup>16</sup> × 2<sup>10</sup> = 2<sup>26</sup> bytes = 64 MB，多一層就把容量放大 256 倍。<br>\n<b>(c) 對</b>：兩者都能用任意零散的 block，沒有外部碎裂。<br>\n<b>(d) 錯</b>：linked allocation 要存取第 k 塊得從頭走 k 步；indexed allocation 查 index 就能直接找到，direct access 應選 indexed。</p>"
+    },
+    {
+      "id": "os-0150",
+      "topics": [
+        "contiguous-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）Buddy system and Slab allocation are two techniques for allocating memory for kernel processes. Which of following statements are true?</p>",
+      "choices": [
+        "(a) With the buddy system, memory requests can be satisfied very quickly because objects are created in advance.",
+        "(b) In Slab allocation scheme, a slab may consist of both used and free objects.",
+        "(c) Using the buddy system, a request for 29KB memory will be satisfied with a 36KB segment of memory.",
+        "(d) Using the Slab allocation scheme, no memory is wasted due to fragmentation."
+      ],
+      "answer": "(b)(d)",
+      "explanation": "<p><b>(a) 錯</b>：「物件事先建立好、所以配置很快」是 <b>slab</b> 的特點；buddy system 是把 2 的次方大小的區塊對半切。<br>\n<b>(b) 對</b>：slab 有三種狀態：full、empty、partial；partial 就是同時有已用與空閒的物件。<br>\n<b>(c) 錯</b>：buddy system 只配 2 的次方大小，29KB 會向上取到 <b>32KB</b>（浪費 3KB 的內部碎裂），36KB 不是 2 的次方。<br>\n<b>(d) 對</b>：slab 的每個 cache 專門存某一種 kernel 物件，切出來的大小剛好等於物件大小，所以不會因碎裂浪費記憶體（這是 slab 的主要優點之一）。</p>"
+    },
+    {
+      "id": "os-0151",
+      "topics": [
+        "disk-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider a disk queue with requests for blocks on cylinders in the listed order:</p>\n<p>120, 25, 5, 11, 80, 185, 90, 85.</p>\n<p>If the disk head is initially at cylinder 88 and is moving upward to next service cylinder 90. Which of following statements are true?</p>",
+      "choices": [
+        "(a) If SSTF (Shortest seek-time first) is used, the requests will be serviced in the order of 90, 85, 80, 120, 185, 25, 11, 5.",
+        "(b) If C-SCAN (Circular SCN) is used, the requests will be serviced in the order of 90, 120, 185, 85, 80, 25, 11, 5.",
+        "(c) SSTF may suffer from the problem of starvation",
+        "(d) C-SCAN is a variant of SCAN, designed to reduce the disk seek time needed by SCAN."
+      ],
+      "answer": "(a)(c)",
+      "explanation": "<p><b>(a) 對</b>：SSTF 每次選離目前最近的：88 → 90（2）→ 85（5）→ 80（5）→ 120（40，比去 25 的 55 近）→ 185 → 25 → 11 → 5，已用程式模擬確認。<br>\n<b>(b) 錯</b>：C-SCAN 往上掃到底之後直接跳回最低端，<b>再往上</b>服務，順序是 90、120、185、5、11、25、80、85。選項的順序是往回掃，那是 SCAN／LOOK。<br>\n<b>(c) 對</b>：如果一直有新的近距離請求進來，遠處的請求可能一直等不到。<br>\n<b>(d) 錯</b>：C-SCAN 的目的是讓<b>等待時間更平均</b>（兩端的請求不會比中間等得久），而不是減少尋道時間；它回程不服務，總移動距離通常反而比 SCAN 多。</p>"
+    },
+    {
+      "id": "os-0152",
+      "topics": [
+        "os-basics",
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）System calls are the interface between application programs and kernel. What descriptions about system calls are correct?</p>",
+      "choices": [
+        "(a) Just like hardware devices that generate interrupts, system calls also generate interrupts and jump to the kernel.",
+        "(b) Just like hardware devices, there are also vector entries for system calls and they point to interrupt service routines for both hardware and software interrupts.",
+        "(c) If there are many parameters to a system call, the user program can store all parameters in a table and pass the address of the table as a parameter to the system call.",
+        "(d) If memory copy between kernel and user program is heavy, it can be offloaded to DMA."
+      ],
+      "answer": "(a)(b)(c)（(d) 待確認）",
+      "explanation": "<p><b>(a) 對</b>：system call 用 trap（軟體中斷）指令進入 kernel，處理流程和中斷一樣：切換到 kernel mode、跳到中斷向量指定的位置。<br>\n<b>(b) 對</b>：interrupt vector table 裡也有 system call（軟體中斷）的項目，硬體中斷和軟體中斷都經由向量表找到對應的服務常式。<br>\n<b>(c) 對</b>：參數太多放不進暫存器時，可以放在記憶體中的一塊 table（block），只把它的位址放進暫存器傳過去（Linux 也用這種方式）。<br>\n<b>(d) 錯</b>：DMA 的用途是讓<b>裝置</b>與記憶體之間直接搬資料，不必 CPU 一個 byte 一個 byte 搬；kernel 與 user 之間的複製是記憶體到記憶體，一般由 CPU 做（copy_to_user／copy_from_user）並要檢查使用者位址是否合法。有些平台有記憶體到記憶體的 DMA 引擎，所以這項的判定待確認。</p>"
+    },
+    {
+      "id": "os-0153",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）State of a process switches between ready, running, and waiting, when device interrupt, clock interrupt, or system call happens. Suppose now a process is in the running state.</p>",
+      "choices": [
+        "(a) When a device interrupt happens, the process enters the waiting state first.",
+        "(b) When a clock interrupt happens, the process enters the ready state first.",
+        "(c) When an I/O system call is invoked, the process enters the waiting state first.",
+        "(d) When a non-I/O system call is invoked, the process enters the ready state first."
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<p><b>(a) 錯</b>：裝置中斷通常是「別的」process 等的 I/O 完成了，正在執行的 process 只是被中斷去跑 ISR，本身沒有在等任何事件，不會進 waiting；處理完通常回到 running，或因排程被搶占進 ready。<br>\n<b>(b) 對</b>：timer interrupt 代表時間片用完，process 被搶占，running → ready。<br>\n<b>(c) 對</b>：發出 I/O 請求要等裝置完成，running → waiting。<br>\n<b>(d) 錯</b>：不需要等待的 system call（例如 getpid）在 kernel 裡處理完就直接返回，process 一直處於 running，不會先進 ready。</p>"
+    },
+    {
+      "id": "os-0154",
+      "topics": [
+        "ipc"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）In message passing for inter-process communication, with send() and receive() being two system calls, if send() in sender is non-blocking but receive() in receiver is blocking.</p>",
+      "choices": [
+        "(a) If receive() happens before send(), the receiver will not get the message.",
+        "(b) If receive() happens after send(), the receiver will get the message.",
+        "(c) If now reversed, send() in sender is blocking and receive() in receiver is non-blocking. If receive() happens before send(), the receiver will get the message.",
+        "(d) Continued from (c), if receive() happens after send(), the receiver will not get the message."
+      ],
+      "answer": "(b)",
+      "explanation": "<p>blocking receive：沒有訊息就一直等到有為止；non-blocking receive：沒有訊息就立刻回傳（null）。blocking send：等對方收下才返回；non-blocking send：送出就返回，訊息放在緩衝區。</p>\n<p><b>(a) 錯</b>：receive 先呼叫會阻塞等待，之後 send 送來就收到了。<br>\n<b>(b) 對</b>：訊息已在緩衝區（或 mailbox）裡，receive 直接拿到。<br>\n<b>(c) 錯</b>：non-blocking receive 先執行時還沒有訊息，立刻回傳 null，這次呼叫拿不到。<br>\n<b>(d) 錯</b>：blocking send 會等到訊息被接收；receive 在之後呼叫時訊息已經在等它，可以拿到。</p>"
+    },
+    {
+      "id": "os-0155",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）For a user thread there can be a corresponding kernel thread. Do they both maintain stack and PCB (process control block)? Separately or jointly? What possibilities below are valid?</p>",
+      "choices": [
+        "(a) User thread has its stack and PCB, but the corresponding kernel thread does not have.",
+        "(b) User thread and kernel thread share the same stack and PCB.",
+        "(c) User thread and kernel thread have their own stack separately but PCB jointly.",
+        "(d) User thread and kernel thread have their own stack and PCB separately."
+      ],
+      "answer": "(d)（待確認）",
+      "explanation": "<p>user thread 在 user mode 執行，要有自己的 user stack，以及 thread library 維護的控制區塊（TCB）；對應的 kernel thread 是 kernel 排程的單位，進入 kernel 執行 system call 時用的是自己的 <b>kernel stack</b>，kernel 也為它維護自己的控制區塊（例如 Linux 的 task_struct）。所以兩邊各有各的 stack 和控制區塊 → (d)。</p>\n<p>(a) 錯：kernel thread 一定要有 kernel stack 和 kernel 端的控制資料才能被排程。(b) 錯：user mode 和 kernel mode 不能共用同一個 stack，否則 user 程式可以竄改 kernel 的資料，有安全問題。(c) 有些教材把一對一模型下的 thread 控制資訊視為同一份，若出題者這樣解讀 (c) 也可能被接受，待確認。</p>"
+    },
+    {
+      "id": "os-0156",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（複選題）Modern operating systems adjust priority in scheduling processes. What strategies are commonly used?</p>",
+      "choices": [
+        "(a) Increase priority when a process uses up its quantum.",
+        "(b) Increase priority when a process has frequent I/O.",
+        "(c) Increase priority when a process wakes up from a long sleep.",
+        "(d) Increase priority for a foreground process."
+      ],
+      "answer": "(b)(c)(d)",
+      "explanation": "<p>常見的動態優先權調整（例如 multilevel feedback queue、Windows、傳統 UNIX）原則是偏好互動式、I/O-bound 的 process：</p>\n<p><b>(a) 錯</b>：用完整個 quantum 代表是 CPU-bound，通常是<b>降低</b>優先權（往下一層 queue 移）。<br>\n<b>(b) 對</b>：I/O-bound 的 process 每次只用一點 CPU 就去等 I/O，提高優先權可以讓 I/O 裝置保持忙碌，也讓回應快。<br>\n<b>(c) 對</b>：等待很久剛被喚醒的 process（例如等鍵盤輸入）會得到提升，這也是避免 starvation 的 aging 概念。<br>\n<b>(d) 對</b>：前景（使用者正在操作的視窗）process 會被提高優先權或給較長的 quantum，例如 Windows 對前景 process 的加成。</p>"
+    },
+    {
+      "id": "os-0157",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": "21-23",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（題組 A）Consider the system with a 32-bit logical address space, a page size of 4K bytes, and physical memory of size 256M bytes. For all the questions below, assume each entry in the page table consists of 4 bytes.</p>\n<p>21. Assuming that the single-level page-table scheme is used, for a logical address 0xabcdef12, the value used to index the page table is ______ (a) 0xf12, (b) 0xabc, (c) 0xabcde, (d) 0xabcd.<br>\n22. Assuming that the two-level page-table scheme is used and the outer page table has 256 entries, for a logical address 0xabcdef12, the values used to index the outer and inner page tables are __A__ and __B__, respectively. (a) A=0xab, B=0xcdef12, (b) A =0xab , B =0xcde, (c) A=0xabcd, B=0xef12, (d) A=0xab, B=0xcd.<br>\n23. Assuming that the two-level page-table scheme is used and the outer page table has 256 entries, each process may need up to ____ bytes of memory space for the page table? (a) 2<sup>10</sup> + 2<sup>22</sup>, (b) 2<sup>8</sup> + 2<sup>12</sup>, (c) 2<sup>10</sup> + 2<sup>14</sup>, (d) 2<sup>13</sup> + 2<sup>25</sup>.</p>",
+      "choices": [
+        "21: (a) / (b) / (c) / (d)",
+        "22: (a) / (b) / (c) / (d)",
+        "23: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "21 (c)；22 (b)；23 (a)",
+      "explanation": "<p>4KB 頁 → offset 12 bits（3 個十六進位數字），頁號 20 bits。</p>\n<p><b>21</b>：0xabcdef12 去掉最後 3 位 0xf12（offset），頁號 = <b>0xabcde</b> → (c)。</p>\n<p><b>22</b>：outer 有 256 = 2<sup>8</sup> 個 entry，用頁號最高 8 bits = 0xab；剩 20 − 8 = 12 bits 給 inner = <b>0xcde</b>；0xf12 仍是 offset → (b)。</p>\n<p><b>23</b>：outer table = 2<sup>8</sup> × 4 = 2<sup>10</sup> bytes；最多 256 張 inner table，每張 2<sup>12</sup> 個 entry × 4 bytes = 2<sup>14</sup> bytes，共 2<sup>8</sup> × 2<sup>14</sup> = 2<sup>22</sup> bytes。總計 <b>2<sup>10</sup> + 2<sup>22</sup></b> → (a)。也就是最壞情況下 page table 要 4MB 多，兩層的好處是用不到的 inner table 可以不配置。（256MB 的實體記憶體大小在這三題用不到，是干擾資訊。）</p>"
+    },
+    {
+      "id": "os-0158",
+      "topics": [
+        "monitors",
+        "classic-sync-problems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（計算機系統）",
+        "no": "24-26",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
+      },
+      "question": "<p>（題組 B）Consider the following monitor solution to the 5 dining philosophers problem where there are 5 chopsticks between 5 philosophers who sit on a round table. A philosopher needs to get both chopsticks on the right and left sides to eat. Suppose the index <i>i</i> is incremented counterclockwise. With the monitor defined below, each philosopher <i>i</i> invokes the operations pickup() and putdown() in the following sequence:</p>\n<pre class=\"code\">DiningPhilosophers.pickup(i);\n    EAT\nDiningPhilosophers.putdown(i);\n\nmonitor DiningPhilosophers\n{\n    enum { THINKING; HUNGRY, EATING) state [5] ;\n    condition self [5];\n    void pickup (int i) {\n            state[i] = HUNGRY;\n            test(i);\n            if (state[i] != HUNGRY) self[i].wait();\n    }\n    void putdown (int i) {\n            state[i] = THINKING;\n            test((i + 4) % 5);\n            test((i + 1) % 5);\n    }\n    void test (int i) {\n            if ((state[(i + 4) % 5] != EATING) &amp;&amp;\n            (state[i] == HUNGRY) &amp;&amp;\n            (state[(i + 1) % 5] != EATING) ) {\n                    state[i] = EATING ;\n                    self[i].signal() ;\n            }\n    }\n    initialization_code() {\n        for (int i = 0; i &lt; 5; i++)\n        state[i] = THINKING;\n    }\n}</pre>\n<p>24. One statement in the above program is wrong. Name which statement.<br>\n(a) state[i] = HUNGRY,<br>(b) if (state[i] != HUNGRY) self[i].wait()<br>(c) state[i] = EATING<br>(d) self.signal()</p>\n<p>25. What is the purpose of the function test(i)?<br>\n(a) Check whether both right and left chopsticks are available.<br>\n(b) Check whether both neighbors are not EATING, and if both not, eat.<br>\n(c) Check whether both right neighbors are HUNGRY, and if both not, eat.<br>\n(d) Check whether either right neighbor or left neighbor is HUNGRY, and if yes, wake it up to eat.</p>\n<p>26. What is the purpose of the function test((i+4)%5)?<br>\n(a) Check whether my left neighbor is HUNGRY and its both neighbors are not EATING, and if both not EATING, wake it up to eat.<br>\n(b) Check whether my right neighbor is HUNGRY and its both neighbors are not EATING, and if both not EATING, wake it up to eat.<br>\n(c) Check whether my left neighbor is HUNGRY and its both neighbors are not HUNGRY, and if both not HUNGRY, wake it up to eat.<br>\n(d) Check whether my right neighbor is HUNGRY and its both neighbors are not HUNGRY, and if both not HUNGRY, wake it up to eat.</p>",
+      "choices": [
+        "24: (a) / (b) / (c) / (d)",
+        "25: (a) / (b) / (c) / (d)",
+        "26: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "24 (b)；25 (b)；26 (a)（26 的左右判定待確認）",
+      "explanation": "<p><b>24</b>：pickup 呼叫 test(i) 後，如果左右鄰居都沒在吃，state[i] 已變成 EATING，可以直接去吃；只有<b>還沒</b>變成 EATING（仍是 HUNGRY）時才要 wait。正確寫法是 <code>if (state[i] != EATING) self[i].wait();</code>。題目寫成 != HUNGRY，結果剛好相反：拿得到筷子的人反而去睡、拿不到的人直接去吃 → (b)。</p>\n<p><b>25</b>：test(i) 檢查 i 自己是 HUNGRY 且左右兩個鄰居都不是 EATING，成立就讓 i 進入 EATING 並 signal 喚醒它 → (b)。(a) 只說「檢查筷子」，沒有提到 i 必須是 HUNGRY 以及會讓它開始吃，不完整。</p>\n<p><b>26</b>：(i+4)%5 就是 i−1（模 5）。putdown 放下筷子後幫鄰居檢查：鄰居若在 HUNGRY、而它的兩個鄰居都不在吃，就讓它吃並喚醒它。條件看的是 EATING 不是 HUNGRY，所以是 (a) 或 (b)。編號逆時針遞增時，坐在桌邊面向圓心的人，逆時針方向的下一位在他右手邊，所以 i+1 是右鄰、i−1 是<b>左鄰</b> → (a)。左右判定依座位朝向而定，待確認。</p>"
+    },
+    {
+      "id": "os-0159",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider the following C code. Which outputs are possible?</p>\n<pre class=\"code\">int main() {\n  printf(\"A\");\n  if (fork() == 0) {\n    usleep(((rand() % 5) + 1) * 10000); /* wait for a random time */\n    printf(\"B\");\n    if (fork() == 0) {\n      usleep(((rand() % 5) + 1) * 10000); /* wait for a random time */\n      printf(\"C\");\n    }\n    else {\n      wait(NULL);\n      printf(\"D\");\n    }\n  }\n  else {\n    usleep(((rand() % 5) + 1) * 10000); /* wait for a random time */\n    printf(\"E\");\n    wait(NULL);\n  }\n  return 0;\n}</pre>",
+      "choices": [
+        "(a) ABCED.",
+        "(b) AEBCD.",
+        "(c) ABDCE.",
+        "(d) AEBDC."
+      ],
+      "answer": "(a)(b)",
+      "explanation": "<p>先整理三個行程的先後限制：<br>\n• 父行程：印 A → fork → 印 E → 等子行程。<br>\n• 子行程 1：印 B → fork → <b>wait</b> 孫行程結束後才印 D。<br>\n• 孫行程：印 C。</p>\n<p>所以 A 一定第一個；B 在 C、D 之前（C、D 都在 B 之後才被 fork 或執行）；C 一定在 D 之前（D 要等孫行程結束）；E 只要在 A 之後，位置不受限。</p>\n<p>(a) ABCED：符合。(b) AEBCD：符合。(c) ABDCE：D 在 C 前面，不可能。(d) AEBDC：同樣 D 在 C 前面，不可能。答案 (a)(b)。</p>\n<p>補充：printf(\"A\") 沒有換行，若 stdout 是完全緩衝（例如導向檔案），\"A\" 還留在緩衝區時 fork 會被複製到子行程，實際輸出會出現多個 A；這題的出題意圖是忽略緩衝的效果。</p>"
+    },
+    {
+      "id": "os-0160",
+      "topics": [
+        "bankers-algorithm",
+        "deadlock-characterization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider a system with 15 resources and 4 threads: <i>T</i><sub>0</sub>, <i>T</i><sub>1</sub>, <i>T</i><sub>2</sub>, and <i>T</i><sub>3</sub>. The second column in the following table shows the maximum number of resources need by each thread and the third column shows the number of resources each thread is currently holding. Let <i>x̂</i> be the maximum value of <i>x</i> (shown below) that can still keep the system in a safe state. Which statements are correct?</p>\n<div class=\"table-scroll\"><table><tr><th></th><th>Maximum Needs</th><th>Current Needs</th></tr>\n<tr><td><i>T</i><sub>0</sub></td><td>5</td><td>3</td></tr><tr><td><i>T</i><sub>1</sub></td><td>4</td><td>1</td></tr><tr><td><i>T</i><sub>2</sub></td><td>9</td><td>5</td></tr><tr><td><i>T</i><sub>3</sub></td><td><i>x</i></td><td>4</td></tr></table></div>",
+      "choices": [
+        "(a) <i>x̂</i> = 13.",
+        "(b) With <i>x̂</i>, ⟨<i>T</i><sub>0</sub>,<i>T</i><sub>1</sub>,<i>T</i><sub>2</sub>,<i>T</i><sub>3</sub>⟩ is a safe sequence.",
+        "(c) Even for some value of <i>x</i> that makes the system in an unsafe state, it may not lead to a deadlock.",
+        "(d) The way we use here to see whether a system is safe only applies to one type of resource. The banker's algorithm extends it to multiple types of resources."
+      ],
+      "answer": "(b)(c)(d)",
+      "explanation": "<p>目前持有 3 + 1 + 5 + 4 = 13，可用 15 − 13 = <b>2</b>。還需要：T0 2、T1 3、T2 4、T3 x − 4。</p>\n<p>T0 需要 2 ≤ 2，先做完 → 可用 5；T1 需要 3 → 做完可用 6；T2 需要 4 → 做完可用 11；最後 T3 需要 x − 4 ≤ 11，x ≤ 15。系統總共只有 15 個資源，x 也不能超過 15，所以 <b>x̂ = 15</b>（不管 T3 排在哪裡，它都得等其他人釋放，放最後最寬鬆）。</p>\n<p><b>(a) 錯</b>：x̂ 是 15 不是 13。<br>\n<b>(b) 對</b>：x = 15 時上面的順序 T0、T1、T2、T3 就是安全序列。<br>\n<b>(c) 對</b>：unsafe 只代表「可能」deadlock；thread 實際不一定會要到最大需求，所以不一定真的發生。<br>\n<b>(d) 對</b>：這題只有一種資源，只要比一個數字；banker's algorithm 把 Need、Available 推廣成向量，處理多種資源。</p>"
+    },
+    {
+      "id": "os-0161",
+      "topics": [
+        "semaphores",
+        "monitors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which statements about semaphore are correct?</p>",
+      "choices": [
+        "(a) Two processes sharing two common binary semaphores may result in a deadlock.",
+        "(b) If we use binary semaphore to implement a mutex lock, the semaphore should be initialized to 0.",
+        "(c) If we invoke a x.signal() operation on a condition variable x but no process is suspended on x, then the state of x remains unchanged.",
+        "(d) If we invoke a Signal(S) operation on a semaphore S but no process is suspended on S, then the state of S remains unchanged."
+      ],
+      "answer": "(a)(c)",
+      "explanation": "<p><b>(a) 對</b>：經典例子：P0 wait(S) 再 wait(Q)，P1 wait(Q) 再 wait(S)，兩邊各拿到一個就互相等對方，deadlock。<br>\n<b>(b) 錯</b>：當 mutex 用時初值要是 <b>1</b>，第一個 wait 才進得去；初值 0 是拿來做「等某件事發生」的同步用。<br>\n<b>(c) 對</b>：condition variable 沒有記憶，沒人在等時 signal 就像沒發生一樣。<br>\n<b>(d) 錯</b>：semaphore 的 signal 一定會把值加 1，就算沒人在等，之後的 wait 也能直接通過。這正是 semaphore 和 condition variable 最大的差別。</p>"
+    },
+    {
+      "id": "os-0162",
+      "topics": [
+        "process-concept",
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）A process could be in new, running, waiting, ready, or terminated state. Which statements about process states are correct?</p>",
+      "choices": [
+        "(a) If a process invokes a blocking send() for message passing, the process will enter the waiting state.",
+        "(b) When a process must wait on a spin-lock, the process will enter the waiting state.",
+        "(c) A process kept staying in the waiting state will not incur context-switching overhead.",
+        "(d) A wakeup() operation changes the state of a process from the waiting state to the running state."
+      ],
+      "answer": "(a)(c)",
+      "explanation": "<p><b>(a) 對</b>：blocking send 要等接收端收下訊息才返回，期間 process 被阻塞，進 waiting。<br>\n<b>(b) 錯</b>：spin-lock 是 busy waiting：process 一直在 CPU 上跑迴圈檢查鎖，仍是 running，不會進 waiting。<br>\n<b>(c) 對</b>：一直待在 waiting 的 process 不會被排程器選中，所以不會因為它而發生 context switch。<br>\n<b>(d) 錯</b>：wakeup 把 process 從 waiting 移到 <b>ready</b>，還要等排程器選中才變成 running。</p>"
+    },
+    {
+      "id": "os-0163",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which statements about CPU scheduling are correct?</p>",
+      "choices": [
+        "(a) Compared with first-come first-serve (FIFO), nonpreemptive shortest-job-first scheduling results in fewer context switches.",
+        "(b) Shortest-remaining-time-first scheduling can lead to starvation.",
+        "(c) A voluntary context switch occurs to a process when its time slice has expired.",
+        "(d) Processor affinity, which tries keeping a thread running on the same processor, is a load-balancing technique for multiple-processor scheduling in a symmetric multiprocessing (SMP) system."
+      ],
+      "answer": "(b)",
+      "explanation": "<p><b>(a) 錯</b>：兩者都是非搶占式，每個 CPU burst 都是一次做完，context switch 次數一樣，只是順序不同。<br>\n<b>(b) 對</b>：一直有更短的工作進來時，長工作可能永遠輪不到。<br>\n<b>(c) 錯</b>：時間片用完被拿走 CPU 是<b>非自願</b>（involuntary）的 context switch；自願的是 process 自己去等 I/O 或資源而放棄 CPU。<br>\n<b>(d) 錯</b>：processor affinity 是為了保留 cache 裡的資料（cache 是熱的），讓 thread 盡量留在同一顆處理器上，它其實和 load balancing（把工作搬去閒的處理器）互相衝突，不是負載平衡技術。</p>"
+    },
+    {
+      "id": "os-0164",
+      "topics": [
+        "page-replacement"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）In addition to a reference bit, a modify bit can be added to form the bit pair (reference, modify) associated with a page to improve the second-chance algorithm used in page replacement, where the reference bit is 1 if the page has been referenced and the modify bit is 1 if the page has been updated in the past round. Divide the pages into four classes: (0,0), (0,1), (1,0), (1,1).</p>",
+      "choices": [
+        "(a) Both reference bit and modify bit, if being 1, are cleared to 0 on a circular round of the page replacement algorithm, as a way to give the second chance.",
+        "(b) Pages in class (0,0) should be replaced first, while the pages in class (1,1) should be replaced last.",
+        "(c) Pages in class (0,1) should be replaced before pages in class (1,0).",
+        "(d) Pages in class (0,1), if picked to replace and dirty, should be written out before replacement."
+      ],
+      "answer": "(b)(c)(d)",
+      "explanation": "<p>這是 enhanced second-chance（加強版第二次機會）演算法，四類的置換優先順序：(0,0) → (0,1) → (1,0) → (1,1)。</p>\n<p><b>(a) 錯</b>：繞一圈時只清 <b>reference bit</b> 給第二次機會；modify bit 不能隨便清，否則會忘記這頁需要寫回磁碟，造成資料遺失。modify bit 只在頁真的寫回之後才清。<br>\n<b>(b) 對</b>：(0,0) 最近沒用、也沒改，換掉不必寫回，最划算；(1,1) 最近有用又要寫回，最後才換。<br>\n<b>(c) 對</b>：(0,1) 雖然換掉要寫回，但最近沒用到；(1,0) 最近剛用過，很可能馬上再用。這裡優先考慮「不久後不會再用」，所以先換 (0,1)。<br>\n<b>(d) 對</b>：modify bit = 1 代表記憶體中的內容和磁碟不同，換出前一定要先寫回。</p>"
+    },
+    {
+      "id": "os-0165",
+      "topics": [
+        "demand-paging",
+        "file-system-interface"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider memory-mapped files where disk blocks of a file are mapped to pages in memory, so that file I/O can be treated as routing memory access.</p>",
+      "choices": [
+        "(a) To load a file into the memory, the mmap() system call loads initially the entire file into the memory pages.",
+        "(b) By default, a memory-mapped file is mapped into the user process address space, instead of the kernel space.",
+        "(c) After invoking mmap(), read() and write() system calls are automatically translated by the kernel into memory access instructions.",
+        "(d) If the standard I/O is memory-mapped by mmap(), the mapping will be to kernel address space instead of user address space, and thus read() and write() would trigger memory copy between kernel space and user space."
+      ],
+      "answer": "(b)(d)（(d) 待確認）",
+      "explanation": "<p><b>(a) 錯</b>：mmap 只建立對映關係，不會一開始就整個載入；存取到某一頁時才 page fault 把那一頁讀進來（demand paging）。<br>\n<b>(b) 對</b>：mmap 回傳的是 user process 位址空間裡的位址，程式直接用指標存取檔案內容。<br>\n<b>(c) 錯</b>：mmap 之後程式是直接用 load／store 存取那塊記憶體；read()／write() 仍是一般的 system call，kernel 不會把它們「自動翻譯」成記憶體存取。<br>\n<b>(d) 對</b>：有些系統（例如 Solaris）即使行程用一般的 open／read／write，kernel 內部也會把檔案 memory-map 起來，但是對映在 <b>kernel</b> 位址空間，所以 read／write 時仍要在 kernel 和 user buffer 之間複製資料。題目的「standard I/O」用詞不太精確，判定待確認。</p>"
+    },
+    {
+      "id": "os-0166",
+      "topics": [
+        "file-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）A file can be stored in a file system with different allocation methods: contiguous, extent-based, linked, or indexed. Suppose directories are already in memory. An extent has an average of 16 blocks. Assume that a file has 512 blocks, numbered from 0 to 511, and the target of a random access read is block 239.</p>",
+      "choices": [
+        "(a) With contiguous allocation, only one block need to be read in order to access block 239.",
+        "(b) With extent-based allocation, 15 blocks need to be read in order to access block 239.",
+        "(c) With linked allocation, 240 blocks need to be read in order to access block 239.",
+        "(d) With indexed allocation, 2 blocks need to be read in order to access block 239."
+      ],
+      "answer": "(a)(b)(c)(d)（(b) 待確認）",
+      "explanation": "<p><b>(a) 對</b>：連續配置時，起點 + 239 直接算出位置，讀 1 塊。<br>\n<b>(b) 對</b>：block 239 在第 ⌊239 / 16⌋ + 1 = 第 15 個 extent。若 extent 之間像 linked 一樣用指標串起來（指標放在每個 extent 的最後一塊），要讀前 14 個 extent 的最後一塊拿到指標，再讀目標那一塊，共 14 + 1 = <b>15</b> 塊。這是依「extent 用串列串接」的假設，題目沒寫清楚，待確認。<br>\n<b>(c) 對</b>：linked 要從 block 0 沿指標走到 block 239，共讀 <b>240</b> 塊（0～239）。<br>\n<b>(d) 對</b>：先讀 index block，再讀資料塊，共 <b>2</b> 塊（假設 512 個指標放得進一個 index block）。</p>"
+    },
+    {
+      "id": "os-0167",
+      "topics": [
+        "file-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider UNIX UFS with 4 KB blocks. In an inode, suppose there are 2048 entries in the \"direct block\" pointing to at most 2048 data blocks. There is also an entry for each of \"single indirect\", \"double indirect\", and \"triple indirect\", pointing to an indirect node with 2048 entries for data blocks or recursively indirect nodes.</p>",
+      "choices": [
+        "(a) With only direct block, the maximum file size is around 8 MB.",
+        "(b) With direct block and single indirect, the maximum file size is around 16 MB.",
+        "(c) With direct block, single indirect, and double indirect, the maximum file size is around 16 GB.",
+        "(d) With direct block, single indirect, double indirect, and triple indirect, the maximum file size is around 32 TB."
+      ],
+      "answer": "(a)(b)(c)(d)",
+      "explanation": "<p>2048 = 2<sup>11</sup>，block = 4 KB = 2<sup>12</sup> bytes。</p>\n<p><b>(a)</b> direct：2<sup>11</sup> × 2<sup>12</sup> = 2<sup>23</sup> = <b>8 MB</b>。<br>\n<b>(b)</b> 加 single indirect 再多 2<sup>11</sup> 塊 = 8 MB，合計約 <b>16 MB</b>。<br>\n<b>(c)</b> double indirect 多 2<sup>22</sup> 塊 × 4 KB = 2<sup>34</sup> = 16 GB，前面的 16 MB 相對很小，合計約 <b>16 GB</b>。<br>\n<b>(d)</b> triple indirect 多 2<sup>33</sup> 塊 × 4 KB = 2<sup>45</sup> = 32 TB，合計約 <b>32 TB</b>。</p>\n<p>四個都對。可以看出每多一層間接，容量就乘上 2048 倍，大檔案的容量幾乎都由最後一層決定。</p>"
+    },
+    {
+      "id": "os-0168",
+      "topics": [
+        "os-structures",
+        "contiguous-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider various mechanisms used in Linux, which statements are valid?</p>",
+      "choices": [
+        "(a) A dynamically loaded kernel module will not be unloaded automatically by the kernel unless explicitly requested.",
+        "(b) The kernel maintains a table of functions for loading programs of different binary formats, and try them one by one when loading an executable binary.",
+        "(c) Slab allocation is for contiguous memory allocation needed for user processes.",
+        "(d) For a library of functions statically linked to multiple programs, it is loaded into memory multiple times as multiple copies, but only once and one copy if dynamically linked."
+      ],
+      "answer": "(a)(b)(d)（(a) 待確認）",
+      "explanation": "<p><b>(a) 對</b>：現代 Linux 的 module 要用 rmmod 等明確要求才會卸載，kernel 不會自己卸。（早期 kmod 曾有自動清除不用的 module 的機制，判定待確認。）<br>\n<b>(b) 對</b>：Linux 有一張 binary format handler 的表（linux_binfmt），執行 exec 時逐一嘗試，直到某個 loader（例如 ELF）認得這個檔案。<br>\n<b>(c) 錯</b>：slab 是 kernel 用來配置 <b>kernel 物件</b>（例如 inode、task_struct）的機制，不是給 user process 用的。<br>\n<b>(d) 對</b>：靜態連結時每個程式都複製一份 library 的程式碼，各自載入；動態連結（shared library）的程式碼在記憶體中只有一份，由各 process 共享。</p>"
+    },
+    {
+      "id": "os-0169",
+      "topics": [
+        "classic-sync-problems",
+        "semaphores"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": "21-24",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（題組 A）Consider using semaphores for the first readers-writers problem, which allows either one writer or at most <i>n</i> readers in the critical session at the same time (no reader be kept waiting unless a writer has already obtained permission to use the shared object). We use an integer read_count to count the number of readers that are currently reading the data. We use two binary semaphores: rw_mutex and mutex. The former is common to both reader and writer processes. The mutex semaphore is used to ensure mutual exclusion when the variable read_count is updated. The reader's code is shown below.</p>\n<pre class=\"code\">sem_wait(&amp;(1));\nread_count++;\nif (read_count == (2))\n   sem_wait(&amp;(3));\nsem_post(&amp;(4));\n(read the data)\nsem_wait(&amp;(5));\nread_count--;\nif (read_count == (6))\n   sem_post(&amp;(7));\nsem_post(&amp;(8));</pre>\n<p>（原卷以圈號 ①～⑧ 標示空格，此處寫成 (1)～(8)。）</p>\n<p>21. What is the initial value of mutex? (a) 0 (b) 1 (c) <i>n</i> (d) none above.<br>\n22. What should be in ①? (a) mutex (b) rw_mutex (c) read_count (d) <i>n</i><br>\n23. What should be in ②? (a) 0 (b) 1 (c) <i>n</i> (d) none above.<br>\n24. What should be in ⑦? (a) mutex (b) rw_mutex (c) read_count (d) <i>n</i></p>",
+      "choices": [
+        "21: (a) / (b) / (c) / (d)",
+        "22: (a) / (b) / (c) / (d)",
+        "23: (a) / (b) / (c) / (d)",
+        "24: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "21 (b)；22 (a)；23 (b)；24 (b)",
+      "explanation": "<p>完整的 reader：wait(mutex)；read_count++；若 read_count == 1 則 wait(rw_mutex)；post(mutex)；讀資料；wait(mutex)；read_count−−；若 read_count == 0 則 post(rw_mutex)；post(mutex)。</p>\n<p><b>21</b>：mutex 當互斥鎖用，初值 <b>1</b> → (b)。<br>\n<b>22</b>：① 是保護 read_count 的 <b>mutex</b> → (a)。<br>\n<b>23</b>：② 是 <b>1</b>：第一個進來的 reader 代表所有 reader 去搶 rw_mutex，把 writer 擋在外面；之後的 reader 直接進來 → (b)。<br>\n<b>24</b>：⑦ 是 <b>rw_mutex</b>：最後一個離開的 reader（read_count 變回 0）放開 rw_mutex，writer 才能進來 → (b)。</p>\n<p>注意題目說「at most n readers」，但這個解法本身並沒有限制 reader 個數，n 只是干擾選項。</p>"
+    },
+    {
+      "id": "os-0170",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（計算機系統）",
+        "no": "25,26,28",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
+      },
+      "question": "<p>（題組 B，節錄）Compare Oracle SPARC and ARM in supporting the page table. The former adopts 2-level caching and a hashed table with the feature of span (the number of pages an entry represent), while the latter uses also 2-level caching and a hybrid 1/2-level hierarchical page table (1-level for big pages and 2-level for small pages). Suppose 100 ns for memory access, 10 ns for 2<sup>nd</sup> cache access with cache hit ratio of 90%, and 1 ns for 1<sup>st</sup> cache access with cache hit ratio of 60%, and the remaining 10% for table lookup in the memory. Note that the 1<sup>st</sup> cache is looked up first before the 2<sup>nd</sup> cache, and then the table in the memory.</p>\n<p>25. What is the minimum access time for a desired word in a frame? (a) 11 ns (b) 101 ns (c) 111 ns (d) 201 ns<br>\n26. In ARM, what is the maximum access time for a desired word in a frame? (a) 201 ns (b) 211 ns (c) 311 ns (d) 411 ns<br>\n28. In ARM, for a large process using big pages, what is the average access time for a desired word in a frame? (a) 33 ns (b) 60 ns (c) 115 ns (d) 215 ns</p>\n<p>（第 27 題問 SPARC 雜湊表串列長度為 4 時的最大存取時間，依題意算出的值不在選項中，未收錄。）</p>",
+      "choices": [
+        "25: (a) / (b) / (c) / (d)",
+        "26: (a) / (b) / (c) / (d)",
+        "28: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "25 (b)；26 (c)；28 (c)（28 待確認）",
+      "explanation": "<p>這裡的 1<sup>st</sup>／2<sup>nd</sup> cache 指的是位址轉換用的兩層 TLB。拿到 frame 號之後，還要再花 100 ns 存取記憶體裡的那個 word。</p>\n<p><b>25</b>：最好情況是第一層 TLB 就命中：1 + 100 = <b>101 ns</b> → (b)。<br>\n<b>26</b>：ARM 最壞情況：兩層 TLB 都 miss（1 + 10），小頁用 2 層 page table，要讀記憶體 2 次（200），再讀資料（100）：1 + 10 + 200 + 100 = <b>311 ns</b> → (c)。<br>\n<b>28</b>：大頁只要 1 層 page table。依題意 60% 在第一層 TLB 命中、30% 到第二層命中（累計 90%）、剩下 10% 要查記憶體：<br>\n轉換時間 = 1（每次都查第一層）+ 0.4 × 10（40% 要查第二層）+ 0.1 × 100（10% 查表）= 1 + 4 + 10 = 15 ns，再加資料存取 100 ns，平均 <b>115 ns</b> → (c)。題目對命中率的描述可以有不同解讀（例如 90% 是第二層本身的命中率），判定待確認。</p>"
+    },
+    {
+      "id": "os-0171",
+      "topics": [
+        "page-replacement"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements on page replacement is (are) true?</p>",
+      "choices": [
+        "(a). FIFO page replacement algorithm may suffer from Bélády's anomaly.",
+        "(b). With LRU page replacement, adding page frames may increase the number of page faults.",
+        "(c). The LRU page replacement algorithm achieves the minimum number of page faults.",
+        "(d). Increasing the size of TLB (translation lookaside buffer) reduces the number of page replacements."
+      ],
+      "answer": "(a)",
+      "explanation": "<p><b>(a) 對</b>：FIFO 不是 stack algorithm，frame 變多 fault 反而可能變多（Belady's anomaly）。<br>\n<b>(b) 錯</b>：LRU 是 stack algorithm，frame 增加時 fault 只會持平或減少。<br>\n<b>(c) 錯</b>：fault 最少的是 OPT（踢未來最久才用的頁），LRU 只是近似。<br>\n<b>(d) 錯</b>：TLB 只是 page table 的快取，影響的是位址轉換速度；page replacement 取決於實體記憶體 frame 數與參考串，和 TLB 大小無關。</p>"
+    },
+    {
+      "id": "os-0172",
+      "topics": [
+        "paging",
+        "ipc",
+        "demand-paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Assume that we create a 64 MB shared memory for processes X and Y on an Intel x86 machine. Which of the following statements is (are) true?</p>",
+      "choices": [
+        "(a). The shared memory must be mapped to the same virtual address range in both X and Y.",
+        "(b). If we set the shared memory pages in process X as read-only, process Y will not be able to write to the shared memory.",
+        "(c). The shared memory can be swapped to a backing store (e.g., the disk).",
+        "(d). It is possible that less than 64 MB of physical memory space is actually allocated for the shared memory."
+      ],
+      "answer": "(c)(d)",
+      "explanation": "<p><b>(a) 錯</b>：共享的是實體 frame，兩個 process 各自的 page table 可以把它對映到不同的虛擬位址。<br>\n<b>(b) 錯</b>：保護位元是記在各自的 page table entry 裡，X 那邊設唯讀不影響 Y 的對映權限。<br>\n<b>(c) 對</b>：共享記憶體的頁和一般頁一樣可以被換出到磁碟（除非特別鎖定）。<br>\n<b>(d) 對</b>：demand paging 下只有真正被存取到的頁才會配置實體 frame，可能遠少於 64 MB。</p>"
+    },
+    {
+      "id": "os-0173",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which of the following statements is (are) true about direct memory access (DMA)?</p>",
+      "choices": [
+        "(a). It allows the application programs to access the main memory directly.",
+        "(b). A DMA transfer will slow down the execution of a CPU-intensive program.",
+        "(c). We can use device interrupts to synchronize DMA transfers.",
+        "(d). We can use polling to synchronize DMA transfers."
+      ],
+      "answer": "(b)(c)(d)（(b) 待確認）",
+      "explanation": "<p><b>(a) 錯</b>：DMA 是讓 <b>I/O 裝置</b>（透過 DMA controller）直接和主記憶體搬資料，不必 CPU 一個一個搬；跟應用程式直接存取記憶體無關。<br>\n<b>(b) 對</b>：DMA 搬資料時要佔用記憶體匯流排（cycle stealing），CPU 存取記憶體時可能要等，所以會稍微拖慢 CPU。若程式幾乎都在 cache 裡命中，影響可能很小，判定待確認。<br>\n<b>(c) 對</b>：最常見的做法：搬完由 DMA controller 發中斷通知 CPU。<br>\n<b>(d) 對</b>：CPU 也可以輪詢 DMA controller 的狀態暫存器來得知是否完成。</p>"
+    },
+    {
+      "id": "os-0174",
+      "topics": [
+        "file-system-interface"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）To move file f from /x/f to /y/f, which of the following step(s) are required (cannot be skipped)?</p>",
+      "choices": [
+        "(a). Make an entry for f in directory y.",
+        "(b). Allocate data blocks on the disk for /y/f.",
+        "(c). Copy the file content of /x/f to the data blocks of /y/f.",
+        "(d). Erase the entry for f in directory x."
+      ],
+      "answer": "(a)(d)",
+      "explanation": "<p>在同一個檔案系統裡移動（rename）檔案，只要改目錄：在 y 新增一個指向同一個 inode 的 entry，再刪掉 x 裡的 entry。檔案內容和它的 data block 完全不用動，所以 (b)(c) 可以省略。只有跨檔案系統搬移時才需要真的配置新 block 並複製內容。</p>"
+    },
+    {
+      "id": "os-0175",
+      "topics": [
+        "file-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Assume that a file system has no fragmentation to begin with (the disk blocks of each file are contiguous). If we want to have some files with non-contiguous data blocks on the file system, which of the following operation(s) are essential?</p>",
+      "choices": [
+        "(a). Changing a file name.",
+        "(b). Deleting a file.",
+        "(c). Creating a new file and writing some data to the file.",
+        "(d). Overwriting the data of an existing file."
+      ],
+      "answer": "(c)（待確認）",
+      "explanation": "<p>要讓檔案變成不連續，必須讓某個檔案「長大」時旁邊已經被別的檔案佔住，只好用其他地方的 block。</p>\n<p><b>(a)</b> 改名只動目錄，不碰 data block，不必要。<br>\n<b>(b)</b> 刪除檔案會留下空洞，是造成碎裂的常見原因，但不是<b>必要</b>的：先建立檔案 A、再建立檔案 B 緊接在後，然後繼續寫資料讓 A 變大，A 就只能用 B 後面的空間而變得不連續，整個過程沒有刪除。<br>\n<b>(c)</b> 必須有寫入新資料、配置新 block 的動作，檔案才可能出現新的不連續 block，所以是必要的。<br>\n<b>(d)</b> 覆寫既有資料只是在原本的 block 上改內容，不會配置新 block，不必要。</p>\n<p>若出題者認為一定要先刪除才會產生空洞，答案會是 (b)(c)，所以標待確認。</p>"
+    },
+    {
+      "id": "os-0176",
+      "topics": [
+        "process-concept",
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which statement(s) about process are correct?</p>",
+      "choices": [
+        "(a). When a process creates a child process, it can either continue its execution or wait for the child process to complete before continuing.",
+        "(b) A process may run out its stack memory by spawning too many processes as it runs.",
+        "(c) In a multithreaded multicore system, it is possible for two threads of the same process to run simultaneously in two different cores.",
+        "(d) A deep recursive function call can consume a lot of memory from the heap section of the process."
+      ],
+      "answer": "(a)(c)",
+      "explanation": "<p><b>(a) 對</b>：父行程可以和子行程並行執行，也可以呼叫 wait() 等子行程結束。<br>\n<b>(b) 錯</b>：fork 出來的子行程各有自己的位址空間與 stack，不會吃父行程的 stack；生太多行程耗盡的是 process table 或系統記憶體。<br>\n<b>(c) 對</b>：多核心下同一個 process 的不同 thread 可以真正同時跑在不同核心上。<br>\n<b>(d) 錯</b>：每層遞迴的 activation record 放在 <b>stack</b>，遞迴太深會 stack overflow，不是吃 heap。</p>"
+    },
+    {
+      "id": "os-0177",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider the following CPU scheduling result in a single-processor system. If all the five processes complete within 18 ms, which statement(s) are correct?</p>\n<p>Gantt chart：p<sub>1</sub>（0–2）、p<sub>2</sub>（2–3）、p<sub>3</sub>（3–8）、p<sub>4</sub>（8–12）、p<sub>5</sub>（12–18），單位 ms。</p>",
+      "choices": [
+        "(a) This result is not possible with round-robin scheduling.",
+        "(b) This result is possible if non-preemptive SJF is used and processes do not arrive at the same time.",
+        "(c) This result is possible if preemptive SJF is used and processes do not arrive at the same time.",
+        "(d) If both the preemptive SJF and the non-preemptive SJF yield this result, the waiting time of p<sub>4</sub> must be zero."
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<p>五個 process 的 burst 是 2、1、5、4、6，各自一次做完。</p>\n<p><b>(a) 錯</b>：只要 quantum ≥ 6（大於所有 burst），RR 就等同 FCFS，依到達順序就會得到這張圖。<br>\n<b>(b) 對</b>：例如 p1 在 0 到、p2 在 1 到、p3 在 2.5 到、p4 在 3 之後到、p5 在 8 之後到，每次選擇時 ready queue 裡只有一個，就會得到這個結果。<br>\n<b>(c) 對</b>：同樣的到達時間，沒有更短的工作在執行中途到達，preemptive SJF 也不會搶占，結果相同。<br>\n<b>(d) 錯</b>：p4 只要在 3 之後到就不影響 SJF 的選擇（若在 3 之前到，4 &lt; 5 會先選 p4）。例如 p4 在時間 5 到：p3 剩 3 &lt; 4，preemptive SJF 也不搶占，p4 等到 8 才開始，等待 3 ms，不是 0。</p>"
+    },
+    {
+      "id": "os-0178",
+      "topics": [
+        "threads",
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider the following C code for creating two threads. Which statement(s) are correct?</p>\n<pre class=\"code\">// header files here\nint count = 0;\n\nvoid *mythread(void *arg) {\n  for (int i=0; i&lt;10000; i++) {\n    // wait for some time\n    count += 1;\n  }\n  return(NULL);\n}\n\nint main() {\n  pthread_t p1, p2;\n  pthread_create(&amp;p1, NULL, mythread, NULL);\n  pthread_create(&amp;p2, NULL, mythread, NULL);\n  pthread_join(p2, NULL); pthread_join(p1, NULL);\n  printf(\"%d\", count);\n  return 0;\n}</pre>",
+      "choices": [
+        "(a) The output is always 20000.",
+        "(b) It is possible that the output is 19999.",
+        "(c) The output is fixed to 20000 if we change the order of the two calls to pthread_join.",
+        "(d) The first thread has a higher priority than the second one in thread scheduling."
+      ],
+      "answer": "(b)",
+      "explanation": "<p>count += 1 在機器層級是「讀、加、寫」三步，兩個 thread 沒有用 mutex 保護，會發生 race condition：兩邊讀到同一個值、各加 1 寫回，就少算一次。</p>\n<p><b>(a) 錯</b>、<b>(b) 對</b>：只要遺失一次更新就是 19999，遺失更多次還會更小。<br>\n<b>(c) 錯</b>：join 的順序只決定 main 先等誰，兩個 thread 照樣同時在跑，race 依舊存在。<br>\n<b>(d) 錯</b>：先建立不代表優先權比較高，兩個 thread 用相同的預設屬性建立。</p>"
+    },
+    {
+      "id": "os-0179",
+      "topics": [
+        "monitors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Which statement(s) about condition variable are correct?</p>",
+      "choices": [
+        "(a) A call to pthread_cond_wait() causes the calling thread to busy wait on a condition variable.",
+        "(b) pthread_cond_wait() includes a mutex lock as a parameter.",
+        "(c) pthread_cond_signal() function signals one thread that is waiting on the condition variable.",
+        "(d) The thread that calls pthread_cond_signal() aborts its execution right after the return of the call, after which CPU scheduler gives the execution right to the awakened thread."
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<p><b>(a) 錯</b>：pthread_cond_wait 會讓 thread 睡著（blocked），不佔 CPU，不是 busy waiting。<br>\n<b>(b) 對</b>：原型是 pthread_cond_wait(cond, mutex)；呼叫時會原子地放開 mutex 並睡著，醒來時再重新取得 mutex。<br>\n<b>(c) 對</b>：signal 喚醒至少一個在等的 thread（喚醒全部要用 broadcast）。<br>\n<b>(d) 錯</b>：Pthreads 採用 signal-and-continue：發出 signal 的 thread 繼續執行，被喚醒的 thread 要等拿回 mutex 才能繼續。</p>"
+    },
+    {
+      "id": "os-0180",
+      "topics": [
+        "bankers-algorithm",
+        "deadlock-characterization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（複選題）Consider a system with <i>m</i> resources and 4 threads: <i>T</i><sub>0</sub>, <i>T</i><sub>1</sub>, <i>T</i><sub>2</sub>, and <i>T</i><sub>3</sub>. Let <i>x<sub>i</sub></i> and <i>y<sub>i</sub></i> denote the maximum number of resources requested and the current number of resources held by thread <i>T<sub>i</sub></i>, respectively, for all <i>i</i>, 0 ≤ <i>i</i> ≤ 3. Which of the following statement(s) are correct?</p>\n<div class=\"table-scroll\"><table><tr><th></th><th>Maximum Needs</th><th>Current Needs</th></tr>\n<tr><td><i>T</i><sub>0</sub></td><td><i>x</i><sub>0</sub></td><td><i>y</i><sub>0</sub></td></tr><tr><td><i>T</i><sub>1</sub></td><td><i>x</i><sub>1</sub></td><td><i>y</i><sub>1</sub></td></tr><tr><td><i>T</i><sub>2</sub></td><td><i>x</i><sub>2</sub></td><td><i>y</i><sub>2</sub></td></tr><tr><td><i>T</i><sub>3</sub></td><td><i>x</i><sub>3</sub></td><td><i>y</i><sub>3</sub></td></tr></table></div>",
+      "choices": [
+        "(a) The system state is deadlocked if Σ<sub><i>i</i>=0..3</sub>(<i>x<sub>i</sub></i> − <i>y<sub>i</sub></i>) &gt; <i>m</i> − (<i>y</i><sub>0</sub> + <i>y</i><sub>1</sub> + <i>y</i><sub>2</sub> + <i>y</i><sub>3</sub>).",
+        "(b) The system state is deadlocked if (<i>x</i><sub>2</sub> − <i>y</i><sub>2</sub>) &gt; <i>m</i> − (<i>y</i><sub>0</sub> + <i>y</i><sub>1</sub> + <i>y</i><sub>2</sub> + <i>y</i><sub>3</sub>).",
+        "(c) The system state is deadlocked if (<i>x<sub>i</sub></i> − <i>y<sub>i</sub></i>) &gt; <i>m</i> − (<i>y</i><sub>0</sub> + <i>y</i><sub>1</sub> + <i>y</i><sub>2</sub> + <i>y</i><sub>3</sub>) for all <i>i</i>, 0 ≤ <i>i</i> ≤ 3.",
+        "(d) The system state is safe if (<i>x<sub>i</sub></i> − <i>y<sub>i</sub></i>) ≤ <i>m</i> − (<i>y</i><sub>0</sub> + <i>y</i><sub>1</sub> + <i>y</i><sub>2</sub> + <i>y</i><sub>3</sub>) for some <i>i</i>, 0 ≤ <i>i</i> ≤ 3."
+      ],
+      "answer": "皆不正確（待確認）",
+      "explanation": "<p>先釐清：m − Σy 是目前可用的資源數；x<sub>i</sub> − y<sub>i</sub> 是 T<sub>i</sub> 最多還可能要的數量（Need）。Max 只是「可能」的需求，不是真的發出的請求。</p>\n<p><b>(a) 錯</b>：全部 Need 加起來大於可用量很常見，只要能一個一個做完再釋放就仍然安全，更不是 deadlock。<br>\n<b>(b) 錯</b>：只代表 T2 現在不能保證拿到最大需求，其他 thread 完成釋放後就可能夠了。<br>\n<b>(c) 錯</b>：每個 thread 的 Need 都大於可用量，代表狀態 <b>unsafe</b>（找不到安全序列），但 unsafe 不等於 deadlocked：thread 不一定真的會要到最大需求，deadlock 要看實際的 Request。<br>\n<b>(d) 錯</b>：某一個 thread 能做完只是安全序列的第一步，做完釋放後剩下的 thread 不一定都能完成。</p>\n<p>依此判斷四個選項都不成立；若出題者把「unsafe」當成「deadlocked」，(c) 會被判為對，待確認。</p>"
+    },
+    {
+      "id": "os-0181",
+      "topics": [
+        "raid"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": "21-23",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（題組 A）Assume that we have four disks (disk0~3), and each disk has 1TB of space. We use the notation diskX[i] to denote the i<sup>th</sup> sector on diskX. Now, we form a RAID5 array with all four disks.</p>\n<p>21. Which of the following number is closest to the maximum capacity (the maximum amount of data you can store on the array) of the RAID5 array? (a). 1TB (b). 2TB (c). 3TB (d). 4TB<br>\n22. What is the maximum number of disk failures that the RAID5 array can tolerate? (a). 1 (b). 2 (c). 3 (d). 4<br>\n23. In the worst case, how many disks will be involved in writing a single byte to the RAID5 array? (a). 1 (b). 2 (c). 3 (d). 4</p>",
+      "choices": [
+        "21: (a) / (b) / (c) / (d)",
+        "22: (a) / (b) / (c) / (d)",
+        "23: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "21 (c)；22 (a)；23 (b)",
+      "explanation": "<p>RAID 5 是 block-level striping 加上分散式 parity：每個 stripe 有 3 個資料 block 和 1 個 parity block，parity 輪流放在不同的磁碟上。</p>\n<p><b>21</b>：4 顆中相當於 1 顆的容量拿來放 parity，可用 4 − 1 = <b>3TB</b> → (c)。<br>\n<b>22</b>：一個 stripe 只有一份 parity，只能重建一個遺失的 block，所以最多容忍 <b>1</b> 顆壞掉 → (a)。<br>\n<b>23</b>：寫一個 byte 要做 read-modify-write：讀舊資料和舊 parity，算出新 parity = 舊 parity ⊕ 舊資料 ⊕ 新資料，再寫回資料和 parity。只牽涉到資料所在的磁碟和該 stripe 的 parity 磁碟，共 <b>2</b> 顆 → (b)。</p>"
+    },
+    {
+      "id": "os-0182",
+      "topics": [
+        "ipc",
+        "deadlock-characterization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（計算機系統）",
+        "no": "24-27",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
+      },
+      "question": "<p>（題組 B）Consider three processes P, Q, and R using message-passing for communications. Their behaviors are illustrated below. Let BS = blocking send, NS = nonblocking send, BR = blocking receive, and NR = nonblocking receive.</p>\n<div class=\"table-scroll\"><table><tr><th>Process P</th><th>Process Q</th><th>Process R</th></tr>\n<tr><td>...<br>send(Q, msg1)<br>receive(R, msg2)</td><td>...<br>send(R, msg3)<br>receive(P, msg4)</td><td>...<br>send(P, msg5)<br>receive(Q, msg6)</td></tr></table></div>\n<p>24. Which type of naming is used? (a) direct (b) indirect (c) insufficient evidence to judge (d) none above.<br>\n25. Which data structure is needed to support this type of communications? (a) mailbox (b) port (c) semaphore (d) none above.<br>\n26. Which condition will cause deadlock in this example? (a) BS (b) BR (c) both BS and BR (d) none above.<br>\n27. If deadlock is not possible, which condition will ensure each process to proceed only after receiving its message? (a) BS (b) BR (c) NS (d) NR.</p>",
+      "choices": [
+        "24: (a) / (b) / (c) / (d)",
+        "25: (a) / (b) / (c) / (d)",
+        "26: (a) / (b) / (c) / (d)",
+        "27: (a) / (b) / (c) / (d)"
+      ],
+      "answer": "24 (a)；25 (d)；26 (a)；27 (b)（26 待確認）",
+      "explanation": "<p><b>24</b>：send、receive 直接寫出對方 process 的名字（Q、R、P），是 <b>direct</b> communication（直接命名）→ (a)。</p>\n<p><b>25</b>：direct communication 是 process 之間直接建立連結，不需要 mailbox 或 port（那是 indirect communication 用的）→ (d)。</p>\n<p><b>26</b>：三個 process 都是先 send 再 receive。若 send 是 blocking（要等對方 receive 才返回），P 等 Q 收、Q 等 R 收、R 等 P 收，但三個人都卡在 send，沒有人走到 receive，形成循環等待 → <b>BS</b> 造成 deadlock → (a)。若只有 receive 是 blocking，send 會先把訊息放出去，之後每個 receive 都收得到，不會 deadlock。（「BS 與 BR 同時成立」也會 deadlock，但造成 deadlock 的關鍵是 BS，選 (a)；若出題者要的是 (c)，待確認。）</p>\n<p><b>27</b>：要保證每個 process 收到訊息後才繼續，receive 必須是 <b>blocking</b>（沒收到就等）→ (b)。</p>"
     }
   ]
 }

@@ -2208,6 +2208,960 @@
       "question": "A fully connected communication network on n nodes is modeled by the complete graph K<sub>n</sub>, where n ≥ 5. Let S ⊆ V(K<sub>n</sub>) ∪ E(K<sub>n</sub>) be a set of failed nodes and links with |S| ≤ n − 3, such that no failed link is incident to a failed node. Let K<sub>n</sub> − S denote the network obtained after removing all failed nodes (and their incident links) and all failed links. Prove by induction on n that the remaining network K<sub>n</sub> − S contains a Hamiltonian cycle. <b>You may not assume any characterization theorem for Hamiltonian graphs.</b>",
       "answer": "對 n ≥ 3 歸納證明更一般的敘述 P(n)：|S| ≤ n − 3 時 K<sub>n</sub> − S 有 Hamiltonian cycle。分「S 含節點」（刪掉該節點，套 P(n−1)）與「S 只含邊」（刪掉失效度數最小的端點 v，套 P(n−1) 得到 cycle，再把 v 插回去）兩種情況。",
       "explanation": "<p>證明比題目更強的 P(n)：對所有 n ≥ 3，只要 |S| ≤ n − 3（且失效的邊不接到失效的點），K<sub>n</sub> − S 就有 <span class=\"term\">Hamiltonian cycle<small>（漢米爾頓迴路）</small></span>。n ≥ 5 是其中的特例。</p><p><b>基底 n = 3</b>：|S| ≤ 0，K<sub>3</sub> 本身就是三角形。</p><p><b>歸納步驟</b>（n ≥ 4，假設 P(n − 1) 成立）：</p><p><b>情況 0：S = ∅</b>。1 → 2 → ⋯ → n → 1 就是 Hamiltonian cycle。</p><p><b>情況 1：S 含某個失效節點 v</b>。令 S' = S \\ {v}。K<sub>n</sub> − S 等於「其餘 n − 1 個點構成的 K<sub>n−1</sub>」去掉 S'；|S'| ≤ n − 4 = (n − 1) − 3，且 S' 的失效邊仍不接到失效點。由 P(n − 1) 得到 Hamiltonian cycle。</p><p><b>情況 2：S 只含失效邊（至少一條）</b>。對每個點 u 令 d(u) = 接到 u 的失效邊數。在所有「至少接一條失效邊」的點中，取 d 值最小的 v，令 d = d(v) ≥ 1。</p><ul><li><b>d 不會太大</b>：v 的 d 個失效鄰居也都是失效邊的端點，所以 d 值都 ≥ d；這 d + 1 個點的 d 值總和 ≥ d(d + 1)，又每條失效邊貢獻 2，所以 d(d + 1) ≤ 2|S| ≤ 2(n − 3)。若 2d ≥ n − 1，則 d(d + 1) ≥ (n − 1)(n + 1)/4，而 (n² − 1)/4 &gt; 2(n − 3) ⇔ n² − 8n + 23 &gt; 0，判別式 64 − 92 &lt; 0 恆成立，矛盾。所以 2d ≤ n − 2，也就是 d &lt; (n − 1)/2。</li><li><b>拿掉 v</b>：剩下的點是 K<sub>n−1</sub>，其中的失效邊是 S 去掉 v 的 d 條，個數 ≤ (n − 3) − 1 = (n − 1) − 3。由 P(n − 1)，剩下的網路有 Hamiltonian cycle C（長度 n − 1）。</li><li><b>把 v 插回去</b>：v 的失效鄰居集合 F 有 d 個點，其餘 n − 1 − d 個點和 v 之間的邊都正常。因為 n − 1 − d &gt; (n − 1)/2，超過 C 上點數的一半，C 上一定有兩個「相鄰」的點 u、w 都不在 F（否則非 F 點在環上兩兩不相鄰，最多只能有 (n − 1)/2 個）。把 C 的邊 uw 換成 u – v – w，就得到包含全部 n 個點的 Hamiltonian cycle。</li></ul><p>兩種情況都成立，由歸納法 P(n) 對所有 n ≥ 3 成立，題目的 n ≥ 5 自然成立。全程只用到「在環中插入一點」的構造，沒有用 Dirac、Ore 等判定定理。</p><p>附註：n − 3 是緊的上界。若 |S| = n − 2，例如 n − 2 條失效邊都接在同一點 v，v 只剩 1 條邊，不可能在環上。程式對 n = 5、6 窮舉所有 |S| ≤ n − 3 的失效組合，全部都有 Hamiltonian cycle，而 K<sub>5</sub> 在同一點拿掉 3 條邊後就沒有。</p>"
+    },
+    {
+      "id": "dm-0110",
+      "topics": [
+        "predicate-logic"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）Let Q(x, y) be the statement “x + y = x − y,” which of the following are true?",
+      "choices": [
+        "(A) ∃x∃yQ(x,y)",
+        "(B) ∀x∃yQ(x,y)",
+        "(C) ∃y∀xQ(x,y)",
+        "(D) ∀y∃xQ(x,y)",
+        "(E) ∀x∀yQ(x,y)"
+      ],
+      "answer": "A、B、C",
+      "explanation": "<p>先化簡：x + y = x − y ⇔ 2y = 0 ⇔ y = 0，和 x 無關。（論域以整數或實數理解。）</p><ul><li>A 對：取 x = 0、y = 0。</li><li>B 對：對每個 x 都取 y = 0。</li><li>C 對：取 y = 0，所有 x 都成立。注意 ∃y∀x 比 ∀x∃y 強，這裡因為 y = 0 這個值對所有 x 都通用，所以也成立。</li><li>D 錯：y = 1 時，不論 x 是多少都不成立。</li><li>E 錯：同 D 的反例。</li></ul>"
+    },
+    {
+      "id": "dm-0111",
+      "topics": [
+        "pigeonhole-principle"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）An arm wrestler is the champion for a period of 75 hours. (Here, by an hour, we mean a period starting from an exact hour, such as 1 p.m., until the next hour.) The arm wrestler had at least one match an hour, but no more than 125 total matches. There is a period of consecutive hours during which",
+      "choices": [
+        "(A) the arm wrestler had exactly 2 matches.",
+        "(B) the arm wrestler had exactly 23 matches.",
+        "(C) the arm wrestler had exactly 24 matches.",
+        "(D) the arm wrestler had exactly 25 matches.",
+        "(E) All the above statements are incorrect."
+      ],
+      "answer": "A、B、C、D",
+      "explanation": "<p>令 a<sub>j</sub> = 前 j 小時的比賽總數，1 ≤ a<sub>1</sub> &lt; a<sub>2</sub> &lt; … &lt; a<sub>75</sub> ≤ 125（每小時至少一場，所以嚴格遞增）。「連續若干小時恰好 k 場」⇔ 存在 a<sub>j</sub> − a<sub>i</sub> = k（或 a<sub>j</sub> = k）。</p><p><b>經典 k = 24</b>：看 a<sub>1</sub>, …, a<sub>75</sub> 和 a<sub>1</sub> + 24, …, a<sub>75</sub> + 24 這 150 個數，都介於 1 和 149 之間。由鴿籠原理必有兩數相等；同一組內嚴格遞增不會相等，所以 a<sub>j</sub> = a<sub>i</sub> + 24，連續第 i+1 到 j 小時恰好 24 場。</p><p>k = 2、23、25 用同樣的鴿籠論證不夠直接（例如 k = 25 時數值上界是 150，剛好不夠），要更細的分析：把 0~125 依「除以 k 的餘數」分成若干條間隔為 k 的鏈，每條鏈中不能同時選相鄰兩個數，算出「不出現差 k」時最多能放幾個部分和。程式算出 k = 2、23、24、25 時最多分別只能放 63、68、71、74 個，都小於 75，所以四種情況都<b>一定</b>存在。</p><p>因此 A、B、C、D 都正確，E 錯。（k = 25 的上限 74 只差 1，是本題最緊的一個。）</p>"
+    },
+    {
+      "id": "dm-0112",
+      "topics": [
+        "modular-arithmetic",
+        "congruences"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）In the RSA public key system,",
+      "choices": [
+        "(A) its correctness is based on Fermat’s theorem and Chinese remainder theorem.",
+        "(B) two large primes are chosen so that one acts as the public key and the other the private key.",
+        "(C) (M<sup>e</sup>)<sup>d</sup> = (M<sup>d</sup>)<sup>e</sup> = M, where M represents a message, e represents the public key, and d the corresponding private key.",
+        "(D) if Alice wants to send a message to Bob and prove her identity, Alice first generates a hash value from the message and encrypts the hash value by her own public key and then sends the plaintext message and the encrypted hash value to Bob. After Bob receives the message, he decrypts the hash value by Alice’s private key. Besides, he also generates a hash value from the plaintext message. If both values match, it proves the message comes from Alice.",
+        "(E) all of the above statements are incorrect."
+      ],
+      "answer": "A、C",
+      "explanation": "<ul><li>A 對：證明 M<sup>ed</sup> ≡ M (mod pq) 時，分別在 mod p、mod q 用 <b>Fermat’s Little Theorem（費馬小定理）</b>，再用 <b>Chinese Remainder Theorem（中國餘數定理）</b>合併。</li><li>B 錯：兩個大質數 p、q 都要保密，用來算 n = pq 和 (p−1)(q−1)；公鑰是 (n, e)，私鑰是 d，不是「一個質數當公鑰、一個當私鑰」。</li><li>C 對（以 mod n 理解）：ed ≡ 1 (mod (p−1)(q−1))，乘法可交換，所以先用哪一把鑰匙都能還原，這也是 RSA 能做數位簽章的原因。</li><li>D 錯：簽章要用 Alice 的<b>私鑰</b>加密雜湊值，Bob 用 Alice 的<b>公鑰</b>解開。題目寫反了；而且 Bob 根本拿不到 Alice 的私鑰。</li><li>E 錯，因為 A、C 正確。</li></ul>"
+    },
+    {
+      "id": "dm-0113",
+      "topics": [
+        "planar-graphs"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）Let G be a connected planar simple graph with e edges and v vertices, then",
+      "choices": [
+        "(A) r = e + v − 2, where r represents the number of regions in a planar representation of G.",
+        "(B) e ≤ 3v − 6 when v ≥ 3",
+        "(C) G has a vertex of degree not exceeding five",
+        "(D) A graph is nonplanar if it contains a subgraph homeomorphic to K<sub>2,3</sub>",
+        "(E) A graph is nonplanar if it contains a subgraph homeomorphic to K<sub>5</sub>"
+      ],
+      "answer": "B、C、E",
+      "explanation": "<ul><li>A 錯：Euler’s Formula 是 v − e + r = 2，所以 r = e − v + 2，不是 e + v − 2。</li><li>B 對：v ≥ 3 時每個面至少 3 條邊圍成，3r ≤ 2e，代入尤拉公式得 e ≤ 3v − 6。</li><li>C 對：若每個點度數 ≥ 6，則 2e ≥ 6v，e ≥ 3v，和 e ≤ 3v − 6 矛盾（v = 1、2 時也顯然成立）。</li><li>D 錯：K<sub>2,3</sub> 是平面圖；<b>Kuratowski’s Theorem</b> 說的是 K<sub>3,3</sub>。</li><li>E 對：含有和 K<sub>5</sub> 同胚的子圖 ⇒ 非平面。</li></ul>"
+    },
+    {
+      "id": "dm-0114",
+      "topics": [
+        "tree-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）A full m-ary tree with",
+      "choices": [
+        "(A) n vertices has i = (n − 1)/m internal vertices",
+        "(B) n vertices has l = [(m − 1)n + 1]/m leaves",
+        "(C) i internal vertices has l = (m − 1)i + 1 leaves",
+        "(D) l leaves has n = (ml − 1)/(m − 1) vertices",
+        "(E) l leaves has i = (l − 1)/(m − 1) internal vertices."
+      ],
+      "answer": "A、B、C、D、E",
+      "explanation": "<p>Full m-ary tree（完滿 m 元樹）每個內部節點恰好有 m 個子節點。兩個基本關係：</p><pre class=\"formula\">n = m·i + 1   （除了根，每個點都是某個內部節點的子節點）\nn = i + l</pre><p>由這兩式可推出所有選項：</p><ul><li>A：i = (n − 1)/m。</li><li>B：l = n − i = n − (n − 1)/m = [(m − 1)n + 1]/m。</li><li>C：l = n − i = mi + 1 − i = (m − 1)i + 1。</li><li>E：由 C，i = (l − 1)/(m − 1)。</li><li>D：n = i + l = (l − 1)/(m − 1) + l = (ml − 1)/(m − 1)。</li></ul><p>五個都對。檢查一個例子：m = 2、i = 3，n = 7、l = 4，代入每個公式都成立。</p>"
+    },
+    {
+      "id": "dm-0115",
+      "topics": [
+        "functions",
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）Suppose |A| = 8, |B| = 3. Consider the number of possible functions f : A → B",
+      "choices": [
+        "(A) The number of possible f is 3<sup>8</sup>.",
+        "(B) If f is one-to-one, the number is 6.",
+        "(C) If f is onto , the number is 8<sup>3</sup>.",
+        "(D) The number of possible f<sup>-1</sup> is 0.",
+        "(E) If f is bijection, the number is 0."
+      ],
+      "answer": "A、D、E",
+      "explanation": "<ul><li>A 對：A 的 8 個元素各有 3 種選擇，3<sup>8</sup> = 6561。</li><li>B 錯：8 個元素要映到 3 個不同的像不可能，一對一函數有 0 個（6 = 3! 是 |A| = |B| = 3 時的數字）。</li><li>C 錯：用排容原理，映成函數 = 3<sup>8</sup> − C(3,1)2<sup>8</sup> + C(3,2)1<sup>8</sup> = 6561 − 768 + 3 = 5796，不是 8<sup>3</sup> = 512（程式驗算）。</li><li>D 對：f 有反函數 ⇔ f 是雙射，而 |A| ≠ |B| 不可能有雙射，所以 0 個。</li><li>E 對：同上，雙射個數為 0。</li></ul>"
+    },
+    {
+      "id": "dm-0116",
+      "topics": [
+        "partial-orders"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）Consider a predicate P(i,j), where i,j are elements from the same domain S. Suppose all following statements are true:<br>∀i, p(i,i);  ∀i,j, (i ≠ j), p(i,j) → ¬p(j,i);  ∀i,j,k, (p(i,j) ∧ p(j,k)) → p(i,k);<br>∀i,j, p(i,j) ∨ p(j,i);  ∃!k, ∀i ≠ k, p(k,i);<br>(∃! means “exist one and only one”)<br>Which of the following options are correct?",
+      "choices": [
+        "(A) p describes an equivalence relation.",
+        "(B) p describes a partial order set.",
+        "(C) p describes a total order relation.",
+        "(D) p describes a lattice .",
+        "(E) p describes a well order relation."
+      ],
+      "answer": "B、C、D（E 待確認）",
+      "explanation": "<p>逐條翻譯：自反、反對稱、遞移 ⇒ <b>Partial Order（偏序）</b>；任兩元素可比較 ⇒ <b>Total Order（全序）</b>；最後一條說有唯一的最小元素。</p><ul><li>A 錯：反對稱和對稱只在全部元素都只跟自己有關係時才同時成立；這裡有最小元素 k 且 p(k,i) 對其他 i 成立，若對稱就會有 p(i,k)，違反反對稱（S 至少 2 個元素時）。</li><li>B、C 對。</li><li>D 對：全序集中任兩元素 a、b，max(a,b) 就是 lub、min(a,b) 就是 glb，所以是 lattice。</li><li>E（待確認）：Well order 要求<b>每個</b>非空子集都有最小元素，題目只保證整個 S 有最小元素。若 S 無限，例如實數區間 [0, 1] 配 ≤，有最小元素 0 但子集 (0, 1] 沒有最小元素，所以不一定是 well order，判為錯；若 S 是有限集合則 E 也成立。</li></ul>"
+    },
+    {
+      "id": "dm-0117",
+      "topics": [
+        "divide-and-conquer-recurrences"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）Consider a general recursive mechanism <b>R</b>, whose input is an array A() initially with n elements. The pseudo code of R is listed below, It takes a parameter k, use √n (n is the size of A when applied, n may change) steps to partition <b>A</b>, and may call another function Q, whose complexity may vary and depends on the size of its input.<pre>Procedure R (array A with size n, int k)\n1. if n&lt;k exit;\n2. partition A into k equal size parts\n   A1 , A2 , … , Ak, (This takes √n steps)\n3. for (i=1 to k)\n     call R(Ak,k); // may change Ak;\n4. merge A1 , A2 , … , Ak into new A with size n;\n   (This takes k steps)\n5. call Q(A);\n6. return()</pre>There are 3 derived algorithms X,Y,Z, based on R. X sets k as 2, and its Q’s complexity is θ(m), m is the size of Q’s input. Y sets k as 4, and its Q’s complexity is θ(√m), m is input size. Z sets k as 9, and its Q’s complexity is θ(m), m is input size.<br>What following comparisons are true?",
+      "choices": [
+        "(A) X’s complexity is better than Y and Z.",
+        "(B) Y’s complexity is better than X and Z.",
+        "(C) X and Y’s complexities are the same.",
+        "(D) X and Z’s complexities are the same.",
+        "(E) X’s complexity is θ(n log n)."
+      ],
+      "answer": "B、D、E",
+      "explanation": "<p>一次呼叫的成本 = 切割 √n + 合併 k + Q(n)，再遞迴 k 個 n/k 的子問題：</p><pre class=\"formula\">T(n) = k·T(n/k) + √n + k + Q(n)</pre><p>用 <b>Master Theorem（主定理）</b>，比較 f(n) 和 n<sup>log<sub>k</sub>k</sup> = n：</p><ul><li>X：T(n) = 2T(n/2) + Θ(n)，f(n) = Θ(n) 和 n 同階 ⇒ Θ(n log n)。</li><li>Y：T(n) = 4T(n/4) + Θ(√n)，f(n) = n<sup>0.5</sup> 比 n 小一個多項式因子 ⇒ Θ(n)。</li><li>Z：T(n) = 9T(n/9) + Θ(n) ⇒ Θ(n log n)（對數底數不同只差常數倍）。</li></ul><p>所以 Y 最好（B 對）、X 和 Z 同階（D 對）、X 是 Θ(n log n)（E 對）；A、C 錯。</p>"
+    },
+    {
+      "id": "dm-0118",
+      "topics": [
+        "binomial-coefficients"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）Concerning the binomial coefficient C(r, k), what following formula are true?",
+      "choices": [
+        "(A) C(r, k) = (r/k)·C(r−1, k−1), integer k ≠ 0;",
+        "(B) Σ<sub>k=0</sub><sup>n</sup> C(n, k)(−1)<sup>k</sup> = 0, integer n ≥ 0;",
+        "(C) Σ<sub>k=0</sub><sup>n</sup> C(k, m) = C(n+1, m+1), integer m, n ≥ 0;",
+        "(D) Σ<sub>k=0</sub><sup>n</sup> C(r+k, k) = C(r+n+1, n), integer n;",
+        "(E) C(r, k) = C(r−1, k−1) + C(r, k−1), integer k;"
+      ],
+      "answer": "A、C、D",
+      "explanation": "<ul><li>A 對：<b>Absorption identity（吸收恆等式）</b>，C(r,k) = r(r−1)…(r−k+1)/k! = (r/k)·(r−1)…(r−k+1)/(k−1)!。k 為負時兩邊都是 0。</li><li>B 錯：n = 0 時左邊 = C(0,0) = 1 ≠ 0。這個恆等式只對 n ≥ 1 成立（(1 − 1)<sup>n</sup> = 0）。</li><li>C 對：<b>Hockey-stick identity（曲棍球棒恆等式）</b>，沿著 Pascal 三角形某一行往下加。</li><li>D 對：Parallel summation，也是曲棍球棒的另一個方向；n &lt; 0 時兩邊都是 0。</li><li>E 錯：Pascal’s Rule 是 C(r,k) = C(r−1,k) + C(r−1,k−1)。反例 r = 3、k = 2：左邊 3，右邊 C(2,1) + C(3,1) = 2 + 3 = 5。</li></ul><p>B 是本題的陷阱：題目刻意寫 n ≥ 0，把 n = 0 包進去了。</p>"
+    },
+    {
+      "id": "dm-0119",
+      "topics": [
+        "generating-functions",
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）There is a series of number a<sub>n</sub>, ∀n &gt; 1, (a<sub>n−1</sub> − a<sub>n−2</sub>) = 2(a<sub>n</sub> − a<sub>n−1</sub>), a<sub>0</sub>=5, a<sub>1</sub>=9. Using generating function f(z) to solve a<sub>n</sub>, what of the followings are true?",
+      "choices": [
+        "(A) f(z) = (10 + 3z)/(2 − 3z + z<sup>2</sup>)",
+        "(B) f(z) = 1/(1 − 2z) + z/((1 − z)<sup>2</sup>(1 − 2z)).",
+        "(C) f(z) = −8/(1 − (1/2)z) − 13/(1 − z).",
+        "(D) a<sub>n</sub> = (13 − 8 × (1/2)<sup>n</sup>)",
+        "(E) a<sub>n</sub> = 16 × 2<sup>n</sup> − 13."
+      ],
+      "answer": "A、D",
+      "explanation": "<p>整理遞迴式：2a<sub>n</sub> = 3a<sub>n−1</sub> − a<sub>n−2</sub>（n ≥ 2）。</p><p><b>求 f(z)</b>：f(z) = Σa<sub>n</sub>z<sup>n</sup>，對 n ≥ 2 乘 z<sup>n</sup> 加總：</p><pre class=\"formula\">2(f − a0 − a1 z) = 3z(f − a0) − z² f\n(2 − 3z + z²) f = 2a0 + 2a1 z − 3a0 z = 10 + 18z − 15z = 10 + 3z\nf(z) = (10 + 3z)/(2 − 3z + z²)</pre><p>A 對。分母 2 − 3z + z² = (1 − z)(2 − z)，部分分式：</p><pre class=\"formula\">f(z) = 13/(1 − z) − 8/(1 − z/2)\na_n = 13 − 8·(1/2)^n</pre><p>D 對。檢查：a<sub>0</sub> = 5、a<sub>1</sub> = 9、a<sub>2</sub> = 11、a<sub>3</sub> = 12，和直接迭代吻合（程式驗算前 10 項）。</p><ul><li>B 錯：常數項是 1，不是 a<sub>0</sub> = 5。</li><li>C 錯：符號錯了，展開常數項是 −21。</li><li>E 錯：a<sub>0</sub> 會是 3。</li></ul><p>直觀：差分每次減半，a<sub>n</sub> 收斂到 13，不會像 E 那樣指數成長。</p>"
+    },
+    {
+      "id": "dm-0120",
+      "topics": [
+        "relation-properties",
+        "partial-orders"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）For question 1~4, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [0 0 0 0 0 1]\n    [0 0 1 1 1 0]\nA = [0 0 0 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 0 0]\n    [0 0 0 0 0 1]</pre>1. About relation <b>R</b>, which of the following statements are true?",
+      "choices": [
+        "A) <b>R</b> is reflexive.",
+        "B) <b>R</b> is anti-symmetric.",
+        "C) <b>R</b> is transitive.",
+        "D) <b>R</b> is a partial ordering relation.",
+        "E) The symmetric closure of <b>R</b> is transitive."
+      ],
+      "answer": "B、C",
+      "explanation": "<p>R = {(1,6), (2,3), (2,4), (2,5), (3,4), (3,5), (4,4), (4,5), (6,6)}。</p><ul><li>A 錯：對角線只有 (4,4)、(6,6) 是 1，(1,1) 等不在 R 中。</li><li>B 對：除了對角線外，沒有任何 (i,j) 和 (j,i) 同時是 1。</li><li>C 對：逐一檢查 (i,j)、(j,k) ∈ R ⇒ (i,k) ∈ R，例如 (2,3)、(3,4) ⇒ (2,4) ∈ R；(2,3)、(3,5) ⇒ (2,5)；(3,4)、(4,5) ⇒ (3,5)。全部成立（程式驗算）。</li><li>D 錯：偏序要自反，R 不自反。</li><li>E 錯：對稱閉包含 (6,1) 和 (1,6)，遞移就要 (1,1)，但 (1,1) 不在裡面。</li></ul>"
+    },
+    {
+      "id": "dm-0121",
+      "topics": [
+        "closures",
+        "partial-orders",
+        "equivalence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）For question 1~4, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [0 0 0 0 0 1]\n    [0 0 1 1 1 0]\nA = [0 0 0 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 0 0]\n    [0 0 0 0 0 1]</pre>2. Consider different closures of <b>R</b>. Which of the following statements are true?",
+      "choices": [
+        "A) 4 more ‘1’s must be added to <b>A</b> to make <b>R</b>’s reflexive closure.",
+        "B) 6 more ‘1’s must be added to <b>A</b> to make <b>R</b>’s symmetric closure.",
+        "C) 3 more ‘1’s must be added to <b>A</b> to make <b>R</b>’s transitive closure.",
+        "D) The reflexive closure of <b>R</b> is a partial ordering set.",
+        "E) The symmetric closure of <b>R</b> is an equivalence relation."
+      ],
+      "answer": "A、D",
+      "explanation": "<ul><li>A 對：對角線缺 (1,1)、(2,2)、(3,3)、(5,5)，補 4 個 1。</li><li>B 錯：非對角線的 1 有 (1,6)、(2,3)、(2,4)、(2,5)、(3,4)、(3,5)、(4,5) 共 7 個，每個都要補上反向，所以是 7 個不是 6 個。</li><li>C 錯：R 本來就遞移（見第 1 題），遞移閉包就是 R 本身，不用加任何 1。</li><li>D 對：補上對角線後自反；反對稱、遞移原本就成立，且加對角線不會破壞它們，所以是偏序。</li><li>E 錯：對稱閉包不自反、也不遞移。</li></ul><p>以上數字都用程式算過。</p>"
+    },
+    {
+      "id": "dm-0122",
+      "topics": [
+        "closures",
+        "connectivity",
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）For question 1~4, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [0 0 0 0 0 1]\n    [0 0 1 1 1 0]\nA = [0 0 0 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 0 0]\n    [0 0 0 0 0 1]</pre>3. If <b>G</b> is a graph representation of <b>R</b>, which of the following statements are true?",
+      "choices": [
+        "A) <b>G</b> is weakly connected.",
+        "B) the longest simple path of <b>G</b> is length 4.",
+        "C) The reflexive, symmetric, and transitive closure of <b>R</b> has 2 connected components.",
+        "D) There is a Hamilton path in the transitive closure of <b>R</b>.",
+        "E) <b>R</b><sup>-1</sup> is strongly connected."
+      ],
+      "answer": "C",
+      "explanation": "<p>有向圖 G 的邊：1→6、2→3、2→4、2→5、3→4、3→5、4→5，外加 4、6 的自迴圈。</p><ul><li>A 錯：忽略方向後分成 {1, 6} 和 {2, 3, 4, 5} 兩塊，不連通。</li><li>B 錯：最長的簡單路徑是 2→3→4→5，長度 3。</li><li>C 對：自反＋對稱＋遞移閉包就是「同一個弱連通分量」的等價關係，兩個分量 {1,6}、{2,3,4,5}，所以 2 個。</li><li>D 錯：遞移閉包就是 R 本身，圖不連通，不可能有走遍 6 點的 Hamilton path（程式窮舉確認）。</li><li>E 錯：R<sup>−1</sup> 只是把邊反向，仍然不連通，更不可能強連通。</li></ul>"
+    },
+    {
+      "id": "dm-0123",
+      "topics": [
+        "propositional-logic",
+        "proof-methods"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）Which are <u>sufficient but not necessary</u> conditions for the corresponding goals?",
+      "choices": [
+        "A) “Graph G<sub>1</sub> and G<sub>2</sub> are isomorphic” for “G<sub>1</sub> and G<sub>2</sub> both have Euler circuits.”",
+        "B) growth order function f and g, “g is O(f) but not Θ(f)” for “g is o(f)”.",
+        "C) “Existing an equivalence relation <b>R</b> on set <b>S</b>” for “<b>S</b> has a partition based on <b>R</b>”.",
+        "D) An infinite set of predicates <b>P</b>, “Existing a well order on <b>P</b>” for “using mathematic induction to prove all predicates in <b>P</b>”.",
+        "E) “P is false” for “P→Q is true”"
+      ],
+      "answer": "E（待確認）",
+      "explanation": "<ul><li>A 錯：兩圖同構推不出它們有 Euler circuit（兩個同構的路徑圖都沒有），所以連充分都不是。</li><li>B 錯：g = o(f) ⇒ g = O(f) 且 g ≠ Θ(f)，所以題目的條件是 o(f) 的<b>必要</b>條件；反過來對一般成長函數兩者等價，對震盪函數則不充分。不論哪種，都不是「充分但不必要」。</li><li>C 錯：等價關係和分割一一對應，是充要條件。</li><li>D 錯（待確認）：數學歸納法需要把命題排成良序（這是必要的部分），但光有良序並不能證明所有命題，還要基底與歸納步驟，所以不是充分條件。</li><li>E 對：P 為假 ⇒ P → Q 為真（充分）；但 P → Q 為真也可能是 Q 為真而 P 為真（不必要）。</li></ul>"
+    },
+    {
+      "id": "dm-0124",
+      "topics": [
+        "graph-basics",
+        "connectivity",
+        "closures"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）Consider a set <b>S</b> of n nodes interconnecting to form a graph <b>G</b>. If two nodes “directly connect” to each other, there is an undirected edge between them. Let D(a) denote the degree of a node a. Which of the following are correct statements?",
+      "choices": [
+        "A) If <b>G</b> is connected, there must be a simple path of length n.",
+        "B) Σ<sub>i∈S</sub> D(i) is even.",
+        "C) If <b>G</b> is connected, Σ<sub>i∈S</sub> D(i) ≥ 2n.",
+        "D) “∃a,b,(a ≠ b) ∧ (D(a) = D(b))” is true.",
+        "E) If <b>G</b> is connected, the transitive and reflexive closure of “direct connecting” relation can form a complete graph."
+      ],
+      "answer": "B、D、E",
+      "explanation": "<ul><li>A 錯：n 個點的簡單路徑最多 n − 1 條邊，長度 n 不可能。</li><li>B 對：<b>Handshaking Theorem（握手定理）</b>，度數和 = 2e。</li><li>C 錯：連通圖最少是樹，有 n − 1 條邊，度數和 2(n − 1) &lt; 2n。</li><li>D 對（n ≥ 2 的簡單圖）：度數只能是 0~n−1 共 n 種，但 0 和 n − 1 不會同時出現（有點連到所有人就不會有孤立點），所以實際只有 n − 1 種值，n 個點由鴿籠原理必有兩點度數相同。</li><li>E 對：連通 ⇒ 任兩點有路徑 ⇒ 遞移閉包讓任兩點都相關，就是完全圖（自反只是再加自迴圈）。</li></ul>"
+    },
+    {
+      "id": "dm-0125",
+      "topics": [
+        "divide-and-conquer-recurrences"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）To analyze the complexity of the following procedure P, We will use the following assumptions: Suppose P and B are both procedures. B take θ(√m) time to compute, where m is the size of B’s input; each statement line in and outside the loop counts 1 step.<pre>Procedure P( array1[a1, a2, ..., an])\n1. if n&lt;9 exit.\n2. call B(array1[a1, a2, ..., an])\n   declare new empty array2, array3, array4;\n3. for (i=1 to n)\n4. { if ((i mod 9)=0)  insert ai into array2;\n5.   if ((i mod 9)=3)  insert ai into array3;\n6.   if ((i mod 9)=6)  insert ai into array4 }\n8. call P( array2 );\n9. call P( array3 );\n10. call P (array4);</pre>Which of the following relations on F<sub>n</sub> can describe the complexity of procedure P with respect to problem size n?",
+      "choices": [
+        "A) F<sub>n</sub> = 3F<sub>n/3</sub> + θ(√n)",
+        "B) F<sub>n</sub> = 3F<sub>n/3</sub> + F<sub>n</sub> + θ(n)",
+        "C) F<sub>n</sub> = 9F<sub>n/9</sub> + θ(√n)",
+        "D) F<sub>n</sub> = 3F<sub>n/9</sub> + θ(n)",
+        "E) F<sub>n</sub> = 3F<sub>n/9</sub> + θ(n<sup>1/2</sup>)"
+      ],
+      "answer": "D",
+      "explanation": "<ul><li>呼叫 B：Θ(√n)。</li><li>迴圈跑 n 次，每次固定幾行：Θ(n)。</li><li>i mod 9 等於 0、3、6 的各約 n/9 個，所以三個子陣列各約 n/9，遞迴呼叫 3 次 P(n/9)。</li></ul><pre class=\"formula\">F_n = 3F_(n/9) + Θ(√n) + Θ(n) = 3F_(n/9) + Θ(n)</pre><p>選 D。E 漏掉迴圈的 Θ(n)；A、C 子問題大小錯（不是 n/3，也不是 9 個）；B 右邊出現 F<sub>n</sub> 本身，不合理。</p>"
+    },
+    {
+      "id": "dm-0126",
+      "topics": [
+        "divide-and-conquer-recurrences"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）What <u>can be</u> the time complexity level of the procedure P in question 7?（Procedure P 的遞迴式為上一題所求）",
+      "choices": [
+        "A) O(n<sup>√2</sup>)",
+        "B) O(n log n)",
+        "C) O(n<sup>log n</sup>)",
+        "D) O(n<sup>1/2</sup>)",
+        "E) O(√n log n)"
+      ],
+      "answer": "A、B、C",
+      "explanation": "<p>F<sub>n</sub> = 3F<sub>n/9</sub> + Θ(n)：a = 3、b = 9，n<sup>log<sub>9</sub>3</sup> = n<sup>1/2</sup>，而 f(n) = n 比它大一個多項式因子（且滿足正則條件 3·(n/9) ≤ cn），由主定理 F<sub>n</sub> = Θ(n)。</p><p>題目問「可以是」的 Big-O，Big-O 是上界，只要比 n 大或相等都對：</p><ul><li>A 對：n ≤ n<sup>1.414</sup>。</li><li>B 對：n ≤ n log n。</li><li>C 對：n<sup>log n</sup> 成長比任何多項式都快。</li><li>D 錯：n 不是 O(√n)。</li><li>E 錯：n 不是 O(√n log n)。</li></ul>"
+    },
+    {
+      "id": "dm-0127",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）An alphabet set {α<sub>1</sub>, α<sub>2</sub>, ..., α<sub>8</sub>} is used to form a string. A legal string cannot have consecutive {α<sub>1</sub>α<sub>1</sub>, α<sub>1</sub>α<sub>2</sub>, α<sub>2</sub>α<sub>1</sub>, α<sub>2</sub>α<sub>2</sub>} in any part of the string. Suppose <u>P<sub>n-1</sub></u> is the number of valid string of length n. Which of the following are true?",
+      "choices": [
+        "A) P<sub>n</sub> = 2P<sub>n−1</sub> + 6<sup>n</sup>, n ≥ 2",
+        "B) P<sub>n</sub> = 6P<sub>n−1</sub> + 12P<sub>n−2</sub>, n ≥ 2",
+        "C) P<sub>n</sub> = 8P<sub>n−1</sub> − 4, n ≥ 2",
+        "D) P<sub>0</sub> = 8, P<sub>1</sub> = 48",
+        "E) P<sub>0</sub> = 8, P<sub>1</sub> = 64"
+      ],
+      "answer": "B",
+      "explanation": "<p>注意題目的下標：P<sub>n−1</sub> 是長度 n 的字串數，所以 P<sub>0</sub> = 長度 1 = 8、P<sub>1</sub> = 長度 2 = 64 − 4 = 60。</p><p>把 α<sub>1</sub>、α<sub>2</sub> 叫「壞字母」，其他 6 個叫「好字母」。規則就是兩個壞字母不能相鄰。看最後一個字母：</p><ul><li>最後是好字母（6 種）：前面接任何合法字串，6·P<sub>n−1</sub>。</li><li>最後是壞字母（2 種）：倒數第二個必須是好字母（6 種），再往前任意，2·6·P<sub>n−2</sub>。</li></ul><pre class=\"formula\">P_n = 6P_(n−1) + 12P_(n−2)</pre><p>B 對。驗算：P<sub>2</sub> = 6·60 + 12·8 = 456，程式窮舉長度 3 的字串也是 456；長度 1~5 依序 8, 60, 456, 3456, 26208 全部吻合。A、C 代入就不符；D、E 的 P<sub>1</sub> 都錯（應為 60）。</p>"
+    },
+    {
+      "id": "dm-0128",
+      "topics": [
+        "generating-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）When using the generating function g(z) to solve P<sub>n</sub> in the previous question, which of the following are true?",
+      "choices": [
+        "A) g(z)(1 − 6z − 12z<sup>2</sup>) = 60z + 8",
+        "B) g(z)(1 − 6z + 12z<sup>2</sup>) = 12z + 8",
+        "C) g(z) = (4 + 2√21)/(1 − (3 + √21)z) + (4 − 2√21)/(1 − (3 − √21)z)",
+        "D) g(z) = (4 + (18/√21))/(1 − (3 + √21)z) + (4 − (18/√21))/(1 − (3 − √21)z)",
+        "E) P<sub>n</sub> = ((4 + 18/√21) × (3 + √21)<sup>n</sup>) + ((4 − 18/√21) × (3 − √21)<sup>n</sup>)"
+      ],
+      "answer": "D、E",
+      "explanation": "<p>g(z) = Σ P<sub>n</sub>z<sup>n</sup>，P<sub>0</sub> = 8、P<sub>1</sub> = 60、P<sub>n</sub> = 6P<sub>n−1</sub> + 12P<sub>n−2</sub>：</p><pre class=\"formula\">g(z)(1 − 6z − 12z²) = P0 + (P1 − 6P0)z = 8 + 12z</pre><p>所以 A（60z + 8）和 B（分母符號錯）都不對。</p><p>1 − 6z − 12z² = (1 − (3+√21)z)(1 − (3−√21)z)（兩根和 6、積 −12）。部分分式 g = c<sub>1</sub>/(1 − r<sub>1</sub>z) + c<sub>2</sub>/(1 − r<sub>2</sub>z)，由 c<sub>1</sub> + c<sub>2</sub> = 8、c<sub>1</sub>r<sub>1</sub> + c<sub>2</sub>r<sub>2</sub> = 60：</p><pre class=\"formula\">c1 = 4 + 18/√21 = 4 + 6√21/7，c2 = 4 − 18/√21</pre><p>D 對，展開得 E 也對（程式驗算 g(z) 的展開係數 8, 60, 456, 3456 吻合）。C 的係數 4 ± 2√21 不對，例如代 n = 1 得不到 60。</p>"
+    },
+    {
+      "id": "dm-0129",
+      "topics": [
+        "planar-graphs"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Which of these nonplanar graphs have the property that the removal of any vertex and all edges incident with that vertex produces a planar graph?",
+      "choices": [
+        "(a) K<sub>5</sub>",
+        "(b) K<sub>6</sub>",
+        "(c) K<sub>3,3</sub>",
+        "(d) K<sub>3,4</sub>",
+        "(e) K<sub>4,4</sub>"
+      ],
+      "answer": "(a)、(c)",
+      "explanation": "<ul><li>(a) 對：K<sub>5</sub> 拿掉任一點變成 K<sub>4</sub>，平面。</li><li>(b) 錯：K<sub>6</sub> 拿掉一點變成 K<sub>5</sub>，仍非平面。</li><li>(c) 對：K<sub>3,3</sub> 拿掉任一點（兩邊對稱）變成 K<sub>2,3</sub>，平面。</li><li>(d) 錯：拿掉「4 個點那一側」的點會剩 K<sub>3,3</sub>，非平面。題目要求「拿掉任何一點」都平面。</li><li>(e) 錯：拿掉任一點剩 K<sub>3,4</sub>，含 K<sub>3,3</sub>，非平面。</li></ul><p>程式逐一刪點做平面性檢查，結果一致。</p>"
+    },
+    {
+      "id": "dm-0130",
+      "topics": [
+        "graph-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Draw a graph with 64 vertices representing the squares of a chessboard. Connect two vertices with an edge if you can move legally between the corresponding squares with a single move of a knight. [The moves of a knight are L-shaped, two squares vertically (or horizontally) followed by one square horizontally (respectively, vertically).]",
+      "choices": [
+        "(a) This graph is bipartite.",
+        "(b) The largest degree number of the graph is 10.",
+        "(c) The smallest degree number of the graph is 4.",
+        "(d) There are four vertices of degree 2.",
+        "(e) There are eight vertices of degree 3."
+      ],
+      "answer": "(a)、(d)、(e)",
+      "explanation": "<ul><li>(a) 對：騎士每走一步，格子顏色（黑白）一定改變，所以以黑格、白格分成兩邊就是 <b>Bipartite Graph（二分圖）</b>。</li><li>(b) 錯：騎士最多 8 種走法，最大度數 8（中央 16 格）。</li><li>(c) 錯：角落只能走 2 步，最小度數是 2。</li><li>(d) 對：4 個角落度數為 2。</li><li>(e) 對：和角落沿邊相鄰的 8 格（如 b1、a2）度數為 3。</li></ul><p>程式建出整張騎士圖統計：度數 2 有 4 個、3 有 8 個、4 有 20 個、6 有 16 個、8 有 16 個，且是二分圖。</p>"
+    },
+    {
+      "id": "dm-0131",
+      "topics": [
+        "graph-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）A sequence d<sub>1</sub>, d<sub>2</sub>,… , d<sub>n</sub> is called graphic if it is the degree sequence of a simple graph. Which of these sequences are graphic?",
+      "choices": [
+        "(a) 5, 4, 3, 2, 1, 0",
+        "(b) 6, 5, 4, 3, 2, 1",
+        "(c) 2, 2, 2, 2, 2, 2",
+        "(d) 3, 3, 3, 2, 2, 2",
+        "(e) 3, 3, 2, 2, 2, 2"
+      ],
+      "answer": "(c)、(e)",
+      "explanation": "<ul><li>(a) 不行：6 個點中有度數 5 的點要連到其他所有點，但又有度數 0 的孤立點，矛盾。</li><li>(b) 不行：簡單圖 6 個點，度數最多 5，不可能有 6。</li><li>(c) 可以：C<sub>6</sub>。</li><li>(d) 不行：度數和 15 是奇數，違反握手定理。</li><li>(e) 可以：用 <b>Havel-Hakimi</b>：3,3,2,2,2,2 → 去掉一個 3，後面三個減 1 → 2,1,1,2,2 → 排序 2,2,2,1,1 → 1,1,1,1 → 0,1,1 → 0,0，可行。具體例子：C<sub>6</sub> 加一條弦。</li></ul><p>程式（networkx is_graphical）驗算一致。</p>"
+    },
+    {
+      "id": "dm-0132",
+      "topics": [
+        "connectivity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Find the cut vertices and cut edges in the following graph.<br>（原題附圖，以文字描述：頂點 a, b, c, d, e, f, g, h；邊為 {a,b}、{b,c}、{b,d}、{c,d}、{c,e}、{e,f}、{f,g}、{e,g}、{e,h}、{g,h}。）",
+      "choices": [
+        "(a) The cut vertices are b, c, d and e.",
+        "(b) The cut vertices are b, c, and e.",
+        "(c) The only cut edge is {c, e}.",
+        "(d) The cut edges are {a, b} and {c, e}.",
+        "(e) The cut edges are {b, d} and {c, e}."
+      ],
+      "answer": "(b)、(d)",
+      "explanation": "<ul><li><b>Cut vertex（割點）</b>：拿掉後圖變不連通。b（a 會被隔開）、c（左右兩半分開）、e（{f,g,h} 和左邊分開）。d 在三角形 b-c-d 裡，拿掉不影響連通。所以割點是 b、c、e。</li><li><b>Cut edge（橋）</b>：不在任何 cycle 上的邊。{a,b}（a 是葉子）和 {c,e}（連接左右兩塊的唯一一條邊）。{b,d} 在三角形 b-c-d 上，不是橋。</li></ul><p>程式求 articulation points 與 bridges 結果相同。</p>"
+    },
+    {
+      "id": "dm-0133",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Let G be a graph with at least three vertices.",
+      "choices": [
+        "(a) If there is a Hamiltonian path between any two vertices of G, G must contain a Hamiltonian cycle.",
+        "(b) If, at every vertex v in G, there is a Hamiltonian path which starts at v, G must contain a Hamiltonian cycle.",
+        "(c) If there is an Eulerian trail (path) between any two vertices of G, G must contain an Eulerian circuit.",
+        "(d) K<sub>m,n</sub> is Hamiltonian (a graph with a Hamiltonian cycle) if and only if n &gt; 1 and m = n.",
+        "(e) K<sub>m,n</sub> is Eulerian (a graph with a Eulerian circuit) if and only if m and n are both odd."
+      ],
+      "answer": "(a)、(c)、(d)（(c) 待確認）",
+      "explanation": "<ul><li>(a) 對：G 連通，取一條邊 uv，題設給出一條從 u 到 v 的 Hamiltonian path，再加上邊 vu 就閉合成 Hamiltonian cycle。</li><li>(b) 錯：<b>Petersen graph</b> 從每個頂點出發都有 Hamiltonian path（程式驗證），但它沒有 Hamiltonian cycle。</li><li>(c) 對（待確認）：兩相異點 u、v 間有 Euler trail ⇔ 恰好 u、v 是奇點。至少 3 個點時，「u,v 之間」和「u,w 之間」都要有 Euler trail 會互相矛盾，所以前提不可能成立，命題在邏輯上是空真（vacuously true）。若出題者另有解讀，答案可能不同。</li><li>(d) 對：二分圖的 cycle 會在兩側交替，必須 m = n；而 m = n = 1 只有一條邊，沒有 cycle，所以要 n &gt; 1。反過來 m = n ≥ 2 時可以交替走一圈。</li><li>(e) 錯：Euler circuit 要所有度數為偶數。K<sub>m,n</sub> 一側點的度數是 n、另一側是 m，所以要 m、n <b>都是偶數</b>。</li></ul>"
+    },
+    {
+      "id": "dm-0134",
+      "topics": [
+        "relation-properties",
+        "partial-orders",
+        "propositional-logic"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Let “P→Q is true” be a relation <b>R</b>(P,Q) between proposition P and Q, where “→” is the <b>implication</b> logic connective. Which of the followings are true?",
+      "choices": [
+        "(a) <b>R</b> is reflexive.",
+        "(b) <b>R</b> is anti-symmetric",
+        "(c) <b>R</b> is transitive",
+        "(d) <b>R</b> is a partial ordering relation.",
+        "(e) The transitive closure of <b>R</b> is <b>R</b> itself"
+      ],
+      "answer": "(a)、(c)、(e)（(b)、(d) 待確認）",
+      "explanation": "<ul><li>(a) 對：P → P 永遠為真。</li><li>(c) 對：P → Q、Q → R 為真 ⇒ P → R 為真（hypothetical syllogism）。</li><li>(e) 對：R 已經遞移，遞移閉包就是自己。</li><li>(b)(d)（待確認）：若把不同的命題當成不同元素，P 和 Q 都為真（但是不同的命題）時 P → Q、Q → P 都成立而 P ≠ Q，不反對稱，因此也不是偏序。若把命題只看真值（論域 {T, F}），R = {(F,F), (F,T), (T,T)} 就是反對稱的偏序。題目沒有說清楚，這裡採「不同命題是不同元素」的解讀，判 (b)(d) 為錯。</li></ul>"
+    },
+    {
+      "id": "dm-0135",
+      "topics": [
+        "functions",
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Suppose a set S, |S| =3. Consider possible function f : S×S → S. Which of the following statements are true?",
+      "choices": [
+        "(a) number of possible f is 3<sup>6</sup>",
+        "(b) number of possible f is 3<sup>9</sup>",
+        "(c) number of 1-to-1 f is 3!",
+        "(d) number of onto f is 3<sup>9</sup> − (3 • 2<sup>9</sup>) + 3",
+        "(e) number of bijection f is 1."
+      ],
+      "answer": "(b)、(d)",
+      "explanation": "<p>定義域 S × S 有 3 × 3 = 9 個元素，對應域有 3 個元素。</p><ul><li>(a) 錯、(b) 對：每個元素 3 種選擇，3<sup>9</sup>。</li><li>(c) 錯：9 個元素不可能一對一地映到 3 個元素，0 個。</li><li>(d) 對：排容原理，3<sup>9</sup> − C(3,1)2<sup>9</sup> + C(3,2)1<sup>9</sup> = 19683 − 1536 + 3 = 18150。</li><li>(e) 錯：大小不同，沒有雙射，0 個。</li></ul><p>陷阱在 (a)：S × S 的大小是 9 不是 6。</p>"
+    },
+    {
+      "id": "dm-0136",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Consider Josephus Problem, where n people are placed clockwise around a circle, from 1, 2,..., to n, n is next to 1; every second person is eliminated each step (so the first few eliminated are 2,4,6,...), until the last one, say k, is remained, we denote J(n)=k. ∀n &gt; 1, n ∈ N, Which of the followings are true?",
+      "choices": [
+        "(a) J(n+1) = (1/2)J(n) + 1",
+        "(b) J(2n) = 2J(n) − 1",
+        "(c) J(2n+1) = 2J(n) − 1",
+        "(d) J(2n) = 2J(n) + 1",
+        "(e) J(2n+1) = 2J(n) + 1"
+      ],
+      "answer": "(b)、(e)",
+      "explanation": "<ul><li><b>2n 個人</b>：第一輪殺掉所有偶數號，剩下 1, 3, 5, …, 2n−1 共 n 個人，從 1 重新開始，相當於 n 人問題，只是原本的第 j 號變成 2j − 1。所以 J(2n) = 2J(n) − 1。</li><li><b>2n+1 個人</b>：殺完偶數號 2, 4, …, 2n 後，下一個要殺的是 1，殺掉後剩 3, 5, …, 2n+1 共 n 人，從 3 開始，第 j 號對應 2j + 1。所以 J(2n+1) = 2J(n) + 1。</li></ul><p>程式模擬 n = 1~40 全部吻合（例如 J(6) = 5 = 2·3 − 1、J(7) = 7 = 2·3 + 1）。(a) 代入 J(1) = 1 得 J(2) = 1.5，不是整數，錯。</p>"
+    },
+    {
+      "id": "dm-0137",
+      "topics": [
+        "partial-orders",
+        "boolean-functions",
+        "functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Which of the following statements are true?",
+      "choices": [
+        "(a) To find greatest common divisor for 2 large integers, Euclidean algorithm provides best complexity if the 2 numbers have been prime factorized.",
+        "(b) In a weighted graph, finding a minimum-weight Hamilton path is un-computable.",
+        "(c) Lattice is a special case of partial ordering set.",
+        "(d) Bipartite graph can be used to represent any function.",
+        "(e) We can use unlimited number of “and”, “or”, and “not” connectives to describe the logic behavior of any logic operator."
+      ],
+      "answer": "(c)、(d)、(e)（(d) 待確認）",
+      "explanation": "<ul><li>(a) 錯：如果已經做好質因數分解，直接取共同質因數的最小次方就得到 gcd，不需要歐幾里得演算法。歐幾里得法的優點正是<b>不用</b>先分解。</li><li>(b) 錯：可以窮舉所有排列求出，是可計算的；它是 NP-hard（很慢），但不是不可計算。</li><li>(c) 對：lattice 是任兩元素都有 lub 和 glb 的偏序集。</li><li>(d) 對（待確認）：f : A → B 可以畫成左邊 A、右邊 B 的二分圖，每個 a 連到 f(a)（定義域和對應域相同時把兩邊各複製一份）。</li><li>(e) 對：{∧, ∨, ¬} 是 functionally complete，任何真值表都能用 disjunctive normal form（析取範式）表示。</li></ul>"
+    },
+    {
+      "id": "dm-0138",
+      "topics": [
+        "recurrence-relations",
+        "generating-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "（複選）Solving recurrence equation ∀n ≥ 2, 2a<sub>n</sub> = 7a<sub>n−1</sub> − 6a<sub>n−2</sub>, a<sub>0</sub> = 3/2, a<sub>1</sub> = 11/4. Which of the following statement are true?",
+      "choices": [
+        "(a) The characteristic polynomial for this equation is 6x<sup>2</sup> − 7x + 2 = 0.",
+        "(b) using generating function, we have 2G(z) − 7zG(z) + 6z<sup>2</sup>G(z) = 0.",
+        "(c) using generating function, we have G(z) = (3 − 5z)/(2 − 7z + 6z<sup>2</sup>)",
+        "(d) a<sub>n</sub> = ((1/2) • (3/2)<sup>n</sup>) + 2<sup>n</sup>",
+        "(e) a<sub>n</sub> = (1/2)<sup>n+1</sup> + 2<sup>n</sup>"
+      ],
+      "answer": "(c)、(d)",
+      "explanation": "<ul><li>(a) 錯：特徵方程式是 2x² − 7x + 6 = 0，根 x = 2、3/2。6x² − 7x + 2 是生成函數分母 6z² − 7z + 2 的形式（根互為倒數），兩者別搞混。</li><li>(b) 錯：右邊不是 0，要包含初始條件。</li><li>(c) 對：對 n ≥ 2 乘 z<sup>n</sup> 加總：2(G − a<sub>0</sub> − a<sub>1</sub>z) = 7z(G − a<sub>0</sub>) − 6z²G，整理得 G(2 − 7z + 6z²) = 2a<sub>0</sub> + (2a<sub>1</sub> − 7a<sub>0</sub>)z = 3 + (11/2 − 21/2)z = 3 − 5z。</li><li>(d) 對：a<sub>n</sub> = A·2<sup>n</sup> + B(3/2)<sup>n</sup>，A + B = 3/2、2A + 3B/2 = 11/4，解得 A = 1、B = 1/2。</li><li>(e) 錯：a<sub>1</sub> 會是 1/4 + 2 = 9/4 ≠ 11/4。</li></ul><p>程式迭代前 8 項和 (d) 完全一致，也和 (c) 的展開係數一致。</p>"
+    },
+    {
+      "id": "dm-0139",
+      "topics": [
+        "relation-properties",
+        "closures"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）For questions 11 and 12, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [1 0 0 0 1 0]\n    [1 1 1 1 1 1]\nA = [1 0 1 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 1 0]\n    [0 0 1 1 1 1]</pre>11. About relation <b>R</b>, which of the following statements are true?",
+      "choices": [
+        "(a) <b>R</b> is reflexive.",
+        "(b) <b>R</b> is anti-symmetric",
+        "(c) <b>R</b> is transitive",
+        "(d) <b>R</b> is a partial ordering relation.",
+        "(e) The transitive closure of <b>R</b> is symmetric."
+      ],
+      "answer": "(a)、(b)",
+      "explanation": "<ul><li>(a) 對：對角線全為 1。</li><li>(b) 對：逐一檢查非對角的 1，沒有任何 (i,j) 和 (j,i) 同時為 1（例如 (2,1) 有、(1,2) 沒有）。</li><li>(c) 錯：(6,3) ∈ R、(3,1) ∈ R，但 (6,1) ∉ R（第 6 列第 1 行是 0）。</li><li>(d) 錯：不遞移，不是偏序。</li><li>(e) 錯：遞移閉包只會多出 (6,1)，例如 (2,1) 在裡面但 (1,2) 不在，不對稱。</li></ul><p>程式檢查各性質與遞移閉包，結果一致。這題的陷阱是 (c)：矩陣幾乎是上三角形狀，容易以為是偏序，要實際找反例。</p>"
+    },
+    {
+      "id": "dm-0140",
+      "topics": [
+        "partial-orders"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）Consider the divisibility relation (i.e., | ) and the poset R = (S, | ), where S = {1, 2, 3, 4, 6, 8, 12, 24}. We can conclude that:",
+      "choices": [
+        "(a) R is a total order.",
+        "(b) R is a well order.",
+        "(c) R has a greatest lower bound.",
+        "(d) R is a lattice.",
+        "(e) R has a maximal element."
+      ],
+      "answer": "(c)、(d)、(e)",
+      "explanation": "<ul><li>(a) 錯：2 和 3 互不整除，不可比較。</li><li>(b) 錯：well order 必須是全序。</li><li>(c) 對：1 整除所有元素，是整個集合的 greatest lower bound（也是最小元素）。</li><li>(d) 對：S 正好是 24 的所有因數，任兩數的 gcd、lcm 仍是 24 的因數，分別就是 glb、lub，所以是 lattice。</li><li>(e) 對：24 是 maximal（而且是最大元素）。</li></ul>"
+    },
+    {
+      "id": "dm-0141",
+      "topics": [
+        "divide-and-conquer-recurrences"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）In the following procedure P, P and B are both procedures; each statement line in and outside the loop counts 1 step.<pre>Procedure P( array1[a1, a2, ..., an])\n1. if n&lt;9 exit.\n2. call B(array1[a1, a2, ..., an])\n   declare new empty array2, array3, array4;\n3. for (i=1 to n)\n4. { if ((i mod 9)=1)  insert ai into array2;\n5.   if ((i mod 9)=4)  insert ai into array3;\n6.   if ((i mod 9)=7)  insert ai into array4 }\n8. call P( array2 );\n9. call P( array3 );\n10. call P (array4);</pre>In order to make P’s complexity O(n) , which of the following can be B’s complexity? (m is the input size of B)",
+      "choices": [
+        "(a) O(m<sup>1/2</sup>)",
+        "(b) O(m<sup>1</sup>)",
+        "(c) O(m<sup>√2</sup>)",
+        "(d) O(m<sup>1/4</sup>)",
+        "(e) O(m<sup>2</sup>)"
+      ],
+      "answer": "(a)、(b)、(d)",
+      "explanation": "<p>三個子陣列各約 n/9，迴圈 Θ(n)：</p><pre class=\"formula\">T(n) = 3T(n/9) + Θ(n) + B(n)</pre><p>n<sup>log<sub>9</sub>3</sup> = n<sup>1/2</sup>。</p><ul><li>B(n) = O(n) 或更小（(a)、(b)、(d)）：額外成本被 Θ(n) 主導，由主定理 T(n) = Θ(n)，符合 O(n)。</li><li>B(n) = n<sup>√2</sup> 或 n²（(c)、(e)）：光是第一次呼叫 B 就超過 n，T(n) = Θ(n<sup>√2</sup>) 或 Θ(n²)，不是 O(n)。</li></ul>"
+    },
+    {
+      "id": "dm-0142",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）Which of these graphs have an Euler circuit?",
+      "choices": [
+        "(a) C<sub>5</sub>",
+        "(b) W<sub>5</sub>",
+        "(c) K<sub>5</sub>",
+        "(d) K<sub>5,5</sub>",
+        "(e) Q<sub>5</sub>"
+      ],
+      "answer": "(a)、(c)",
+      "explanation": "<p>連通圖有 Euler circuit ⇔ 每個頂點度數都是偶數。</p><ul><li>(a) C<sub>5</sub>：每點度數 2，有。</li><li>(b) W<sub>5</sub>：外圈 5 點各連到兩個鄰居和中心，度數 3，沒有。</li><li>(c) K<sub>5</sub>：每點度數 4，有。</li><li>(d) K<sub>5,5</sub>：每點度數 5，沒有。</li><li>(e) Q<sub>5</sub>：5 維超立方體每點度數 5，沒有。</li></ul>"
+    },
+    {
+      "id": "dm-0143",
+      "topics": [
+        "graph-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）At a party, you and your partner meet three other couples. Several handshakes take place under the following rules: no one shakes hands with themselves or their own partner, no one shakes hands with the same person more than once, and the number of handshakes for the other seven people (excluding you) are all different. Based on these conditions, how many hands did you shake, and how many hands did your partner shake?",
+      "choices": [
+        "(a) You shook 4 hands.",
+        "(b) You shook 5 hands.",
+        "(c) You shook 3 hands.",
+        "(d) your partner shook 0 hand.",
+        "(e) your partner shook 3 hand."
+      ],
+      "answer": "(c)、(e)",
+      "explanation": "<p>共 8 人，每人最多和 6 人握手（扣掉自己和伴侶），所以其他 7 人的握手數兩兩不同，只能是 0, 1, 2, 3, 4, 5, 6。</p><ol><li>握 6 次的人和除了伴侶以外所有人都握過，所以唯一一個沒和他握手的人就是他的伴侶，那人一定是握 0 次的。⇒ 6 和 0 是一對。</li><li>去掉這對，其他人的握手數都少 1（每人都和「6」握過一次），剩下的情況變成 1~5 → 0~4，同理 5 和 1 是一對、4 和 2 是一對。</li><li>剩下 3 沒有配對，他的伴侶只能是「你」（你不在 7 人之列）。所以你的伴侶握了 3 次。</li><li>你和 6、5、4 那三個人握過手（每一層的「高位者」），沒和 0、1、2 握手，所以你也握了 3 次。</li></ol><p>程式窮舉所有握手組合，滿足條件時（你, 伴侶）的握手數只有 (3, 3)。</p>"
+    },
+    {
+      "id": "dm-0144",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）A computer system considers a string of decimal digits a valid codeword if it contains an even number of 0 digits. For instance, 1230407869 is valid, whereas 120987045608 is not valid. Let a<sub>n</sub> be the number of valid n-digit codewords. what of the followings are true?",
+      "choices": [
+        "(a) a<sub>n</sub> = 9a<sub>n−1</sub> + 10<sup>n−1</sup>",
+        "(b) a<sub>n</sub> = 8a<sub>n−1</sub> + 10<sup>n−1</sup>",
+        "(c) a<sub>1</sub> = 9",
+        "(d) a<sub>n</sub> = 8<sup>n</sup> + 10<sup>n−1</sup>",
+        "(e) a<sub>n</sub> = 8<sup>n</sup> + 10<sup>n</sup>"
+      ],
+      "answer": "(b)、(c)",
+      "explanation": "<p>看第一個數字（或最後一個）：</p><ul><li>不是 0（9 種）：剩下 n − 1 位也要偶數個 0，9a<sub>n−1</sub>。</li><li>是 0：剩下 n − 1 位要<b>奇數</b>個 0，有 10<sup>n−1</sup> − a<sub>n−1</sub> 種。</li></ul><pre class=\"formula\">a_n = 9a_(n−1) + (10^(n−1) − a_(n−1)) = 8a_(n−1) + 10^(n−1)</pre><p>(b) 對、(a) 錯。a<sub>1</sub>：1~9 有 0 個 0（偶數），「0」有 1 個 0，所以 a<sub>1</sub> = 9，(c) 對。</p><p>解遞迴式：a<sub>n</sub> = (8<sup>n</sup> + 10<sup>n</sup>)/2，(d)(e) 都少了除以 2，錯。程式窮舉 n = 1~4 得 9, 82, 756, 7048，吻合 (8<sup>n</sup> + 10<sup>n</sup>)/2。</p>"
+    },
+    {
+      "id": "dm-0145",
+      "topics": [
+        "connectivity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）Find the vertex connectivity and the edge connectivity in the following graph.<br>（原題附圖，以文字描述：頂點 a, b, c, d, e, f, g；邊為 {a,b}、{a,g}、{a,f}、{b,g}、{b,c}、{g,f}、{c,d}、{c,f}、{c,e}、{d,f}、{d,e}、{e,f}。）",
+      "choices": [
+        "(a) The vertex connectivity is 3.",
+        "(b) The vertex connectivity is 2.",
+        "(c) The edge connectivity is 3.",
+        "(d) The edge connectivity is 2.",
+        "(e) The edge connectivity is 1."
+      ],
+      "answer": "(b)、(c)",
+      "explanation": "<ul><li><b>Vertex connectivity（點連通度）</b>κ：拿掉 {b, f} 後，{a, g} 和 {c, d, e} 分開，所以 κ ≤ 2。拿掉任何單一點圖都還連通（沒有割點），所以 κ = 2。</li><li><b>Edge connectivity（邊連通度）</b>λ：最小度數是 3（a、b、g、d、e），所以 λ ≤ 3。左半 {a, b, g} 和右半 {c, d, e, f} 之間的邊有 a–f、g–f、b–c 三條，任何拿掉 2 條邊的方式都斷不開圖，λ = 3。</li></ul><p>這是 κ ≤ λ ≤ δ 的典型例子：2 ≤ 3 ≤ 3。程式計算結果一致。</p>"
     }
   ]
 }

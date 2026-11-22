@@ -2160,6 +2160,1018 @@
       "question": "Let A be an mxn matrix and x be an nx1 vector. (a) Given ‖x‖ = 1, what is the least square solution for Ax = 0? (b) Please prove your answer. (Please leave it blank if you don't know the correct answer, or you will get <b>at most minus 5 points</b> (until questions 3, 4, and 5 are 0 points) for the wrong answer. 不會寫請留白，答錯最多倒扣 5 分，扣至 3, 4, 5 題 0 分為止。)",
       "answer": "(a) x 取 A<sup>T</sup>A 最小特徵值 λ<sub>min</sub> 所對應的單位特徵向量（即 A 的最小奇異值對應的右奇異向量 v<sub>n</sub>），此時 min‖Ax‖² = λ<sub>min</sub> = σ<sub>min</sub>²。(b) 見詳解。",
       "explanation": "<p>題目要求的是：在 ‖x‖ = 1 的限制下，讓 ‖Ax‖² 最小（Ax = 0 的「最小平方解」；不加限制的話 x = 0 是平凡解）。</p><p><b>(a)</b> x* = A<sup>T</sup>A 最小特徵值的單位特徵向量，也就是 SVD 中 V 的最後一行 v<sub>n</sub>；最小值 ‖Ax*‖² = λ<sub>min</sub>(A<sup>T</sup>A) = σ<sub>min</sub>²。若 A 的零空間非平凡，λ<sub>min</sub> = 0，任何單位零空間向量都使 Ax = 0。</p><p><b>(b) 證明</b>：A<sup>T</sup>A 是實對稱半正定，由 <span class=\"term\">Spectral theorem<small>（譜定理）</small></span>有正交規範特徵向量 q<sub>1</sub>, …, q<sub>n</sub>，特徵值 λ<sub>1</sub> ≥ ⋯ ≥ λ<sub>n</sub> ≥ 0。把 x 寫成 x = Σ c<sub>i</sub>q<sub>i</sub>，‖x‖² = Σ c<sub>i</sub>² = 1：</p><pre class=\"formula\">||Ax||^2 = x^T A^T A x = Σ λ_i c_i^2 ≥ λ_n Σ c_i^2 = λ_n</pre><p>每一項 λ<sub>i</sub> ≥ λ<sub>n</sub>，所以下界是 λ<sub>n</sub>；取 x = q<sub>n</sub>（c<sub>n</sub> = 1、其餘為 0）時等號成立。因此最小值為 λ<sub>n</sub>，最佳解是 q<sub>n</sub>（或 −q<sub>n</sub>；重根時特徵空間中任一單位向量皆可）。</p><p>也可以用 <span class=\"term\">Lagrange multiplier<small>（拉格朗日乘數）</small></span>：最小化 x<sup>T</sup>A<sup>T</sup>Ax − λ(x<sup>T</sup>x − 1)，梯度為 0 得 A<sup>T</sup>Ax = λx，所以臨界點都是特徵向量，目標值就是 λ，取最小的。</p><p>常見錯誤：答「x = 0」（違反 ‖x‖ = 1）、或答成最大特徵值的特徵向量（那是讓 ‖Ax‖ 最大）。</p>"
+    },
+    {
+      "id": "la-0104",
+      "topics": [
+        "diagonalization",
+        "symmetric-matrices",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）Which of the following statements are true?",
+      "choices": [
+        "(A) If <b>A</b><sup>2</sup> is a diagonal matrix, <b>A</b> must be a diagonal matrix.",
+        "(B) If <b>A</b><sub>n×n</sub> has a complete set of orthonormal eigenvectors (<i>i.e.</i>, n eigenvectors that are orthonormal), it must be a Hermitian matrix.",
+        "(C) If <b>AA</b><sup>H</sup> = <b>A</b><sup>H</sup><b>A</b>, where <b>A</b><sup>H</sup> is the Hermitian transpose of <b>A</b>, then <b>A</b> can always be diagonalized.",
+        "(D) If the rank of an n by n matrix, <b>A</b>, is r &lt; n, then its n-r eigenvalues are zero.",
+        "(E) If k is an eigenvalue of <b>A</b>, we may find more than one eigenvector corresponding to k."
+      ],
+      "answer": "C、D、E（D 待確認）",
+      "explanation": "<ul><li>A 錯：A = [[0,1],[1,0]]，A² = I 是對角矩陣，但 A 不是。</li><li>B 錯：有 n 個正交規範特徵向量 ⇔ A = UDU<sup>H</sup>（U unitary）⇔ A 是 <b>Normal Matrix（正規矩陣）</b>。D 的對角元素可以是複數，例如 A = diag(i, 1)，特徵向量 e<sub>1</sub>、e<sub>2</sub> 正交規範，但 A<sup>H</sup> = diag(−i, 1) ≠ A，不是 Hermitian。</li><li>C 對：AA<sup>H</sup> = A<sup>H</sup>A 就是 normal，由譜定理可被 unitary 矩陣對角化。</li><li>D 對（待確認）：零空間維度 n − r = 特徵值 0 的幾何重數，而代數重數 ≥ 幾何重數，所以<b>至少</b>有 n − r 個特徵值是 0。若把題意解讀成「恰好 n − r 個」則為錯（例如 [[0,1],[0,0]]，r = 1，但兩個特徵值都是 0）。</li><li>E 對：特徵向量乘上任何非零常數仍是特徵向量，所以一定不只一個。</li></ul>"
+    },
+    {
+      "id": "la-0105",
+      "topics": [
+        "determinant-properties",
+        "symmetric-matrices",
+        "positive-definite",
+        "lu-decomposition"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）For the 197 by 197 finite difference matrix, <b>A</b>, which statements are true?<pre>              [ 2  −1   0   ·   ·   ·   0]\n              [−1   2  −1   0   ·   ·   ·]\n              [ 0  −1   2  −1   ·   ·   ·]\nA(197×197) =  [ ·   0  −1   ·   ·   ·   ·]\n              [ ·   ·   ·   ·   ·  −1   0]\n              [ ·   ·   ·   ·  −1   2  −1]\n              [ 0   ·   ·   ·   0  −1   2]</pre>",
+      "choices": [
+        "(A) The determinant of <b>A</b> is D. Then, mod(|D|,5)=3, where mod(.) is the modulo operation.",
+        "(B) <b>A</b> can be expressed as <b>A</b>=<b>B</b>+<b>C</b>, where <b>B</b> is a symmetric matrix and <b>C</b> is a skew-symmetric matrix.",
+        "(C) <b>A</b> can be expressed as <b>A</b>=<b>BCB</b><sup>T</sup>, where <b>B</b> is an orthogonal matrix and <b>C</b> is a diagonal matrix.",
+        "(D) <b>A</b> can be expressed as <b>A</b>=<b>BCB</b><sup>T</sup>, where <b>B</b> is a lower triangular matrix and <b>C</b> is a diagonal matrix.",
+        "(E) <b>A</b>’s smallest eigenvalue is negative."
+      ],
+      "answer": "A、B、C、D",
+      "explanation": "<ul><li>A 對：令 D<sub>n</sub> 為 n 階行列式，沿第一列展開得 D<sub>n</sub> = 2D<sub>n−1</sub> − D<sub>n−2</sub>，D<sub>1</sub> = 2、D<sub>2</sub> = 3，所以 D<sub>n</sub> = n + 1（程式驗算 D<sub>6</sub> = 7）。D<sub>197</sub> = 198，198 mod 5 = 3。</li><li>B 對：任何方陣都能寫成 (A + A<sup>T</sup>)/2 + (A − A<sup>T</sup>)/2；A 本身對稱，取 B = A、C = 0（零矩陣是反對稱）。</li><li>C 對：A 是實對稱矩陣，譜定理給出 A = QΛQ<sup>T</sup>。</li><li>D 對：A 對稱正定（見 E），不用換列就能做 LU，且可寫成 <b>LDL<sup>T</sup></b>，L 是單位下三角、D 的對角元素是 pivot (k+1)/k &gt; 0。</li><li>E 錯：這個矩陣的特徵值是 2 − 2cos(kπ/198)，k = 1..197，全部為正（也可以從所有 pivot 為正看出正定）。</li></ul>"
+    },
+    {
+      "id": "la-0106",
+      "topics": [
+        "diagonalization",
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "<b>A</b><sup>5</sup> = [[32, 100000], [0, 3125]]. The determinant of <b>A</b> is M. The closest integer of summing up the four entries in <b>A</b> is N = round(A<sub>11</sub> + A<sub>12</sub> + A<sub>21</sub> + A<sub>22</sub>). What is the value of mod(M + N × 13, 5), where mod(.) is the modulo operation.",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(C) 2",
+      "explanation": "<p>A<sup>5</sup> 是上三角、特徵值 32 和 3125 相異。A 和 A<sup>5</sup> 可交換，而和「特徵值相異的上三角矩陣」可交換的矩陣也必須是上三角（以實數矩陣來看），所以設 A = [[a, b], [0, d]]，a<sup>5</sup> = 32、d<sup>5</sup> = 3125 ⇒ a = 2、d = 5。</p><p>上三角矩陣的冪次，右上角是 b(a<sup>4</sup> + a<sup>3</sup>d + a<sup>2</sup>d<sup>2</sup> + ad<sup>3</sup> + d<sup>4</sup>) = b·(a<sup>5</sup> − d<sup>5</sup>)/(a − d) = b·(32 − 3125)/(2 − 5) = 1031b。</p><pre class=\"formula\">1031 b = 100000 ⇒ b ≈ 96.993</pre><ul><li>M = det A = 2 × 5 = 10（也可以用 det(A)<sup>5</sup> = 32 × 3125 = 100000 = 10<sup>5</sup>）。</li><li>N = round(2 + 96.993 + 0 + 5) = round(103.993) = 104。</li></ul><p>M + 13N = 10 + 1352 = 1362，mod 5 = 2，選 (C)（程式驗算）。</p>"
+    },
+    {
+      "id": "la-0107",
+      "topics": [
+        "gaussian-elimination",
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "First, consider the linear system<pre>kx +  y +  z = 1\n x + ky +  z = 1\n x +  y + kz = 1</pre>If k = a, the system has more than one solution. If k = b, the system has no solution. The closest integer of |a-b| is c. M=mod(c,5), where mod(.) is the modulo operation.<br>Next, consider the linear system<pre> x +  y +  z = 4\n2x +  y + 2z = 7\n x      − 2z = 3\n      y + 2z = 4</pre>Its least squares solution is {x̃, ỹ, z̃}. The closest integer of (ỹ × 50) is N.<br>What is the value of mod(M+N,5),?",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(D) 3",
+      "explanation": "<p><b>第一部分</b>：係數矩陣行列式 = (k − 1)²(k + 2)。</p><ul><li>k = 1：三條方程式都是 x + y + z = 1，無限多解，a = 1。</li><li>k = −2：三式相加得 0 = 3，無解，b = −2。</li></ul><p>|a − b| = 3，c = 3，M = 3。</p><p><b>第二部分</b>：4 條方程式 3 個未知數，解正規方程式 A<sup>T</sup>A x̃ = A<sup>T</sup>b：</p><pre class=\"formula\">A^T A = [[6, 3, 3], [3, 3, 5], [3, 5, 13]]，A^T b = (21, 15, 20)</pre><p>解得 (x̃, ỹ, z̃) = (9/5, 37/10, −3/10)（程式驗算）。ỹ × 50 = 185，N = 185。</p><p>M + N = 188，mod 5 = 3，選 (D)。</p>"
+    },
+    {
+      "id": "la-0108",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "The determinant of the following matrix <b>A</b> is M.<pre>    [1  −1  8   4  2]\n    [2   6  0  −4  3]\nA = [2   0  2   6  2]\n    [0   2  8   0  0]\n    [0   1  1   2  2]</pre>The determinant of the following matrix <b>B</b> is N.<pre>    [1.25  1    1    1  ]\nB = [1     1.2  1    1  ]\n    [1     1    1.1  1  ]\n    [1     1    1    1.5]</pre>K = |M/N| × 1/10000. Which of the following is the range of K?",
+      "choices": [
+        "(A) 0 ≤ K &lt; 1",
+        "(B) 1 ≤ K &lt; 2",
+        "(C) 2 ≤ K &lt; 3",
+        "(D) 4 ≤ K &lt; 5",
+        "(E) 5 ≤ K"
+      ],
+      "answer": "(C)",
+      "explanation": "<p><b>M</b>：用列運算把第一行消成只剩第一個元素（R2 − 2R1、R3 − 2R1），再沿第一行展開成 4×4，繼續消去，得 M = −1100（程式驗算）。</p><p><b>N</b>：B = D + J 的形式，D = diag(1/4, 1/5, 1/10, 1/2)，J 是全 1 矩陣（秩 1）。用 <b>Matrix Determinant Lemma（矩陣行列式引理）</b>：det(D + uv<sup>T</sup>) = det(D)(1 + v<sup>T</sup>D<sup>−1</sup>u)：</p><pre class=\"formula\">det D = (1/4)(1/5)(1/10)(1/2) = 1/400\n1 + Σ 1/d_i = 1 + 4 + 5 + 10 + 2 = 22\nN = 22/400 = 11/200</pre><p>K = |−1100 / (11/200)| / 10000 = 20000/10000 = 2，落在 2 ≤ K &lt; 3，選 (C)。</p><p>K 剛好等於 2 在區間邊界上，(B) 的 1 ≤ K &lt; 2 不含 2，這是要小心的地方。</p>"
+    },
+    {
+      "id": "la-0109",
+      "topics": [
+        "similarity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）<b>A</b> and <b>B</b> are two square matrices.",
+      "choices": [
+        "(A) If <b>A</b> is similar to <b>B</b>, then det (<b>A</b>) = det (<b>B</b>).",
+        "(B) If <b>A</b> is similar to <b>B</b>, then <b>A</b> and <b>B</b> have the same eigenvectors.",
+        "(C) If <b>A</b> is similar to <b>B</b>, then <b>A</b><sup>2</sup> is similar to <b>B</b><sup>2</sup>.",
+        "(D) If <b>A</b> is similar to <b>B</b>, then <b>AB</b> is similar to <b>BA</b>.",
+        "(E) If <b>A</b><sup>2</sup> is similar to <b>B</b><sup>2</sup>, then <b>A</b> is similar to <b>B</b>."
+      ],
+      "answer": "A、C",
+      "explanation": "<p>設 B = P<sup>−1</sup>AP。</p><ul><li>A 對：det B = det(P<sup>−1</sup>)det(A)det(P) = det A。</li><li>B 錯：特徵值相同，但特徵向量差一個 P：若 Ax = λx，則 B(P<sup>−1</sup>x) = λP<sup>−1</sup>x。</li><li>C 對：B² = P<sup>−1</sup>APP<sup>−1</sup>AP = P<sup>−1</sup>A²P。</li><li>D 錯：反例 A = [[0,0],[0,1]]、B = [[1,0],[1,0]]（兩者特徵值都是 0、1 且相異，所以相似）。AB = [[0,0],[1,0]] ≠ 0，BA = 0，非零矩陣不會和零矩陣相似（程式搜尋找到並驗證）。若 A 或 B 可逆，AB 和 BA 才一定相似。</li><li>E 錯：A = I、B = −I，A² = B² = I，但 I 和 −I 特徵值不同，不相似。</li></ul>"
+    },
+    {
+      "id": "la-0110",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）For a n×n real square matrix <b>A</b>. λ<sub>i</sub>‘s are eigenvalues of <b>A</b>.",
+      "choices": [
+        "(A) λ<sub>i</sub>‘s may be complex number.",
+        "(B) If some λ<sub>i</sub> = 0, then <b>A</b> is always not invertible.",
+        "(C) If some λ<sub>i</sub>‘s are the same, then <b>A</b> is not diagonalizable.",
+        "(D) If <b>A</b> = <b>A</b><sup>T</sup>, then λ<sub>i</sub>‘s are positive real.",
+        "(E) If <b>A</b> is diagonalizable, then <b>A</b> has many different matrices <b>P</b> and <b>D</b> such that <b>A</b> = <b>PDP</b><sup>-1</sup>."
+      ],
+      "answer": "A、B、E",
+      "explanation": "<ul><li>A 對：旋轉矩陣 [[0,−1],[1,0]] 的特徵值是 ±i。</li><li>B 對：det A = 特徵值乘積 = 0。</li><li>C 錯：I 的特徵值全相同，卻是對角矩陣。重根只是「可能」不可對角化。</li><li>D 錯：對稱矩陣的特徵值是實數，但不一定為正，例如 −I。</li><li>E 對：特徵向量可乘非零常數、D 的對角元素順序可換，所以 P、D 有很多種取法。</li></ul>"
+    },
+    {
+      "id": "la-0111",
+      "topics": [
+        "orthogonal-subspaces",
+        "gram-schmidt"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）If <b>A</b> is a m×n matrix and <b>A</b> can be <b>QR</b> factorized. <b>W</b> is the set of all columns of <b>A</b>, and <b>W</b><sup>⊥</sup> is the orthogonal complement of <b>W</b>, then",
+      "choices": [
+        "(A) <b>W</b> is a subspace.",
+        "(B) <b>W</b><sup>⊥</sup> is a subspace.",
+        "(C) (<b>W</b><sup>⊥</sup>)<sup>⊥</sup> = <b>W</b>.",
+        "(D) <b>W</b> ∩ <b>W</b><sup>⊥</sup> = φ (empty set)",
+        "(E) m ≥ n."
+      ],
+      "answer": "B、D、E（待確認）",
+      "explanation": "<p>題目刻意說 W 是「所有行向量構成的<b>集合</b>」（有限個向量），不是行空間。QR 分解（R 可逆）要求 A 的行線性獨立，所以每一行都不是零向量。</p><ul><li>A 錯：有限個非零向量的集合不含零向量，也不封閉於加法，不是子空間。</li><li>B 對：任何集合的 orthogonal complement 都是子空間。</li><li>C 錯：(W<sup>⊥</sup>)<sup>⊥</sup> = span(W) = Col A，是子空間，不等於有限集合 W。</li><li>D 對：若某一行 w 屬於 W<sup>⊥</sup>，則 w·w = 0 ⇒ w = 0，和行向量非零矛盾，所以交集是空集合。（若 W 指行空間，交集會是 {0}，不是空集合。）</li><li>E 對：n 個 R<sup>m</sup> 中線性獨立的向量，必須 m ≥ n。</li></ul><p>（待確認）答案取決於把 W 當作「集合」還是「行空間」，這裡依題目字面「set of all columns」作答。</p>"
+    },
+    {
+      "id": "la-0112",
+      "topics": [
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）In the following terminologies which are <b>not</b> related to the least-squares problem.",
+      "choices": [
+        "(A) Inconsistent system.",
+        "(B) Eigenvector.",
+        "(C) Diagonalizable.",
+        "(D) Orthogonal projection.",
+        "(E) Gram - Schmidt process"
+      ],
+      "answer": "B、C",
+      "explanation": "<ul><li>(A) 有關：最小平方法就是處理 Ax = b 無解（inconsistent）時的近似解。</li><li>(D) 有關：Ax̂ 是 b 在 Col A 上的正交投影。</li><li>(E) 有關：用 Gram-Schmidt 得到 A = QR，最小平方解可化成 Rx̂ = Q<sup>T</sup>b。</li><li>(B)(C) 無直接關係：特徵向量、可對角化屬於特徵值問題。</li></ul><p>所以「不相關」的是 B、C。</p>"
+    },
+    {
+      "id": "la-0113",
+      "topics": [
+        "symmetric-matrices"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
+      },
+      "question": "（複選）Construct a spectral decomposition of matrix [[3, 4], [4, 9]]. Which values are <b>not</b> in the solution matrices.",
+      "choices": [
+        "(A) 1/5, −1/5.",
+        "(B) 2/5, −2/5.",
+        "(C) 4/5, −4/5.",
+        "(D) 1/5, 4/5.",
+        "(E) −1/5, −4/5."
+      ],
+      "answer": "A、C、E（待確認）",
+      "explanation": "<p>特徵方程式 λ² − 12λ + 11 = 0，λ = 1, 11。</p><ul><li>λ = 1：特徵向量 (2, −1)，單位化 u<sub>1</sub> = (2, −1)/√5，u<sub>1</sub>u<sub>1</sub><sup>T</sup> = [[4/5, −2/5], [−2/5, 1/5]]。</li><li>λ = 11：特徵向量 (1, 2)，u<sub>2</sub> = (1, 2)/√5，u<sub>2</sub>u<sub>2</sub><sup>T</sup> = [[1/5, 2/5], [2/5, 4/5]]。</li></ul><pre class=\"formula\">A = 1·[[4/5, −2/5], [−2/5, 1/5]] + 11·[[1/5, 2/5], [2/5, 4/5]]</pre><p>投影矩陣 u<sub>i</sub>u<sub>i</sub><sup>T</sup> 不受特徵向量正負號影響，所以結果唯一（程式驗算）。出現的數值是 4/5、−2/5、1/5、2/5；沒出現的是 −1/5、−4/5。</p><ul><li>(A) 含 −1/5 → 有不在其中的值</li><li>(B) 2/5、−2/5 都出現</li><li>(C) 含 −4/5 → 有不在其中的值</li><li>(D) 1/5、4/5 都出現</li><li>(E) −1/5、−4/5 都不在</li></ul><p>（待確認）若題意是「整組都不在」則只有 E；若是「含有不在其中的數值」則是 A、C、E。</p>"
+    },
+    {
+      "id": "la-0114",
+      "topics": [
+        "symmetric-matrices"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）Which of the following statements about symmetric matrices are true?",
+      "choices": [
+        "A) The symmetric matrix <b>A</b> has a complete set of orthonormal eigenvectors even though it has repeated eigenvalues.",
+        "B) For the symmetric matrices <b>A</b> and <b>B</b>, <b>A</b> + <b>B</b> and <b>AB</b> are both symmetric.",
+        "C) If the rank of a symmetric matrix, <b>A</b><sub>n×n</sub>, is r&lt;n, then its n-r eigenvalues are zero.",
+        "D) The eigenvalues of symmetric matrices are real values. In other words, they cannot be complex values.",
+        "E) None of the above is true."
+      ],
+      "answer": "A、C、D",
+      "explanation": "<ul><li>A 對：<b>Spectral Theorem（譜定理）</b>保證實對稱矩陣一定能正交對角化，有重根也一樣（重根的特徵空間維度等於重數，可以在裡面挑正交基底）。</li><li>B 錯：A + B 對稱，但 (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup> = BA，只有 AB = BA 時才對稱。反例 A = [[1,0],[0,0]]、B = [[0,1],[1,0]]，AB = [[0,1],[0,0]] 不對稱。</li><li>C 對：對稱矩陣可對角化，rank = 非零特徵值個數（含重數），所以恰好 n − r 個特徵值是 0。</li><li>D 對：實對稱矩陣的特徵值都是實數。</li><li>E 錯。</li></ul>"
+    },
+    {
+      "id": "la-0115",
+      "topics": [
+        "rank-nullity",
+        "gaussian-elimination"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）Which of the following statements about the matrix <b>A</b><sub>m×n</sub>, m&lt;n are true?",
+      "choices": [
+        "A) The sum of its nullity and its rank is m.",
+        "B) If its rank is equal to m, then <b>AA</b><sup>T</sup> must be invertible.",
+        "C) The number of independent columns and the number of independent rows in the matrix <b>A</b> can be different.",
+        "D) After applying Gaussian elimination on <b>A</b>, the number of zero rows must be m-r, where r is the rank of <b>A</b>.",
+        "E) None of the above is true."
+      ],
+      "answer": "B、D",
+      "explanation": "<ul><li>A 錯：rank + nullity = <b>行數</b> n，不是 m。</li><li>B 對：rank(AA<sup>T</sup>) = rank(A) = m，AA<sup>T</sup> 是 m × m 且滿秩，所以可逆。</li><li>C 錯：行秩 = 列秩，永遠相等。</li><li>D 對：化成列梯形後非零列數就是 rank r，其餘 m − r 列都是零列。</li><li>E 錯。</li></ul>"
+    },
+    {
+      "id": "la-0116",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "similarity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "（複選）Which of the following about eigenvalues/eigenvectors are true?",
+      "choices": [
+        "A) If an 8x8 square matrix has 8 positive pivots after applying Gaussian elimination, then its eigenvalues cannot be negative.",
+        "B) For the two square matrices <b>A</b> and <b>B</b>, both of which are diagonalizable, if <b>AB</b> = <b>BA</b>, then <b>A</b> and <b>B</b> have the same eigenvalues.",
+        "C) If two square matrices <b>A</b> and <b>B</b> are similar, i.e., <b>A</b> = <b>MBM</b><sup>−1</sup>, then <b>A</b> and <b>B</b> have the same eigenvalues.",
+        "D) For a square matrix <b>A</b>, the matrices <b>AA</b><sup>T</sup> and <b>A</b><sup>T</sup><b>A</b> have the same eigenvalues.",
+        "E) None of the above is true."
+      ],
+      "answer": "C、D",
+      "explanation": "<ul><li>A 錯：「pivot 全正 ⇒ 特徵值全正」只對<b>對稱</b>矩陣成立。非對稱反例（2×2，再補上 I<sub>6</sub> 變 8×8）：[[1, 4], [−4, −10]]，pivot 是 1 和 −10 + 16 = 6，都為正；但 trace = −9 &lt; 0、det = 6 &gt; 0，兩個特徵值都是負的。</li><li>B 錯：可交換只代表能同時對角化（共用特徵向量），特徵值不必相同，例如 A = I、B = 2I。</li><li>C 對：相似矩陣的特徵多項式相同。</li><li>D 對：方陣時 AB 和 BA 的特徵值相同，取 B = A<sup>T</sup> 即得（它們的特徵值都是 A 的奇異值平方）。</li><li>E 錯。</li></ul>"
+    },
+    {
+      "id": "la-0117",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "Given a 4 by 4 matrix, <b>A</b>, as below, find its inverse matrix, <b>A</b><sup>−1</sup>.<pre>    [1  2  1  −1]\nA = [2  5  1  −1]\n    [1  3  2   1]\n    [2  4  1  −2]</pre>The sum of all the elements of <b>A</b><sup>−1</sup> is b. Rounding |b| to the nearest integer, c. What is the value of mod(c,5), where mod(.) is the modulo operation. (For example, mod(5,2)=1.)",
+      "choices": [
+        "A) 0",
+        "B) 1",
+        "C) 2",
+        "D) 3",
+        "E) 4"
+      ],
+      "answer": "C) 2",
+      "explanation": "<p>用 [A | I] 做 Gauss-Jordan 消去，得</p><pre class=\"formula\">A^(−1) = [[−10, −5,  3,  9],\n          [  3,  2, −1, −3],\n          [  2,  0,  0, −1],\n          [ −3, −1,  1,  2]]</pre><p>（程式驗算 AA<sup>−1</sup> = I。）各列和為 −3、1、1、−1，總和 b = −2，|b| = 2，c = 2，mod(2, 5) = 2，選 C。</p><p>小技巧：所有元素和 = 1<sup>T</sup>A<sup>−1</sup>1，也可以解 Ax = 1 再把 x 的分量加起來，不必算出整個反矩陣。</p>"
+    },
+    {
+      "id": "la-0118",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "For the following Matlab code:<pre class=\"code\">a=11;             %Set 'a' as the number of rows/cols. in a square matrix A\nA=ones(a,a);      %Set A as an 11x11 all-one matrix (All the elements are 1)\nfor m=1:a\n    A(m,m)=0.9;   %Set all the elements on the main diagonal of A as 0.9\nend\nd=det(A);         %Calculate the determinant of A\nc=abs(d*(10^a)+7); %Adjust the value, and abs(.) is the absolute-value func.\nanswer=mod(c,5);  %mod(.) is the modulo operation</pre>What is the value of “answer”?",
+      "choices": [
+        "A) 0",
+        "B) 1",
+        "C) 2",
+        "D) 3",
+        "E) 4"
+      ],
+      "answer": "B) 1",
+      "explanation": "<p>A = J − 0.1I，J 是 11 × 11 全 1 矩陣。J 的特徵值是 11（一個）和 0（十個），所以 A 的特徵值是 10.9（一個）和 −0.1（十個）。</p><pre class=\"formula\">d = 10.9 × (−0.1)^10 = 10.9 × 10^(−10) = 1.09 × 10^(−9)\nd × 10^11 = 109\nc = |109 + 7| = 116，mod(116, 5) = 1</pre><p>選 B。</p><p>附註：實際在電腦上用浮點數算 det 會得到 115.99999… 而不是剛好 116，mod 結果會變成 0.9999…；題目顯然是要考行列式的數學值，所以答案取 1。</p>"
+    },
+    {
+      "id": "la-0119",
+      "topics": [
+        "matrix-representation",
+        "change-of-basis"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "The following matrix <b>A</b> is the transformation matrix of a linear operator A. Find the linear transformation matrix <b>B</b> that represents the linear operator A relative to the basis [1, 1, 0]<sup>T</sup>, [0, 1, 1]<sup>T</sup> and [1, 2, 2]<sup>T</sup>.<pre>    [1   3   1]\nA = [2   5  −4]\n    [1  −2   2]</pre>‘b’ is obtained by summing up all the elements in <b>B</b>, taking the absolute value and then rounding to the nearest integer. What is the value of mod(b,5), where mod(.) is the modulo operator?",
+      "choices": [
+        "A) 0",
+        "B) 1",
+        "C) 2",
+        "D) 3",
+        "E) 4"
+      ],
+      "answer": "C) 2",
+      "explanation": "<p>令 P 的三行是新基底向量：P = [[1, 0, 1], [1, 1, 2], [0, 1, 2]]（det P = 1）。新基底下的矩陣是 B = P<sup>−1</sup>AP。</p><pre class=\"formula\">AP = [[4, 4, 9], [7, 1, 4], [−1, 0, 1]]\nB = P^(−1)AP = [[8, 1, 3], [7, −6, −11], [−4, 3, 6]]</pre><p>（程式驗算。）元素和 = 12 − 10 + 5 = 7，b = 7，mod(7, 5) = 2，選 C。</p><p>易錯點是寫成 PAP<sup>−1</sup>：B 的第 j 行是「A 作用在第 j 個基底向量後，用新基底表示的座標」，所以是 P<sup>−1</sup>(AP)。</p>"
+    },
+    {
+      "id": "la-0120",
+      "topics": [
+        "gram-schmidt"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "Consider the subspace S of <b>R</b><sup>4</sup> spanned by the vectors: <b>v</b><sub>1</sub>=[1, 1, 1, 1]<sup>T</sup>, <b>v</b><sub>2</sub>=[1, 1, 2, 4]<sup>T</sup>, <b>v</b><sub>3</sub>=[1, 2, -4, -3]<sup>T</sup>. Apply the Gram-Schmidt method starting from <b>v</b><sub>1</sub>, then <b>v</b><sub>2</sub> and finally <b>v</b><sub>3</sub> to obtain the orthogonal basis of S: <b>u</b><sub>1</sub>=[1, 1, 1, 1]<sup>T</sup>, <b>u</b><sub>2</sub>=[-1, a, b, c]<sup>T</sup>, <b>u</b><sub>3</sub>=[1, d, e, f]<sup>T</sup>, where a, b, c, d, e and f are all integers (rounded to the nearest ones if necessary). What is mod(|a+b+c+d+e+f|,5), where mod(.) is the modulo operator?",
+      "choices": [
+        "A) 0",
+        "B) 1",
+        "C) 2",
+        "D) 3",
+        "E) 4"
+      ],
+      "answer": "A) 0",
+      "explanation": "<ol><li>u<sub>1</sub> = v<sub>1</sub> = (1,1,1,1)。</li><li>v<sub>2</sub>·u<sub>1</sub> = 8，u<sub>1</sub>·u<sub>1</sub> = 4，v<sub>2</sub> − 2u<sub>1</sub> = (−1, −1, 0, 2)。第一個分量已是 −1，所以 u<sub>2</sub> = (−1, −1, 0, 2)，a = −1、b = 0、c = 2。</li><li>v<sub>3</sub>·u<sub>1</sub> = −4 ⇒ 係數 −1；v<sub>3</sub>·u<sub>2</sub> = −1 − 2 + 0 − 6 = −9，u<sub>2</sub>·u<sub>2</sub> = 6 ⇒ 係數 −3/2。<br>v<sub>3</sub> + u<sub>1</sub> + (3/2)u<sub>2</sub> = (1/2, 3/2, −3, 1)，乘 2 讓第一個分量為 1：u<sub>3</sub> = (1, 3, −6, 2)，d = 3、e = −6、f = 2。</li></ol><p>a + b + c + d + e + f = −1 + 0 + 2 + 3 − 6 + 2 = 0，mod 5 = 0，選 A（程式驗算）。</p><p>注意題目的 u<sub>3</sub> 第一個分量固定為 1，所以要把 Gram-Schmidt 的結果乘 2，而不是四捨五入 (1/2, 3/2, …)。</p>"
+    },
+    {
+      "id": "la-0121",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "Given that <b>A</b> = [[0, 0, −2], [1, 2, 1], [1, 0, 3]], <b>B</b> = <b>A</b><sup>12</sup>. ‘b’ is obtained by summing up all the elements in <b>B</b>. What is mod (|b|,5), where mod(.) is the modulo operator?",
+      "choices": [
+        "A) 0",
+        "B) 1",
+        "C) 2",
+        "D) 3",
+        "E) 4"
+      ],
+      "answer": "D) 3",
+      "explanation": "<p>先對角化。特徵多項式 (λ − 1)(λ − 2)²，特徵值 1, 2, 2。</p><ul><li>λ = 2：A − 2I = [[−2,0,−2],[1,0,1],[1,0,1]]，秩 1，特徵空間 2 維，基底 (−1, 0, 1)、(0, 1, 0)。</li><li>λ = 1：特徵向量 (−2, 1, 1)。</li></ul><p>可對角化，A<sup>12</sup> = PD<sup>12</sup>P<sup>−1</sup>，D<sup>12</sup> = diag(1, 4096, 4096)。算出 A<sup>12</sup> = [[2·1 − 4096, 0, 2·1 − 2·4096], [4096 − 1, 4096, 4096 − 1], [4096 − 1, 0, 2·4096 − 1]] = [[−4094, 0, −8190], [4095, 4096, 4095], [4095, 0, 8191]]。</p><p>元素和 b = 12288（程式直接算 A<sup>12</sup> 驗算），12288 mod 5 = 3，選 D。</p><p>易錯點：λ = 2 是重根，要先確認它的特徵空間是 2 維（A − 2I 的秩為 1），A 才能對角化；否則就不能直接用 PD<sup>12</sup>P<sup>−1</sup>。</p>"
+    },
+    {
+      "id": "la-0122",
+      "topics": [
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "Find the least squares solution of the system <b>Ax</b> = <b>b</b>, in which<pre>    [1  0  1]\nA = [1  1  1]   and b=[4, -1, 0, 1]<sup>T</sup>.\n    [0  1  1]\n    [1  1  0]</pre>c is the rounding (or nearest) integer of the sum of the elements in <b>x</b>. What is the value of mod(|c|,5), where mod(.) is the modulo operator?",
+      "choices": [
+        "A) 0",
+        "B) 1",
+        "C) 2",
+        "D) 3",
+        "E) 4"
+      ],
+      "answer": "B) 1",
+      "explanation": "<p>正規方程式 A<sup>T</sup>Ax̂ = A<sup>T</sup>b：</p><pre class=\"formula\">A^T A = [[3, 2, 2], [2, 3, 2], [2, 2, 3]]，A^T b = (4, 0, 3)</pre><p>A<sup>T</sup>A = I + 2J（J 全 1），三式相加得 7(x<sub>1</sub>+x<sub>2</sub>+x<sub>3</sub>) = 7，所以 x<sub>1</sub>+x<sub>2</sub>+x<sub>3</sub> = 1；代回每一式 x<sub>i</sub> + 2·1 = (A<sup>T</sup>b)<sub>i</sub>，得 x̂ = (2, −2, 1)（程式驗算）。</p><p>元素和 c = 1，mod 5 = 1，選 B。這題連 x̂ 都不用全部解出，三式相加就直接得到和。</p>"
+    },
+    {
+      "id": "la-0123",
+      "topics": [
+        "symmetric-matrices"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
+      },
+      "question": "Find an orthogonal matrix <b>P</b> that diagonalizes <b>A</b> as shown below. That is, <b>P</b><sup>T</sup><b>AP</b> = <b>D</b>, where <b>D</b> is a diagonal matrix.<pre>    [ 1  −1  2]\nA = [−1   1  2]\n    [ 2   2  2]</pre>The product of the three elements in the first row of <b>P</b> is b. The product of the three elements in the main diagonal of <b>D</b> is d. c is the rounding (or nearest) integer of |b × d × 6|. What is the value of mod(c,5), where mod(.) is the modulo operator?",
+      "choices": [
+        "A) 0",
+        "B) 1",
+        "C) 2",
+        "D) 3",
+        "E) 4"
+      ],
+      "answer": "B) 1",
+      "explanation": "<p>特徵值與單位特徵向量（程式驗算）：</p><ul><li>λ = −2：(−1, −1, 1)/√3</li><li>λ = 2：(−1, 1, 0)/√2</li><li>λ = 4：(1, 1, 2)/√6</li></ul><p>三個特徵值相異，P 只差行的順序和正負號，而這些只影響 b 的正負號，不影響 |b|。</p><ul><li>P 第一列三個元素的絕對值：1/√3、1/√2、1/√6，乘積 |b| = 1/√36 = 1/6。</li><li>d = (−2)(2)(4) = −16（也等於 det A）。</li></ul><p>|b × d × 6| = (1/6)(16)(6) = 16，c = 16，mod 5 = 1，選 B。</p>"
+    },
+    {
+      "id": "la-0124",
+      "topics": [
+        "lu-decomposition"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "Let A = [[2, 4, 2], [1, 5, 2], [4, −1, 9]], and the <i>LU</i> decomposition of <i>A</i> be<pre>[1  0  0] [d  e  f]\n[a  1  0] [0  g  h]\n[b  c  1] [0  0  i]</pre>What is ⌊a + b + c + d + e + f + g + h + i⌋%5?<br>(% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(e) 4",
+      "explanation": "<p>高斯消去（不換列）：</p><ol><li>第一行 pivot 2：R2 − (1/2)R1、R3 − 2R1，得 a = 1/2、b = 2；R2 變 (0, 3, 1)、R3 變 (0, −9, 5)。</li><li>第二行 pivot 3：R3 − (−3)R2 = R3 + 3R2，c = −3；R3 變 (0, 0, 8)。</li></ol><pre class=\"formula\">L = [[1, 0, 0], [1/2, 1, 0], [2, −3, 1]]\nU = [[2, 4, 2], [0, 3, 1], [0, 0, 8]]</pre><p>總和 = (1/2 + 2 − 3) + (2 + 4 + 2 + 3 + 1 + 8) = −1/2 + 20 = 19.5，⌊19.5⌋ = 19，19 % 5 = 4，選 (e)（程式驗算）。</p><p>注意 c 的符號：乘數是 −9/3 = −3，L 裡放的就是這個乘數。</p>"
+    },
+    {
+      "id": "la-0125",
+      "topics": [
+        "change-of-basis"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "Suppose that in P<sub>3</sub> we want to change from the ordered basis [1, x, x<sup>2</sup>] to the ordered basis [1, 2x, 4x<sup>2</sup> − 2]. Let the transition matrix from the first basis to the second basis be S, and the number of zeros in S be D. What is D%5?<br>(% is the modulo operation.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(a) 0",
+      "explanation": "<p>把新基底用舊基底表示，排成行：</p><pre class=\"formula\">T = [[1, 0, −2], [0, 2, 0], [0, 0, 4]]   （1、2x、4x² − 2 的座標）</pre><p>T 把「新基底座標」轉成「舊基底座標」；題目要的是從第一組（舊）轉到第二組（新），S = T<sup>−1</sup>：</p><pre class=\"formula\">S = [[1, 0, 1/2], [0, 1/2, 0], [0, 0, 1/4]]</pre><p>驗證：x² = (1/4)(4x² − 2) + (1/2)·1，對應 S 的第三行 (1/2, 0, 1/4)。</p><p>S 有 5 個 0，D = 5，5 % 5 = 0，選 (a)。（就算把方向弄反用 T，也剛好是 5 個 0，答案相同。）</p>"
+    },
+    {
+      "id": "la-0126",
+      "topics": [
+        "gaussian-elimination",
+        "linear-independence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "Let A be a 4 × 4 matrix with reduced row echelon form given by<pre>    [1  0  −1  1]\nU = [0  1   3  2]\n    [0  0   0  0]\n    [0  0   0  0]</pre>Let the first two columns of A be [3, 2, −1, 2]<sup>T</sup> and [1, 1, −2, 3]<sup>T</sup>, and denote the third column of A as [a, b, c, d]<sup>T</sup>. What is ⌊a + b + c + d⌋%5?<br>(% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(d) 3",
+      "explanation": "<p>關鍵性質：列運算不改變「行之間的線性關係」。U 的第三行 = −1·(第一行) + 3·(第二行)，所以 A 也一樣：</p><pre class=\"formula\">a3 = −a1 + 3a2 = −(3, 2, −1, 2) + 3(1, 1, −2, 3) = (0, 1, −5, 7)</pre><p>a + b + c + d = 0 + 1 − 5 + 7 = 3，3 % 5 = 3，選 (d)。</p>"
+    },
+    {
+      "id": "la-0127",
+      "topics": [
+        "linear-transformations",
+        "matrix-algebra"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "Let the matrix A = (a<sub>ij</sub>) represent the composite transformations “a yaw of 45°, followed by a pitch of −90° and then a roll of −45°”. What is Round{|Σ a<sub>ij</sub>|}%5?<br>(% is the modulo operation. Round{z} rounds z to the nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(b) 1（待確認：依旋轉矩陣慣例）",
+      "explanation": "<p>採用常見的慣例：yaw 繞 z 軸、pitch 繞 y 軸、roll 繞 x 軸：</p><pre class=\"formula\">Y(θ) = [[cos θ, −sin θ, 0], [sin θ, cos θ, 0], [0, 0, 1]]\nP(θ) = [[cos θ, 0, sin θ], [0, 1, 0], [−sin θ, 0, cos θ]]\nR(θ) = [[1, 0, 0], [0, cos θ, −sin θ], [0, sin θ, cos θ]]</pre><p>「先 yaw、再 pitch、最後 roll」，矩陣要從右往左乘：A = R(−45°)P(−90°)Y(45°)。計算得（程式驗算）</p><pre class=\"formula\">A = [[0, 0, −1], [1, 0, 0], [0, −1, 0]]</pre><p>元素和 = −1，|−1| = 1，1 % 5 = 1，選 (b)。</p><p>易錯點是乘法順序：先做的變換要放在最右邊。（待確認）不同教材對 pitch 的正負方向定義可能不同；程式測試多種常見的符號與順序慣例，大多數也得到 1，但少數慣例會得到 3。</p>"
+    },
+    {
+      "id": "la-0128",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "Let A = [[1, 2, 3, 4], [0, 1, 2, 3], [0, 0, 1, 2], [0, 0, 0, 1]]. What is the dimension spanned by the eigenvectors of A?",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(b) 1",
+      "explanation": "<p>A 是上三角，對角線全是 1，唯一特徵值 λ = 1（代數重數 4）。</p><p>特徵向量 = Null(A − I)，A − I = [[0,2,3,4],[0,0,2,3],[0,0,0,2],[0,0,0,0]]，秩為 3，所以零空間維度 = 4 − 3 = 1，特徵向量只張成 span{e<sub>1</sub>}，選 (b)。</p><p>這也代表 A 不可對角化（幾何重數 1 &lt; 代數重數 4），其 Jordan form 是一個 4×4 的 Jordan block。</p>"
+    },
+    {
+      "id": "la-0129",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "cayley-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "A = [[5, 2, 2], [3, 6, 3], [6, 6, 9]], <b>B</b> = <b>A</b><sup>3</sup> − 20<b>A</b><sup>2</sup> + 92<b>A</b> − 120<b>I</b><sub>3x3</sub>. D is the determinant of <b>B</b>. What is |D|%5? (% is the modulo operation. |.| is the absolute value.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(c) 2",
+      "explanation": "<p>B = p(A)，p(λ) = λ³ − 20λ² + 92λ − 120。若 λ 是 A 的特徵值，p(λ) 就是 B 的特徵值，det B = 各 p(λ) 的乘積。</p><p>A 的特徵多項式 (λ − 14)(λ − 3)²（trace = 20 = 14 + 3 + 3 可檢查），特徵值 14, 3, 3。</p><ul><li>p(14) = 2744 − 3920 + 1288 − 120 = −8</li><li>p(3) = 27 − 180 + 276 − 120 = 3</li></ul><p>D = (−8)(3)(3) = −72，|D| = 72，72 % 5 = 2，選 (c)（程式直接算 det B 驗算）。</p><p>陷阱：p(λ) 長得很像 A 的特徵多項式，但不是（A 的是 λ³ − 20λ² + 93λ − 126），所以 B 不是零矩陣；若誤用 Cayley-Hamilton 以為 B = 0 就會選 (a)。</p>"
+    },
+    {
+      "id": "la-0130",
+      "topics": [
+        "gram-schmidt"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "The subspace U of <b>R</b><sup>4</sup> is spanned by the three vectors: <b>v</b><sub>1</sub>=[1,-1,-1,1]<sup>T</sup>, <b>v</b><sub>2</sub>=[1,2,-3,2]<sup>T</sup>, <b>v</b><sub>3</sub>=[3,3,0,-2]<sup>T</sup>.<br>Use the Gram -Schmidt process to find the orthonormal basis of U:<br><b>t</b><sub>1</sub>=[1/2, −1/2, −1/2, 1/2]<sup>T</sup>, <b>t</b><sub>2</sub>=[m,n,p,q]<sup>T</sup>, <b>t</b><sub>3</sub>=[r,s,x,y]<sup>T</sup>. D=(Round{1/(n<sup>2</sup>s<sup>2</sup>)})%5. What is D?<br>(% is the modulo operation. Round{z} rounds z to the nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(c) 2",
+      "explanation": "<ol><li>t<sub>1</sub> = v<sub>1</sub>/2。</li><li>v<sub>2</sub>·t<sub>1</sub> = (1 − 2 + 3 + 2)/2 = 2；w<sub>2</sub> = v<sub>2</sub> − 2t<sub>1</sub> = (0, 3, −2, 1)，長度 √14，t<sub>2</sub> = (0, 3, −2, 1)/√14，n = 3/√14，n² = 9/14。</li><li>v<sub>3</sub>·t<sub>1</sub> = (3 − 3 + 0 − 2)/2 = −1；v<sub>3</sub>·t<sub>2</sub> = (0 + 9 + 0 − 2)/√14 = 7/√14。<br>w<sub>3</sub> = v<sub>3</sub> + t<sub>1</sub> − (7/14)(0, 3, −2, 1) = (7/2, 1, 1/2, −2)，長度 √(49/4 + 1 + 1/4 + 4) = √70/2，t<sub>3</sub> = (7, 2, 1, −4)/√70，s = 2/√70，s² = 4/70。</li></ol><pre class=\"formula\">1/(n² s²) = 1 / ((9/14)(4/70)) = 980/36 ≈ 27.22</pre><p>Round = 27，27 % 5 = 2，選 (c)（程式驗算）。平方讓正負號不影響答案。</p>"
+    },
+    {
+      "id": "la-0131",
+      "topics": [
+        "orthogonal-subspaces",
+        "inner-product-projection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "Following the previous question（U 為上一題由 <b>v</b><sub>1</sub>=[1,-1,-1,1]<sup>T</sup>, <b>v</b><sub>2</sub>=[1,2,-3,2]<sup>T</sup>, <b>v</b><sub>3</sub>=[3,3,0,-2]<sup>T</sup> 張成的子空間）. The subspace V = U<sup>⊥</sup> is U’s orthogonal complement in <b>R</b><sup>4</sup>. Given a vector w=[10,0,8,2]<sup>T</sup>, find w = v + u, where v = [a, b, c, d]<sup>T</sup> ∈ V, u = [e, f, g, h]<sup>T</sup> ∈ U. What is (Round{c<sup>2</sup> + g<sup>2</sup>})%5?<br>(% is the modulo operation. Round{z} rounds z to the nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(a) 0",
+      "explanation": "<p>u 是 w 在 U 上的正交投影，用上一題的正交規範基底：u = Σ (w·t<sub>i</sub>)t<sub>i</sub>。</p><ul><li>w·t<sub>1</sub> = (10 − 0 − 8 + 2)/2 = 2 → 2t<sub>1</sub> = (1, −1, −1, 1)</li><li>w·t<sub>2</sub> = (0 + 0 − 16 + 2)/√14 = −14/√14 → −(0, 3, −2, 1) = (0, −3, 2, −1)</li><li>w·t<sub>3</sub> = (70 + 0 + 8 − 8)/√70 = 70/√70 → (7, 2, 1, −4)</li></ul><p>u = (8, −2, 2, −4)，v = w − u = (2, 2, 6, 6)。可檢查 v 和 v<sub>1</sub>、v<sub>2</sub>、v<sub>3</sub> 都正交。</p><p>c = 6、g = 2，c² + g² = 40，40 % 5 = 0，選 (a)（程式驗算）。</p>"
+    },
+    {
+      "id": "la-0132",
+      "topics": [
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
+      },
+      "question": "We are required to find the parabola C + Dt + Et<sup>2</sup> that comes closest to the values <b>v</b>=(0,2,2,5) at the times <b>t</b>=(0,1,3,4). What is F = Round{|C + D + E| × 256}%5? (|.| is the absolute value. % is the modulo operation. Round{z} rounds z to the nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(b) 1",
+      "explanation": "<p>A 的每一列是 (1, t, t²)：A = [[1,0,0],[1,1,1],[1,3,9],[1,4,16]]，b = (0, 2, 2, 5)。</p><pre class=\"formula\">A^T A = [[4, 8, 26], [8, 26, 92], [26, 92, 338]]\nA^T b = (9, 28, 100)</pre><p>解正規方程式得 (C, D, E) = (1/2, 1/3, 1/6)（程式驗算）。</p><p>C + D + E = 1，× 256 = 256，256 % 5 = 1，選 (b)。</p><p>有趣的是 C + D + E 就是擬合拋物線在 t = 1 的值，剛好是 1（實際資料是 2）。</p>"
+    },
+    {
+      "id": "la-0133",
+      "topics": [
+        "matrix-representation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "Given a linear transformation from R<sup>2</sup> to R<sup>3</sup> (with respect to standard bases) L([x, y]<sup>T</sup>) = [2x − 2y, 3x − 4y, −7x]<sup>T</sup>. Now let B<sub>1</sub> = {[1, 1]<sup>T</sup>, [−1, 1]<sup>T</sup>} and B<sub>2</sub> = {[1, −1, 0]<sup>T</sup>, [0, 1, 0]<sup>T</sup>, [1, 0, −1]<sup>T</sup>} be non-standard bases for R<sup>2</sup> and R<sup>3</sup>, respectively. If the matrix representation of the same linear transformation L (with respect to B<sub>1</sub> and B<sub>2</sub>) is [[a, b], [c, d], [e, f]]<sub>B<sub>1</sub>:B<sub>2</sub></sub>, what is ⌊|a + b + c + d + e + f|⌋%5? (% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(b) 1",
+      "explanation": "<p>表示矩陣的第 j 行 = L(B<sub>1</sub> 的第 j 個向量) 用 B<sub>2</sub> 表示的座標。</p><ul><li>L(1, 1) = (0, −1, −7)。設 = α(1,−1,0) + β(0,1,0) + γ(1,0,−1)：第三分量 −γ = −7 ⇒ γ = 7；第一分量 α + γ = 0 ⇒ α = −7；第二分量 −α + β = −1 ⇒ β = −8。第一行 (−7, −8, 7)。</li><li>L(−1, 1) = (−4, −7, 7)：γ = −7、α = 3、β = −4。第二行 (3, −4, −7)。</li></ul><pre class=\"formula\">[[−7, 3], [−8, −4], [7, −7]]</pre><p>總和 = −16，|−16| = 16，16 % 5 = 1，選 (b)（程式驗算）。</p>"
+    },
+    {
+      "id": "la-0134",
+      "topics": [
+        "gram-schmidt"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "Let the Gram-Schmidt QR factorization of the matrix [[1, −2, −1], [2, 0, 1], [2, −4, 2], [4, 0, 0]] be<pre>[1/5  −2/5  −4/5]\n[2/5   1/5   2/5]  [a  b  c]\n[2/5  −4/5   2/5]  [0  d  e]\n[4/5   2/5  −1/5]  [0  0  f]</pre>What is ⌊|a + b + c + d + e + f|⌋%5? (% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(e) 4",
+      "explanation": "<p>Q 的行已經給了，且 Q<sup>T</sup>Q = I，所以 R = Q<sup>T</sup>A，不用重做 Gram-Schmidt：</p><ul><li>a = q<sub>1</sub>·a<sub>1</sub> = (1 + 4 + 4 + 16)/5 = 5；b = q<sub>1</sub>·a<sub>2</sub> = (−2 + 0 − 8 + 0)/5 = −2；c = q<sub>1</sub>·a<sub>3</sub> = (−1 + 2 + 4 + 0)/5 = 1</li><li>d = q<sub>2</sub>·a<sub>2</sub> = (4 + 0 + 16 + 0)/5 = 4；e = q<sub>2</sub>·a<sub>3</sub> = (2 + 1 − 8 + 0)/5 = −1</li><li>f = q<sub>3</sub>·a<sub>3</sub> = (4 + 2 + 4 + 0)/5 = 2</li></ul><p>總和 = 5 − 2 + 1 + 4 − 1 + 2 = 9，9 % 5 = 4，選 (e)。程式驗證 QR = A。</p>"
+    },
+    {
+      "id": "la-0135",
+      "topics": [
+        "cayley-hamilton",
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "Assume p(x) = x<sup>10</sup> − x<sup>5</sup> + 1 and A = [[−2, −6], [1, 3]]. Let p(A) = [[a, b], [c, d]]. What is ⌊|a + b + c + d|⌋%5? (% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(c) 2",
+      "explanation": "<p>A 的 trace = 1、det = −6 + 6 = 0，特徵多項式 λ² − λ，由 <b>Cayley-Hamilton Theorem</b>：A² − A = 0，即 A² = A（A 是冪等矩陣）。</p><p>於是 A<sup>k</sup> = A 對所有 k ≥ 1 成立：</p><pre class=\"formula\">p(A) = A^10 − A^5 + I = A − A + I = I</pre><p>a + b + c + d = 1 + 0 + 0 + 1 = 2，2 % 5 = 2，選 (c)（程式直接計算驗證）。</p>"
+    },
+    {
+      "id": "la-0136",
+      "topics": [
+        "subspaces"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）Which of the following vectors belong to the nullspace of A = [[1, 1, 1, 0], [2, 1, 0, 1]]?",
+      "choices": [
+        "(a) (0,0,0,0)<sup>T</sup>",
+        "(b) (1,1,1,0)<sup>T</sup>",
+        "(c) (1,−2,1,0)<sup>T</sup>",
+        "(d) (−1,1,0,1)<sup>T</sup>",
+        "(e) (0,−1,1,1)<sup>T</sup>"
+      ],
+      "answer": "(a)、(c)、(d)、(e)",
+      "explanation": "<p>逐一代入 Av：</p><ul><li>(a) 零向量永遠在零空間裡。</li><li>(b) (1+1+1, 2+1+0) = (3, 3) ≠ 0。</li><li>(c) (1−2+1, 2−2+0) = (0, 0)。</li><li>(d) (−1+1+0, −2+1+1) = (0, 0)。</li><li>(e) (0−1+1, 0−1+1) = (0, 0)。</li></ul><p>補充：nullity = 4 − 2 = 2，所以 (c)(d)(e) 三個向量一定線性相依，事實上 (e) = (c) + (d)。</p>"
+    },
+    {
+      "id": "la-0137",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "similarity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）<b>A</b> and <b>B</b> are both N×N square matrices. Which of the following statements are true?",
+      "choices": [
+        "(a) λ<sub>A</sub> is the eigenvalue of <b>A</b> and λ<sub>B</sub> is the eigenvalue of <b>B</b>. λ<sub>A</sub>× λ<sub>B</sub> is the eigenvalue of <b>AB</b>.",
+        "(b) <b>AB</b> and <b>BA</b> have the same eigenvalues.",
+        "(c) <b>AB</b> and <b>BA</b> have the same eigenvectors.",
+        "(d) If <b>B</b>=<b>M</b><sup>-1</sup><b>AM</b>, then <b>A</b> and <b>B</b> have the same eigenvalues.",
+        "(e) If <b>AA</b><sup>H</sup>=<b>A</b><sup>H</sup><b>A</b> (<b>A</b><sup>H</sup> is <b>A</b>‘s Hermitian Transpose), then <b>A</b> and <b>A</b><sup>H</sup> have the same eigenvalues."
+      ],
+      "answer": "(b)、(d)",
+      "explanation": "<ul><li>(a) 錯：除非 A、B 有共同的特徵向量，否則不成立。反例：A = [[1,0],[0,0]]、B = [[0,0],[0,1]]，λ<sub>A</sub> = 1、λ<sub>B</sub> = 1，但 AB = 0 的特徵值只有 0。</li><li>(b) 對：方陣 AB 與 BA 的特徵多項式相同。</li><li>(c) 錯：若 ABx = λx，對應 BA 的特徵向量是 Bx，一般和 x 不同。</li><li>(d) 對：相似矩陣特徵值相同。</li><li>(e) 錯：A<sup>H</sup> 的特徵值是 A 特徵值的<b>共軛</b>，normal 也不例外。反例 A = diag(i, 0)，A<sup>H</sup> = diag(−i, 0)。</li></ul>"
+    },
+    {
+      "id": "la-0138",
+      "topics": [
+        "symmetric-matrices",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）<b>A</b> is an N×N symmetric matrix. Which of the following statements are true?",
+      "choices": [
+        "(a) If <b>A</b><sup>-1</sup> exists, <b>A</b><sup>-1</sup> must be symmetric.",
+        "(b) <b>A</b> must have a complete set of (N) orthonormal eigenvectors.",
+        "(c) If <b>A</b><sup>2</sup>=<b>A</b>, its eigenvalues must be 0 and 1.",
+        "(d) If the sum of each individual column of <b>A</b> is 1, then one of its eigenvalues is 1.",
+        "(e) If <b>B</b> is also an N×N symmetric matrix. <b>AB</b> must be symmetric."
+      ],
+      "answer": "(a)、(b)、(c)、(d)（(c) 待確認）",
+      "explanation": "<ul><li>(a) 對：(A<sup>−1</sup>)<sup>T</sup> = (A<sup>T</sup>)<sup>−1</sup> = A<sup>−1</sup>。</li><li>(b) 對：譜定理（以實對稱矩陣而言）。</li><li>(c) 對（待確認）：Ax = λx ⇒ A²x = λ²x = λx ⇒ λ ∈ {0, 1}。意思是「特徵值只能是 0 或 1」；若嚴格解讀成「0 和 1 都一定出現」則為錯（例如 A = I）。</li><li>(d) 對：每一行和為 1 ⇔ 1<sup>T</sup>A = 1<sup>T</sup> ⇔ A<sup>T</sup>1 = 1，所以 1 是 A<sup>T</sup> 的特徵值，而 A 和 A<sup>T</sup> 特徵值相同（這裡 A 對稱更直接）。</li><li>(e) 錯：(AB)<sup>T</sup> = BA，只有可交換時才對稱。</li></ul>"
+    },
+    {
+      "id": "la-0139",
+      "topics": [
+        "linear-transformations",
+        "svd",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）We are processing two-dimensional data on the X-Y plane. Which of the following are true?<br>(a) One particle is initially located at the point A (0,-1) and on the unit circle. It goes straight to B on the unit circle as shown in the figure, and ∠OAB=15°, where O is the origin (0,0). The particle is then reflected and reaches P<sub>1</sub> on the unit circle with ∠OBA=∠OBP<sub>1</sub>. The particle keeps reflecting and reaches point P<sub>2</sub> on the unit circle and so on. The coordinate of P<sub>120</sub> is (1/2, −√3/2).（原題附圖：單位圓上 A 在正下方，B 在第一象限，P<sub>1</sub> 在第三象限；弦 AB 與半徑 OA 夾 15°。）<br>(b) The point A (0,-1) is linearly transformed by J=[[1, 2], [2, −1]]. After N linear transformations (i.e., J<sup>N</sup>[0, −1]<sup>T</sup>), the position is Q<sub>N</sub>=(x<sub>N</sub>, y<sub>N</sub>). Q<sub>1001</sub>=(x<sub>1001</sub>, y<sub>1001</sub>), x<sub>1001</sub>=0.<br>(c) Following (B), the distance between Q<sub>1000</sub> and Q<sub>1001</sub> is M. The distance between Q<sub>999</sub> and Q<sub>1000</sub> is N. M/N &gt; 2.3.<br>(d) R<sub>K</sub>=[[cos(K°), −sin(K°)], [sin(K°), cos(K°)]], M<sub>K</sub>=[[cos(2×K°), sin(2×K°)], [sin(2×K°), −cos(2×K°)]]. A point C, (a,b), is on the unit circle and in the first Quadrant (0&lt;a&lt;1, 0&lt;b&lt;1). C is then linearly transformed by Q=R<sub>15</sub>M<sub>15</sub>R<sub>30</sub>M<sub>30</sub>R<sub>45</sub> (i.e, Q[a,b]<sup>T</sup>). The resultant point must be in the first Quadrant.<br>(e) J=[[1, 2], [2, −1]], T=[[2, −1], [1, 2]], S=[[2, 0], [0, 3]]. A unit circle U is transformed by N=SJT to become Z. (For a point D, (c,d), on the unit circle, we calculate N[c,d]<sup>T</sup>.) The sum of the largest and shortest distances between the origin O and Z is 25.",
+      "choices": [
+        "(a)",
+        "(b)",
+        "(c)",
+        "(d)",
+        "(e)"
+      ],
+      "answer": "(d)、(e)",
+      "explanation": "<ul><li>(a) 錯：△OAB 等腰（OA = OB = 1），底角 15°，圓心角 ∠AOB = 150°。每次反射都沿同一方向再走 150°。A 在 −90°，B 在 60°，P<sub>k</sub> 在 60° + 150°k。P<sub>120</sub>：60 + 18000 = 18060 ≡ 60° (mod 360)，座標 (1/2, √3/2)，不是 (1/2, −√3/2)。</li><li>(b) 錯：J² = [[5,0],[0,5]] = 5I，所以 J<sup>1001</sup> = 5<sup>500</sup>J。J(0,−1) = (−2, 1)，Q<sub>1001</sub> = 5<sup>500</sup>(−2, 1)，x<sub>1001</sub> ≠ 0。</li><li>(c) 錯：Q<sub>1000</sub> = 5<sup>500</sup>(0, −1)、Q<sub>999</sub> = 5<sup>499</sup>(−2, 1)。M = 5<sup>500</sup>|(−2, 2)| = 5<sup>500</sup>·2√2；N = 5<sup>499</sup>|(0, −5) − (−2, 1)| = 5<sup>499</sup>·2√10。M/N = 5·2√2/(2√10) = √5 ≈ 2.236 &lt; 2.3。</li><li>(d) 對：M<sub>K</sub> 是對直線（角度 K°）的鏡射。用 M<sub>α</sub>R<sub>θ</sub> = M<sub>α−θ/2</sub>、M<sub>α</sub>M<sub>β</sub> = R<sub>2(α−β)</sub> 化簡，或直接計算，Q = I（程式數值驗證），所以 C 不動，仍在第一象限。</li><li>(e) 對：單位圓經 N 變成橢圓，原點到橢圓的最遠、最近距離就是 N 的最大、最小奇異值。N = SJT = [[8, 6], [9, −12]]，奇異值 15 和 10（N<sup>T</sup>N 的特徵值 225、100），和為 25。</li></ul>"
+    },
+    {
+      "id": "la-0140",
+      "topics": [
+        "gaussian-elimination",
+        "determinant-properties",
+        "linear-independence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）[[a<sub>1</sub>, b<sub>1</sub>, c<sub>1</sub>, d<sub>1</sub>], [a<sub>2</sub>, b<sub>2</sub>, c<sub>2</sub>, d<sub>2</sub>], [a<sub>3</sub>, b<sub>3</sub>, c<sub>3</sub>, d<sub>3</sub>]] is processed by row operations to form [[1, 2, 3, 5], [2, 5, 7, 13], [0, 0, 1, 0]]. Which of the following are true?",
+      "choices": [
+        "(a) |d<sub>1</sub> d<sub>2</sub> d<sub>3</sub>; b<sub>1</sub> b<sub>2</sub> b<sub>3</sub>; c<sub>1</sub> c<sub>2</sub> c<sub>3</sub>| = |b<sub>1</sub> b<sub>2</sub> b<sub>3</sub>; a<sub>1</sub> a<sub>2</sub> a<sub>3</sub>; c<sub>1</sub> c<sub>2</sub> c<sub>3</sub>|（兩個 3×3 行列式，分號隔開各列）",
+        "(b) After row operations, [[a<sub>1</sub>, b<sub>1</sub>, c<sub>1</sub>, d<sub>1</sub>], [a<sub>2</sub>, b<sub>2</sub>, c<sub>2</sub>, d<sub>2</sub>], [a<sub>3</sub>, b<sub>3</sub>, c<sub>3</sub>, d<sub>3</sub>]] can become [[2, −1, 0, −5], [3, 0, −1, −3], [0, 3, −2, 9]].",
+        "(c) If a<sub>1</sub><sup>2</sup> + a<sub>2</sub><sup>2</sup> + a<sub>3</sub><sup>2</sup> = 2, b<sub>1</sub><sup>2</sup> + b<sub>2</sub><sup>2</sup> + b<sub>3</sub><sup>2</sup> = 2, d<sub>1</sub><sup>2</sup> + d<sub>2</sub><sup>2</sup> + d<sub>3</sub><sup>2</sup> = 16, then |(a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>) × (d<sub>1</sub>, d<sub>2</sub>, d<sub>3</sub>)| = 4√2, where × is the cross product.",
+        "(d) { a<sub>1</sub>x + c<sub>1</sub>y + 3b<sub>1</sub> = d<sub>1</sub>, a<sub>2</sub>x + c<sub>2</sub>y + 3b<sub>2</sub> = d<sub>2</sub> } has a unique solution.",
+        "(e) { (3b<sub>1</sub> + c<sub>1</sub>)x − 2a<sub>1</sub>y + d<sub>1</sub>z + 2c<sub>1</sub> = 0, (3b<sub>2</sub> + c<sub>2</sub>)x − 2a<sub>2</sub>y + d<sub>2</sub>z + 2c<sub>2</sub> = 0, (3b<sub>3</sub> + c<sub>3</sub>)x − 2a<sub>3</sub>y + d<sub>3</sub>z + 2c<sub>3</sub> = 0 } has a unique solution."
+      ],
+      "answer": "(a)、(c)、(e)（(d) 待確認）",
+      "explanation": "<p>關鍵：列運算 = 左乘可逆矩陣，<b>不改變行向量之間的線性關係</b>。令 a、b、c、d 表示原矩陣的四個行向量。在化簡後的矩陣中：</p><ul><li>a、b、c 對應 (1,2,0)、(2,5,0)、(3,7,1)，行列式 = 1·5 − 2·2 = 1 ≠ 0（第三列只有第三行為 1，展開後剩 [[1,2],[2,5]]），所以 a、b、c 線性獨立。</li><li>(5,13,0) = −(1,2,0) + 3(2,5,0)，所以原矩陣也滿足 <b>d = −a + 3b</b>。</li></ul><ul><li>(a) 對：左邊是以 d、b、c 為列的行列式（= 以它們為行的行列式），代入 d = −a + 3b 得 −det[a b c]；右邊交換 a、b 也是 −det[a b c]，相等。</li><li>(b) 錯：目標矩陣的前三行 (2,3,0)、(−1,0,3)、(0,−1,−2) 行列式為 0（線性相依），但原矩陣前三行獨立，列運算不可能改變這件事。</li><li>(c) 對：|d|² = |−a + 3b|² = 2 − 6a·b + 18 = 16 ⇒ a·b = 2/3。a × d = 3(a × b)，|a × b|² = |a|²|b|² − (a·b)² = 4 − 4/9 = 32/9，所以 |a × d| = 3·(4√2/3) = 4√2。</li><li>(d) 錯（待確認）：用三列都成立的關係 d − 3b = −a，可知 x = −1、y = 0 是一組解；但只取前兩列時，2×2 矩陣 [[a<sub>1</sub>, c<sub>1</sub>], [a<sub>2</sub>, c<sub>2</sub>]] 是否可逆無法從已知條件確定，所以不能保證唯一。</li><li>(e) 對：方程式寫成向量形式 x(3b + c) − 2y·a + z·d = −2c，代入 d = −a + 3b：(−2y − z)a + (3x + 3z)b + x·c = −2c。a、b、c 獨立 ⇒ x = −2、z = 2、y = −1，唯一解。</li></ul>"
+    },
+    {
+      "id": "la-0141",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）Which of the determinants of the following matrices are zero?<br>(a) [[0, 3, 2, 6, 3], [−3, 0, 1, 3, 2], [−2, −1, 0, 5, 3], [−6, −3, −5, 0, 4], [−3, −2, −3, −4, 0]]<br>(b) [[1, 3, 2, 4, 3], [5, 4, 1, 3, 2], [2, 5, 2, 5, 3], [2, 6, 4, 8, 6], [4, 7, 8, 7, 9]]<br>(c) [[1, 1, 0, 0, 0], [−1, 3, 1, 0, 0], [0, −1, 3, 1, 0], [0, 0, −1, 3, 1], [0, 0, 0, −1, 3]]<br>(d) [[1, 1, 0, 0, 0], [1, 1, 1, 0, 0], [0, 1, 1, 1, 0], [0, 0, 1, 1, 1], [0, 0, 0, 1, 1]]<br>(e) [[1, 2, 3, 4, 0], [2, 4, 2, 0, 0], [3, 2, 0, 0, 0], [4, 0, 0, 4, 0], [0, 0, 0, 0, 1]]",
+      "choices": [
+        "(a)",
+        "(b)",
+        "(c)",
+        "(d)",
+        "(e)"
+      ],
+      "answer": "(a)、(b)、(d)、(e)",
+      "explanation": "<ul><li>(a) 為 0：這是 <b>skew-symmetric（反對稱）</b>矩陣（A<sup>T</sup> = −A），det A = det(A<sup>T</sup>) = det(−A) = (−1)<sup>5</sup>det A ⇒ det A = 0。奇數階反對稱矩陣行列式必為 0。</li><li>(b) 為 0：第四列 (2,6,4,8,6) = 2 × 第一列 (1,3,2,4,3)。</li><li>(c) 不為 0：三對角矩陣，用遞迴 D<sub>k</sub> = 3D<sub>k−1</sub> + D<sub>k−2</sub>（主對角 3、上下各 1 與 −1，乘積 −1），D<sub>1</sub> = 1、D<sub>2</sub> = 4，得 13、43、142，det = 142。</li><li>(d) 為 0：三對角全 1，遞迴 D<sub>k</sub> = D<sub>k−1</sub> − D<sub>k−2</sub>，D<sub>1</sub> = 1、D<sub>2</sub> = 0、D<sub>3</sub> = −1、D<sub>4</sub> = −1、D<sub>5</sub> = 0。也可以看出第一列 − 第二列 + 第四列 − 第五列 = 0。</li><li>(e) 為 0：沿最後一列展開剩左上 4×4，它的行有線性關係：−2·(第一行) + 3·(第二行) − 4·(第三行) + 2·(第四行) = 0（例如第一列 −2 + 6 − 12 + 8 = 0），所以行列式為 0（程式驗算）。</li></ul><p>五個行列式都用程式計算確認。</p>"
     }
   ]
 }
