@@ -273,6 +273,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 4,
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Find the curve y = C(−2)<sup>x</sup> + D(−1)<sup>x+1</sup>, which gives the least squares fit to points (x,y) = (0,0), (1,4), (2,6).",
@@ -293,6 +294,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "5-(a)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Given A = [[1, 1, 1], [1, 1, 0], [−1, 0, 1], [0, 0, 1]]. Find the Gram-Schmidt QR decomposition of A, then use that decomposition to solve the least squares problem.<br>Ax = (1, 2, 3, 4)<sup>T</sup>",
@@ -312,6 +314,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "5-(b)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Given A = [[10, 5], [−11, 2], [−2, 14]]. Find the pseudoinverse of A.",
@@ -331,6 +334,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 6,
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Two eigenvectors of this circulant matrix C are (1, i, i<sup>2</sup>, i<sup>3</sup>)<sup>T</sup> and (1, i<sup>2</sup>, i<sup>4</sup>, i<sup>6</sup>)<sup>T</sup>. What are the eigenvalues λ<sub>0</sub> and λ<sub>1</sub>?<pre>[c0 c1 c2 c3] [1 ]      [1 ]        [c0 c1 c2 c3] [1 ]      [1 ]\n[c3 c0 c1 c2] [i ]  = λ0 [i ]   and  [c3 c0 c1 c2] [i²]  = λ1 [i²]\n[c2 c3 c0 c1] [i²]      [i²]        [c2 c3 c0 c1] [i⁴]      [i⁴]\n[c1 c2 c3 c0] [i³]      [i³]        [c1 c2 c3 c0] [i⁶]      [i⁶]</pre>",
@@ -350,6 +354,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 6,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "Let A be a Hermitian matrix with eigenvalues λ<sub>1</sub> ≥ λ<sub>2</sub> ≥ ⋯ ≥ λ<sub>n</sub> and orthonormal eigenvectors u<sub>1</sub>, …, u<sub>n</sub>. For any nonzero vector x in ℝ<sup>n</sup>, the <i>Rayleigh quotient</i> ρ(x) is defined by<pre>ρ(x) = ⟨Ax, x⟩ / ⟨x, x⟩ = x<sup>H</sup>Ax / x<sup>H</sup>x</pre>(a) If x = c<sub>1</sub>u<sub>1</sub> + ⋯ + c<sub>n</sub>u<sub>n</sub>, show that<pre>ρ(x) = ( |c<sub>1</sub>|²λ<sub>1</sub> + |c<sub>2</sub>|²λ<sub>2</sub> + ⋯ + |c<sub>n</sub>|²λ<sub>n</sub> ) / ‖c‖²</pre>(b) Show that λ<sub>n</sub> ≤ ρ(x) ≤ λ<sub>1</sub>.<br>(c) Show that max<sub>x≠0</sub> ρ(x) = λ<sub>1</sub> and min<sub>x≠0</sub> ρ(x) = λ<sub>n</sub>.",
@@ -369,6 +374,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 7,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "Let<pre>‖A‖<sub>F</sub> = (⟨A, A⟩)<sup>1/2</sup> = ( Σ<sub>i=1..m</sub> Σ<sub>j=1..n</sub> a<sub>ij</sub>² )<sup>1/2</sup>   for A ∈ ℝ<sup>m×n</sup>.</pre>The <i>trace</i> of an n × n matrix C, denoted tr(C), is the sum of its diagonal entries; that is,<pre>tr(C) = c<sub>11</sub> + c<sub>22</sub> + ⋯ + c<sub>nn</sub></pre>If A and B are m × n matrices, show that<br>(a) ‖A‖<sub>F</sub>² = tr(A<sup>T</sup>A)<br>(b) ‖A + B‖<sub>F</sub>² = ‖A‖<sub>F</sub>² + 2tr(A<sup>T</sup>B) + ‖B‖<sub>F</sub>²",
@@ -389,6 +395,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 8,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "Let A be a symmetric n × n matrix. Show that e<sup>A</sup> is symmetric and positive definite.",
@@ -408,6 +415,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 9,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "Let A be a singular n × n matrix. Show that A<sup>T</sup>A is positive semidefinite, but not positive definite.",
@@ -427,6 +435,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 6,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "Determine the coordinate vector of <b>w</b> = (8, −4, −12) with respect to the basis {(1, 1, 1), (1, 5, -3), (2, 2, 1)}.",
@@ -446,6 +455,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 7,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "Let {<b>u</b><sub>1</sub>, <b>u</b><sub>2</sub>, <b>u</b><sub>3</sub>} be an orthonormal basis for an inner product space <i>V</i>. If <b>x</b> = c<sub>1</sub><b>u</b><sub>1</sub> + c<sub>2</sub><b>u</b><sub>2</sub> + c<sub>3</sub><b>u</b><sub>3</sub> is a vector with the properties ‖<b>x</b>‖ = 5, ⟨<b>u</b><sub>1</sub>, <b>x</b>⟩ = 4, and <b>x</b> ⊥ <b>u</b><sub>2</sub>, then what are the possible values of c<sub>1</sub>, c<sub>2</sub>, c<sub>3</sub>?",
@@ -465,6 +475,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 8,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "Let <i>A</i> be a 5 by 7 matrix with rank 4.<br>(a) What is the dimension of the solution space of <i>A</i><b>x</b> = <b>0</b>?<br>(b) Is <i>A</i><b>x</b> = <b>b</b> consistent for all vectors <b>b</b> in <i>R</i><sup>5</sup>? Explain.",
@@ -485,6 +496,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 9,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "Given that the characteristic polynomial of a matrix <i>A</i> is p(λ) = (λ + 1)(λ − 2)<sup>2</sup>(λ + 3)<sup>2</sup>, find det(<i>A</i><sup>−1</sup>).",
@@ -505,6 +517,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 10,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "True or False<br>(a) If <i>A</i> is an <i>n</i> × <i>n</i> matrix whose eigenvalues are all nonzero, then <i>A</i> is nonsingular.<br>(b) If <i>A</i> is a 5 × 5 matrix of rank 1 and λ = 0 is an eigenvalue of multiplicity 4, then <i>A</i> is diagonalizable.<br>(c) If <i>A</i> and <i>B</i> are row equivalent matrices, then their determinants are equal.<br>(d) If <i>A</i> is an invertible <i>n</i> × <i>n</i> matrix, then <i>rank</i>(<i>A</i><sup>T</sup>) = 0",
@@ -525,6 +538,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 6,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "Let a vector <b>x</b> = (x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>, x<sub>4</sub>) ∈ ℝ<sup>4</sup>. It has 24 rearrangements like (x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>, x<sub>4</sub>) and (x<sub>4</sub>, x<sub>3</sub>, x<sub>1</sub>, x<sub>2</sub>). Those 24 vectors span a subspace <i>S</i>. Find specific vectors <b>x</b> so that the dimension of <i>S</i> is three.",
@@ -544,6 +558,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 7,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "Let G<sub>2</sub>, G<sub>3</sub> and G<sub>4</sub> be the determinants of the matrices in the following form:<pre>     |0 1|        |0 1 1|        |0 1 1 1|\nG2 = |1 0| , G3 = |1 0 1| , G4 = |1 0 1 1|\n                  |1 1 0|        |1 1 0 1|\n                                 |1 1 1 0|</pre>Calculate the value of G<sub>n</sub>.",
@@ -564,6 +579,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 8,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "Let <i>A</i> and <i>B</i> as two matrices. If <i>B</i> is invertible, prove that <i>AB</i> has the same eigenvalues as <i>BA</i>.",
@@ -583,6 +599,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 9,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "Consider the points P(3, − 1,4) and Q(6,0,2), and R(5,1,1). Find the point S in ℝ<sup>3</sup> whose first component is -1 and such that <span>PQ→</span> is parallel to <span>RS→</span>.",
@@ -606,6 +623,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 10,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "True or False<br>(a) Every positive definite matrix is invertible.<br>(b) The determinant of <i>A</i> − <i>B</i> equals det <i>A</i> − det <i>B</i>.<br>(c) If <b>u</b> is orthogonal to every vector of a subspace <i>W</i>, then <b>u</b> = <b>0</b>.<br>(d) If <i>A</i> is square and <i>A</i><b>x</b> = <b>b</b> is inconsistent for some vector <b>b</b>, then the nullity of <i>A</i> is zero.<br>(e) If there is a basis for ℝ<sup>n</sup> consisting of eigenvectors of an <i>n</i> × <i>n</i> matrix <i>A</i>, then <i>A</i> is diagonalizable.",
@@ -625,6 +643,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 5,
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "Let <i>A</i> be an <i>m</i> × <i>n</i> matrix with the rank <i>r</i>, which is the relationship between <i>r</i>, <i>m</i>, <i>n</i> if <i>A</i><b>x</b> = <b>b</b> has exactly one solution for some <b>b</b>, no solution for other <b>b</b>?",
@@ -650,6 +669,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 6,
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "Consider the matrix following matrix. Which condition must the scalars x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub> satisfy for the matrix to be nonsingular?<pre>    [1  x1  x1²]\nA = [1  x2  x2²]\n    [1  x3  x3²]</pre>",
@@ -677,6 +697,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 7,
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "Which one of the following is false?",
@@ -702,6 +723,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 8,
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "About the eigenvalues and the corresponding eigenspaces for the following matrix, which is wrong?<pre>[2 1 0 0]\n[3 4 0 0]\n[0 0 2 0]\n[0 0 0 1]</pre>",
@@ -728,6 +750,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 9,
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "True or False<br>(a) If a 3 × 2 matrix <i>Q</i> has orthonormal columns, then ‖<i>Q</i><b>x</b>‖ always equals ‖<b>x</b>‖.<br>(b) Let <i>P</i> = <i>A</i>(<i>A</i><sup>T</sup><i>A</i>)<sup>−1</sup><i>A</i><sup>T</sup>, where <i>A</i> is an <i>m</i> × <i>n</i> matrix of rank <i>n</i>. Then <i>P</i><sup>k</sup> = <i>P</i> for k = 1,2,....<br>(c) If {<b>u</b><sub>1</sub>, <b>u</b><sub>2</sub>, …, <b>u</b><sub>k</sub>} is an orthonormal set of vectors in ℝ<sup>n</sup> and <i>U</i> = (<b>u</b><sub>1</sub>, <b>u</b><sub>2</sub>, …, <b>u</b><sub>k</sub>), then <i>UU</i><sup>T</sup> = <i>I</i><sub>n</sub> (the n × n identity matrix).<br>(d) If <i>A</i> is symmetric and det(<i>A</i>) &gt; 0, then <i>A</i> is positive definite.<br>(e) If <i>A</i> is symmetric positive definite, then the diagonal elements of <i>A</i> must all be positive.",
@@ -747,6 +770,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 6,
+        "paper": "ncku-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
       },
       "question": "By factoring <b>A</b> into <b>LU</b>, the LU decomposition allows solving <b>Ax</b> = <b>b</b> by first solving <b>Ly</b> = <b>b</b>, followed by <b>Ux</b> = <b>y</b>, each requiring only a single triangular solve. Thus, computing <b>A</b> = <b>LU</b> is crucial in large-scale computer engineering applications.<br>(a) Give the complexity of the classic LU decomposition, shown in Algorithm 1.<pre>Algorithm 1 LU Decomposition Without Pivoting\nRequire: Matrix A ∈ ℝ^(n×n)\nEnsure: Lower triangular matrix L, Upper triangular matrix U such that A = LU\n 1: Initialize L ← I_n, U ← 0_(n×n)\n 2: for k = 1 to n do\n 3:   for j = k to n do                    ▷ Compute k-th row of U\n 4:     U_(k,j) ← A_(k,j) − Σ_(s=1)^(k−1) L_(k,s) · U_(s,j)\n 5:   end for\n 6:   for i = k + 1 to n do                ▷ Compute k-th column of L\n 7:     L_(i,k) ← (1/U_(k,k)) ( A_(i,k) − Σ_(s=1)^(k−1) L_(i,s) · U_(s,k) )\n 8:   end for\n 9: end for\n10: return (L, U)</pre>(b) An improvement of (a) based on the block matrix multiplication is shown in Algorithm 2. Give the complexity of the speed-improved LU decomposition.<pre>Algorithm 2 Speed-Improved Block LU Decomposition\nRequire: Matrix A ∈ ℝ^(n×n), n is a power of 2\nEnsure: Matrices L, U with A = LU\n 1: function SPEEDIMPROVEDBLOCKLU(A)\n 2:   n ← size of A\n 3:   if n = 1 then\n 4:     return ([1], [A11])\n 5:   end if\n 6:   Partition A into blocks: A = [A11 A12; A21 A22]\n 7:   (L11, U11) ← SPEEDIMPROVEDBLOCKLU(A11)\n 8:   U12 ← SISOLVE(L11, A12, lower)\n 9:   L21 ← SISOLVE(U11, A21, upper)\n10:   S ← A22 − SIMULTIPLY(L21, U12)\n11:   (L22, U22) ← SPEEDIMPROVEDBLOCKLU(S)\n12:   Construct: L = [L11 0; L21 L22], U = [U11 U12; 0 U22]\n13:   return (L, U)\n14: end function\n\n 1: function SISOLVE(T, B, type)\n 2:   if n = 1 then\n 3:     return B/T\n 4:   end if\n 5:   Partition T, B into blocks: T = [T11 T12; T21 T22], B = [B1; B2]\n 6:   if type = lower then\n 7:     X1 ← SISOLVE(T11, B1)\n 8:     X2 ← SISOLVE(T22, B2 − T21 X1)\n 9:   else\n10:     X2 ← SISOLVE(T22, B2)\n11:     X1 ← SISOLVE(T11, B1 − T12 X2)\n12:   end if\n13:   return [X1; X2]\n14: end function\n\n 1: function SIMULTIPLY(A, B)\n 2:   if n = 1 then\n 3:     return A · B\n 4:   end if\n 5:   Partition A, B into: A = [A11 A12; A21 A22], B = [B11 B12; B21 B22]\n 6:   M1 ← (A11 + A22)(B11 + B22)\n 7:   M2 ← (A21 + A22)B11\n 8:   M3 ← A11(B12 − B22)\n 9:   M4 ← A22(B21 − B11)\n10:   M5 ← (A11 + A12)B22\n11:   M6 ← (A21 − A11)(B11 + B12)\n12:   M7 ← (A12 − A22)(B21 + B22)\n13:   C11 ← M1 + M4 − M5 + M7\n14:   C12 ← M3 + M5\n15:   C21 ← M2 + M4\n16:   C22 ← M1 − M2 + M3 + M6\n17:   C ← [C11 C12; C21 C22]\n18:   return C\n19: end function</pre>(c) Given A = [[4, 3], [6, 3]], compute the LU decomposition A = LU using the speed-improved LU decomposition method in (b).<br>(Note: List the key intermediate results from Algorithm 2 to receive full credit.)",
@@ -767,6 +791,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 7,
+        "paper": "ncku-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
       },
       "question": "Let A ∈ ℝ<sup>m×n</sup> with m &gt; n, and assume that A is rank-deficient, i.e., rank(A) &lt; n. A<sup>T</sup>A is positive semi-definite.<br>(a) Let λ &gt; 0. Show that the matrix A<sup>T</sup>A + λI is positive definite.<br>(b) Derive the closed-form solution for<pre>x* = arg min<sub>x∈ℝ<sup>n</sup></sub> ‖Ax − b‖<sup>2</sup> + λ‖x‖<sup>2</sup>,  λ &gt; 0.</pre>",
@@ -789,6 +814,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": "11-15",
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Give the necessary conditions for matrix <b>A</b> can be factorized<br>11. <b>A</b> = <b>PDP</b><sup>-1</sup>.<br>12. <b>A</b> = <b>QR</b>.<br>13. <b>A</b> = <b>PDP</b><sup>T</sup>.<br>14. <b>A</b> = λ<sub>1</sub><b>u</b><sub>1</sub><b>u</b><sub>1</sub><sup>T</sup> + λ<sub>2</sub><b>u</b><sub>2</sub><b>u</b><sub>2</sub><sup>T</sup> + .. + λ<sub>n</sub><b>u</b><sub>n</sub><b>u</b><sub>n</sub><sup>T</sup>.<br>15. <b>A</b> = <b>R</b><sup>T</sup><b>R</b> (Cholesky factorization)",
@@ -815,6 +841,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": "16-20",
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "If n×n matrix <b>A</b> is diagonalizable, then（每小題 (A) True. (B) False.）<br>16. 0 is not the eigenvalue of <b>A</b>.<br>17. <b>A</b> has n distinct eigenvalues.<br>18. <b>A</b> is invertible.<br>19. <b>A</b><sup>T</sup> is also diagonalizable.<br>20. The diagonalization is unique.",
@@ -834,6 +861,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": "26-30",
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "If <b>A</b> is a m×n matrix; <b>Ax</b> = <b>b</b> is an inconsistent system and has a least-square solution <b>x̂</b>.（每小題 (A) True. (B) False.）<br>26. <b>b</b> is exactly not in Col <b>A</b>.<br>27. <b>x̂</b> is not a unique solution.<br>28. If <b>A</b><sup>T</sup><b>A</b> is not invertible, then the system has no solution.<br>29. <b>A</b><b>x̂</b> is not always in Col <b>A</b>.<br>30. <b>b</b> - <b>A</b><b>x̂</b> is always in Nul <b>A</b><sup>T</sup>.",
@@ -854,6 +882,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": "31-35",
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "If <b>C</b> is a n×n covariance matrix, then（每小題 (A) True. (B) False.）<br>31. <b>C</b> always have n orthogonal eigenvectors.<br>32. <b>C</b> always have n distinct real eigenvalues.<br>33. <b>C</b> has positive and negative eigenvalues but no zero eigenvalues.<br>34. <b>C</b> can always be decomposed into <b>AA</b><sup>T</sup>, where <b>A</b> is a matrix.<br>35. <b>C</b> is exactly positive definite.",
@@ -874,6 +903,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 36,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Which of the following statements regarding the cost of methods for solving an n × n linear system <b>Ax</b> = <b>b</b> are true?",
@@ -901,6 +931,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 37,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Which of the following methods can be used for solving the system <b>Ax</b> = <b>b</b>, where <b>A</b> is a symmetric, diagonally dominant, square n × n matrix?",
@@ -928,6 +959,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 38,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Which set of vectors is a basis for <b>R</b><sup>3</sup>",
@@ -955,6 +987,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 39,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Which vectors form the basis of null(<b>A</b>)?<pre>     [ 1   1  3   1   6]\nA =  [ 2  −1  0   1  −1]\n     [−3   2  1  −2   1]\n     [ 4   1  6   1   3]</pre>",
@@ -981,6 +1014,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 40,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）A python function Fun is designed to perform a certain matrix operation:<pre class=\"code\">def FunSub(m,i,j):\n    return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]\n\ndef Fun(m):\n    if len(m) == 2:\n        return m[0][0]*m[1][1]-m[0][1]*m[1][0]\n\n    x = 0\n    for c in range(len(m)):\n        x += ((-1)**c)*m[0][c]*Fun(FunSub(m,0,c))\n    return x</pre>What inputs make Fun output 0?",
@@ -1008,6 +1042,7 @@
         "year": 110,
         "dept": "數學",
         "no": "6-(a)",
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "Suppose U and V are distinct six-dimensional subspaces of a vector space W and dim W = 8. Find dim(U ∩ V).",
@@ -1028,6 +1063,7 @@
         "year": 110,
         "dept": "數學",
         "no": "6-(b)",
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "Let V be a vector space of all symmetric 2 × 2 matrices. Define a linear transformation T: V → P<sub>2</sub>(R) by<br>T([[a, b], [b, c]]) = (a − b) + (b − c)x + (c − a)x².<br>Find rank(T).",
@@ -1048,6 +1084,7 @@
         "year": 110,
         "dept": "數學",
         "no": 7,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "Suppose m(t) = t<sup>r</sup> + a<sub>r−1</sub>t<sup>r−1</sup> + ⋯ + a<sub>1</sub>t + a<sub>0</sub> is the minimal polynomial of a nonsingular n × n matrix A. Find A<sup>−1</sup>.",
@@ -1068,6 +1105,7 @@
         "year": 110,
         "dept": "數學",
         "no": 8,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "Solve for t if det([[3−t, 2, 0, 0, 0], [1, 4−t, 0, 0, 0], [0, 0, 3−t, 1, 0], [0, 0, 1, 3−t, 0], [0, 0, 0, 0, 4−t]]) = 0.<br>（矩陣依列（row）由上到下列出。）",
@@ -1091,6 +1129,7 @@
         "year": 110,
         "dept": "數學",
         "no": 9,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "（複選，必須選出所有正確敘述才給分）Which of the following statements are true?",
@@ -1120,6 +1159,7 @@
         "year": 110,
         "dept": "數學",
         "no": 10,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "（複選，必須選出所有正確敘述才給分）Which of the following statements are true?",
@@ -1146,6 +1186,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 6,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "If A is similar to B, how many of the following statements are true?<ul><li>A<sup>−1</sup> is similar to B<sup>−1</sup>.</li><li>A and B have the same eigenvalues.</li><li>A and B represent the same transformation with respect to different bases.</li><li>The nullity of A is the same as the nullity of B.</li></ul>",
@@ -1173,6 +1214,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 7,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "How many of the following statements are true?<ul><li>The inverse of an orthogonal matrix is orthogonal.</li><li>The product of two orthogonal matrices is an orthogonal matrix.</li><li>Every matrix with orthonormal columns is invertible.</li><li>If A, B ∈ R<sup>n×n</sup>, and A + iB is a unitary matrix, then A<sup>T</sup>B is symmetric.</li></ul>",
@@ -1200,6 +1242,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 8,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "Assume that A ∈ R<sup>n×n</sup> and A² + 4A + 6I<sub>n</sub> = O. If (A + 3I<sub>n</sub>)<sup>−1</sup> = aA + bI<sub>n</sub>. What is the value of 2a + b?",
@@ -1227,6 +1270,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 9,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "Given a basis S = {(t − 1)³, (t − 1)², (t − 1), 1} of a vector space P<sub>3</sub>(t) of polynomials of degree ≤ 3. If the coordinate of x = 5t³ − 4t² + 3t − 2 with respect to S is (a, b, c, d), then a + b + c + d = ?",
@@ -1253,6 +1297,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 10,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "Given A = [[9, −1, 5, 7], [8, 3, 2, −4], [0, 0, 3, 6], [0, 0, −1, 8]]（依列列出）. The largest eigenvalue is",
@@ -1279,6 +1324,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 11,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "Given A = [[2, 1], [3, 4]]. Assume that B³ = A and B has real eigenvalues. What is the matrix B?（矩陣依列列出，∛5 表示 5 的立方根）",
@@ -1307,6 +1353,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 12,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "Let U = span{(1, 3, −2, 2, 3), (1, 4, −3, 4, 2), (2, 3, −1, −2, 9), (2, 4, −2, 0, 8)} and W = span{(1, 3, 0, 2, 1), (1, 5, −6, 6, 3), (2, 5, 3, 2, 1), (2, 7, −3, 6, 3)} be two subspaces of R<sup>5</sup>. The dimension of U ∩ W is",
@@ -1334,6 +1381,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 6,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "（第 6～11 題可能有多個答案，全部選對才給分）Given A = [[3/5, 2/5], [2/5, 3/5]] and x = [2, 0]<sup>T</sup>. If lim<sub>n→∞</sub> A<sup>n</sup>x = [a, b]<sup>T</sup>, what is 2a + b?",
@@ -1361,6 +1409,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 7,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "（第 6～11 題可能有多個答案，全部選對才給分）Given a linear transformation T: P<sub>2</sub>(R) → P<sub>2</sub>(R) defined by T(f(x)) = f″(x) + 2f′(x) − f(x), where P<sub>2</sub>(R) represents the real-valued 2<sup>nd</sup>-order polynomials. Assume M is the matrix representation of T with respect to the ordered basis. Please find the determinant of (M<sup>−1</sup> + 2I), where I is the identity matrix with the same dimension as M.",
@@ -1388,6 +1437,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 8,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "（第 6～11 題可能有多個答案，全部選對才給分）Assume that A, B, and C are n × n matrices.",
@@ -1415,6 +1465,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 9,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "（第 6～11 題可能有多個答案，全部選對才給分）Let S, D, and Q ∈ M<sub>n</sub>(R) represent a symmetric matrix, a diagonal matrix and an orthogonal matrix. Assume that their degree of freedom are d<sub>S</sub>, d<sub>D</sub> and d<sub>Q</sub>, respectively. Find the value of d<sub>S</sub> − d<sub>D</sub> − d<sub>Q</sub>.",
@@ -1444,6 +1495,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 10,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "（第 6～11 題可能有多個答案，全部選對才給分）Let A ∈ M<sub>n×n</sub>, which of the following statements are true?",
@@ -1471,6 +1523,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 11,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "（第 6～11 題可能有多個答案，全部選對才給分）Let T be a self-adjoint operator on a finite-dimensional inner product space V with distinct eigenvalues λ<sub>1</sub>, λ<sub>2</sub>, …, λ<sub>k</sub>. Let E<sub>i</sub> be the eigenspace of T corresponding to λ<sub>i</sub>, and let T<sub>i</sub> be the orthogonal projection of V on E<sub>i</sub>, 1 ≤ i ≤ k.",
@@ -1501,6 +1554,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 8,
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "True or false: NO need to justify your answer. No credit for unanswered questions. Incorrect answers will deduct the credit until zero point is earned in this section.（每小題 correct: 1; incorrect: −1; unanswered: 0）<br>(a) For any square real matrix A, A<sup>T</sup> + A is always symmetric.<br>(b) For a square real matrix A, if Ax = 0 has a non-zero solution, then A is invertible.<br>(c) {(0, 0, 0)} is the orthogonal complement of R³ in R³.<br>(d) Let A be a m × n real matrix, where m &lt; n, with full row rank. Ax = b has either 0 or 1 solution.<br>(e) Let v be a vector in S and u be a vector such that &lt;u, v&gt; = 0, then u ∈ S<sup>⊥</sup>.<br>(f) Let A be a symmetric matrix. C(A<sup>T</sup>) and N(A<sup>T</sup>) are orthogonal complement.<br>(g) Let u<sub>1</sub>, …, u<sub>n</sub> be linearly dependent. Then u<sub>1</sub>, …, u<sub>n−1</sub> are linearly dependent.<br>(h) Let U be a subspace of a vector space V. Then (U<sup>⊥</sup>)<sup>⊥</sup> = U.<br>(i) The null space of A is equal to the column space of A<sup>T</sup>A.<br>(j) Let A and B be n × n real matrices. Then, rank(AB) ≤ min(rank(A), rank(B))",
@@ -1520,6 +1574,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "9-(a)",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "（correct: 3; incorrect: −1; unanswered: 0）Let W be a subspace of R<sup>n</sup> and W<sup>⊥</sup> denotes its orthogonal complement. If W<sub>1</sub> is a subspace of R<sup>n</sup> such that x ∈ W<sub>1</sub>, then x<sup>T</sup>u = 0 for all u ∈ W<sup>⊥</sup>. Justify whether the following statements are true or false.<br>(i) dim(W<sub>1</sub><sup>⊥</sup>) ≤ dim(W<sup>⊥</sup>)<br>(ii) dim(W<sub>1</sub><sup>⊥</sup>) ≤ dim(W)<br>(iii) dim(W<sub>1</sub><sup>⊥</sup>) ≥ dim(W)<br>(iv) dim(W<sub>1</sub><sup>⊥</sup>) ≥ dim(W<sup>⊥</sup>)",
@@ -1540,6 +1595,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "9-(b)",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "（correct: 3; incorrect: −1; unanswered: 0）Let A be a 7×5 matrix with rank(A) = 5. Justify whether the following statements are true or false.<br>(i) There exists at least one b ∈ R<sup>7</sup> such that Ax = b has infinite number of least square solutions.<br>(ii) For any b ∈ R<sup>7</sup>, Ax = b has infinite number of solution.<br>(iii) There exists at least one b ∈ R<sup>7</sup> such that Ax = b has a unique least square solution.<br>(iv) For any b ∈ R<sup>7</sup>, Ax = b has a unique solution.",
@@ -1559,6 +1615,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "9-(c)",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "（correct: 3; incorrect: −1; unanswered: 0）Let B̂ = [(i), (ii)]<sup>T</sup> ∈ R² be the least-squares solution that minimize ‖Y − XB‖² where X = [[2, 0], [−1, 1], [0, 2]]（依列列出）and Y = [−1, 0, 1]<sup>T</sup>. Find the value for (i) and (ii).",
@@ -1579,6 +1636,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "9-(e)",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "（correct: 3; incorrect: −1; unanswered: 0）Let [(i), (ii), (iii)]<sup>T</sup> be the closest point to y in the subspace W spanned by u<sub>1</sub> and u<sub>2</sub>, where y = [12, −1, 2]<sup>T</sup>, u<sub>1</sub> = [−1, 0, 1]<sup>T</sup>, u<sub>2</sub> = [2, 1, 2]<sup>T</sup>. Find the value for (i), (ii), and (iii).",
@@ -1598,6 +1656,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "10-a",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Determine.<br>(i) True (T) or false (F): If A is an invertible matrix, then det(A<sup>−1</sup>) = [det(A)]<sup>−1</sup>.<br>(ii) True (T) or false (F): If M is an n×n matrix and can be written in the form M = [[A, B], [O, C]], where A, B, C, O are square matrices, and O is all zero matrix. Then det(M) = det(A) · det(C).<br>(iii) Find the determinant of the following matrix:<br>[[2, 0, −1, 1, 3], [0, −1, 0, −2, 0], [2, 1, 4, 0, 3], [2, −1, −1, −3, 3], [0, 2, 0, 3, 1]]（依列列出）.",
@@ -1618,6 +1677,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "10-c",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Prove <b>generally</b> that eigenvectors of an n×n matrix corresponding to distinct eigenvalues are linearly independent. Notice that the number of distinct eigenvalues k is not necessarily equal to n (i.e. a general case with k ≤ n). (Please leave it blank if you don't know the correct answer, or you will get at most minus 5 points for the wrong answer. 不會寫請留白，答錯最多倒扣 5 分，扣至本題組 0 分為止。)",
@@ -1638,6 +1698,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "6-a",
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Project the vector b onto the nullspace of A, where b = [−3, −2, 1, 2, 1]<sup>T</sup> and A = [[1, 2, 1, 0, 0], [2, 5, 1, 1, 0], [3, 7, 2, 2, −2], [4, 9, 3, −1, 4]]（依列列出）.",
@@ -1658,6 +1719,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "6-b",
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Orthogonal Bases.<br>(i) Apply the Gram-Schmidt process (<b>Requirement: you must process following the column order</b>, i.e. first column first, then second column, etc. <b>or you will get zero point</b>) to obtain orthonormal vectors from the columns of A = [[1, 4, −2, 2], [2, 1, 3, 2], [−1, 0, −2, 0], [0, 1, −1, 8]]（依列列出）.<br>(ii) As we known, the orthonormal vectors obtained from (i) cannot span R⁴. We can add some additional orthonormal vectors to those obtained from (i) and the new set of orthonormal vectors will span R⁴, and what are the additional orthonormal vectors?",
@@ -1678,6 +1740,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "6-c",
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Let A be an m by n matrix. Show that nullspace N(A<sup>T</sup>A) = N(A). (Please leave it blank if you don't know the correct answer, or you will get at most minus 5 points for the wrong answer. 不會寫請留白，答錯最多倒扣 5 分，扣至本題組 0 分為止。)",
@@ -1697,6 +1760,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 7,
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "a. Let B = [[1, −1, 0, 2], [0, 0, 3, 3], [2, 1, 0, 0], [1, 1, 2, 2]]（依列列出）. Compute det(B).<br>b. Let Q be an orthogonal matrix. Show that det(Q) is either 1 or −1.（不會寫請留白，答錯最多倒扣 2 分，扣至本題組 0 分為止。）",
@@ -1717,6 +1781,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 8,
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Let A = [[4, −1], [6, −1]], B = [[1, 1, 1], [0, 1, 0], [0, 0.5, 1.5]], and C = [[4, −4.5], [2, −2]]（依列列出）.<br>a. Check the diagonalizability of each of the above matrices. If it is diagonalizable, please diagonalize it; otherwise, clearly explain why it is not.<br>b. Find A<sup>8</sup> and A<sup>∞</sup>.<br>c. Find det(B + 6I<sub>3</sub>) using eigenvalues.",
@@ -1737,6 +1802,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 9,
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Let A = [[6, 2, 2], [−2, 6, 2]]（依列列出）, and consider the singular value decomposition (SVD) A = UΣV<sup>T</sup>.<br>a. Find U, Σ, and V.<br>b. Find orthonormal bases for C(A<sup>T</sup>), N(A), C(A), and N(A<sup>T</sup>), respectively, from the results obtained from SVD.",
@@ -1757,6 +1823,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "1-1",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "（第 1 題：Answer problems 1-1, 1-2, 1-3, and 1-4 independently.）Determine if the quadratic function f(x, y, z) = −x² − 5y² − 4z² − 2xy − 2yz − 2x − 4z − 5 has a maximum f<sub>max</sub> at (x, y, z) = (x*, y*, z*). If so, find:<br>(a) f<sub>max</sub>.<br>(b) (x*, y*, z*).",
@@ -1777,6 +1844,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "1-2",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Prove that Q is an orthogonal matrix if ‖Qx‖ = ‖x‖ for all x ∈ R<sup>n</sup>.",
@@ -1797,6 +1865,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "1-3",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Let c = (1, 8, 9, 6)<sup>T</sup>. Find the vector w ∈ span{(1, 1, 1, 1)<sup>T</sup>} such that ‖w − c‖ is minimized.",
@@ -1817,6 +1886,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "1-4",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "A square matrix satisfies −S = S<sup>T</sup>. Show that S − I is nonsingular.",
@@ -1837,6 +1907,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "2-1",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Given A = [[1, 0, 1], [0, 1, 1], [1, 2, 0], [0, 1, 0]]（依列列出）and b = [1, 1, 1, 1]<sup>T</sup>.<br>If the Gram-Schmidt process is applied to determine an orthonormal basis for R(A) = {b ∈ R<sup>m</sup> | b = A<sub>mn</sub>x} and QR factorization of A, then, after the first one orthonormal vector q<sub>1</sub> and r<sub>11</sub> are computed, we have<br>Q = [q<sub>1</sub> q<sub>2</sub> q<sub>2</sub>] = [[0.5√2, _, _], [0, _, _], [0.5√2, _, _], [0, _, _]] and R = [[r<sub>11</sub>, r<sub>12</sub>, r<sub>13</sub>], [0, r<sub>22</sub>, r<sub>23</sub>], [0, 0, r<sub>33</sub>]] = [[√2, _, _], [0, _, _], [0, _, _]].<br>(a) Finish above process and determine q<sub>2</sub> and q<sub>3</sub>, and fill in the columns of Q.<br>(b) Finish above process and determine R.<br>(c) Use the QR factorization to find the least squares solution of Ax = b.",
@@ -1857,6 +1928,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "2-2",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Let C = [[3, −1, −2], [2, 0, −2], [2, −1, −1]]（依列列出）is an 3x3 matrix.<br>(a) Please find the value of lim<sub>n→∞</sub> C<sup>n</sup>.<br>(b) Please compute the value of e<sup>C</sup>.",
@@ -1877,6 +1949,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 7,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Let A = [[0, −3, 3, 9], [2, 3, −1, 1], [1, 3, −2, 2], [4, 10, −5, 1]]（依列列出）.<br>a. Find the A<sup>−1</sup> = ?<br>b. Find the PA=LU factorization for A, where P is a permutation matrix, L is a lower triangular matrix with unit diagonal, and U is an upper triangular matrix.",
@@ -1896,6 +1969,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 8,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Given 4 points (t, b): (0, 20), (1, 0), (2, 0), and (3, 0), what is the sum of squared error ‖e‖² if we fit the closest quadratic polynomial b = C + Dt + Et² by the least square approximation?",
@@ -1915,6 +1989,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 9,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Prove that if a square matrix A is invertible, then (A<sup>−1</sup>)<sup>T</sup> = (A<sup>T</sup>)<sup>−1</sup>. (Please leave it blank if you don't know the correct answer, or you will get at most minus 5 points (until questions 7, 8, and 9 are 0 points) for the wrong answer. 不會寫請留白，答錯最多倒扣 5 分，扣至 7, 8, 9 題 0 分為止。)",
@@ -1934,6 +2009,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 10,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Given A = [[1, 1, 1], [0, 2, 1], [0, 0, 3]] and B = [[2A, 2A], [A, 3A]]（依列列出，B 為 6×6 區塊矩陣）, please find<br>a. the eigenvalues of A,<br>b. the corresponding eigenvectors of A, and<br>c. the eigenvalues of B.",
@@ -1954,6 +2030,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 11,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Let C = [[9, 3, −6], [3, 4, 1], [−6, 1, 7]] = LL<sup>T</sup>, where L is a 3x3 lower triangular matrix. Please find the L.",
@@ -1974,6 +2051,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 12,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Let D = [[4, 0, 0], [0, 1, i], [0, −i, 1]] = F<sup>H</sup>F, where F is a 3x3 Hermitian matrix. Please find the F.",
@@ -1996,6 +2074,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 6,
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "Answer the following problems. Any negative total score will be adjusted to 0 points.<br>Consider the problems (a)-(d), determine whether each statement is True or False. If a statement is False, provide a justification explaining why it is incorrect. You will receive 4 points for each correct answer, a penalty of −4 points for each incorrect answer, or 0 points for no answer.<br>For the problems (e)-(g), find the solutions and provide your answers. You will receive 3 points for each correct answer, or 0 points for each incorrect answer or no answer.<br>(a) A square matrix A is invertible if and only if λ = 1 is an eigenvalue of A.<br>(b) If W is a subspace of R<sup>n</sup>, then the orthogonal complement of W is also a subspace of R<sup>n</sup>.<br>(c) If E is an m × m elementary matrix and A is an m × n matrix, then the null space of EA is the same as the null space of A.<br>(d) If f = cos²x, g = sin²x, and h = 1 + x², then h lies in the space spanned by f and g.<br>(e) Find the number of parameters in the general solution of Ax = 0 if A is a 5 × 7 matrix of rank 3.<br>(f) Find the rank of a 5 × 6 matrix A for which Ax = 0 has a two-dimensional solution space.<br>(g) Find the value of k such that the vector (k, 21, −12) is a linear combination of vectors (−2, 2, 1) and (2, 1, −2).",
@@ -2015,6 +2094,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 7,
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "If *'s denote non-zero numbers, how many non-zero product terms in the expansion of the determinant<pre>| *  0  *  *  0  * |\n| 0  0  *  *  0  * |\n| 0  *  *  *  *  0 |\n| 0  *  *  0  *  0 |\n| 0  *  *  *  *  0 |\n| *  0  *  *  0  * |</pre>",
@@ -2035,6 +2115,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 8,
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "Find the orthogonal matrix Q in which q<sub>11</sub> &gt; 0 and q<sub>22</sub> &gt; 0, and the diagonal matrix D such that [x y] QDQ<sup>T</sup> [x, y]<sup>T</sup> = 6x² + 24xy − y².",
@@ -2054,6 +2135,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 9,
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "Find the matrix representation of the linear transformation L([x, y]<sup>T</sup>) = [5x − 3y, x + y, −3x + 2y]<sup>T</sup> with respect to bases B<sub>1</sub> = {[1, 2]<sup>T</sup>, [1, 1]<sup>T</sup>} and B<sub>2</sub> = {[1, 2, 1]<sup>T</sup>, [0, 0, 1]<sup>T</sup>, [1, 1, 2]<sup>T</sup>}.",
@@ -2076,6 +2158,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 1,
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "True or False: This part consists of true-or-false questions. In each case, please answer true if the statement is always true and false otherwise. And give a counterexample for any false conjecture.<br>1.1. A nxn matrix A is said to be nonsingular,<br>(1) if A is non-invertible.<br>(2) if there exists a matrix B such that AB=BA=I.<br>(3) if the determinates of A in nonzero.<br>(4) if Ax=0 where x is nonzero vector.<br>1.2. There are many types of elementary matrices. Which of the following definitions are elementary matrices?<br>(1) A nxn matrix is obtained by interchanging two rows of I.<br>(2) A nxn matrix is obtained by multiplying a row of I by a nonzero constant.<br>(3) A nxn matrix is obtained from I by adding a multiple of on row to another row.<br>(4) A nxn matrix is form from the I by reordering its column.<br>1.3. If there are two nxn matrices A, B and one scalar r,<br>(1) det(A) = det(B) implies A = B.<br>(2) det(rA+B) = r det(rA)+det(B).<br>(3) det((AB)<sup>T</sup>) = det(A)det(B).<br>(4) det(A) = det(B) where A and B are row equivalent matrices.<br>1.4. The a<sub>1</sub>, a<sub>2</sub>, …, a<sub>n</sub> be n column vectors in R<sup>n</sup> and let A = [a<sub>1</sub> a<sub>2</sub> … a<sub>n</sub>].<br>(1) The vectors a<sub>1</sub>, a<sub>2</sub>, …, a<sub>n</sub> will be linearly independent if and only if A is singular.<br>(2) The Ax = 0 if and only if x is trivial [0 0 … 0]<sup>T</sup>.<br>(3) The rank of A plus the nullity of A equals n.<br>(4) The rank of A equals the rank of A<sup>T</sup>.",
@@ -2096,6 +2179,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 2,
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "By trial and error, find the general condition of 2×2 matrices A, such that A² = − I with real entries.",
@@ -2115,6 +2199,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 3,
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "Find the determinant of the matrix A = [[1, 0, 2, 0, 0, 4], [30, 1, 5, 0, 0, 9], [3, 5, 3, 8, 0, 4], [2, 0, 8, 0, 0, 7], [7, 0, 4, 0, 6, 0], [0, 0, 1, 0, 2, 0]]（依列列出）.",
@@ -2134,6 +2219,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 4,
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "Find a Singular Value Decomposition of the matrix A = [[2, −2], [2, 2], [1, −1]]（依列列出）and verify your answer.",
@@ -2155,6 +2241,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 5,
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "Let A be an mxn matrix and x be an nx1 vector. (a) Given ‖x‖ = 1, what is the least square solution for Ax = 0? (b) Please prove your answer. (Please leave it blank if you don't know the correct answer, or you will get <b>at most minus 5 points</b> (until questions 3, 4, and 5 are 0 points) for the wrong answer. 不會寫請留白，答錯最多倒扣 5 分，扣至 3, 4, 5 題 0 分為止。)",
@@ -2176,6 +2263,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 11,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）Which of the following statements are true?",
@@ -2205,6 +2293,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 12,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）For the 197 by 197 finite difference matrix, <b>A</b>, which statements are true?<pre>              [ 2  −1   0   ·   ·   ·   0]\n              [−1   2  −1   0   ·   ·   ·]\n              [ 0  −1   2  −1   ·   ·   ·]\nA(197×197) =  [ ·   0  −1   ·   ·   ·   ·]\n              [ ·   ·   ·   ·   ·  −1   0]\n              [ ·   ·   ·   ·  −1   2  −1]\n              [ 0   ·   ·   ·   0  −1   2]</pre>",
@@ -2232,6 +2321,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 13,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "<b>A</b><sup>5</sup> = [[32, 100000], [0, 3125]]. The determinant of <b>A</b> is M. The closest integer of summing up the four entries in <b>A</b> is N = round(A<sub>11</sub> + A<sub>12</sub> + A<sub>21</sub> + A<sub>22</sub>). What is the value of mod(M + N × 13, 5), where mod(.) is the modulo operation.",
@@ -2259,6 +2349,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 14,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "First, consider the linear system<pre>kx +  y +  z = 1\n x + ky +  z = 1\n x +  y + kz = 1</pre>If k = a, the system has more than one solution. If k = b, the system has no solution. The closest integer of |a-b| is c. M=mod(c,5), where mod(.) is the modulo operation.<br>Next, consider the linear system<pre> x +  y +  z = 4\n2x +  y + 2z = 7\n x      − 2z = 3\n      y + 2z = 4</pre>Its least squares solution is {x̃, ỹ, z̃}. The closest integer of (ỹ × 50) is N.<br>What is the value of mod(M+N,5),?",
@@ -2285,6 +2376,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 15,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "The determinant of the following matrix <b>A</b> is M.<pre>    [1  −1  8   4  2]\n    [2   6  0  −4  3]\nA = [2   0  2   6  2]\n    [0   2  8   0  0]\n    [0   1  1   2  2]</pre>The determinant of the following matrix <b>B</b> is N.<pre>    [1.25  1    1    1  ]\nB = [1     1.2  1    1  ]\n    [1     1    1.1  1  ]\n    [1     1    1    1.5]</pre>K = |M/N| × 1/10000. Which of the following is the range of K?",
@@ -2311,6 +2403,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 16,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）<b>A</b> and <b>B</b> are two square matrices.",
@@ -2338,6 +2431,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 17,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）For a n×n real square matrix <b>A</b>. λ<sub>i</sub>‘s are eigenvalues of <b>A</b>.",
@@ -2365,6 +2459,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 18,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）If <b>A</b> is a m×n matrix and <b>A</b> can be <b>QR</b> factorized. <b>W</b> is the set of all columns of <b>A</b>, and <b>W</b><sup>⊥</sup> is the orthogonal complement of <b>W</b>, then",
@@ -2391,6 +2486,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 19,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）In the following terminologies which are <b>not</b> related to the least-squares problem.",
@@ -2417,6 +2513,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 20,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）Construct a spectral decomposition of matrix [[3, 4], [4, 9]]. Which values are <b>not</b> in the solution matrices.",
@@ -2443,6 +2540,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 11,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）Which of the following statements about symmetric matrices are true?",
@@ -2470,6 +2568,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 12,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）Which of the following statements about the matrix <b>A</b><sub>m×n</sub>, m&lt;n are true?",
@@ -2497,6 +2596,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 13,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）Which of the following about eigenvalues/eigenvectors are true?",
@@ -2523,6 +2623,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 14,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "Given a 4 by 4 matrix, <b>A</b>, as below, find its inverse matrix, <b>A</b><sup>−1</sup>.<pre>    [1  2  1  −1]\nA = [2  5  1  −1]\n    [1  3  2   1]\n    [2  4  1  −2]</pre>The sum of all the elements of <b>A</b><sup>−1</sup> is b. Rounding |b| to the nearest integer, c. What is the value of mod(c,5), where mod(.) is the modulo operation. (For example, mod(5,2)=1.)",
@@ -2549,6 +2650,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 15,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "For the following Matlab code:<pre class=\"code\">a=11;             %Set 'a' as the number of rows/cols. in a square matrix A\nA=ones(a,a);      %Set A as an 11x11 all-one matrix (All the elements are 1)\nfor m=1:a\n    A(m,m)=0.9;   %Set all the elements on the main diagonal of A as 0.9\nend\nd=det(A);         %Calculate the determinant of A\nc=abs(d*(10^a)+7); %Adjust the value, and abs(.) is the absolute-value func.\nanswer=mod(c,5);  %mod(.) is the modulo operation</pre>What is the value of “answer”?",
@@ -2576,6 +2678,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 16,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "The following matrix <b>A</b> is the transformation matrix of a linear operator A. Find the linear transformation matrix <b>B</b> that represents the linear operator A relative to the basis [1, 1, 0]<sup>T</sup>, [0, 1, 1]<sup>T</sup> and [1, 2, 2]<sup>T</sup>.<pre>    [1   3   1]\nA = [2   5  −4]\n    [1  −2   2]</pre>‘b’ is obtained by summing up all the elements in <b>B</b>, taking the absolute value and then rounding to the nearest integer. What is the value of mod(b,5), where mod(.) is the modulo operator?",
@@ -2602,6 +2705,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 17,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "Consider the subspace S of <b>R</b><sup>4</sup> spanned by the vectors: <b>v</b><sub>1</sub>=[1, 1, 1, 1]<sup>T</sup>, <b>v</b><sub>2</sub>=[1, 1, 2, 4]<sup>T</sup>, <b>v</b><sub>3</sub>=[1, 2, -4, -3]<sup>T</sup>. Apply the Gram-Schmidt method starting from <b>v</b><sub>1</sub>, then <b>v</b><sub>2</sub> and finally <b>v</b><sub>3</sub> to obtain the orthogonal basis of S: <b>u</b><sub>1</sub>=[1, 1, 1, 1]<sup>T</sup>, <b>u</b><sub>2</sub>=[-1, a, b, c]<sup>T</sup>, <b>u</b><sub>3</sub>=[1, d, e, f]<sup>T</sup>, where a, b, c, d, e and f are all integers (rounded to the nearest ones if necessary). What is mod(|a+b+c+d+e+f|,5), where mod(.) is the modulo operator?",
@@ -2628,6 +2732,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 18,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "Given that <b>A</b> = [[0, 0, −2], [1, 2, 1], [1, 0, 3]], <b>B</b> = <b>A</b><sup>12</sup>. ‘b’ is obtained by summing up all the elements in <b>B</b>. What is mod (|b|,5), where mod(.) is the modulo operator?",
@@ -2654,6 +2759,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 19,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "Find the least squares solution of the system <b>Ax</b> = <b>b</b>, in which<pre>    [1  0  1]\nA = [1  1  1]   and b=[4, -1, 0, 1]<sup>T</sup>.\n    [0  1  1]\n    [1  1  0]</pre>c is the rounding (or nearest) integer of the sum of the elements in <b>x</b>. What is the value of mod(|c|,5), where mod(.) is the modulo operator?",
@@ -2680,6 +2786,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 20,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "Find an orthogonal matrix <b>P</b> that diagonalizes <b>A</b> as shown below. That is, <b>P</b><sup>T</sup><b>AP</b> = <b>D</b>, where <b>D</b> is a diagonal matrix.<pre>    [ 1  −1  2]\nA = [−1   1  2]\n    [ 2   2  2]</pre>The product of the three elements in the first row of <b>P</b> is b. The product of the three elements in the main diagonal of <b>D</b> is d. c is the rounding (or nearest) integer of |b × d × 6|. What is the value of mod(c,5), where mod(.) is the modulo operator?",
@@ -2706,6 +2813,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 1,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "Let A = [[2, 4, 2], [1, 5, 2], [4, −1, 9]], and the <i>LU</i> decomposition of <i>A</i> be<pre>[1  0  0] [d  e  f]\n[a  1  0] [0  g  h]\n[b  c  1] [0  0  i]</pre>What is ⌊a + b + c + d + e + f + g + h + i⌋%5?<br>(% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
@@ -2732,6 +2840,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 2,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "Suppose that in P<sub>3</sub> we want to change from the ordered basis [1, x, x<sup>2</sup>] to the ordered basis [1, 2x, 4x<sup>2</sup> − 2]. Let the transition matrix from the first basis to the second basis be S, and the number of zeros in S be D. What is D%5?<br>(% is the modulo operation.)",
@@ -2759,6 +2868,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 3,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "Let A be a 4 × 4 matrix with reduced row echelon form given by<pre>    [1  0  −1  1]\nU = [0  1   3  2]\n    [0  0   0  0]\n    [0  0   0  0]</pre>Let the first two columns of A be [3, 2, −1, 2]<sup>T</sup> and [1, 1, −2, 3]<sup>T</sup>, and denote the third column of A as [a, b, c, d]<sup>T</sup>. What is ⌊a + b + c + d⌋%5?<br>(% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
@@ -2786,6 +2896,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 4,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "Let the matrix A = (a<sub>ij</sub>) represent the composite transformations “a yaw of 45°, followed by a pitch of −90° and then a roll of −45°”. What is Round{|Σ a<sub>ij</sub>|}%5?<br>(% is the modulo operation. Round{z} rounds z to the nearest integer.)",
@@ -2813,6 +2924,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 5,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "Let A = [[1, 2, 3, 4], [0, 1, 2, 3], [0, 0, 1, 2], [0, 0, 0, 1]]. What is the dimension spanned by the eigenvectors of A?",
@@ -2840,6 +2952,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 6,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "A = [[5, 2, 2], [3, 6, 3], [6, 6, 9]], <b>B</b> = <b>A</b><sup>3</sup> − 20<b>A</b><sup>2</sup> + 92<b>A</b> − 120<b>I</b><sub>3x3</sub>. D is the determinant of <b>B</b>. What is |D|%5? (% is the modulo operation. |.| is the absolute value.)",
@@ -2866,6 +2979,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 7,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "The subspace U of <b>R</b><sup>4</sup> is spanned by the three vectors: <b>v</b><sub>1</sub>=[1,-1,-1,1]<sup>T</sup>, <b>v</b><sub>2</sub>=[1,2,-3,2]<sup>T</sup>, <b>v</b><sub>3</sub>=[3,3,0,-2]<sup>T</sup>.<br>Use the Gram -Schmidt process to find the orthonormal basis of U:<br><b>t</b><sub>1</sub>=[1/2, −1/2, −1/2, 1/2]<sup>T</sup>, <b>t</b><sub>2</sub>=[m,n,p,q]<sup>T</sup>, <b>t</b><sub>3</sub>=[r,s,x,y]<sup>T</sup>. D=(Round{1/(n<sup>2</sup>s<sup>2</sup>)})%5. What is D?<br>(% is the modulo operation. Round{z} rounds z to the nearest integer.)",
@@ -2893,6 +3007,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 8,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "Following the previous question（U 為上一題由 <b>v</b><sub>1</sub>=[1,-1,-1,1]<sup>T</sup>, <b>v</b><sub>2</sub>=[1,2,-3,2]<sup>T</sup>, <b>v</b><sub>3</sub>=[3,3,0,-2]<sup>T</sup> 張成的子空間）. The subspace V = U<sup>⊥</sup> is U’s orthogonal complement in <b>R</b><sup>4</sup>. Given a vector w=[10,0,8,2]<sup>T</sup>, find w = v + u, where v = [a, b, c, d]<sup>T</sup> ∈ V, u = [e, f, g, h]<sup>T</sup> ∈ U. What is (Round{c<sup>2</sup> + g<sup>2</sup>})%5?<br>(% is the modulo operation. Round{z} rounds z to the nearest integer.)",
@@ -2919,6 +3034,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 10,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "We are required to find the parabola C + Dt + Et<sup>2</sup> that comes closest to the values <b>v</b>=(0,2,2,5) at the times <b>t</b>=(0,1,3,4). What is F = Round{|C + D + E| × 256}%5? (|.| is the absolute value. % is the modulo operation. Round{z} rounds z to the nearest integer.)",
@@ -2945,6 +3061,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 1,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "Given a linear transformation from R<sup>2</sup> to R<sup>3</sup> (with respect to standard bases) L([x, y]<sup>T</sup>) = [2x − 2y, 3x − 4y, −7x]<sup>T</sup>. Now let B<sub>1</sub> = {[1, 1]<sup>T</sup>, [−1, 1]<sup>T</sup>} and B<sub>2</sub> = {[1, −1, 0]<sup>T</sup>, [0, 1, 0]<sup>T</sup>, [1, 0, −1]<sup>T</sup>} be non-standard bases for R<sup>2</sup> and R<sup>3</sup>, respectively. If the matrix representation of the same linear transformation L (with respect to B<sub>1</sub> and B<sub>2</sub>) is [[a, b], [c, d], [e, f]]<sub>B<sub>1</sub>:B<sub>2</sub></sub>, what is ⌊|a + b + c + d + e + f|⌋%5? (% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
@@ -2971,6 +3088,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 2,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "Let the Gram-Schmidt QR factorization of the matrix [[1, −2, −1], [2, 0, 1], [2, −4, 2], [4, 0, 0]] be<pre>[1/5  −2/5  −4/5]\n[2/5   1/5   2/5]  [a  b  c]\n[2/5  −4/5   2/5]  [0  d  e]\n[4/5   2/5  −1/5]  [0  0  f]</pre>What is ⌊|a + b + c + d + e + f|⌋%5? (% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
@@ -2998,6 +3116,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 3,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "Assume p(x) = x<sup>10</sup> − x<sup>5</sup> + 1 and A = [[−2, −6], [1, 3]]. Let p(A) = [[a, b], [c, d]]. What is ⌊|a + b + c + d|⌋%5? (% is the modulo operation. ⌊z⌋ rounds z to the smaller nearest integer.)",
@@ -3024,6 +3143,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 5,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）Which of the following vectors belong to the nullspace of A = [[1, 1, 1, 0], [2, 1, 0, 1]]?",
@@ -3051,6 +3171,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 6,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）<b>A</b> and <b>B</b> are both N×N square matrices. Which of the following statements are true?",
@@ -3078,6 +3199,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 7,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）<b>A</b> is an N×N symmetric matrix. Which of the following statements are true?",
@@ -3106,6 +3228,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 8,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）We are processing two-dimensional data on the X-Y plane. Which of the following are true?<br>(a) One particle is initially located at the point A (0,-1) and on the unit circle. It goes straight to B on the unit circle as shown in the figure, and ∠OAB=15°, where O is the origin (0,0). The particle is then reflected and reaches P<sub>1</sub> on the unit circle with ∠OBA=∠OBP<sub>1</sub>. The particle keeps reflecting and reaches point P<sub>2</sub> on the unit circle and so on. The coordinate of P<sub>120</sub> is (1/2, −√3/2).（原題附圖：單位圓上 A 在正下方，B 在第一象限，P<sub>1</sub> 在第三象限；弦 AB 與半徑 OA 夾 15°。）<br>(b) The point A (0,-1) is linearly transformed by J=[[1, 2], [2, −1]]. After N linear transformations (i.e., J<sup>N</sup>[0, −1]<sup>T</sup>), the position is Q<sub>N</sub>=(x<sub>N</sub>, y<sub>N</sub>). Q<sub>1001</sub>=(x<sub>1001</sub>, y<sub>1001</sub>), x<sub>1001</sub>=0.<br>(c) Following (B), the distance between Q<sub>1000</sub> and Q<sub>1001</sub> is M. The distance between Q<sub>999</sub> and Q<sub>1000</sub> is N. M/N &gt; 2.3.<br>(d) R<sub>K</sub>=[[cos(K°), −sin(K°)], [sin(K°), cos(K°)]], M<sub>K</sub>=[[cos(2×K°), sin(2×K°)], [sin(2×K°), −cos(2×K°)]]. A point C, (a,b), is on the unit circle and in the first Quadrant (0&lt;a&lt;1, 0&lt;b&lt;1). C is then linearly transformed by Q=R<sub>15</sub>M<sub>15</sub>R<sub>30</sub>M<sub>30</sub>R<sub>45</sub> (i.e, Q[a,b]<sup>T</sup>). The resultant point must be in the first Quadrant.<br>(e) J=[[1, 2], [2, −1]], T=[[2, −1], [1, 2]], S=[[2, 0], [0, 3]]. A unit circle U is transformed by N=SJT to become Z. (For a point D, (c,d), on the unit circle, we calculate N[c,d]<sup>T</sup>.) The sum of the largest and shortest distances between the origin O and Z is 25.",
@@ -3134,6 +3257,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 9,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）[[a<sub>1</sub>, b<sub>1</sub>, c<sub>1</sub>, d<sub>1</sub>], [a<sub>2</sub>, b<sub>2</sub>, c<sub>2</sub>, d<sub>2</sub>], [a<sub>3</sub>, b<sub>3</sub>, c<sub>3</sub>, d<sub>3</sub>]] is processed by row operations to form [[1, 2, 3, 5], [2, 5, 7, 13], [0, 0, 1, 0]]. Which of the following are true?",
@@ -3160,6 +3284,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 10,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）Which of the determinants of the following matrices are zero?<br>(a) [[0, 3, 2, 6, 3], [−3, 0, 1, 3, 2], [−2, −1, 0, 5, 3], [−6, −3, −5, 0, 4], [−3, −2, −3, −4, 0]]<br>(b) [[1, 3, 2, 4, 3], [5, 4, 1, 3, 2], [2, 5, 2, 5, 3], [2, 6, 4, 8, 6], [4, 7, 8, 7, 9]]<br>(c) [[1, 1, 0, 0, 0], [−1, 3, 1, 0, 0], [0, −1, 3, 1, 0], [0, 0, −1, 3, 1], [0, 0, 0, −1, 3]]<br>(d) [[1, 1, 0, 0, 0], [1, 1, 1, 0, 0], [0, 1, 1, 1, 0], [0, 0, 1, 1, 1], [0, 0, 0, 1, 1]]<br>(e) [[1, 2, 3, 4, 0], [2, 4, 2, 0, 0], [3, 2, 0, 0, 0], [4, 0, 0, 4, 0], [0, 0, 0, 0, 1]]",
@@ -3186,6 +3311,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 1,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let A and B be n × n matrices over ℝ. Which of the following statements about <b>determinants</b> are <b>true</b>?",
@@ -3213,6 +3339,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 2,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let V be a vector space over a field 𝔽. Which of the following statements are <b>true</b>?",
@@ -3241,6 +3368,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 3,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let T: V → W be a linear transformation between finite-dimensional vector spaces over the same field. Which of the following statements are <b>true</b>?",
@@ -3268,6 +3396,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 4,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let V be a finite-dimensional inner product space over ℝ, and let u, v, w ∈ V. Which of the following statements about <b>orthogonality</b> are <b>true</b>?",
@@ -3296,6 +3425,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 5,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let A be an n × n Hermitian matrix over ℂ. Which of the following statements are <b>true</b>?",
@@ -3323,6 +3453,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 6,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "A = <pre>[ 3  2]\n[-1  0]</pre>B = <pre>[M  N]\n[P  Q]</pre>= A<sup>20</sup>. What is mod(|P|, 5), where mod(.) is the modulo operator?",
@@ -3349,6 +3480,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 7,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "A = <pre>[ 1  1  1  1]\n[-1  1  1  1]\n[ 0  0  2  3]\n[ 0  0  0  7]</pre>Apply QR factorization on A so that A=QR, where Q is an orthogonal matrix, and R is an upper triangular matrix. “K” is equal to multiplying all the nonzero elements in R. What is mod(round(|K|),5), where round(.) is the rounding function (to the nearest integer), and mod(.) is the modulo operator?",
@@ -3375,6 +3507,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 8,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "The determinant of <pre>[ 1   2   5   3   7]\n[ 3   7   1   4   2]\n[ 2   5   1   2   6]\n[-1  -6   2  -5   3]\n[-3  -7   4  -3   9]</pre>is K. What is mod(|K|,5)?",
@@ -3403,6 +3536,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 9,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "A = <pre>[ 1  -1   1   3   2]\n[ 1   1  -1  -4   1]\n[-1   1   1   2  -2]\n[ 1   1   1   1   1]</pre>Project b=[1 2 3 4]<sup>T</sup> onto A’s column space and the resulting vector is c. K is equal to the multiplication of all the elements of c. What is mod(round(|K×4|),5)?",
@@ -3429,6 +3563,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 10,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "Let S={V<sub>1</sub>,V<sub>2</sub>,V<sub>3</sub>} and T={U<sub>1</sub>,U<sub>2</sub>,U<sub>3</sub>} be the ordered bases for the vector space ℝ<sup>3</sup>, where V<sub>1</sub>= [-1 2 1]<sup>T</sup>, V<sub>2</sub>=[0 1 0]<sup>T</sup>, V<sub>3</sub>=[-2 2 1]<sup>T</sup>, and U<sub>1</sub>= [-1 1 0]<sup>T</sup>, U<sub>2</sub>=[0 1 1]<sup>T</sup>, U<sub>3</sub>=[2 1 1]<sup>T</sup>. For a vector V in ℝ<sup>3</sup>, the coordinate vector of V with respect to the basis T is [2 3 1]<sup>T</sup>. The coordinate vector of V with respect to the basis S is [M N P]<sup>T</sup>. What is mod(round(|M+N+P|),5)?",
@@ -3456,6 +3591,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 9,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "<b>A</b> = <pre>[4  1  −1]\n[2  5  −2]\n[1  1   2]</pre>. <b>P</b> is used to diagonalize <b>A</b> by <b>P</b><sup>−1</sup><b>AP</b> = <b>D</b>, where<br><b>D</b> = <pre>[a  0  0]\n[0  b  0]\n[0  0  c]</pre>, <i>a</i> ≤ <i>b</i> ≤ <i>c</i>, and <b>P</b> = <pre>[ d  e  1]\n[−1  f  g]\n[ h  1  j]</pre>. What is the value <i>K</i>,<br><i>K</i> = (Round{|<i>a</i> + <i>b</i> + <i>c</i> + <i>d</i> + <i>e</i> + <i>f</i> + <i>g</i> + <i>h</i> + <i>j</i>|})%5?<br>(|.| is the absolute value. % is the modulo operation. Round{z} rounds z to the nearest integer.)",
@@ -3484,6 +3620,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 4,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "Let <i>A</i> = <pre>[  2    1 − i]\n[1 + i    1  ]</pre> and the unitary matrix that diagonizes（註：原卷此字有補字修正，應為 diagonalizes）<i>A</i> be <i>U</i> = (1/√3)<pre>[a + ib   c + id]\n[e + if   g + ih]</pre>, what is the ⌊ |<i>a</i> + <i>c</i> + <i>e</i> + <i>g</i>| ⌋%5? (% is the modulo operation. ⌊<i>z</i>⌋ rounds z to the smaller nearest integer.)",

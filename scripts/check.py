@@ -157,26 +157,56 @@ def check_questions(subject_id, topic_ids, errors):
 
 
 def check_exam_log(errors):
-    """data/exam-log.json：每份已匯入的考卷都要登錄，不收的題目要寫原因（第 7.1 節）"""
+    """data/exam-log.json：每份已匯入的考卷都要登錄，不收的題目要寫原因（第 7.1 節）；
+    考古卷頁（第 7.2 節）靠 id 和題目的 source.paper 把整份卷組回來"""
     path = ROOT / "data" / "exam-log.json"
     if not path.exists():
         errors.append("[exam-log] 缺少 data/exam-log.json")
         return
     log = json.loads(path.read_text(encoding="utf-8"))
-    known = set()
+    known, ids = set(), {}
     for p in log.get("papers", []):
-        for k in ("school", "year", "paper", "url", "subjects", "skipped"):
+        for k in ("id", "school", "year", "paper", "title", "url", "subjects", "skipped"):
             if k not in p:
-                errors.append(f"[exam-log] 考卷 {p.get('school')} {p.get('year')} 缺少欄位 {k}")
+                errors.append(f"[exam-log] 考卷 {p.get('school')} {p.get('year')} {p.get('paper')} 缺少欄位 {k}")
+        if p.get("id") in ids:
+            errors.append(f"[exam-log] 考卷 id「{p.get('id')}」重複")
+        elif p.get("id"):
+            if not re.fullmatch(r"[a-z]+-\d{3}-[a-z]+", p["id"]):
+                errors.append(f"[exam-log] 考卷 id「{p['id']}」格式要是 <學校縮寫>-<學年>-<卷別>，例如 ncu-115-software")
+            ids[p["id"]] = p
         known.add((p.get("school"), p.get("year"), p.get("url")))
         for x in p.get("skipped", []):
             if not x.get("reason") or "no" not in x:
                 errors.append(f"[exam-log] {p.get('school')} {p.get('year')} {p.get('paper')} 的不收題目要有 no 和 reason")
+    used = {}   # 考卷 id -> 已收錄的題號
     for sid, qs in QUESTIONS.items():
         for q in qs:
             src = q.get("source", {})
-            if src.get("kind") == "exam" and (src.get("school"), src.get("year"), src.get("url")) not in known:
+            if src.get("kind") != "exam":
+                continue
+            if (src.get("school"), src.get("year"), src.get("url")) not in known:
                 errors.append(f"[questions/{q.get('id')}] 考卷沒有登錄在 data/exam-log.json")
+            pid = src.get("paper")
+            if not pid:
+                errors.append(f"[questions/{q.get('id')}] 考古題要有 source.paper（考卷 id，見 data/exam-log.json）")
+                continue
+            p = ids.get(pid)
+            if p is None:
+                errors.append(f"[questions/{q.get('id')}] source.paper「{pid}」不在 data/exam-log.json")
+                continue
+            if p.get("url") != src.get("url") or p.get("school") != src.get("school") or p.get("year") != src.get("year"):
+                errors.append(f"[questions/{q.get('id')}] source.paper「{pid}」和題目的學校／學年度／url 對不上")
+            no = str(src.get("no"))
+            if no in used.setdefault(pid, {}):
+                errors.append(f"[questions/{q.get('id')}] 考卷 {pid} 的第 {no} 題重複收錄（另一題是 {used[pid][no]}）")
+            used[pid][no] = q.get("id")
+    for pid, p in ids.items():
+        if not used.get(pid):
+            errors.append(f"[exam-log] 考卷 {pid} 沒有任何收錄的題目（考古卷頁會是空的）")
+        for x in p.get("skipped", []):
+            if str(x.get("no")) in used.get(pid, {}):
+                errors.append(f"[exam-log] 考卷 {pid} 的第 {x.get('no')} 題同時在「不收」和題庫裡")
 
 
 def load(path):
@@ -288,7 +318,7 @@ EMOJI = re.compile("[\U0001F300-\U0001FAFF\u2600-\u27BF\u2B50\u23E9-\u23FA\u25B6
 
 
 def check_no_emoji(errors):
-    paths = [ROOT / "index.html", *ROOT.glob("subjects/**/*.html"), *ROOT.glob("templates/*.html"),
+    paths = [ROOT / "index.html", *ROOT.glob("subjects/**/*.html"), *ROOT.glob("exams/*.html"), *ROOT.glob("templates/*.html"),
              *ROOT.glob("assets/**/*.js"), *ROOT.glob("assets/**/*.css"), *ROOT.glob("data/**/*.json")]
     for path in paths:
         for n, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
@@ -304,7 +334,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 def check_headers(errors):
     """每一頁的 <header> 都要和 scripts/header.py 產生的完全一樣（CLAUDE.md 6.6）"""
     from header import site_header
-    for path in [ROOT / "index.html", *ROOT.glob("subjects/**/*.html")]:
+    for path in [ROOT / "index.html", *ROOT.glob("subjects/**/*.html"), *ROOT.glob("exams/*.html")]:
         html = path.read_text(encoding="utf-8")
         body = re.search(r"<body[^>]*>", html)
         root = re.search(r'data-root="([^"]*)"', body.group(0)) if body else None

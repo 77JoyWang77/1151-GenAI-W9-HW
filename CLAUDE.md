@@ -75,8 +75,11 @@
 ├── data/
 │   ├── subjects.json             ← 科目登錄表
 │   ├── questions/<subject-id>.json  ← 題庫：原創練習題與考古題（第 7 節）
-│   ├── exam-log.json             ← 已匯入的考卷與不收的題目、原因（第 7.1 節）
+│   ├── exam-log.json             ← 考卷登錄表：每份考卷的 id、卷名、原卷網址、不收的題目與原因（第 7.1、7.2 節）
 │   └── <subject-id>.json         ← 該科的參考書、章節、主題登錄表
+├── exams/
+│   ├── index.html                ← 考古題總覽：學校 × 學年度 × 卷別（第 7.2 節）
+│   └── paper.html                ← 單份考卷頁，用 ?id=<考卷 id> 指定，內容全由 site.js 讀 JSON 畫出
 ├── subjects/
 │   └── <subject-id>/
 │       ├── index.html            ← 科目首頁（從 templates/subject.html 複製）
@@ -210,7 +213,7 @@
 - meta 列：`Ch<編號> 章節 English`、難度、tags。
 - 頁尾「最後更新：YYYY-MM-DD」與 JSON 的 `updated` 一致。
 - 難度寫成 `<span class="chip" data-difficulty="1～3">難度</span>`，星星由 `site.js` 畫。
-- **全站頁首統一**：每一頁的 `<header class="site-header">` 都**一模一樣**（只有相對路徑不同）。頁首只放每一頁都適用的東西：logo＋站名、「科目」、亮暗切換。屬於某個科目的連結（科目首頁、題庫）不放頁首，改由頁面內的麵包屑、題庫卡片、「到題庫篩選」提供。頁首也不標示目前所在頁，外觀在每一頁都完全相同。頁首由 `scripts/header.py` 產生，不要手改；要調整時改 `header.py` 再執行 `python scripts/header.py` 更新全部頁面（`check.py` 會比對）。
+- **全站頁首統一**：每一頁的 `<header class="site-header">` 都**一模一樣**（只有相對路徑不同）。頁首只放每一頁都適用的東西：logo＋站名、「科目」、「考古題」、亮暗切換。屬於某個科目的連結（科目首頁、題庫）不放頁首，改由頁面內的麵包屑、題庫卡片、「到題庫篩選」提供。頁首也不標示目前所在頁，外觀在每一頁都完全相同。頁首由 `scripts/header.py` 產生，不要手改；要調整時改 `header.py` 再執行 `python scripts/header.py` 更新全部頁面（`check.py` 會比對）。
 - HTML 標籤要成對，特別是專有名詞的 `<small>`：少寫一個 `</small>`，後面整段字都會變小（`check.py` 會檢查）。
 - `<head>` 載入 `theme.js`。
 - 結尾載入 `site.js`，再依序載入 `viz-core.js` → `viz/<subject-id>/<topic-id>.js`（圖和動畫都寫在這個腳本裡）。
@@ -219,7 +222,7 @@
 
 ## 7. 題庫（`data/questions/<subject-id>.json`）
 
-主題頁的練習題和科目的題庫頁（`subjects/<subject-id>/questions.html`，可依主題、難度、題型、來源、學校篩選）都讀這個檔案。
+主題頁的練習題、科目的題庫頁（`subjects/<subject-id>/questions.html`，可依主題、難度、題型、來源、學校篩選）和考古卷頁（第 7.2 節）都讀這個檔案。
 
 ```json
 {
@@ -284,7 +287,8 @@
 - `type` 照題目性質，`level` 一律為 `"exam"`。
 
 **5. source**
-- `{ "kind": "exam", "school": "國立臺灣大學", "year": 113, "dept": "…", "no": 3, "url": "原卷網址" }`，`school`、`year`、`dept`、`no` 必填。
+- `{ "kind": "exam", "school": "國立臺灣大學", "year": 113, "dept": "…", "no": 3, "paper": "ntu-113-software", "url": "原卷網址" }`，`school`、`year`、`dept`、`no`、`paper` 必填。
+- `paper`：這題屬於哪一份考卷，值是 `data/exam-log.json` 裡那份考卷的 `id`（`import_exq.py` 會自動填）。考古卷頁靠它把散在各科題庫的題目組回一份卷。
 - `dept`：照該年卷頭的系所／科目寫，同一學校不同年份卷頭不同就分開寫。
 - `no`：用卷上的題號。大題下的小題寫 `"3-(a)"`；卷上分成幾個部分（例如問答、單選、複選）就加部分編號 `"I-3"`、`"II-1"`；同一份考卷內格式要一致。合併收錄的幾題寫 `"21-23"`。
 
@@ -292,7 +296,24 @@
 - 自己寫詳解，寫推導過程；計算、追蹤題一定用程式驗算。看不清楚或不確定的地方標「（待確認）」並回報使用者。
 - 題目用到的主題如果還沒有頁面，仍然可以先收錄（題庫頁看得到），主題頁做好後會自動出現。
 
-**7.** 執行 `python scripts/check.py` 檢查格式（會檢查題目圖片存在、每份考卷都登錄在 `data/exam-log.json`）。
+**7.** 執行 `python scripts/check.py` 檢查格式（會檢查題目圖片存在、每份考卷都登錄在 `data/exam-log.json`、每題的 `paper` 對得到考卷、同一份卷的題號不重複、不收的題號沒有同時被收錄）。
+
+### 7.2 考古卷頁（`exams/`）
+
+考古題除了依主題出現在主題頁和題庫頁，也可以**一份卷一頁**瀏覽，模擬真的寫一份考卷。
+
+- **資料**：不另外存題目。`data/exam-log.json` 的每份考卷有：
+  - `id`：`<學校縮寫>-<學年>-<卷別>`，例如 `ncu-115-software`。學校縮寫在 `scripts/exam/_common.py` 的 `SCHOOL_SLUG`（ntu、nycu、ncu、ncku），新學校先在那裡加縮寫；卷別用 `software`（資料結構＋演算法）、`hardware`（計算機組織＋作業系統）、`math`（離散數學＋線性代數）。用 `_common.paper_id()` 產生，不要手打。
+  - `title`：卷頭的卷名（和題目的 `dept` 一致）。
+  - 其餘欄位見第 7.1 節：`school`、`year`、`paper`、`url`、`subjects`、`skipped`。
+  頁面把所有科目題庫中 `source.paper` 等於這個 id 的題目，加上 `skipped`，依卷上題號自然排序（2 < 10、1-(a) < 1-(b)、I-3 < II-1）組成一份卷。
+- **總覽 `exams/index.html`**：每間學校一張表，列是學年度、欄是三種卷，格子是收錄題數與未收題數，連到單份考卷頁；可依學校、卷別篩選。
+- **單份考卷 `exams/paper.html?id=<考卷 id>`**：
+  - 卷頭：學校、學年度、卷名、卷別、收錄／未收題數、原卷 PDF 連結，以及這份卷考了哪些主題（依次數排序，先顯示 8 個；已完成的主題可以點過去）。
+  - 題目卡片和題庫頁同一套，編號顯示卷上的「第 n 題」，附主題標籤；未收的題目放在原本的位置，灰色虛線框寫出原因，讓整份卷是完整的。
+  - 工具：展開／收合全部答案、每題自評「答對／答錯」（存在瀏覽器 localStorage，`exam-grade:<考卷 id>`）、自評統計、清除自評、同校同卷別的前一年／後一年。
+- **串接**：主題頁與題庫頁上考古題的來源標籤是連結，點了跳到那份考卷的那一題（`paper.html?id=…#q-<題目 id>`）；頁首有「考古題」；首頁有考古卷入口卡。
+- 新增考卷時**不用新增 HTML**：登錄 `exam-log.json`、匯入題目後，總覽和考卷頁會自動出現。
 
 ---
 
@@ -460,7 +481,7 @@ figure("bst-valid-invalid", () => ({
 - **預設淺色**，頁首按鈕可切換深色：`theme.js` 在 `<html>` 設定 `data-theme="dark"`，深色配色寫在 `:root[data-theme="dark"]`，選擇存在 localStorage。
 - 新元件一律用 CSS 變數上色，才會自動適用兩種模式；也要支援手機寬度（≥ 360px）：窄螢幕的樣式統一寫在 `style.css` 最後的 `@media (max-width: 600px)` 區塊（放在最後才能蓋過基本樣式），改完要用 360px 寬度截圖確認沒有橫向捲動。圖和動畫在窄螢幕會保留最小寬度、在自己的框裡左右滑動（`.viz-stage`），所以畫的時候字不要太小（label 至少 12px 等級），也要實際用 360px 截圖確認讀得清楚。題庫頁（`subjects/<id>/questions.html`）也要用 360px 檢查：考古題常有長式子、長表格、`<pre>`，題目卡片裡的 `<pre>` 和表格要能在自己的框裡捲動（表格包 `.table-scroll`）。
 - 動畫要平滑、不炫技：顏色代表狀態（第 9.4 節），位置移動代表資料移動。
-- **用語實用導向**：首頁、科目頁、題庫頁只放標題和功能，不寫宣傳性標語或「這裡可以做什麼」之類的說明文字。首頁只有 banner（站名、科目名稱、數字概況：已完成主題、練習題、考古題）和科目卡片（不加「科目」小標，也不列已完成的主題），全部由 `site.js` 讀 JSON 產生，新增主題或題目後會自動更新。
+- **用語實用導向**：首頁、科目頁、題庫頁只放標題和功能，不寫宣傳性標語或「這裡可以做什麼」之類的說明文字。首頁只有 banner（站名、科目名稱、數字概況：已完成主題、練習題、考古題）、考古卷入口卡（考卷份數、題數、學校與學年度範圍，連到 `exams/index.html`）和科目卡片（不加「科目」小標，也不列已完成的主題），全部由 `site.js` 讀 JSON 產生，新增主題或題目後會自動更新。
 - 科目頁的主題列表保持簡潔：已完成的主題是連結、籌備中的灰色並標「籌備中」，高頻主題名稱前有火焰 icon；不要再加其他標籤。
 
 ### 10.1 Icon
@@ -523,7 +544,7 @@ figure("bst-valid-invalid", () => ({
 
 照第 7.1 節的標準，用 `scripts/exam/` 的工具：
 
-1. **登錄考卷**：在 `data/exam-log.json` 新增這份考卷（school、year、paper、url、subjects、skipped）。
+1. **登錄考卷**：在 `data/exam-log.json` 新增這份考卷（id、school、year、paper、title、url、subjects、skipped；id 用 `_common.paper_id()` 產生，見第 7.2 節）。
 2. **OCR**：`sh scripts/exam/ocr.sh <paper.pdf>`，頁面圖放在 repo 外的 `$EXAM_PAGES`（預設 `~/exams/img`），不要把整份掃描檔放進 repo。
 3. **寫題目模組**：每份考卷 × 每科一個 Python 檔（放在 repo 外），格式：
    ```python
@@ -537,7 +558,7 @@ figure("bst-valid-invalid", () => ({
 5. **合併**：`python scripts/exam/import_exq.py <subject-id> <模組…>`。依（學校, 年, 題號）去重，題號自動接在題庫最大號後面，`SKIP` 會寫進 `data/exam-log.json`。已收的題目要修改時用 `sync_exq.py` 覆蓋，不要手改。
 6. **push 前先 `git fetch`**：遠端題庫有變動（例如另一個 session 新增了題目）時，先以遠端版本為準，再重跑 `import_exq.py`，讓題號往後接，不要讓題號撞號。
 7. **大量匯入**（很多份考卷）可以分給多個子代理平行處理：每個子代理只寫題目模組，不碰 repo；每做完一份考卷就存檔並跑 `validate.py`，避免中途被中斷時白做；由主代理統一合併、檢查、push。
-8. 回報：匯入幾題、對應到哪些主題、不收的題目與原因、哪些題目標了「（待確認）」。
+8. 回報：匯入幾題、對應到哪些主題、不收的題目與原因、哪些題目標了「（待確認）」，並附上考古卷頁的連結（`exams/paper.html?id=…`）確認整份卷顯示正常。
 
 ### 開始一個新科目
 

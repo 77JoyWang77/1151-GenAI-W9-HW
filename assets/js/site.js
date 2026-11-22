@@ -81,6 +81,14 @@
         exam += e; practice += q.questions.length - e;
       } catch (err) { /* 還沒有題庫 */ }
     }
+    const ex = $("#home-exams");
+    if (ex) {
+      try {
+        const log = await getJSON("data/exam-log.json");
+        const years = log.papers.map((p) => p.year);
+        ex.textContent = `${log.papers.length} 份考卷 · ${exam} 題 · ${[...new Set(log.papers.map((p) => SCHOOL_SHORT[p.school] || p.school))].join("、")} ${Math.min(...years)}–${Math.max(...years)} 學年度`;
+      } catch (err) { ex.textContent = `${exam} 題`; }
+    }
     const stats = $("#home-stats");
     if (stats) {
       const tile = (ic, num, unit, label) => h("div", { class: "stat" }, [
@@ -206,14 +214,18 @@
     if (!src || src.kind !== "exam") return "原創";
     return [src.school, src.year ? src.year + " 學年度" : "", src.dept, src.no ? "第 " + src.no + " 題" : ""].filter(Boolean).join(" ");
   }
-  function qCard(q, levels, num, topicNames) {
+  const paperHref = (src, qid) => `${ROOT}exams/paper.html?id=${encodeURIComponent(src.paper)}#q-${qid}`;
+  function qCard(q, levels, num, topicNames, opts = {}) {
     const el = h("article", { class: "qcard", id: "q-" + q.id });
     const meta = h("div", { class: "qmeta" }, [
       h("span", { class: "qnum", text: num }),
       h("span", { class: "qlevel lv-" + q.level, text: levels[q.level] || q.level }),
       h("span", { class: "qkind", text: q.type }),
-      h("span", { class: "qsrc" + (q.source && q.source.kind === "exam" ? " is-exam" : ""), text: srcText(q.source) }),
     ]);
+    const isExam = q.source && q.source.kind === "exam";
+    if (!opts.noSource) meta.appendChild(isExam && q.source.paper
+      ? h("a", { class: "qsrc is-exam", href: paperHref(q.source, q.id), title: "看整份考卷", text: srcText(q.source) })
+      : h("span", { class: "qsrc" + (isExam ? " is-exam" : ""), text: srcText(q.source) }));
     if (topicNames) q.topics.forEach((t) => topicNames[t] && meta.appendChild(h("a", { class: "qtopic", href: topicNames[t].href, text: topicNames[t].name })));
     if (q.source && q.source.url) meta.appendChild(h("a", { class: "qtopic", href: q.source.url, text: "原題連結", target: "_blank", rel: "noopener" }));
     const text = h("div", { class: "qtext" }); text.innerHTML = q.question;
@@ -353,6 +365,196 @@
     el.textContent = `${data.questions.length - exam} 題練習題 · ${exam} 題考古題`;
   }
 
+
+  // ---------- 考古題：總覽（學校 × 學年度 × 卷別）與單份考卷 ----------
+  const SCHOOL_SHORT = { "國立臺灣大學": "臺大", "國立陽明交通大學": "陽明交大", "國立中央大學": "中央", "國立成功大學": "成大" };
+  const SCHOOL_ORDER = Object.keys(SCHOOL_SHORT);
+  const PAPER_KIND = { software: ["軟體卷", "資料結構與演算法"], hardware: ["硬體卷", "計算機組織與作業系統"], math: ["數學卷", "離散數學與線性代數"] };
+  const KIND_ORDER = Object.keys(PAPER_KIND);
+  // 卷上的題號自然排序：2 < 10、1-(a) < 1-(b)、I-3 < II-1
+  const natCmp = (a, b) => String(a).localeCompare(String(b), "en", { numeric: true });
+  const schoolRank = (s) => { const i = SCHOOL_ORDER.indexOf(s); return i < 0 ? 99 : i; };
+
+  // 所有科目的考古題，附上科目 id
+  async function allExamQuestions() {
+    const reg = await getJSON("data/subjects.json");
+    const active = reg.subjects.filter((s) => s.status === "active");
+    const lists = await Promise.all(active.map(async (s) => {
+      const [d, subj] = await Promise.all([loadQuestions(s.id), getJSON(`data/${s.id}.json`)]);
+      return { s, d, subj };
+    }));
+    const qs = [], topics = {}, levels = {};
+    lists.forEach(({ s, d, subj }) => {
+      Object.assign(levels, d.levels);
+      subj.chapters.forEach((c) => c.topics.forEach((t) => (topics[s.id + "/" + t.id] = {
+        name: `${t.en} ${t.zh}`, done: t.status === "done", href: `${ROOT}subjects/${s.id}/${c.id}/${t.id}.html`, subject: s.zh,
+      })));
+      d.questions.forEach((q) => q.source && q.source.kind === "exam" && qs.push({ q, sid: s.id }));
+    });
+    return { qs, topics, levels, subjects: reg.subjects };
+  }
+
+  async function renderExamIndex(box) {
+    const [log, all] = await Promise.all([getJSON("data/exam-log.json"), allExamQuestions()]);
+    const count = {};
+    all.qs.forEach(({ q }) => (count[q.source.paper] = (count[q.source.paper] || 0) + 1));
+    const sum = $("#exam-summary");
+    if (sum) sum.textContent = `${log.papers.length} 份考卷 · ${all.qs.length} 題`;
+    const schools = [...new Set(log.papers.map((p) => p.school))].sort((a, b) => schoolRank(a) - schoolRank(b));
+    const sel = (label, opts) => h("select", { class: "vinput", "aria-label": label }, [h("option", { value: "", text: label + "：全部" }), ...opts.map(([v, t]) => h("option", { value: v, text: t }))]);
+    const fSchool = sel("學校", schools.map((s) => [s, s]));
+    const fKind = sel("卷別", KIND_ORDER.map((k) => [k, `${PAPER_KIND[k][0]}（${PAPER_KIND[k][1]}）`]));
+    const out = h("div");
+    box.append(h("div", { class: "qfilters" }, [fSchool, fKind]), out);
+    function draw() {
+      out.innerHTML = "";
+      const kinds = KIND_ORDER.filter((k) => !fKind.value || k === fKind.value);
+      schools.filter((s) => !fSchool.value || s === fSchool.value).forEach((school) => {
+        const mine = log.papers.filter((p) => p.school === school);
+        const years = [...new Set(mine.map((p) => p.year))].sort((a, b) => b - a);
+        const head = h("tr", {}, [h("th", { text: "學年度" }), ...kinds.map((k) => h("th", {}, [PAPER_KIND[k][0], h("small", { text: PAPER_KIND[k][1] })]))]);
+        const rows = years.map((y) => h("tr", {}, [h("th", { text: String(y) }), ...kinds.map((k) => {
+          const p = mine.find((x) => x.year === y && x.paper === k);
+          if (!p) return h("td", { class: "is-empty", text: "—" });
+          const n = count[p.id] || 0, sk = (p.skipped || []).length;
+          return h("td", {}, [h("a", { class: "paper-link", href: `paper.html?id=${encodeURIComponent(p.id)}` }, [
+            h("b", { text: `${n} 題` }), sk ? h("small", { text: `未收 ${sk}` }) : "",
+          ])]);
+        })]));
+        out.append(h("section", { class: "exam-school" }, [
+          h("h2", { text: school }),
+          h("div", { class: "table-scroll" }, [h("table", { class: "exam-grid" }, [h("thead", {}, [head]), h("tbody", {}, rows)])]),
+        ]));
+      });
+    }
+    [fSchool, fKind].forEach((f) => f.addEventListener("change", draw));
+    draw();
+  }
+
+  async function renderPaper(box) {
+    const id = new URLSearchParams(location.search).get("id");
+    const [log, all] = await Promise.all([getJSON("data/exam-log.json"), allExamQuestions()]);
+    const p = log.papers.find((x) => x.id === id);
+    if (!p) {
+      box.append(h("p", { class: "qempty" }, ["找不到這份考卷。", h("a", { href: "index.html", text: "回考古題總覽" })]));
+      return;
+    }
+    const school = SCHOOL_SHORT[p.school] || p.school;
+    const kind = PAPER_KIND[p.paper] || [p.paper, ""];
+    document.title = `${school} ${p.year} ${p.title} · 考古題 | 資工考研互動學習站`;
+    const crumb = $("#paper-crumb");
+    if (crumb) crumb.textContent = `${school} ${p.year} ${kind[0]}`;
+
+    const mine = all.qs.filter(({ q }) => q.source.paper === id);
+    const items = [
+      ...mine.map(({ q, sid }) => ({ no: q.source.no, q, sid })),
+      ...(p.skipped || []).map((s) => ({ no: s.no, skip: s })),
+    ].sort((a, b) => natCmp(a.no, b.no));
+
+    // 前後年度（同一間學校、同一種卷）
+    const same = log.papers.filter((x) => x.school === p.school && x.paper === p.paper).sort((a, b) => a.year - b.year);
+    const i = same.findIndex((x) => x.id === id);
+    const pager = h("nav", { class: "pager" });
+    const plink = (x, cls, hint) => h("a", { class: cls, href: `paper.html?id=${encodeURIComponent(x.id)}` }, [h("small", {}, hint), `${school} ${x.year} ${kind[0]}`]);
+    if (i > 0) pager.appendChild(plink(same[i - 1], "prev", [icon("prev"), " 前一年"]));
+    if (i < same.length - 1) pager.appendChild(plink(same[i + 1], "next", ["後一年 ", icon("next")]));
+
+    // 這份考卷考了哪些主題（次數多的在前）
+    const tc = {};
+    mine.forEach(({ q, sid }) => q.topics.forEach((t) => (tc[sid + "/" + t] = (tc[sid + "/" + t] || 0) + 1)));
+    const chips = Object.entries(tc).sort((a, b) => b[1] - a[1]).map(([k, n]) => {
+      const t = all.topics[k] || { name: k.split("/")[1], done: false };
+      const label = [t.name + " ", h("b", { text: String(n) })];
+      return t.done ? h("a", { class: "chip topic-chip", href: t.href }, label) : h("span", { class: "chip topic-chip is-planned", title: "主題頁籌備中" }, label);
+    });
+
+    // 主題太多時只先顯示最常考的 8 個，其他收起來
+    function topicBox(chips) {
+      const SHOW = 8;
+      const box2 = h("div", { class: "paper-topics" }, [h("span", { class: "paper-topics-label", text: `考了哪些主題（${chips.length}）` }), ...chips]);
+      if (chips.length > SHOW) {
+        chips.slice(SHOW).forEach((c) => (c.hidden = true));
+        const more = h("button", { class: "linkbtn", type: "button", text: `顯示全部 ${chips.length} 個` });
+        more.addEventListener("click", () => { chips.forEach((c) => (c.hidden = false)); more.remove(); });
+        box2.appendChild(more);
+      }
+      return box2;
+    }
+
+    // 自評：每題記「答對／答錯」，存在這台電腦的瀏覽器
+    const KEY = "exam-grade:" + id;
+    let grade = {};
+    try { grade = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { grade = {}; }
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(grade)); } catch (e) { /* 無痕模式等情況存不了，只影響紀錄 */ } };
+    const score = h("span", { class: "grade-score" });
+    const updateScore = () => {
+      const v = Object.values(grade), ok = v.filter((x) => x === 1).length;
+      score.textContent = v.length ? `自評：答對 ${ok} / 已作答 ${v.length} / 共 ${mine.length} 題` : `自評：尚未作答（共 ${mine.length} 題）`;
+    };
+
+    const toggle = h("button", { class: "linkbtn", type: "button", text: "展開全部答案" });
+    toggle.addEventListener("click", () => {
+      const ds = box.querySelectorAll("details.qans");
+      const open = !Array.from(ds).every((d) => d.open);
+      ds.forEach((d) => (d.open = open));
+      toggle.textContent = open ? "收合全部答案" : "展開全部答案";
+    });
+    const reset = h("button", { class: "linkbtn", type: "button", text: "清除自評" });
+    reset.addEventListener("click", () => {
+      grade = {}; save(); updateScore();
+      box.querySelectorAll(".qgrade button").forEach((b) => b.setAttribute("aria-pressed", "false"));
+    });
+
+    const skipped = (p.skipped || []).length;
+    box.append(
+      h("section", { class: "page-head paper-head" }, [
+        h("h1", {}, [`${p.school} ${p.year} 學年度`, h("small", { text: p.title })]),
+        h("div", { class: "meta" }, [
+          h("span", { class: "chip accent", text: `${kind[0]}・${kind[1]}` }),
+          h("span", { class: "chip", text: `收錄 ${mine.length} 題` }),
+          skipped ? h("span", { class: "chip", text: `未收 ${skipped} 題` }) : "",
+          h("a", { class: "chip", href: p.url, target: "_blank", rel: "noopener", text: "原卷 PDF" }),
+        ]),
+        chips.length ? topicBox(chips) : "",
+      ]),
+      h("div", { class: "practice-tools paper-tools" }, [score, toggle, reset]),
+    );
+    updateScore();
+
+    const list = h("div", { class: "qlist" });
+    items.forEach((it) => {
+      if (it.skip) {
+        list.appendChild(h("article", { class: "qcard is-skipped", id: "skip-" + it.no }, [
+          h("div", { class: "qmeta" }, [h("span", { class: "qnum", text: `第 ${it.no} 題` }), h("span", { text: "未收錄" })]),
+          h("p", { class: "qempty", text: it.skip.reason }),
+        ]));
+        return;
+      }
+      const card = qCard(it.q, all.levels, `第 ${it.no} 題`, null, { noSource: true });
+      // 主題標籤：已完成的主題可以點過去
+      const meta = card.querySelector(".qmeta");
+      it.q.topics.forEach((t) => {
+        const tp = all.topics[it.sid + "/" + t];
+        if (!tp) return;
+        meta.appendChild(tp.done ? h("a", { class: "qtopic", href: tp.href, text: tp.name }) : h("span", { class: "qtopic", title: "主題頁籌備中", text: tp.name }));
+      });
+      const g = h("div", { class: "qgrade" }, [h("span", { text: "自評" })]);
+      [[1, "答對", "check-circle"], [0, "答錯", "x-circle"]].forEach(([v, text, ic]) => {
+        const b = h("button", { type: "button", class: "linkbtn grade-" + (v ? "ok" : "ng"), "aria-pressed": String(grade[it.q.id] === v) }, [icon(ic), " " + text]);
+        b.addEventListener("click", () => {
+          if (grade[it.q.id] === v) delete grade[it.q.id]; else grade[it.q.id] = v;
+          save(); updateScore();
+          g.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b && grade[it.q.id] === v)));
+        });
+        g.appendChild(b);
+      });
+      card.appendChild(g);
+      list.appendChild(card);
+    });
+    box.append(list, pager);
+    focusHash();
+  }
+
   document.addEventListener("DOMContentLoaded", async () => {
     renderToc();
     renderQuizToggle();
@@ -370,6 +572,8 @@
       run(".qbank[data-questions]", (el) => renderTopicQuestions(el, subjectId, el.dataset.questions)),
       run("#qbank-all", (el) => renderQuestionBank(el, subjectId)),
       run(".pager", (el) => document.body.dataset.topic && renderPager(el, document.body.dataset.topic)),
+      run("#exam-index", (el) => renderExamIndex(el)),
+      run("#exam-paper", (el) => renderPaper(el)),
     ]);
   });
 })();

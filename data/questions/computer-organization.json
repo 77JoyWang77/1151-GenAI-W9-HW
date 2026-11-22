@@ -231,6 +231,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 1,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）Given (1) an instruction has 32 bits, and (2) a cache memory with 64 blocks, 16 bytes/block, and 4-way set associative. Which of the following statements are true?",
@@ -257,6 +258,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 2,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true for memory hierarchy?",
@@ -284,6 +286,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 3,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true regarding the pipeline hazards of a 5-stage MIPS CPU?",
@@ -311,6 +314,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 4,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）Given the execution time of the 5 stages of a CPU: IF 200 ps, ID 100 ps, EXE 200 ps, MEM 200 ps, WB 100 ps, which of the following statements are true?",
@@ -337,6 +341,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 5,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）Given a 16-bit computer with the I-type instruction in the following format, which of the following statements are true?<div class=\"table-scroll\"><table><tr><td>op: 5 bits</td><td>rs: 3 bits</td><td>rt: 3 bits</td><td>immediate: 5 bits</td></tr></table></div>",
@@ -363,6 +368,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 6,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true for dynamic branch prediction?",
@@ -390,6 +396,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 7,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）For RISC (Reduced Instruction Set Computer), which of the following statements are true?",
@@ -417,6 +424,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 8,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）Assume that the frequency of Floating Point (FP) operations is 25% for a computer, and the average CPI (Clock Cycles Per Instruction) of FP operations is 4. The average CPI of other instructions is 1.5. By performing some enhancement on the hardware, we can reduce the average CPI of all FP operations to 2. All other factors are not changed after enhancement. Which of the followings are true?",
@@ -443,6 +451,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 9,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）About instruction level parallelism, which of the followings are true?",
@@ -470,6 +479,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 10,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（多選題）About memory hierarchy, which of the followings are true?",
@@ -496,6 +506,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 1,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "We define the speedup of a system by the execution time before improvement divides the execution time after improvement. Suppose a module accounts for 40% computation time of the entire system. We enhance the module to be 10 times faster. What is the overall speedup after the enhancement (approximate to two decimal places)?",
@@ -522,6 +533,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 2,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "For a 16K-byte two-way set associative cache whose block size is 4 bytes, if the length of the address is 32 bits, how many bits are used for tag?",
@@ -549,6 +561,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 3,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "Assume that an un-pipelined machine has 8ns clock cycles. The machine uses four cycles for ALU operations, five cycles for branches, and five cycles for memory operations. The relative frequencies of these operations are 30%, 30%, and 40%, respectively. Suppose that pipelining the machines adds 1ns of overhead to the clock cycle time. Assume that the ideal CPI is one after pipelining. Ignore any other impact. What is the speedup in the instruction execution rate gained from pipelining the machine?",
@@ -575,6 +588,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 10,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）The IEEE 754 standard specifies a binary16 as sign bit (1 bit), exponent (5 bits), and significand (10 bits). The exponent bias is 15. We define a new format by increasing the exponent to 8 bits and decreasing significand to 7 bits. We set the exponent bias in the new format as 127. Which of the following statements are true?",
@@ -601,6 +615,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 11,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true regarding inclusive cache?",
@@ -628,6 +643,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 12,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true regarding Instruction cache (I-cache) and Data cache (D-cache) in L1 cache?",
@@ -656,6 +672,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 13,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are NOT true for instruction set design and CPU implementation?",
@@ -683,6 +700,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 14,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true for pipeline hazards?",
@@ -711,6 +729,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 15,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true?",
@@ -738,6 +757,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 1,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true regarding performance evaluation?",
@@ -765,6 +785,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 3,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which statements are true about the MIPS (32-bit) assembly language?",
@@ -792,6 +813,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 4,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which statements are true about single-cycle, multi-cycle, and pipeline CPUs?",
@@ -818,6 +840,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 5,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true about RISC and CISC?",
@@ -844,6 +867,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 6,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true about RAM and ROM?",
@@ -871,6 +895,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 7,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true about cache design?",
@@ -898,6 +923,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 8,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which of the following statement are true about cache miss types?",
@@ -924,6 +950,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 9,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Suppose that a cache memory’s (L1) access time is “<i>C</i> ns” and a main memory’s (L2) access time is “<i>M</i> ns”. In this architecture, 60% of the memory accesses are read and remaining all are writing requests. If the hit ratio of read operation can achieves “<i>H</i>” and that of writing operation is 1, what is the average memory access time (AMAT) when a write-through protocol is adopted on the cache?",
@@ -950,6 +977,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 10,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）If the floating-point (FP) instructions of an application on a specific processor <i>C1</i> consumes 60% of the total execution time. Moreover, in the same application, 25% of the floating-point time is taken to do square root calculations. A new processor <i>C2</i> is developed. This new processor could either enhance the performance of FP instructions by a factor of 1.5 or alternatively increase the performance of the square root operation by a factor of 8. Which of the following statements are true?",
@@ -976,6 +1004,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 1,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（複選題）Consider a system where the cache memory (L1) has an access time of \"C ns,\" and the main memory (L2) has an access time of \"M ns.\" In this architecture, 80% of the memory accesses are read, and the remaining 20% are write requests. If the hit ratio for read operations is \"H,\" and the hit ratio for write operations is 1, what is the average memory access time (AMAT) when a write-through protocol is implemented in the cache?",
@@ -1002,6 +1031,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 2,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）What factors influence the effectiveness of a cache memory in a memory hierarchy? (Select all that apply)",
@@ -1028,6 +1058,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 3,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Which statements accurately describe the characteristics of non-volatile storage in the memory hierarchy? (Select all that apply)",
@@ -1054,6 +1085,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 4,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）What tasks are performed by the Memory Management Unit (MMU) in the memory hierarchy? (Select all that apply)",
@@ -1080,6 +1112,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 5,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）In a cache memory system, what are the characteristics of direct-mapped, set-associative, and fully-associative caches? (Select all that apply)",
@@ -1107,6 +1140,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 6,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）In the context of pipelining in a CPU, which of the following statements are true?",
@@ -1133,6 +1167,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 7,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）In the context of virtual memory, which of the following statements are accurate?",
@@ -1159,6 +1194,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 8,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）In the context of memory hierarchy, what are the characteristics of cache memory?",
@@ -1186,6 +1222,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 9,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）What features are associated with the MIPS instruction set architecture?",
@@ -1212,6 +1249,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 10,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）What are characteristics of SIMD (Single Instruction, Multiple Data) parallelism?",
@@ -1238,6 +1276,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 1,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Virtual memory is a fundamental concept in modern operating systems that provides an abstraction of the physical memory available in a computer system. Which of the following are true about virtual memory systems?",
@@ -1264,6 +1303,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 2,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements regarding ECC (Error-Correcting Code) memory are accurate?",
@@ -1290,6 +1330,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 3,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）A system employs various techniques to maximize memory bandwidth and minimize latency, including memory banks, interleaving, and multiple memory channels. Given this context, which of the following statements accurately describe the interaction and impact of memory banks and related memory parallelism techniques on overall system performance?",
@@ -1316,6 +1357,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 4,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are true?",
@@ -1343,6 +1385,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 5,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）In modern computer architecture, the increasing gap between CPU processing speeds and the rate at which data can be accessed from main memory has created a significant bottleneck. This bottleneck impacts overall system performance and has led to the development of various techniques to mitigate its effects. Considering the challenges posed by this bottleneck, which of the following statements are correct?",
@@ -1369,6 +1412,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 6,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）What is the primary purpose of forwarding (bypassing) in a pipelined processor?",
@@ -1395,6 +1439,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 7,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Which of the following is a characteristic of a structural hazard?",
@@ -1421,6 +1466,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 8,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Which of the following are common techniques for resolving data hazards in pipelined processors?",
@@ -1448,6 +1494,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 9,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Why is it important to consider associativity in parallel programming when working with floating-point arithmetic?",
@@ -1474,6 +1521,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 10,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）What is the purpose of adding a bias to the exponent in a floating-point representation?",
@@ -1502,6 +1550,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 1,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements are TRUE regarding computer architecture?",
@@ -1529,6 +1578,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 2,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Which of the following comparisons between single-cycle and multi-cycle implementations are TRUE?",
@@ -1555,6 +1605,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 3,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Consider the code sequence:<pre class=\"code\">add x1, x2, x3\nsub x4, x1, x5</pre>In a 5-stage MIPS pipeline with full forwarding logic, which of the following are TRUE?",
@@ -1581,6 +1632,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 4,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements about branch prediction are TRUE?",
@@ -1607,6 +1659,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 5,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Regarding exceptions in a pipelined processor:",
@@ -1634,6 +1687,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 6,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Regarding Virtual Memory and Translation Lookaside Buffers (TLBs) in a modern hierarchical memory system, which statements are correct?",
@@ -1662,6 +1716,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 7,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Consider a Multi-Level Cache (MLC) hierarchy (L1, L2, L3). Which design choices regarding inclusion and writing policies are correct?",
@@ -1689,6 +1744,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 8,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）In Modern GPU Architectures (SIMT - Single Instruction, Multiple Threads), how are memory divergence and control divergence handled?",
@@ -1715,6 +1771,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 9,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements correctly describe the principles of Locality of Reference?",
@@ -1742,6 +1799,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 10,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Modern GPUs often use GDDR (Graphics Double Data Rate) or HBM. How does the memory subsystem of a GPU differ from a CPU's DDR subsystem regarding latency and parallelism?",
@@ -1769,6 +1827,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": 6,
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(20 pts) Consider a SMP processor (Symmetric Multiprocessor) adopting the Write-Invalidate <i>Snooping Cache Coherence</i> protocol. Each processor has a 4KiB direct-mapped, physically-addressed L1 cache with 16-byte cache lines. Three integer arrays A, B and C are placed contiguously in the memory in the order of A, B and C. The starting address of array A is 0x0000A000 (assuming 32-bit memory address). Processor P0 and P1 execute the following code segment (the L1 cache is empty initially):</p>\n<pre class=\"code\">Int  A[300], B[300], C[300]\nfor (i=4*Pn; i&lt; 4*(Pn+1);i++)   /* Pn is the processor id: 0, 1 */\n     C[i] = A[i]+B[i];</pre>\n<p>(a) (5 pts) What is the size (bits) of the tag array?<br>\n(b) (5 pts) Could increasing the cache associativity reduce cache misses running the above codes?<br>\n(c) (5 pts) How many coherence misses could occur in the worst case(c1)? How many of them are false-sharing misses(c2)?<br>\n(d) (5 pts) if the cache line size becomes 32 bytes (the cache size is still 4KiB), how many coherence misses could occur in the worst case (d1)? How many of them are false-sharing misses(d2)?</p>",
@@ -1790,6 +1849,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": 7,
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(25 pts) Consider a 5-stage (IF, ID, EX, MEM, WB) RISC-V pipelined processor (Figure 1) composed of logic blocks with the following latency (any unspecified block latency is treated as 0):</p>\n<p>（原題附各元件延遲表與含 Forwarding Unit、Hazard Detection Unit 的五級管線資料路徑圖 Figure 1；子題 (a) 需要依該圖逐段計算延遲，本題庫只收不依賴該圖的 (b)～(d)。）</p>\n<p>Given the following code segment:</p>\n<pre class=\"code\">#1 lw    x10, 100(x5)\n#2 add   x2, x10, x2\n#3 add   x2, x2, x4\n#4 sub   x6, x2, x6</pre>\n<p>(b) (5 pts) When the first instruction (lw) is in the MEM stage, which instructions are executing in the ID (b1) and EX (b2) stage? (請填寫 instruction number，不要寫 instruction)<br>\n(c) (5 pts) When the sub instruction (#4) is in the EX state, what value should be set for the control signal ForwardA (c1) and ForwardB (c2), respectively?<br>\n(d) (5 pts) What are the control signal values for RegWrite (d1), MemtoReg(d2), MemRead(d3), and MemWrite (d4) for the sub instruction?</p>",
@@ -1812,6 +1872,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": 8,
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(5 pts) Which one(s) of the following statements are correct? (全對才給分)（複選）</p>",
@@ -1837,6 +1898,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 4,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts) Compilers could affect program execution efficiency. We have two compiler options, C1 and C2. Given a program A, compiler C1 results in a dynamic instruction count of 1.0x 10<sup>9</sup> and has an execution time of 1.1 second, while compiler C2 results in a dynamic instruction count of 1.2 x 10<sup>9</sup> and an execution time of 1.5 second. Assume the processor has a clock cycle time of 1ns. What is the average CPI for that program compiled with C1 and C2, respectively?</p>",
@@ -1864,6 +1926,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 5,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts) Consider the fragment of RISC-V assembly codes below:</p>\n<pre class=\"code\">#1   sd  x29, 12(x16)\n#2   ld  x29, 8(x16)\n#3   sub x17, x29, x14\n#4   add x15, x17, x14\n#5   sub x15, x30, x14</pre>\n<p>Assume that we have a standard 5-stage pipeline (IF, ID, EX, MEM, WB) without data forwarding, and a register can be written and read back in the same cycle without introducing a hazard. Which CPU cycles do instruction #3 and instruction #4 complete assuming a perfect cache?</p>",
@@ -1891,6 +1954,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 6,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts) Below is the RISC-V assembly program generated for the body of function f: \"<i>int f(int a, int b, int c)</i>\". The program follows RISC-V's convention and uses registers x10-x18 to pass parameters and return values in function calls.</p>\n<pre class=\"code\">addi  x2, x2, -16\nsd    x1, 0(x2)\nslli  x5, x12, 5\nsd    x5, 8(x2)\njal   x1, m\nld    x11, 8(x2)\nlui   x12, 0x11232\naddi  x12, 0x334\nld    x1, 0(x2)\naddi  x2, x2, 16\njal   x0, g</pre>\n<p>Which of the following is the respective C code? Note that the addi instruction in RISC-V is sign-extended for immediate values.</p>",
@@ -1917,6 +1981,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 7,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts) Consider the RISC-V code below were executed concurrently on two cores.</p>\n<pre class=\"code\">[x2] = 1\n[x3] = 1\n________\nld    x1, 0(x2)\naddi  x1, x1, 1\nsd    x1, 0(x2)\nld    x4, 0(x3)\nadd   x4, x1, x4\nsd    x4, 0(x3)</pre>\n<p>Memory is shared by the two cores. Before the executing the code, assuming registers x2 and x3 of each of the cores contain different values (x2<sub>core0</sub> != x3<sub>core0</sub> and x2<sub>core1</sub> != x3<sub>core1</sub>). The same register x2 and x3 of the two cores respectively contain the same value (x2<sub>core0</sub> = x2<sub>core1</sub> and x3<sub>core0</sub> = x3<sub>core1</sub>). The memory location [x2] and [x3] each contains the integer value 1 before executing the code. Assuming no instruction reordering is possible. What are all the possible values of [x2] and [x3] after code execution has completed?</p>",
@@ -1944,6 +2009,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 14,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts)（複選）Assume a virtual memory system with an 4KiB page size. The cache capacity is 16KiB, and the block size is 8-word (1 word = 4 bytes). Which cache architecture could be implemented as a virtually-indexed, physically tagged cache:</p>",
@@ -1971,6 +2037,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 15,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts)（複選）Assume the CPI for INT instructions, FP instructions, L/S instructions, and branch instructions for a given processor P is 1, 2, 4, and 2, respectively. Consider a program F that includes 12 x 10<sup>6</sup> INT instructions, 15 x 10<sup>6</sup> FP instructions, 50 x 10<sup>6</sup> L/S instructions, and 13 x 10<sup>6</sup> branch instructions. Assume the program executes on a machine with a single processor P that has a 3.2 GHz clock rate. Which of the following are correct?</p>",
@@ -1997,6 +2064,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 17,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts)（複選）Which of the following are true about RISC-V instructions about the registers in the register file and instruction size?</p>",
@@ -2023,6 +2091,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 1,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(2pts) As shown below, the function \"compute_distance\" runs through a list of 2D points and computes the distance between each pair of them. Note that each point is represented by single precision float-point numbers. Please answer the following questions.</p>\n<pre class=\"code\">void compute_distance(float x[], float y[], int N, float distance[]) {\n    for (int i = 0; i &lt; N; i++) {\n        for (int j = 0; j &lt; N; j++) {\n            float x_dist = x[i]- x[j];\n            float y_dist = y[i] - y[j];\n            distance[j + i * N] = sqrt(x_dist*x_dist + y_dist*y_dist);\n        }\n    }\n}</pre>\n<p>Let us observe the data access pattern first. For each iteration in the inner loop, the function loads 4 floating-point numbers and store 1 floating-point number. Assume N=1024, and the processor cache is too small to hold all the data points. The cache is configured with a write-back/write-allocate policy, with 32-bytes blocks. What would be the average cache miss rate?</p>",
@@ -2050,6 +2119,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 4,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(2pts) Suppose the compute_distance function above is executed on an Intel Core i7 960 processor. The roofline model for the processor is shown as the figure below. The processor has 4 cores, and the capacity of Level 1 data cache on each core is 32KB. Assume N=1024. Based on the roofline model, how long does it take to finish the function when the processor cache is too small to store all the data points?</p>\n<pre class=\"code\">void compute_distance(float x[], float y[], int N, float distance[]) {\n    for (int i = 0; i &lt; N; i++) {\n        for (int j = 0; j &lt; N; j++) {\n            float x_dist = x[i]- x[j];\n            float y_dist = y[i] - y[j];\n            distance[j + i * N] = sqrt(x_dist*x_dist + y_dist*y_dist);\n        }\n    }\n}</pre>\n<p>（roofline 圖：Core i7 960 (Nehalem)，縱軸 GFLOPs/s（4～1024，對數刻度），橫軸 Arithmetic intensity（1/8～32，對數刻度）；斜線為 Stream = 16.4 GB/s，水平屋頂為 102.4 GF/s Single Precision 與 51.2 GF/s Double Precision。）</p>",
@@ -2077,6 +2147,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 5,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(2pts)（承 Q4：compute_distance 在 Core i7 960 上執行，cache 放不下所有資料點）Following the previous question, if we wish to improve the performance, which of the following method is most effective?</p>",
@@ -2104,6 +2175,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 6,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(6pts) Consider two hardware threads, Proc0 and Proc1, that interact with a shared memory that maps addresses to values. Both memory locations, A and B, have an initial value of 0. x0 and x1 are CPU registers. Each of the hardware threads has a store buffer. The hardware threads support out-of-order execution. Assume the following code in two cases runs on Proc0 and Proc1 concurrently. Which of the following is true about the final state of x0 and x1 after the code finishes executing?</p>\n<div class=\"table-scroll\"><table><tr><th colspan=\"2\">Case 0</th><th colspan=\"2\">Case 1</th><th colspan=\"2\">Case 2</th></tr>\n<tr><th>Proc0</th><th>Proc1</th><th>Proc0</th><th>Proc1</th><th>Proc0</th><th>Proc1</th></tr>\n<tr><td>store #1, [A];</td><td>store #1, [B];</td><td>load x0, [A];</td><td>load x1, [B];</td><td>store #1, [A];</td><td>load x0, [B];</td></tr>\n<tr><td>load x0, [B];</td><td>load x1, [A];</td><td>store #1, [B];</td><td>store #1, [A];</td><td>store #1, [B];</td><td>load x1, [A];</td></tr></table></div>",
@@ -2130,6 +2202,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 7,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(5pts) Consider the following instruction sequence. Assume that the instructions are executed on a pipeline datapath with five stages.</p>\n<pre class=\"code\">or x10, x3, x4\nld x5, 8(x10)\nld x4, 0(x2)\nadd x5, x10, x5\nsd x5, 4(x10)</pre>\n<p>Assume that the processor has neither implemented hazard detection nor forwarding. How many NOP instructions should be added to ensure the execution is correct?</p>",
@@ -2157,6 +2230,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 8,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(5pts) Which of the following statement is true?</p>",
@@ -2184,6 +2258,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 10,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(8pts)（複選）Which of the following are possible values stored in the memory location A after the following sequence of instructions has been executed, each on a different processor? Assume each processor has its own cache, memory location A initially contains value 0.</p>\n<div class=\"table-scroll\"><table><tr><th>CPU0</th><th>CPU1</th><th>CPU2</th></tr>\n<tr><td>store #4, (A);<br>load reg, (A);<br>add reg, reg, #4;<br>store reg, (A);</td><td>load reg, (A);<br>add reg, reg, #1;<br>store reg, (A);<br>load reg, (A);<br>add reg, reg, reg;<br>store reg, (A);</td><td>store #6, (A);<br>load reg, (A);<br>add reg, reg, reg;<br>store reg, (A);</td></tr></table></div>",
@@ -2209,6 +2284,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 11,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(8pts)（複選）Assume the system has the following properties:</p>\n<ul><li>The memory is byte-addressable, and memory accesses are to 1-byte words.</li><li>Addresses are 13 bits wide.</li><li>The cache is 4-way set associative, with 4-byte block size, and 8 sets.</li></ul>\n<div class=\"table-scroll\"><table>\n<tr><th>Index</th><th>Tag</th><th>V</th><th>Bytes:0-3</th><th>Tag</th><th>V</th><th>Bytes:0-3</th><th>Tag</th><th>V</th><th>Bytes:0-3</th><th>Tag</th><th>V</th><th>Bytes:0-3</th></tr>\n<tr><td>0</td><td>F0</td><td>1</td><td>ED 32 0A A2</td><td>8A</td><td>1</td><td>74 80 1D FC</td><td>14</td><td>1</td><td>EF 09 86 2A</td><td>BC</td><td>0</td><td>25 44 FA 1A</td></tr>\n<tr><td>1</td><td>BC</td><td>0</td><td>03 3E CD 38</td><td>A0</td><td>0</td><td>16 7B ED 5A</td><td>BC</td><td>1</td><td>8E 74 DF 18</td><td>E4</td><td>1</td><td>FB B7 12 02</td></tr>\n<tr><td>2</td><td>BC</td><td>1</td><td>54 9E 1E FA</td><td>B6</td><td>1</td><td>DC FA B2 14</td><td>00</td><td>0</td><td>B6 1F 7B 44</td><td>74</td><td>0</td><td>10 F5 B8 2E</td></tr>\n<tr><td>3</td><td>BE</td><td>0</td><td>2F 7E 3D A8</td><td>C0</td><td>1</td><td>27 95 A4 74</td><td>C4</td><td>0</td><td>07 11 6B D8</td><td>BC</td><td>0</td><td>C7 B7 AF C2</td></tr>\n<tr><td>4</td><td>7E</td><td>1</td><td>74 21 1C 2C</td><td>8A</td><td>1</td><td>22 C2 DC 34</td><td>BC</td><td>1</td><td>BA DD 37 D8</td><td>DC</td><td>0</td><td>E7 A2 39 BA</td></tr>\n<tr><td>5</td><td>98</td><td>0</td><td>A9 76 DB EE</td><td>54</td><td>0</td><td>BC 91 D5 92</td><td>98</td><td>1</td><td>80 BA 9B F6</td><td>BC</td><td>1</td><td>48 16 81 0A</td></tr>\n<tr><td>6</td><td>38</td><td>0</td><td>5D 4D F7 DA</td><td>BC</td><td>1</td><td>69 C2 DB 74</td><td>8A</td><td>1</td><td>A8 CE 7F DA</td><td>38</td><td>1</td><td>FA 93 EB 48</td></tr>\n<tr><td>7</td><td>8A</td><td>1</td><td>04 2A 32 6A</td><td>9E</td><td>0</td><td>B1 86 56 0E</td><td>CC</td><td>1</td><td>96 30 47 F2</td><td>BC</td><td>1</td><td>F8 1D 42 DB</td></tr>\n</table></div>\n<p>Suppose a program running on the machine references a 1-byte word at address addr. Select the true statements.</p>",
@@ -2235,6 +2311,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 1,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>[5 points]（複選）Power management is important to the design of computer systems. Which of the following statements is/are true?</p>",
@@ -2262,6 +2339,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 2,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>[5 points]（複選）In this question, we examine how the pipeline affects the clock cycle time of the processor. Assume that individual stages of the datapath have the following latencies:</p>\n<div class=\"table-scroll\"><table><tr><th>IF</th><th>ID</th><th>EX</th><th>MEM</th><th>WB</th></tr><tr><td>500 ps</td><td>700 ps</td><td>300 ps</td><td>600 ps</td><td>400 ps</td></tr></table></div>\n<p>Also, assume that instructions executed by the processor are broken down as the following:</p>\n<div class=\"table-scroll\"><table><tr><td>ALU/Logic</td><td>40%</td></tr><tr><td>Jump/Branch</td><td>15%</td></tr><tr><td>Load</td><td>25%</td></tr><tr><td>re（原卷此格字被截斷，依上下文應為 Store）</td><td>20%</td></tr></table></div>\n<p>Which of the following statements is/are true?</p>",
@@ -2290,6 +2368,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 3,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>[5 points]（複選）At the age of AI and big data, memory hierarchy has become more and more important. Which of the following statements is/are true?</p>",
@@ -2316,6 +2395,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 4,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>[5 points]（複選）According to the article, the use of low-precision calculation is critical to the transformer engine. The article mentions FP8, but there are two FP8 formats that are in use today. One is called <i>E4M3</i>, as it contains 4 exponent bits and 3 mantissa bits, and the other is called <i>E5M2</i>, which contains 5 exponent bits and 2 mantissa bits. Which of the following statements is/are true?</p><p>（題目中的 the article 指同卷前面引用的一篇談 MLPerf 加入 GPT-3 訓練基準、比較 Nvidia H100 與 Intel Gaudi2 的新聞，文中提到混合精度與 FP8；本題只需要浮點數格式的知識即可作答。）</p>",
@@ -2342,6 +2422,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 7,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>[10 points]（複選）A group of researchers at Massachusetts Institute of Technology developed a LLM called <i>TinyChat</i> to run on weak, power-constrained edge devices (https://hanlab.mit.edu/blog/tinychat). First, they profiled the execution time of TinyChat in the target application scenario to understand the workload. The LLM workload was broken down into two stages, Context stage and Generation Stage, and the profile revealed that the Generation Stage dominated the execution time, as Generation occupies 310ms of the total execution time (340ms). Furthermore, they used arithmetic intensity and roofline model to characterize the workload, and the figure below reported the arithmetic intensity for the two stages.</p>\n<p>（圖的內容：圓餅圖分成 Context (200 tokens) 與 Generation (20 tokens) 兩塊，Generation 佔 310 ms。下方 roofline 圖縱軸為 Peak Throughput (TFLOPS)，0～180；橫軸為 Arithmetic Intensity (FLOPs/Byte)，0～300；斜線上升到約 180 TFLOPS 後變水平。圖上標示：Generation Stage: Arithmetic Intensity = 1, 1TFLOPS (W16A16)；Generation Stage: Arithmetic Intensity = 4, 4TFLOPS (W4A16)，兩點都在斜線最底端；Context stage: Arithmetic Intensity &gt;= 165，落在水平屋頂附近。）</p>\n<p>Suppose we are designing a processor chip and fine-tune the LLM for a similar application, which of the following statements is/are true?</p>",
@@ -2369,6 +2450,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(1)~(4)",
+        "paper": "ncku-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_hardware.pdf"
       },
       "question": "Convolution neural networks (CNNs) have been widely adopted in many different application domains. Nevertheless, as CNNs incur high computation overhead and large memory footprint, it is an important task to customize the designs of embedded processors so as to meet the timing constrains required by target applications. Among other types of computations, matrix operations are time-consuming functions in CNNs and are important targets for hardware and software optimizations to facilitate the CNN computations on such platforms. Given the partial C code for the convolution operations, there are three N-by-N matrices (A, B, and C), and they keep double-precision floating-point numbers (each number is eight bytes). Please answer the following questions related to processor designs and software optimizations.<pre class=\"code\">for (int x = 0; x &lt; N; ++x)\n  for (int y = 0; y &lt; N; ++y)\n    for (int z = 0; z &lt; N; z++)\n      C[x+y*N] += A[x+z*N] * B[z+y*N];      (a)</pre><p>(1) [5%] Please write down the MIPS assembly code for the C statement (a). NOTE: Assume that the variables, C[x+y*N], A[x+z*N], B[z+y*N], have already been loaded into the CPU registers, $f4, $f6, and $f8, respectively.</p><p>(2) [5%] Which datapath(s) of the target CPU should be optimized if we want to accelerate the computation speed of above operations?</p><p>(3) [5%] Sometimes, embedded processors may not have the hardware support of floating-point operations. On such embedded platforms, the floating-point operations could be emulated by a software implementation of the floating-point operations (as library routines) or by integer operations. What is the technique of the floating-point emulation with integer operations?</p><p>(4) [5%] Continue with the above question. Which one of the two emulation techniques is better for computation efficiency?</p>",
@@ -2389,6 +2471,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(5)",
+        "paper": "ncku-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_hardware.pdf"
       },
       "question": "Convolution neural networks (CNNs) have been widely adopted in many different application domains. Nevertheless, as CNNs incur high computation overhead and large memory footprint, it is an important task to customize the designs of embedded processors so as to meet the timing constrains required by target applications. Among other types of computations, matrix operations are time-consuming functions in CNNs and are important targets for hardware and software optimizations to facilitate the CNN computations on such platforms. Given the partial C code for the convolution operations, there are three N-by-N matrices (A, B, and C), and they keep double-precision floating-point numbers (each number is eight bytes). Please answer the following questions related to processor designs and software optimizations.<pre class=\"code\">for (int x = 0; x &lt; N; ++x)\n  for (int y = 0; y &lt; N; ++y)\n    for (int z = 0; z &lt; N; z++)\n      C[x+y*N] += A[x+z*N] * B[z+y*N];      (a)</pre><p>(5) [10%] On a single-core embedded processor, which type of instructions is often supported by the embedded processor to take advantage of the data-level parallelism found in the above example code? Please rewrite the above code into the version with such type of instructions.</p>",
@@ -2408,6 +2491,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(6)~(8)",
+        "paper": "ncku-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_hardware.pdf"
       },
       "question": "Convolution neural networks (CNNs) have been widely adopted in many different application domains. Nevertheless, as CNNs incur high computation overhead and large memory footprint, it is an important task to customize the designs of embedded processors so as to meet the timing constrains required by target applications. Among other types of computations, matrix operations are time-consuming functions in CNNs and are important targets for hardware and software optimizations to facilitate the CNN computations on such platforms. Given the partial C code for the convolution operations, there are three N-by-N matrices (A, B, and C), and they keep double-precision floating-point numbers (each number is eight bytes). Please answer the following questions related to processor designs and software optimizations.<pre class=\"code\">for (int x = 0; x &lt; N; ++x)\n  for (int y = 0; y &lt; N; ++y)\n    for (int z = 0; z &lt; N; z++)\n      C[x+y*N] += A[x+z*N] * B[z+y*N];      (a)</pre><p>(6) [5%] When N is 64, what is the smallest L1 data cache size, which can accommodate the data of all three matrices and provide no cache conflicts? NOTE: The cache should be sized in powers of 2.</p><p>(7) [5%] Usually, to ensure the matrix elements can fit in the cache enjoying spatial and temporal locality, it is a common practice to rewrite the code into the blocked version so that the computations are done within submatrices. Please determine the maximum matrix size, M, so that the three submatrices can fit in a 16KB data cache.</p><p>(8) [10%] Continue with the above question. Please rewrite the above C code into the <b>blocked</b> version with the calculated M.</p>",
@@ -2433,6 +2517,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 1,
+        "paper": "ncku-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_hardware.pdf"
       },
       "question": "[20%] Determine whether each of the following statements is true (T) or false (F)?<ol type=\"a\"><li>[2%] When a computer has low utilization, they use little power.</li><li>[2%] Consider the following performance measurement of a program, Computer A has higher MIPS, but Computer B is faster.<div class=\"table-scroll\"><table><tr><th>Measurement</th><th>Computer A</th><th>Computer B</th></tr><tr><td>Instruction count</td><td>10 billion</td><td>8 billion</td></tr><tr><td>Clock rate</td><td>4 GHz</td><td>4 GHz</td></tr><tr><td>CPI</td><td>1.0</td><td>1.2</td></tr></table></div></li><li>[2%] Suppose the program counter (PC) is at address 0x00000600. It is possible to use one single branch-on-equal (beq) MIPS instruction to get to address 0x00020000.</li><li>[2%] In IEEE 754 single precision floating-point format, the smallest normalized positive number is 0000_0001_0000_0000_0000_0000_0000_0000<sub>2</sub>.</li><li>[2%] The IEEE 754 binary representation of −0.75<sub>10</sub> is 10111111000000000000000000000000<sub>2</sub>.</li><li>[2%] Compared with Physically Indexed Physically Tagged (VIPT) cache, the main advantage of Virtually Indexed Physically Tagged (VIPT) cache is that it has lower a miss rate.</li><li>[2%] A fully-associative cache does not have conflict misses.</li><li>[2%] GPU relies on deeply pipelined architecture to hide long latency of DRAM access latency.</li><li>[2%] Given the Roofline model in Figure 1, Kernel 1 is memory bandwidth-limited.</li><li>[2%] It is possible that TLB misses and page fault does not occur.</li></ol><p>Figure 1（以文字描述）：Roofline 圖，橫軸 Arithmetic Intensity: FLOPs/Byte Ratio（1/8 到 16，對數刻度），縱軸 Attainable GFLOPs/second（0.5 到 64）。斜線 “peak memory BW (stream)” 由左下往右上，在 arithmetic intensity = 1 處碰到水平線 “peak floating-point performance”（16 GFLOPs/s）。Kernel 1 的虛線位於 arithmetic intensity = 1/2，Kernel 2 的虛線位於 arithmetic intensity = 4。</p>",
@@ -2453,6 +2538,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "2-a",
+        "paper": "ncku-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_hardware.pdf"
       },
       "question": "Assume that the following MIPS code is executed on a pipelined processor with a 5-stage pipeline and a predict-taken branch predictor.<pre class=\"code\">        ADD R2, R1, R3\nLabel1: BEQ R2, R0, Label2   # not taken once, then taken\n        LW  R3, 0(R2)\n        BEQ R3, R0, Label1   # taken\n        ADD R1, R3, R1\nLabel2: SW  R1, 0(R2)</pre>The actual execution order of instruction is shown as follows:<pre class=\"code\">ADD R2, R1, R3\nBEQ R2, R0, Label2   # not taken\nLW  R3, 0(R2)\nBEQ R3, R0, Label1   # taken\nBEQ R2, R0, Label2   # taken\nSW  R1, 0(R2)</pre><p>a. [5%] Assume <b>NO</b> forwarding and there are no delay slots. The branch result is determined at the <b>EX</b> stage. On your answer sheet, draw the following table and indicate the cycle at which each instruction is completed, assuming the first instruction is completed at cycle 5 (Hint: Draw the pipeline execution diagram for this code)</p><div class=\"table-scroll\"><table><tr><th>Execution Order</th><th>Completed at cycle?</th></tr><tr><td>ADD R2, R1, R3</td><td>5</td></tr><tr><td>BEQ R2, R0, Label</td><td>(1)</td></tr><tr><td>LW R3, 0(R2)</td><td>(2)</td></tr><tr><td>BEQ R3, R0, Label1</td><td>(3)</td></tr><tr><td>BEQ R2, R0, Label2</td><td>(4)</td></tr><tr><td>SW R1, 0(R2)</td><td>(5)</td></tr></table></div>",
@@ -2473,6 +2559,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "2-b",
+        "paper": "ncku-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_hardware.pdf"
       },
       "question": "Assume that the following MIPS code is executed on a pipelined processor with a 5-stage pipeline and a predict-taken branch predictor.<pre class=\"code\">        ADD R2, R1, R3\nLabel1: BEQ R2, R0, Label2   # not taken once, then taken\n        LW  R3, 0(R2)\n        BEQ R3, R0, Label1   # taken\n        ADD R1, R3, R1\nLabel2: SW  R1, 0(R2)</pre>The actual execution order of instruction is shown as follows:<pre class=\"code\">ADD R2, R1, R3\nBEQ R2, R0, Label2   # not taken\nLW  R3, 0(R2)\nBEQ R3, R0, Label1   # taken\nBEQ R2, R0, Label2   # taken\nSW  R1, 0(R2)</pre><p>b. [10%] Assume <b>FULL</b> forwarding and there are no delay slots. The branch result is determined at the <b>ID</b> stage. On your answer sheet, draw the following table and indicate the cycle at which each instruction is completed, assuming the first instruction is completed at cycle 5 (Hint: Draw the pipeline execution diagram for this code.)</p><div class=\"table-scroll\"><table><tr><th>Execution Order</th><th>Completed at cycle?</th></tr><tr><td>ADD R2, R1, R3</td><td>5</td></tr><tr><td>BEQ R2, R0, Label</td><td>(1)</td></tr><tr><td>LW R3, 0(R2)</td><td>(2)</td></tr><tr><td>BEQ R3, R0, Label1</td><td>(3)</td></tr><tr><td>BEQ R2, R0, Label2</td><td>(4)</td></tr><tr><td>SW R1, 0(R2)</td><td>(5)</td></tr></table></div>",
@@ -2492,6 +2579,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 3,
+        "paper": "ncku-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_hardware.pdf"
       },
       "question": "Cache are important to providing high-performance memory hierarchy to processors. Below is a list of 32-bit memory address reference, given as word address<p><b>3, 180, 2, 43, 191, 88, 190, 14, 181, 88</b></p><p>Answer the following questions.</p><p>a. [5%] Using the above sequence of reference. Assume the cache is direct-mapped with 1-word block and has a total size of 8 words. Complete the following table by identifying whether each reference is hit or miss. What is the hit rate?</p><div class=\"table-scroll\"><table><tr><td>Addr.</td><td>3</td><td>180</td><td>2</td><td>43</td><td>191</td><td>88</td><td>190</td><td>14</td><td>181</td><td>88</td></tr><tr><td>H/M</td><td>Miss</td><td>Miss</td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td><td>(6)</td><td>(7)</td><td>(8)</td></tr></table></div><p>b. [5%] Using the above sequence of reference. Assume the cache is two-way set associative with two-word block. and a total size of 8 words, used <b>LRU</b> replacement. Complete the following table by identifying whether each reference is hit or miss. What is the hit rate?</p><div class=\"table-scroll\"><table><tr><td>Addr.</td><td>3</td><td>180</td><td>2</td><td>43</td><td>191</td><td>88</td><td>190</td><td>14</td><td>181</td><td>88</td></tr><tr><td>H/M</td><td>Miss</td><td>Miss</td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td><td>(6)</td><td>(7)</td><td>(8)</td></tr></table></div><p>c. [5%] Using the above sequence of reference. Assume a fully associate cache with two-word blocks and a total size of 8 words. Use <b>LRU</b> replacement. Complete the following table by identifying whether each reference is hit or miss. What is the hit rate?</p><div class=\"table-scroll\"><table><tr><td>Addr.</td><td>3</td><td>180</td><td>2</td><td>43</td><td>191</td><td>88</td><td>190</td><td>14</td><td>181</td><td>88</td></tr><tr><td>H/M</td><td>Miss</td><td>Miss</td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td><td>(6)</td><td>(7)</td><td>(8)</td></tr></table></div>",
@@ -2511,6 +2599,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "5-(1)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "[30%] Please answer the questions for the design of a pipelined CPU.<p>(1) [5%] The image below shows the single-cycle datapath with the pipelined stages identified. In order to build a pipelined version of the datapath, what hardware resources should be added to buffer the required data between/across pipeline stages? Why?</p><p>Figure（以文字描述）：單週期 RISC-V datapath，用虛線分成 IF: Instruction fetch、ID: Instruction decode/register file read、EX: Execute/address calculation、MEM: Memory access、WB: Write back 五段；包含 PC、PC+4 加法器、Instruction memory、Registers、Imm Gen、ALU 與分支目標加法器、Data memory，以及寫回的多工器。</p>",
@@ -2531,6 +2620,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "5-(3)(4)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "[30%] Please answer the questions for the design of a pipelined CPU.<p>(3) [8%] The table below lists the operation times for the five stages of the single-cycle datapath. What is the latency of processing a load instruction? What is the latency for handling a store instruction?</p><div class=\"table-scroll\"><table><tr><th>IF</th><th>ID</th><th>EX</th><th>MEM</th><th>WB</th></tr><tr><td>100 ps</td><td>50 ps</td><td>100 ps</td><td>200 ps</td><td>80 ps</td></tr></table></div><p>(4) [5%] Continue with the above question. What is the pipelined execution clock cycle for such a single-cycle datapath? Why?</p>",
@@ -2551,6 +2641,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 6,
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "[20%] Please answer the questions of the techniques to handle hazards occurred on a pipelined CPU.<p>(1) [5%] Assume a five-stage pipelined datapath does not handle data hazards. In such a case, the programmers should address the hazards by inserting NOP instructions when necessary. Give the code sequence below, please add NOP instructions so that it will run correctly on the pipelined datapath.</p><pre class=\"code\">addi  x10, x14, 10\nsub   x13, x10, x14\nxor   x4, x3, x5</pre><p>(2) [5%] Continue with the above question. Code reordering is a software-based technique to alleviate the overhead caused by the hazards. Please apply the technique on your previous answer. Can the overhead be removed completely by the code reordering? Why?</p><p>(3) [10%] Branch prediction is commonly used to reduce the overhead caused by control hazard. Given a loop code segment, please calculate the accuracies of the Always-Taken and the Always-Not-Taken predictors to determine which predictor performs better.</p><pre class=\"code\">for (i=0; i&lt;4; i++)\n   x = a + b;</pre>",
@@ -2574,6 +2665,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 5,
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "[20%] Please answer the following True/False questions.<ol><li>[2%] In order to alleviate the memory wall problem, a small, fast memory called cache memory, which is built with the dynamic random access memory (DRAM) technology, is used in the processor and acts as a DRAM buffer.</li><li>[2%] There are many metrics and they are good for measuring and comparing the performance delivered by different processors, including execution time, CPU time, million instructions per second (MIPS), and CPU clock cycles.</li><li>[2%] A general-purpose register (GPR) architecture provides the GPRs for storing addresses or data for instructions and it can be found on many processor architectures, such as Intel 8086, MIPS, and RISC-V.</li><li>[2%] Parallel execution strategies that work great for integer data also work for floating-point data. This means that computer arithmetic generates the same results when going from sequential to parallel.</li><li>[2%] Pipelining techniques can be implemented independent of process technology. For instance, the delayed branch is a simple solution to alleviate the overhead caused by control hazards, and it is very useful for processors with longer pipelines.</li><li>[2%] The high-level abstraction provided by programming languages, such as C and C++, allows the programmers and compilers to produce a high-performance code without considering memory system behavior of a computer.</li><li>[2%] Operating Systems (OS) is responsible for serving the disk accesses requested by user-space programs. This makes OS the best place to schedule the disk accesses for improving the performance.</li><li>[2%] The instruction number of a program and the clock cycles required for each instruction are independent.</li><li>[2%] The performance delivered by a processor architecture is usually improved by lowering the clock rate of the processor.</li><li>[2%] The performance of a compute-intensive program is dominated by the operating frequency of a processor. That is, the program will execute faster on a machine with a processor running at 1 GHz clock than on a machine with another processor running at 800 MHz clock.</li></ol>",
@@ -2595,6 +2687,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 6,
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "[30%] Please evaluate the performance of the loop below on different machines. The nested loops perform the operations on the integer arrays, A and B, where each array element is a 32-bit integer.<pre class=\"code\">for (i=0; i&lt;1000; i++)\n   for (j=0; j&lt;1000; j++)\n      A[i][j] = B[j][i] * 100 + 20;</pre><p>(1) [10%] What is the common optimization technique that can be used by a compiler to generate a more efficient version of the code to alleviate branch penalties during the execution? Please provide the optimized code generated by the compiler.</p><p>(2) [10%] We assume a machine α with a 64-bit dual-core processor. What is the ideal speedup of the above code running in parallel on the machine α, compared with the sequential execution version? Why? (Hint: There is no control hazard, and memory miss overhead is negligible.)</p><p>(3) [10%] We assume another machine β with a single-core processor with a SIMD engine. The SIMD engine is equipped with 128-bit data registers for data processing. What is the performance ratio of the above code running with and without the support of the SIMD engine? Why? (Hint: There is no control hazard, and memory miss overhead is negligible.)</p>",
@@ -2619,6 +2712,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 4,
+        "paper": "ncku-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_hardware.pdf"
       },
       "question": "Part II: Computer Organization [50%]<p>4) [30%] Please indicate whether the following statements are <u>Correct</u> or <u>Incorrect</u> and provide your explanations to justify your answers.</p><p>(a) [5%] In the design of a microprocessor, the instruction set architecture of the processor completely hides all physical implementation details.</p><p>(b) [5%] For a given problem, the speedup achieved by a multicore processor is a critical factor in assessing the processor design. A multicore system exhibits strong scaling when the speedup is achieved without increasing the problem size, <b>S</b>, where the memory size utilized by each processor core is <b>S</b>.</p><p>(c) [5%] In the design of a multi-level processor cache, it is critical to balance between miss rate and miss penalty. The design of the first-level caches focuses on miss rate reduction, so larger cache blocks are desired to reduce the miss rate. The design of the second-level caches puts emphasis on miss penalty improvement to avoid higher memory access latencies.</p><p>(d) [5%] In the design of a pipelined processor, it is important to allow instructions to take fewer clock cycles in order to increase overall pipeline performance. A common practice is to make ALU instructions take fewer cycles to improve the processor throughput.</p><p>(e) [5%] In the design of arithmetic logic units, the speed of addition depends highly on the number of bits involved. As the number of bits increases, more 1-bit adders are required to calculate the sum of each bit and it leads to longer delays to obtain the sum for all bits involved.</p><p>(f) [5%] For the PC-relative addressing in RISC-V processors, the SB-format <i>branches</i> have a 12-bit address immediate and the UJ-format <i>jumps</i> have a 20-bit address immediate. These formats mean that a RISC-V program can branch within ±2<sup>10</sup> words of the current instruction and jump within ±2<sup>18</sup> words of the current instruction, if the PC is used as the register to be added to the address.</p>",
@@ -2638,6 +2732,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 5,
+        "paper": "ncku-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_hardware.pdf"
       },
       "question": "Part II: Computer Organization [50%]<p>5) [20%] Please answer the following questions related to memory locality of matrix multiplication. The following C code having elements within the same row are stored contiguously. The nested loops perform the operations on the floating-point arrays, N and M. Each array element is a 32-bit floating-point number.</p><pre class=\"code\">for (x=0; x&lt;8; x++)\n   for (y=0; y&lt;8000; y++)\n      N[x][y] = M[x][0] + N[x][y];</pre><p>(a) [5%] Which variables demonstrate temporal locality in their references?</p><p>(b) [5%] Which variables demonstrate spatial locality in their references?</p><p>(c) [5%] If the cache size is unlimited, how many cache blocks, each with 4 words, are required to store all the referenced matrix elements?</p><p>(d) [5%] Assume that the data in the two arrays, N and M, are streaming over Internet (similar to a video streaming application) with predictable data accessing patterns. What technique can be used to bring up adjacent cache blocks into a buffer within the processor core to reduce the data accessing time? Note that when the data is found in the buffer, it is considered as a hit and moved into the cache for the next block. Please provide a detailed explanation of how this technique works.</p>",
@@ -2660,6 +2755,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "問題1",
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "計算機組織（每小題 5 分）<p>【READ BEFORE ANSWERING: Reference Concepts】</p><p>Please read the following principles to assist your reasoning:</p><ol><li><b>Cache Coherence:</b> The MESI protocol is a foundational hardware-based cache coherence mechanism designed to maintain data consistency across the private caches of a multi-core system. It functions by assigning one of four distinct states to every cache line—Modified (M), Exclusive (E), Shared (S), or Invalid (I)—and monitoring bus traffic through a process known as \"snooping.\" Under this protocol, if a core intends to write to a data block currently in the Shared state, it must first broadcast an Invalidate signal to all other cores to force their local copies into the Invalid state; this allows the initiating core to acquire exclusive ownership and transition to the Modified state, ensuring that no two cores can hold conflicting versions of the same data and that all processors always access the most recent values.</li><li><b>Pipeline Overhead:</b> Pipelining increases <b>Throughput</b>. However, due to 'Pipeline Registers' inserted between stages, the setup/propagation time causes the total <b>Latency</b> of a 'single instruction' to increase slightly compared to a non-pipelined design.</li><li><b>Memory Hierarchy Goals:</b> L1 Cache optimizes for Speed (Hit Time). L2 Cache optimizes for reducing the <b>Global Miss Rate</b> (intercepting Misses before they reach the slow DRAM). L2 is typically slower and larger than L1.</li><li><b>Branch Limits:</b> In fixed-length ISAs (e.g., RISC-V), the Offset for conditional branches is limited (e.g., 12-bit, approx KB). Long-distance jumps (e.g., 1MB) require compiler workarounds (like trampolines).</li><li><b>Spatial Locality:</b> Cache moves data in Blocks. If a program's access <b>Stride</b> is too large (e.g., jumping across rows in a large 2D array), it fails to utilize the data within the block, leading to a high Miss Rate.</li></ol><p>INSTRUCTIONS:</p><ol><li>Use the Reference Concepts above to assist your reasoning.</li><li><b>WARNING:</b> Column B contains 'Distractors' (Incorrect Statements).</li><li>Column B has <b>MORE</b> options than Column A. Select the <b>BEST</b> match for each item in Column A.</li></ol><p>問題 1: Core Mechanisms (25 points)</p><div class=\"table-scroll\"><table><tr><th>Column A: Mechanism</th><th>Column B: Characteristics &amp; Distractors</th></tr><tr><td>1. Pipelining<br>2. L2 Cache<br>3. Cache Block (Line)<br>4. MESI Protocol<br>5. PC-relative Addressing</td><td>(A) Primarily increases Throughput; single instruction Latency slightly increases due to register overhead.<br>(B) Splits execution to reduce single instruction Latency to exactly 1/N.<br>(C) Hardware guarantees zero Data Hazards between any instructions.<br>(D) Designed to intercept L1 Misses and reduce Global Miss Rate to DRAM.<br>(E) Designed to be smaller than L1 to achieve higher speeds.<br>(F) Uses block transfers to exploit Spatial Locality.<br>(G) Optimizes access for non-contiguous structures like Linked Lists.<br>(H) Requires 'Invalidate' signal before writing to Shared data.<br>(I) Managed by OS; triggers Context Switch on write.<br>(J) Used for conditional branches with limited range (e.g., ±4KB).<br>(K) Allows jumping to any address without bit-width limits.</td></tr></table></div>",
@@ -2682,6 +2778,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "問題2",
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "計算機組織（每小題 5 分），Reference Concepts 與 INSTRUCTIONS 同問題 1。<p>問題 2: Scenario Analysis (25 points)</p><div class=\"table-scroll\"><table><tr><th>Column A: Scenario</th><th>Column B: Behavior &amp; Distractors</th></tr><tr><td>6. Convert Single-cycle to 5-stage Pipeline<br>7. Accessing 2D array via A[j][i] (Strided)<br>8. Core A writes to 'Shared' (S) data<br>9. Branch target is 1MB away<br>10. L1 Miss but L2 Hit</td><td>(A) Total program execution time instantly becomes 1/5th.<br>(B) Individual instruction Latency may slightly increase due to overhead.<br>(C) Destroys Spatial Locality; Miss Rate increases significantly.<br>(D) Spatial locality remains excellent regardless of access order.<br>(E) Can write directly since it is Shared; no need to signal.<br>(F) Must acquire Bus Exclusivity and Invalidate Core B's copy.<br>(G) Hardware auto-extends 12-bit offset to 32-bit.<br>(H) Compiler uses 'Invert Branch + Unconditional Jump' combination.<br>(I) Access latency is faster than DRAM but slower than L1.<br>(J) L2 speed is identical to L1, zero latency difference.<br>(K) Triggers Write-Through to HDD directly.</td></tr></table></div>",
@@ -2701,6 +2798,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 11,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the CPU performance, which of the following statements are correct?</p>",
@@ -2727,6 +2825,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 12,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the instruction set of 32-bit MIPS CPU, which of the following statements are correct?</p>\n<pre class=\"code\">fib:                      L1:                      EXIT:\naddi $sp,$sp, -12         addi $a0,$a0, -1         lw   $ra,0($sp)\nsw   $ra, 0($sp)          jal  fib                 lw   $a0,8($sp)\nsw   $s1, 4($sp)          addi $s1,$v0,0           lw   $s1,4($sp)\nsw   $a0, 8($sp)          addi $a0,$a0,-1          addi $sp,$sp, 12\nslti $t0, $a0, 2          jal  fib                 jr   $ra\nbeq  $t0,$0,L1            add  $v0,$v0,$s1\naddi $v0,$a0,0\nj    EXIT</pre>",
@@ -2754,6 +2853,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 13,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the 32-bit MIPS CPU, which of the following statements are correct?</p>",
@@ -2781,6 +2881,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 14,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the 32-bit MIPS CPU. Which of the following statements are correct?</p>",
@@ -2807,6 +2908,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 16,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Using MIPS processor design and implementation for example, which of the following statements are correct?</p>",
@@ -2834,6 +2936,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 17,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Given following figures and tables for a few MIPS sample instructions, which of the following statements are correct?</p>\n<div class=\"table-scroll\"><table><tr><th>R-type</th><td>0 (31:26)</td><td>rs (25:21)</td><td>rt (20:16)</td><td>rd (15:11)</td><td>shamt (10:6)</td><td>funct (5:0)</td></tr>\n<tr><th>Load or Store</th><td>35 or 43 (31:26)</td><td>rs (25:21)</td><td>rt (20:16)</td><td colspan=\"3\">address (15:0)</td></tr>\n<tr><th>Branch</th><td>4 (31:26)</td><td>rs (25:21)</td><td>rt (20:16)</td><td colspan=\"3\">address (15:0)</td></tr></table></div>\n<div class=\"table-scroll\"><table><tr><th>opcode</th><th>ALUOp</th><th>Operation</th><th>funct</th><th>ALU function</th><th>ALU control</th></tr>\n<tr><td>lw</td><td>00</td><td>load word</td><td>XXXXXX</td><td>add</td><td>0010</td></tr>\n<tr><td>sw</td><td>00</td><td>store word</td><td>XXXXXX</td><td>add</td><td>0010</td></tr>\n<tr><td>beq</td><td>01</td><td>branch equal</td><td>XXXXXX</td><td>subtract</td><td>0110</td></tr>\n<tr><td>R-type</td><td>10</td><td>add</td><td>100000</td><td>add</td><td>0010</td></tr>\n<tr><td></td><td></td><td>subtract</td><td>100010</td><td>subtract</td><td>0110</td></tr>\n<tr><td></td><td></td><td>AND</td><td>100100</td><td>AND</td><td>0000</td></tr>\n<tr><td></td><td></td><td>OR</td><td>100101</td><td>OR</td><td>0001</td></tr>\n<tr><td></td><td></td><td>set-on-less-than</td><td>101010</td><td>set-on-less-than</td><td>0111</td></tr></table></div>\n<p>（另附標準的 MIPS 單週期資料路徑圖：PC、instruction memory、register file、sign-extend、ALU 與 ALU control、data memory、Shift left 2 與分支加法器，控制訊號為 RegDst、Branch、MemRead、MemtoReg、ALUOp、MemWrite、ALUSrc、RegWrite；RegDst 的 mux 0 選 Instruction[20-16]、1 選 Instruction[15-11]，ALUSrc 0 選 Read data 2、1 選 sign-extend，MemtoReg 1 選記憶體資料、0 選 ALU 結果。）</p>",
@@ -2861,6 +2964,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 18,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）We study the MIPS processor hazards using pipelined designs for a few typical instructions, which of the following statements are correct?</p>",
@@ -2887,6 +2991,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 19,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Memory design is typically hierarchical. Which of the following statements are correct?</p>",
@@ -2913,6 +3018,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 20,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）In a computer system, cache memory and main memory are two intermediate memory hierarchies. Which of the following statements are <b>not</b> correct?</p>",
@@ -2939,6 +3045,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": "28",
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（題組 C）Consider two one-bit ALU designs and a 32-bit ALU design for 32-bit MIPS CPU design.</p>\n<p>（圖的內容：1-bit ALU 有 Ainvert、Binvert 兩個 mux 分別選 a 或 a 的反相、b 或 b 的反相，CarryIn 送進加法器；結果 mux 由 Operation 選擇：0 = AND、1 = OR、2 = 加法器輸出、3 = Less 輸入。32-bit ALU 由 ALU0～ALU31 串接，Binvert 同時接到 ALU0 的 CarryIn，ALU1～ALU31 的 Less 接 0，ALU31 輸出 Set 接回 ALU0 的 Less，並有 Overflow 偵測。）</p>\n<p>Which of the following statements is correct?</p>",
@@ -2964,6 +3071,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": "29",
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（題組 C，承上題的 1-bit ALU 與 32-bit ALU：Operation 0 = AND、1 = OR、2 = 加法器、3 = Less）Which of the following statements is correct?</p>",
@@ -2990,6 +3098,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": "30-33",
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（題組 D）Given that (1) memory space is 32-bit byte addressable, (2) main memory size is 2<sup>mm</sup> bytes, (3) page frame size is 2<sup>pf</sup> bytes, (4) Cache size is 2<sup>cache</sup> bytes, and (5) cache block size is 2<sup>cb</sup> bytes:</p>\n<p>30. The memory space available to a program is (a) 2<sup>32</sup>, (b) 2<sup>31</sup>, (c) 2<sup>mm</sup>, (d) 2<sup>mm-1</sup>, bytes<br>\n31. The number of virtual pages is (a) 2<sup>mm</sup>, (b) 2<sup>32</sup>-2<sup>mm</sup>, (c) 2<sup>32-cache</sup>, (d) 2<sup>32-pf</sup>.<br>\n32. The page size is (a) 2<sup>32</sup>/2<sup>mm</sup>, (b) 2<sup>mm</sup>/2<sup>pf</sup>, (c) 2<sup>pf</sup>, (d) 2<sup>pf</sup>/2<sup>cb</sup>.<br>\n33. The size of the cache block tag in bits is (choose the most proper one) (a) [&lt;(32-cb)], (b) 32-cache, (c) (32-cache)~[&lt;(32-cb)], (d) 2<sup>(32-cache)</sup>~2<sup>[&lt;(32-cb)]</sup>.</p>",
@@ -3015,6 +3124,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 11,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）For instruction set architecture (ISA), which of the following statements are true?</p>",
@@ -3041,6 +3151,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 12,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Given the normal 1-bit ALU (top) and the MSB 1-bit ALU (bottom), you can implement the C-language statement by giving tuple (Ainvert, Binvert, CarryIn, Operation). Each A,B,C represent 4 bits wide. For condition determination, C is 0001 if TRUE, and is 0000 if FALSE.<br>E.g. Give (0, 0, 0, 2) for C=A+B</p>\n<p>（圖的內容：1-bit ALU 由 Ainvert、Binvert 兩個 mux 選 A 或 ¬A、B 或 ¬B，輸入 AND、OR、加法器，結果 mux 由 Operation 選 0 = AND、1 = OR、2 = 加法器輸出、3 = Less，輸出 C<sub>i</sub>。MSB（第 3 位）的 1-bit ALU 另外輸出 Set（加法器結果）與 Overflow。）</p>",
@@ -3067,6 +3178,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 13,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Considering both DMA(direct memory access) and I/O, which of the following statements are true?</p>",
@@ -3094,6 +3206,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 14,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）The following text is excerpted from an article on the web about CPU performance.</p>\n<p>\"The total clock speed or CPU performance of a device indicates how many processing cycles per second can be executed by a CPU, considering all of its processing units (more commonly referred to as cores). The CPU speed is measured in gigahertz (GHz), with each gigahertz being equivalent to one thousand million cycles per second. Given the same clock rate, more CPU parallelism can contribute better performance. However, power dissipation and circuit temperature usually constrain modern processors clock frequency and thus they can be dynamically changed so that circuit temperature stays below a certain limit.</p>\n<p>When considering the total CPU speed, let us look for more GHz and a higher core count. Although this is not the single determining factor for an electronic device's performance, high processor speed is crucial if you are looking to perform demanding tasks such as gaming or video editing. As for the core count, a CPU chip with multiple processing units has the advantage of being able to run various tasks at the same time.</p>\n<p>Nowadays, a CPU chip can comprise cores with varying speeds, thanks to ARM's big.LITTLE technology; the advantage is that tasks are assigned to different cores depending on how demanding they are, optimizing system usage, and preventing overheating. For instance, sending e-mails doesn't require much processing power. Instead of assigning this task to a sophisticated core, the system will delegate these tasks to LITTLE cores that produce less heat than the BIG cores with an aggressive execution such as multi-issue pipelines, hardware multithreading or out-of-order execution. Besides, even a single-core may be able to operate on different clock speeds: namely \"base\" and \"turbo.\"</p>\n<p>The current victor when it comes to total clock speed for computers is AMD's Epyc 7742, flaunting an overall clock rate of 64 x 2.25GHz (64 cores with 2.25 GHz each). The fierce competition among manufacturers means that higher CPU performance is a never-ending race.\"</p>\n<p>For CPU clock rate, which of the following statements are true?</p>",
@@ -3121,6 +3234,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 15,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）（承上一題的 CPU 效能文章）Considering CPUs with full parallelism, which of the following statements are true?</p>",
@@ -3146,6 +3260,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 16,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）The single-precision (32-bit) IEEE 754 floating-point format is as follows. Which of following statements are correct?</p>\n<p>格式：S（1 bit）｜Exponent（8 bits）｜Fraction（23 bits）</p>\n<div class=\"table-scroll\"><table><tr><th>Exp.</th><th>Significant</th><th>Meaning</th></tr>\n<tr><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>Non-zero</td><td>+/- de-normalized number</td></tr><tr><td>1-254</td><td>Anything</td><td>+/- normalized floating-point number</td></tr><tr><td>255</td><td>0</td><td>+/- infinity</td></tr><tr><td>255</td><td>Non-zero</td><td>NaN (Not a number)</td></tr></table></div>",
@@ -3172,6 +3287,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 17,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Consider a five-stage piplelined MIPS CPU. Please select the signals that are required to insert a stall cycle when data hazard is detected at ID stage.</p>",
@@ -3198,6 +3314,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 18,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Given the pipelined CPU in the figure below, which code sequence(s) will fail to run correctly if the data-path A is cut?</p>\n<div class=\"table-scroll\"><table><tr><th>(a)</th><th>(b)</th><th>(c)</th><th>(d)</th></tr>\n<tr><td>add $s1, $t0, $t1<br>add $s3, $s2, $s1<br>add $s2, $s3, $s1</td><td>add $s3, $t0, $t1<br>add $s1, $s2, $s1<br>add $s2, $s3, $s1</td><td>add $s1, $t0, $t1<br>add $s1, $s2, $s1<br>add $s2, $s3, $s1</td><td>add $s1 $t0, $t1<br>add $s2, $s2, $s1<br>add $s2, $s3, $s1</td></tr></table></div>\n<p>（圖為含 Hazard detection unit 與 Forwarding unit 的 MIPS 五級管線。ALU 兩個輸入前各有一個三選一的 forwarding mux，可選 ID/EX 讀出的暫存器值、EX/MEM 的 ALU 結果、MEM/WB 的寫回值。A 標在 ALU <b>第二個（下方，rt）</b>運算元 mux 的一條輸入線上，這條線是從 MEM/WB 寫回結果繞回來的轉送路徑。）</p>",
@@ -3225,6 +3342,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 19,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）For a MIPS 5-stage pipelined CPU with data forwarding and stall mechanisms been implemented, which of following statements are true for the code sequence below? You may refer to the following code sequence and the CPU pipeline figure.</p>\n<pre class=\"code\">add  $s2, $s2, $s3\nlw   $s1, 0($s2)\naddi $t1, $s2, 8\nsw   $t2, 0($s1)\nlw   $t3, 0($s1)\nadd  $s3, $t3, $s2\nsub  $s3, $s3, $s2</pre>\n<p>（附圖為標準的 MIPS 五級管線資料路徑與控制訊號。）</p>",
@@ -3250,6 +3368,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 20,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）For the code sequence written in MIPS assembly, assume that the $s2, $t1 are initialized to 0x0, and 0x3, respectively. Which of following statements are correct for the execution of this code sequence?</p>\n<pre class=\"code\">Loop:  addi $t2, $zero, 0x6\nLoop2: addi $s2, $s2, 1\n       addi $t2, $t2, -1\n       bne $t2, $zero, Loop2   //branch1\n       addi $t1, $t1, -1\n       bne $t1, $zero, Loop    //branch2\nDone:</pre>",
@@ -3277,6 +3396,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": "29-32",
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（題組 C）You have designed a brand new CPU: NYCU (New Younker Compute Unit). We know:</p>\n<p><i>real CPI = ideal CPI + data access prob * avg stall cycles</i><br><i>avg stall = miss rate * miss penalty</i></p>\n<p>Assume that NYCU can run at 2GHz and its lw/sw share 25% of total <i>N</i> instructions. Let us ignore the instruction cache issue and ideal CPI is 1. The access time of main memory is 100 ns.</p>\n<p>29. We build a direct-mapped L1 data cache to match the NYCU1 pipeline. Assume that the miss rate is 4% for each cache access. What is the real CPI of NYCU1? (a) 2 (b) 3 (c) 4 (d) 5</p>\n<p>30. Now we build a 4-way set-associative L1 data cache for new NYCU2 pipeline. Which of the following effects is NOT true for the new L1 compared to NYCU1? (a) the CPU clock rate could be reduced (b) better access time since address tags can be compared in parallel (c) an extra multiplexor to select blocks (d) conflict cache misses can be reduced</p>\n<p>31. Now we design a NYCU3 by providing a 128 KB L2 to NYCU1, where L2 has a hit time of 8 ns and a miss rate 20%. What is the real CPI of NYCU3? (a) 0.28 (b) 0.56 (c) 1.28 (d) 1.56</p>\n<p>32. We have to consider TLB in cache accessing for the NYCU memory hierarchy. Which of the following statement is NOT true for TLB? (a) TLB= translation-lookaside buffer (b) TLB miss will result into a page fault (c) small TLB uses fully-associative (d) TLB is accessed before L1 (physical addr)</p>",
@@ -3303,6 +3423,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": "33-35",
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（題組 D）Given the MIPS code sequence below, if we assume it starts at location 8800 4000h in memory. Which of following statements are true?</p>\n<pre class=\"code\">8800 4000h        add  $t0, $zero, $zero\n           loop:  beq  $s2, $zero, finish\n                  add  $t0, $t0, $s1\n                  sub  $s2, $s2, 1\n                  j    loop\n           finish: sll $t0, $t0, 2\n                  add  $v0, $t0, $zero</pre>\n<p>33. Assume the register number of <i>$s2</i> is 18 and the OP code of <b><i>beq</i></b> is 4. The MIPS machine codes of the <b><i>beq</i></b> in this code sequence is (a) 0x12400003 (b) 0x12400004 (c) 0x1240000C (d) 0x12400010<br>\n34. The MIPS machine code of the <i>j</i> (OP code is 2) in this code sequence is (a) 0x 08001001 (b) 0x22001001 (c) 0x0a001001 (d) 0x02001001<br>\n35. Assume both $s1 and $s2 initially contain integers 5 and 6, respectively. What is the value that $v0 will contain after the execution of the whole code sequence? (a) 6 (b) 30 (c) 60 (d) 120</p>",
@@ -3328,6 +3449,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 11,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Two CPUs are implemented to execute exactly the same ISA. Assume that CPU A is a single-cycle implementation while CPU B is a five-stage pipelined implementation. The instruction and data memory devices are zero wait state memory for both CPU. Which of the following statements are true when both CPUs runs the same program C with finite execution time?</p>",
@@ -3354,6 +3476,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 12,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）To remove hazards for a single-issue in-order execution pipelined processor, which of the following techniques may require help from the compilers (assuming that you only write programs using high-level languages)?</p>",
@@ -3379,6 +3502,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 13,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Modern ISAs often contain a pair of instructions for multi-thread and multi-core synchronization. In MIPS, this pair of instructions includes a special load called a load linked, ll; and a special store called a store conditional, sc. Which of the following statements are true?</p>",
@@ -3405,6 +3529,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 14,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）The following figure shows a simple implementation of a MIPS processor. Which of the following statements are true?</p>\n<p>（圖為標準的 MIPS 單週期資料路徑：PC、Instruction memory、Registers（RegWrite 控制寫入）、Sign-extend、ALUSrc mux、ALU（ALU operation）、Data memory（MemWrite、MemRead）、MemtoReg mux（1 選 data memory 的 Read data、0 選 ALU result），以及 PC+4 加法器、Shift left 2、分支加法器與 PCSrc mux。）</p>",
@@ -3432,6 +3557,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 15,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Assume that we have a 5-stage processor that has neither data forwarding nor branch prediction. It has separate instruction and data memory. Bubbles will be inserted when there are hazards. The processor always resolves the branch target at stage 2 (the decode stage). Which of the following statements are true when the following code segment is executed?</p>\n<pre class=\"code\">      addi  $t1, zero, zero\nloop: addi  $t1, $t1, 1\n      lw    $s0, 2000($t1)\n      subi  $t2, $s0, 2\n      sw    $t2, 4000($t1)\n      bne   $t1, $t3, loop</pre>",
@@ -3458,6 +3584,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 16,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Which of following statements about cache are true?</p>",
@@ -3484,6 +3611,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 17,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）The following table shows the instruction type breakdown of a given application executed in a CPU. Assume the CPU has a 2GHz clock rate. Which of following statements are correct?</p>\n<div class=\"table-scroll\"><table><tr><th></th><th>FP instr.</th><th>INT instr.</th><th>L/S instr.</th><th>Branch instr.</th></tr>\n<tr><td>Number of instr.</td><td>80x10<sup>6</sup></td><td>240 x10<sup>6</sup></td><td>160 x10<sup>6</sup></td><td>32 x10<sup>6</sup></td></tr>\n<tr><td>CPI</td><td>1</td><td>1</td><td>4</td><td>2</td></tr></table></div>",
@@ -3509,6 +3637,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 18,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Given a processor with two caches: an I-cache and a D-cache, and the miss penalty is 200 cycles for all misses. Assume the I-cache miss rate is 2%, D-cache miss rate is 4%, and the percentage of all <i>lw</i> and <i>sw</i> instructions is 50%. If the processor has a CPI of 2 without any memory stalls. Which of following statements are true when memory stall is considered? (Note, each statement is independent.)</p>",
@@ -3535,6 +3664,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 19,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）The system has a direct-mapped cache with total data size of 8192 bytes and block size of 16 bytes. Assume the cache starts out empty. For the following piece of code, which of following statements are correct? (Note: Assume that <b>int</b> is of 32-bits (4 bytes); variables <i>x</i> and <i>i</i> are both in registers and the array A is in memory.)</p>\n<pre class=\"code\">int A[256];\nint x = 0;\nfor (int i = 0; i &lt; 256; i++ ) {\n    x += A[i];\n}</pre>",
@@ -3561,6 +3691,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 20,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）The following table shows two processors and their read/write operations on two different variables <i>a</i> and <i>b</i> (initially <i>a</i> = <i>b</i> = 0). After the operations, which of following statements are correct?</p>\n<div class=\"table-scroll\"><table><tr><th>Processor 1</th><th>Processor 2</th></tr><tr><td><i>a</i>++;　<i>b</i>++;</td><td><i>a</i> =2;　<i>b</i> = <i>b</i>+2;</td></tr></table></div>",
@@ -3586,6 +3717,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": "28-30",
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（題組 C）We want to translate a C function my_call() into the MIPS assembly language. The function my_call() calls another function func() which is declared as \"int func(int s, int t);\". The translated assembly code for the function my_call() is as follows:</p>\n<pre class=\"code\">my_call:\n   addi $sp,$sp,-12\n   sw   $ra,8($sp)\n   sw   $s1,4($sp)\n   sw   $s0,0($sp)\n   move $s1,$a2\n   move $s0,$a3\n   jal  func\n   move $a0,$v0\n   add  $a1,$s0,$s1\n   jal  func\n   lw   $ra,8($sp)\n   lw   $s1,4($sp)\n   lw   $s0,0($sp)\n   addi $sp,$sp,12\n   jr   $ra</pre>\n<p>28. How many parameters does the function my_call() have? (a). 1 (b). 2 (c). 3 (d). 4</p>\n<p>29. Which of the following C code could be the body of my_call()?<br>(a). {return func(func(a,b), c+d);}<br>(b). {return func(a,b) + func(c,d);}<br>(c). {return func(a+b, func(a+b,c) );}<br>(d). {return func(a, func(c+d, b));}</p>\n<p>30. The tail-call optimization is a technique that when a caller simply returns the value that it gets from the callee, we can avoid allocating a procedure frame for the last function call. How many instructions can we save if the tail-code optimization is used to optimize the assembly code? (a). 1 (b). 2 (c). 3 (d). 4</p>",
@@ -3610,6 +3742,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": "31-34",
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（題組 D）Consider a two-way set associative cache with four-word bocks and LRU replacement. Assume the cache has a total data size of 32 words and 24-bit byte address is used. Please answer each question below.</p>\n<p>31. What's the size (in bits) of tag field in one block used in this cache? (a) 23 (b) 22 (c) 19 (d) 18<br>\n32. What's the total size (in bits) of this cache, including data, tag, and valid fields? (a) 1024 (b) 1100 (c) 1176 (d) 1184<br>\n33. Assume the cache is initially empty. Given a series of memory references: 24, 8, 25, 10, and 41 (which are word <i>addresses</i>), how many cache miss will be for the references? (a) 1 (b) 2 (c) 3 (d) 4<br>\n34. For your answer of above question, how many cache misses are <i>compulsory miss</i>? (a) 1 (b) 2 (c) 3 (d) 4</p>",
@@ -3636,6 +3769,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 11,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）For the 32-bit MIPS ISA, an instruction is coded in 32-bit. Different addressing modes are defined in the ISA for instruction and data accessing. Which of the following statements about the MIPS instruction design are true?</p>",
@@ -3662,6 +3796,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 13,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Assume that we have a classical five-stage pipelined 32-bit MIPS processor with a branch predictor and all required forwarding mechanisms. Which of the following statements are true?</p>",
@@ -3687,6 +3822,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 14,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Assume that we have two processors, P1 and P2, that are different microarchitecture implementations of the same ISA. The instructions can be divided into four classes according to their CPI (class A, B, C, and D). P1 has a clock cycle of 1ns and CPIs of 1, 1, 4, and 3, respectively for each instruction class. P2 has a clock cycle of 0.8ns and CPIs of 2, 2, 2, and 2, respectively for each instruction class. Given a program with its instructions divided into the four classes as follows: 30% class A, 25% class B, 20% class C, and 25% class D. Which of the following statements about the execution of this program using processor P1 and P2 are true?</p>",
@@ -3713,6 +3849,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 15,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements about the MIPS ISA design are true?</p>",
@@ -3739,6 +3876,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 16,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements are true?</p>",
@@ -3764,6 +3902,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 17,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the CPU performance and the instruction count at the machine level, which of the following statements are true?</p>",
@@ -3789,6 +3928,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 20,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）The (7,4) Hamming code has bit indices ranging from 1 to 7 (left to right). Parity bits <i>p</i><sub>1</sub>, <i>p</i><sub>2</sub>, and <i>p</i><sub>3</sub> are bits 1, 2, and 4, respectively. Data bits are bits 3, 5, 6, and 7. Which of the following statements are true?</p>",
@@ -3816,6 +3956,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "25-27",
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（題組 C）P is a single-issue, in-order execution, five-stage pipeline implementation of the MIPS ISA without a branch prediction unit and without any data-forwarding path. The registers are read at the second half cycle of the Decode stage. The registers are written at the first half cycle of the Writeback stage. The branch decisions and targets are determined at the Execute stage. The fetch of the next instruction after a branch will be stalled until the branch decision is made. Answer the following questions when P is used to execute Program 3:</p>\n<pre class=\"code\">      addi $s1, $zero, 8\n      addi $s2, $s1, $zero\nLoop: lw   $t0, 100($s1)\n      addu $t0, $t0, $s2\n      sw   $t0, 100($s1)\n      addi $s1, $s1, -4\n      bne  $s1, $zero, Loop\n      addi $s2, $zero, $zero</pre>\n<p>Program 3.</p>\n<p>25. How many total stall cycles will be inserted into the pipeline for proper execution throughout the entire program? (a) 8 (b) 12 (c) 16 (d) 18<br>\n26. How many stall cycles are due to control hazards? (a) 2 (b) 4 (c) 6 (d) 8<br>\n27. How many stall cycles can be removed by adding only the forwarding path from the EX/MEM register to one of the inputs of the ALU in the execute stage? (a) 6 (b) 8 (c) 10 (d) 12</p>",
@@ -3841,6 +3982,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "28-29",
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（題組 D，節錄）Consider a 16-bit computer with a hierarchical memory system consisting of a disk, a 2<sup>16</sup>-byte main memory using byte-addressing, and a two-level cache with primary cache of 2<sup>9</sup>-byte data inside CPU. The primary cache is designed as follows. It is a direct mapped cache. Each block is 16-word long and the replacement policy is LRU. The OS adopts a 16-bit virtual address with a page size of 0.5KB.</p>\n<p>28. Which configuration of the hierarchical memory system is true?<br>\n(a) The hierarchical memory system is suited to apply physically tagged and virtually indexed scheme since the virtual page offset field is equal to or longer than the index field for cache addressing.<br>\n(b) The virtual memory has 2<sup>8</sup> pages.<br>\n(c) The virtual page number field has a length of 6 bits.<br>\n(d) The tag field of physical address has a length of 8 bits.</p>\n<p>29. Without regarding the disadvantage of virtually addressed cache, the virtually addressed cache is used in this computer. Assume the cache is empty initially. Given the following virtual address accesses to access cache: 0x8A78, 0x8A64, 0x8876, 0x8FF8, 0x8DE7. Which statement is true?<br>\n(a) The result of access to 0x8A64 is <i>miss</i>.<br>\n(b) The result of access to 0x8876 is <i>hit</i>.<br>\n(c) The result of access to 0x8FF8 is <i>miss</i> and the block containing 0x8A78 is replaced.<br>\n(d) The result of access to 0x8DE7 is <i>miss</i> and the block containing 0x8FF8 is replaced.</p>\n<p>（第 30 題依題目數據算出的 CPI 不在選項中，未收錄。）</p>",
@@ -3866,6 +4008,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 11,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）In a pipelined processor, a program has 5% instructions belonging to load and store instructions. This program spends 20% of its execution time for load instructions and 10% of its execution time for store instructions. Since the data cache miss rate is high shown in this program, the processor architect proposes a new data cache architecture that improves the 4x execution time of load instructions (4x faster) and 2x execution time of store instructions (2x faster). Then, this new processor will achieve 1.25x speedup. Which statements are correct when using the processor with this new cache architecture?</p>",
@@ -3892,6 +4035,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 12,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Given a pipelined processor that includes a directed-mapped data cache where the length of memory address is 32 bits. The size of tag, index, and offset fields in such a directed-mapped data cache are 26 bits, 4 bits, and 2 bits for each. This processor executes the program 1 and observes its cache miss rate is high. What kind of cache misses causes such a problem when using a directed-mapped cache in this processor?</p>\n<pre class=\"code\">       addi  $t0  $0   3\nloop:  beq   $t0  $0   done\n       lw    $t1  0x4($0)\n       lw    $t2  0x8($0)\n       lw    $t3  0xC($0)\n       lw    $t4  0x10($0)\n       addi  $t0  $t0  -1\n       j     loop\ndone:</pre>\n<p>Program 1</p>",
@@ -3917,6 +4061,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 13,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）A data cache usually has multiple cache blocks. The set-associative cache includes tag, index, and offset fields to manage each cache block. What are impacts when increasing the size of cache blocks in a data cache?</p>",
@@ -3943,6 +4088,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 14,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）A data cache in a processor employs 2-way set associative cache where the word size is 32 bits. The size of tag, index, offset fields in this set associative cache are 26 bits, 4 bits, and 2 bits for each. Which statements are correct when this processor executes the program 2?</p>\n<pre class=\"code\">       addi  $t0  $0   4\nloop:  beq   $t0  $0   done\n       lw    $t1  0x6($0)\n       lw    $t2  0x46($0)\n       addi  $t0  $t0  -1\n       j     loop\ndone:</pre>\n<p>Program 2</p>",
@@ -3969,6 +4115,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 15,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）A processor runs at 4 GHz and has a CPI of 1.4 without including the stall cycles due to cache misses. Load and store instructions count 30% of all instructions. The processor has an I-cache and a D-cache. The hit time is 1 clock cycle. The I-cache has a 3% miss rate. The D-cache has a 5% miss rate on load and store instructions. The miss penalty is 50 ns, which is the time to access and transfer a cache block between main memory and the cache. Which following statement are correct?</p>",
@@ -3995,6 +4142,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 16,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements are true?</p>",
@@ -4020,6 +4168,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 17,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Given an IEEE754 single-precision representation format in the table below and the bias value as 127. Which of the following statements are correct?</p>\n<p>格式：S｜Exponent（8 bits）｜Fraction（23 bits）</p>\n<div class=\"table-scroll\"><table><tr><th>Exp.</th><th>Fraction</th><th>Meaning</th></tr>\n<tr><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>Non-zero</td><td>+/- de-normalized number</td></tr><tr><td>1-254</td><td>Anything</td><td>+/- floating-point number</td></tr><tr><td>255</td><td>0</td><td>+/- infinity</td></tr><tr><td>255</td><td>Non-zero</td><td>NaN (Not a number)</td></tr></table></div>",
@@ -4046,6 +4195,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 18,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the execution of the following code on the 5-stage pipelined processor. The processor has both the hazard detection unit and the forwarding unit for data hazard. Assume that the following code sequence executes starting from clock cycle 1. At clock cycle 8, where do the two ALU inputs come from?</p>\n<pre class=\"code\">add x28, x31, x29\nld  x31, 32(x29)\nand x30, x29, x31\nsd  x5, 20(x30)\nsub x5, x5, x30\nor  x29, x29, x30</pre>\n<p>（附圖為含 Hazard detection unit 與 Forwarding unit 的標準五級管線，ALU 的兩個輸入各有一個 forwarding mux，可選 ID/EX、EX/MEM、MEM/WB。）</p>",
@@ -4071,6 +4221,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 19,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Consider a pipeline CPU with five stages: IF, ID, EX, MEM, WB. Stall cycles due to mis-predicted branches increase the CPI of pipeline. Given a code sequence with instruction mix as: R-type: 50%, beq: 25%, lw &amp; sw: 25%. Assume branch prediction accuracy is 20% and there are no data hazards and cache misses. It is clear that the system suffers from extra CPIs due to mis-predicted branches. Which of the following statements about the extra CPI are correct?</p>",
@@ -4096,6 +4247,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 20,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the 2-bit predictor shown in the Figure below, and assume the predictor starts at the top-left state (i.e., the \"strongly predict taken\" state). Given the branch outcome sequence: N, T, N, N, T, (where T = taken, N = not-taken), which of the following statements are correct?</p>\n<p>（圖為標準的 2-bit 飽和計數器：左上 Predict taken（強）遇 Taken 留在原地、遇 Not taken 到右上 Predict taken（弱）；右上遇 Taken 回左上、遇 Not taken 到右下 Predict not taken（弱）；右下遇 Taken 回右上、遇 Not taken 到左下 Predict not taken（強）；左下遇 Not taken 留在原地、遇 Taken 到右下。）</p>",
@@ -4121,6 +4273,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "28-30",
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（題組 C）A pipelined processor contains 64 KB L1 data cache, where the length of memory address is 32 bits, the block size is 64 bytes. This data cache employs 4-way set associative cache architecture. The size of physical memory on this processor is 4 GB.</p>\n<p>28. How many cache blocks are having in the 64 KB L1 data cache? (a) 0.5K cache blocks (b) 1K cache blocks (c) 1.5K cache blocks (d) 2K cache blocks<br>\n29. How many bits are used in tag of such a data cache? (a) 14 bits (b) 15 bits (c) 17 bits (d) 18 bits<br>\n30. Which fields in the data cache will be increased when increasing the length of memory address from 32 bits to 64 bits? (a) Tag (b) Index (c) Offset (d) Valid bit</p>",
@@ -4147,6 +4300,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "31-34",
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（題組 D）Consider the execution of the following code on a 5-stage pipelined processor, shown in the Figure below. Note that the processor includes both a hazard detection unit and a forwarding unit for data hazard, though these components are not shown in the figure. Assume the code sequence starts execution at clock cycle 1. Please answer the following questions.</p>\n<pre class=\"code\">ld  x31, 32(x5)\nsub x30, x31, x5\nld  x31, 20(x30)\nadd x29, x29, x30\nor  x5, x5, x30</pre>\n<p>（附圖為標準五級管線資料路徑，含 ALUSrc mux（0 選暫存器、1 選 sign-extend）與 MemtoReg mux（1 選 data memory 的 Read data、0 選 ALU result）。）</p>\n<p>31. What instruction is in the EXE stage at clock cycle 5? (a) ld (b) sub (c) add (d) bubble<br>\n32. What instruction is in the MEM stage at clock cycle 5? (a) ld (b) sub (c) add (d) bubble<br>\n33. What instruction is in the WB stage at clock cycle 5? (a) ld (b) sub (c) add (d) bubble<br>\n34. What are the values of signals ALUsrc and MemToReg, respectively, at clock cycle 5? (a) 0,0 (b) 0,1 (c) 1,0 (d) 1,1</p>",
@@ -4173,6 +4327,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 11,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements are true?</p>",
@@ -4200,6 +4355,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 12,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements are true?</p>",
@@ -4226,6 +4382,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 13,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the above ALU design. The control signals are grouped as (Ainvert, Binvert, Operation[1], Operation[0]). Which of the following statements are true?</p>\n<p>（圖為標準 32-bit 漣波 ALU：每個 1-bit ALU 有 Ainvert、Binvert 兩個 mux 選 a／ā、b／b̄，Operation 選 0 = AND、1 = OR、2 = 加法器、3 = Less；ALU0 的 CarryIn 與 Binvert 相連；ALU1～ALU31 的 Less 接 0；ALU31 輸出 Set 接回 ALU0 的 Less，並輸出 Overflow；所有 Result 經 NOR 產生 Zero。）</p>",
@@ -4251,6 +4408,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 15,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Consider a 16-bit Floating-Point format following IEEE Std 754 with one signed bit, 4-bit exponent and 11-bit fraction. <i>x</i> = (−1)<sup><i>S</i></sup> × (1 + <i>Fraction</i>) × 2<sup>(<i>Exponent</i> − <i>Bias</i>)</sup>. Which of the following statements are <u>true</u>?</p>",
@@ -4278,6 +4436,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 16,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）The following statements describe three pairs of pipelined processors. In each pair, the processors are identical except for the specified feature. In all cases, the processors execute the same compiled program. Ignore differences in execution time, pipeline stalls, and throughput. Consider only whether the processors may produce different architectural results.</p>\n<p>In Case A, processor A resolves data hazards using interlocks, while processor B uses full bypassing.<br>\nIn Case B, Processor A handles control hazards by stalling the pipeline until the branch target is known, Processor B uses a 'predict-not-taken' scheme and flushes the pipeline if the branch is taken.<br>\nIn Case C, processor A has a single memory port shared between instruction fetch and data access, while processor B has no structural hazards.</p>",
@@ -4304,6 +4463,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 17,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）A cache designer considers modifying a cache while keeping all parameters fixed except for the single change described. Assume a conventional set-associative cache with Least Recently Used (LRU) replacement. Which of the following statements is (are) correct?</p>",
@@ -4330,6 +4490,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 18,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）A byte-addressable machine uses 36-bit virtual addresses and 30-bit physical addresses. To achieve high performance, the bits used to index a physical cache set must be obtainable without performing virtual-to-physical address translation through the TLB. The cache block size is fixed at 64 bytes. Which of the following statements is (are) correct?</p>",
@@ -4355,6 +4516,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 19,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements about branch prediction and conditional execution is (are) true?</p>",
@@ -4380,6 +4542,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 20,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Consider two compute systems, Machine A and Machine B, designed to accelerate linear-algebra workloads. Machine A can issue 3 multiply operations per cycle and sustains a memory bandwidth of 0.1 words per cycle. Machine B can issue 1 multiply operation per cycle and sustains a memory bandwidth of 0.5 words per cycle. Both machines have a multiplier latency of 1 cycle and operate at the same clock frequency.</p>\n<p>Assume the following throughout this problem: instructions execute in program order; in each cycle, all multiplications whose dependencies are satisfied are issued, up to the number of available multipliers; only multiplications and loads from main memory incur cost; load latency is fully hidden once data is available; all kernels execute in steady state on large inputs; results are kept on-chip and are not written back to main memory; and at any time at most one kernel is executing on a machine.</p>\n<p>Consider the following kernels:</p>\n<ul><li>Matrix–vector multiplication of an N×N matrix with an N-element vector.</li><li>Matrix–matrix multiplication of two N×N matrices.</li></ul>\n<p>Which of the following statements is (are) correct?</p>",
@@ -4406,6 +4569,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "29-32",
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（題組 C）In recent years, general purpose processors have increasingly been supplemented, and in some cases replaced, by specialized accelerators such as GPUs and TPUs. These accelerators depart from traditional CPU designs by prioritizing high throughput computation, data level parallelism, and memory bandwidth over single thread latency and complex control flow. While such designs can deliver orders of magnitude improvements for selected workloads, they also introduce new architectural tradeoffs at the system level. The following questions examine the architectural principles that distinguish accelerators from CPUs, and the system-level consequences of these design choices.</p>\n<p>29. Consider a multi-accelerator system executing a workload that performs frequent collective operations (e.g., all-reduce) on large tensors. Which interconnect property is most critical for maximizing sustained throughput? (a) Minimum single-hop latency (b) Peak bisection bandwidth (c) Support for hardware cache coherence (d) Ability to route packets out of order</p>\n<p>30. Compared to a monolithic accelerator with the same aggregate compute resources, a chiplet-based accelerator design necessarily introduces which architectural tradeoff? (a) Reduced arithmetic throughput per cycle (b) Increased on-chip memory capacity (c) Additional communication latency and bandwidth overhead (d) Lower instruction issue width</p>\n<p>31. An accelerator sustains a peak compute throughput of 100 TFLOP/s and a sustained memory bandwidth of 10 TB/s. A kernel has an arithmetic intensity of 4 FLOPs per byte. Which statement is correct? (a) The kernel is compute-bound at 100 TFLOP/s (b) The kernel is memory-bound at 40 TFLOP/s (c) The kernel is control-bound due to insufficient parallelism (d) The roofline model cannot be applied to this kernel</p>\n<p>32. Given a fixed power and area budget for an accelerator intended primarily for large-model inference, which architectural investment most directly improves end-to-end throughput? (a) Increasing peak floating-point units per cycle (b) Increasing instruction window size (c) Increasing sustained on-chip and inter-chip data bandwidth (d) Increasing branch prediction accuracy</p>",
@@ -4432,6 +4596,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "33-35",
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（題組 D）Consider the above C codes and its related 32-bit MIPS assembly codes.</p>\n<pre class=\"code\">unsigned int fib (unsigned int n) {\n  if (n &lt; 2) return(n);\n  else return(fib(n-1)+fib(n-2));\n}\n\n 1. fib:                      13. addi $s1, $v0, 0\n 2. addi $sp, $sp, -12        14. addi $a0, $a0, -1\n 3. sw   $ra, 0($sp)          15. jal  fib\n 4. sw   $s1, 4($sp)          16. add  $v0, $v0, $s1\n 5. sw   $a0, 8($sp)          17. EXIT:\n 6. slti $t0, $a0, 2          18. lw   $ra, 0($sp)\n 7. beq  $t0, $0, L1          19. lw   $a0, 8($sp)\n 8. addi $v0, $a0, 0          20. lw   $s1, 4($sp)\n 9. j    EXIT                 21. addi $sp, $sp, 12\n10. L1:                       22. jr   $ra\n11. addi $a0, $a0, -1\n12. jal  fib</pre>\n<p>暫存器編號：$zero = 0、$v0–$v1 = 2–3、$a0–$a3 = 4–7、$t0–$t7 = 8–15、$s0–$s7 = 16–23、$t8–$t9 = 24–25、$sp = 29。opcode 表（節錄）：R-format = 0、Jump = 2、Jal = 3、Beq = 4、Bne = 5、Addi = 8、Slti = 10、Lw = 35、Sw = 43。</p>\n<p>33. Which statement is correct?<br>\n(a) If register <i>$s1</i> is replaced with <i>$t0</i>, register utilization can be improved without side-effects.<br>\n(b) It is not necessarily to save register <i>$s1</i> at the beginning of function, which can reduce one instruction.<br>\n(c) It is necessary to save registers <i>$ra</i> and <i>$a0</i> at the start of each function to avoid data loss in situations where a callee subsequently acts as a caller.<br>\n(d) One of the reasons why using <i>slti</i> and <i>beq</i> rather than using a single <i>blti</i> (branch less than immediate) instruction is that <i>blti</i> requires two immediate fields that cannot be accommodated within a single 32-bit MIPS instruction format.</p>\n<p>34. Assume that the execution of each j, jal, beq, and jr instruction takes 3 clock cycles. As invoking the function fib(2), the total number of clock cycles to performing all j, jal, beq, and jr instructions is: (a) 30 (b) 27 (c) 24 (d) 33</p>\n<p>35. The above tables present the register numbers and the corresponding translations of assembly instructions into machine codes. The machine code of the instruction beq $t0, $0, L1 (Line 7) is:<br>\n(a) 000 100 01000 00000 1111 1111 1111 1110.<br>\n(b) 100 000 01000 00000 0000 0000 0000 0010.<br>\n(c) 000 100 01000 00000 0000 0000 0000 0010.<br>\n(d) 100 000 01000 00000 1111 1111 1111 1110.</p>",
@@ -4457,6 +4622,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 2,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>（承 Q1：compute_distance 對 N 個 2D 點兩兩計算距離，內層迴圈每次 load 4 個 float、store 1 個 float；N=1024，cache 放不下所有資料點，write-back/write-allocate，block 32 bytes）</p>\n<pre class=\"code\">void compute_distance(float x[], float y[], int N, float distance[]) {\n    for (int i = 0; i &lt; N; i++) {\n        for (int j = 0; j &lt; N; j++) {\n            float x_dist = x[i]- x[j];\n            float y_dist = y[i] - y[j];\n            distance[j + i * N] = sqrt(x_dist*x_dist + y_dist*y_dist);\n        }\n    }\n}</pre>\n<p>(2pts) Following the previous question, let us calculate the <i>arithmetic intensity</i>, which is defined as the ratio between the number of executed operations and the number of bytes transferred between the processor and the memory. For the compute_distance function, we focus on floating-point operations only. What is the arithmetic intensity of this function?</p>",
@@ -4484,6 +4650,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 3,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>（承 Q1、Q2：compute_distance 內層迴圈每次 load 4 個 float（x[i]、y[i]、x[j]、y[j]）、store 1 個 float（distance[j + i * N]），N=1024）</p>\n<p>(2pts) Following the previous question, suppose we make the processor large enough to store all the 2D points, so that all the x[] and y[] are already in the cache before the function is called. What is the arithmetic intensity of this function in this case?</p>",
@@ -4511,6 +4678,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": "27",
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（題組 C）Consider two one-bit ALU designs and a 32-bit ALU design for 32-bit MIPS CPU design.</p>\n<p>（圖的內容：<br>\n<b>左圖</b>：1-bit ALU。a 經 Ainvert 控制的 mux 選 a 或 ¬a，b 經 Binvert 控制的 mux 選 b 或 ¬b，兩者送進 AND、OR 與加法器（+，CarryIn 由上方進入）。結果 mux 由 Operation 選擇：0 = AND、1 = OR、2 = 加法器的和、3 = Less 輸入。加法器的和輸出（接到 mux 輸入 2 的那條線）往下拉出一條標 <i>S1</i>；加法器底部的進位輸出標 <i>S2</i>。S1、S2 連同 a、b 的訊號一起送進下方的 Overflow detection 方塊，輸出 Overflow。這個 1-bit ALU 沒有對外的 CarryOut。<br>\n<b>中圖</b>：同樣的 1-bit ALU（Ainvert、Binvert、CarryIn、Operation，mux 0～3 = AND、OR、加法器、Less），但沒有 Overflow detection，加法器的進位從底部輸出為 CarryOut。<br>\n<b>右圖</b>：32-bit ALU，ALU0～ALU31 串接，每一級的 CarryOut 接下一級的 CarryIn；Ainvert、Binvert、Operation 接到每一級，Binvert 同時接 ALU0 的 CarryIn；ALU1～ALU31 的 Less 接 0；ALU31 輸出 Result31、Set、Overflow，其中 Set 接回 ALU0 的 Less。）</p>\n<p>27. Which of the following statements is correct?</p>",
@@ -4537,6 +4705,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "5-(2)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "5. [30%] Please answer the questions for the design of a pipelined CPU.<p>(1) [5%] The image below shows the single-cycle datapath with the pipelined stages identified. In order to build a pipelined version of the datapath, what hardware resources should be added to buffer the required data between/across pipeline stages? Why?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/ncku-112-q5.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（標出五個 pipeline 階段的單週期 datapath）</figcaption></figure><p>(2) [12%] After adding the hardware resources mentioned above, the datapath shown in the above image becomes a pipelined datapath. But, it has a potential bug which makes it produce a wrong result when the pipelined datapath is used to handle a load instruction. Please describe the bug and draw a figure to fix the bug.</p>",
@@ -4556,6 +4725,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 9,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）The architecture of a single cycle CPU is shown in the following Figure. Select the correct statements based on the Figure.<figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/ncu-111-q9.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（single cycle CPU 的 datapath 與 control）</figcaption></figure>",
@@ -4583,6 +4753,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": "7-(a)",
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(25 pts) Consider a 5-stage (IF, ID, EX, MEM, WB) RISC-V pipelined processor (Figure 1) composed of logic blocks with the following latency (any unspecified block latency is treated as 0):</p><div class=\"table-scroll\"><table><tr><th>I-Mem / D-Mem R/W</th><th>Register File R/W</th><th>Mux</th><th>ALU</th><th>Adder / Shifter/Comparator</th><th>PC R/W</th><th>Single gate</th><th>Imm Gen</th><th>Control/ ALU Control</th><th>Pipeline Register R/W</th><th>Forwarding Unit/Hazard Detection Unit</th></tr><tr><td>280 ps</td><td>180 ps</td><td>25 ps</td><td>200 ps</td><td>50 ps</td><td>30 ps</td><td>5 ps</td><td>50 ps</td><td>80 ps</td><td>30 ps</td><td>50 ps</td></tr></table></div><div class=\"table-scroll\"><table><tr><th>funct7</th><th>rs2</th><th>rs1</th><th>funct3</th><th>rd</th><th>opcode</th></tr><tr><td>7 bits</td><td>5 bits</td><td>5 bits</td><td>3 bits</td><td>5 bits</td><td>7 bits</td></tr></table></div><p>R-type instruction format (add/sub rd, rs1, rs2)（bit 31 在最左、bit 0 在最右）</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/ntu-110-q7.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Figure 1（含 Forwarding Unit 與 Hazard Detection Unit 的五級管線 datapath）</figcaption></figure><p>Given the following code segment:</p><pre class=\"code\">#1 lw    x10, 100(x5)\n#2 add   x2, x10, x2\n#3 add   x2, x2, x4\n#4 sub   x6, x2, x6</pre><p>(a) (10 pts) Which pipeline stage determines the clock cycle time?</p><p>（本題 (b)～(d) 另收為第 7 題。）</p>",
@@ -4604,6 +4775,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 8,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>[10 points]（複選）Suppose we are designing a computing system that aims to train LLMs with multi-trillion of parameters. For that, let us review the latest system architecture design. NVIDIA recently announced <i>DGX GH200 AI Supercomputer</i>. According to its specifications (shown below), it is capable of 128 petaFLOPS of FP8 AI performance with 32 GH200 superchips and 19.5 TB of shared memory.</p><div class=\"table-scroll\"><table><tr><th colspan=\"2\">DGX GH200 Technical Specifications</th></tr><tr><td>CPU and GPU</td><td>32x NVIDIA Grace Hopper Superchips</td></tr><tr><td>CPU Cores</td><td>2,304 Arm® Neoverse V2 Cores with SVE2 4X 128b</td></tr><tr><td>Shared Memory</td><td>19.5 TB</td></tr><tr><td>Performance</td><td>128 petaFLOPS of FP8 AI performance</td></tr><tr><td>Networking</td><td>32x OSFP single-port NVIDIA ConnectX-7 VPI with 400Gb/s InfiniBand<br>16x dual-port NVIDIA BlueField®-3 VPI with 200Gb/s InfiniBand and Ethernet</td></tr><tr><td>NVIDIA NVLink Switch System</td><td>9x L1 NVIDIA NVLink Switches</td></tr><tr><td>Management Network</td><td>Host baseboard management controller<br>(BMC) with RJ45</td></tr><tr><td>Software</td><td>NVIDIA AI Enterprise (optimized AI software)<br>NVIDIA Base Command (orchestration, scheduling, and cluster management)<br>DGX OS / Ubuntu / Red Hat Enterprise Linux / Rocky (operating system)</td></tr><tr><td>Support</td><td>Three-year business-standard hardware and software support</td></tr></table></div><p>However, to really exploit the potential of the DGX GH200, we need to understand the system architecture further by examining the <i>Grace Hopper Superchip</i>. As shown in the figure below, the GH200 chip features up to 480 GB of LPDDR5X CPU memory and supports up to 144 GB of HBM3e GPU memory, offering up to 624 GB of fast-access memory on a single GPU-CPU superchip. The CPU memory and GPU memory are connected via a cache-coherent interconnect (NVLink-C2C) to provide a unified, cache-coherent memory address space. The Hopper GPU can transfer data to/from Hopper GPUs on other superchips at 900GB/s via 18x NVLink 4 connections. (Note that the specifications for network and I/O in this figure are bi-directional bandwidth).</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/ntu-113-q8.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（NVIDIA GH200 Grace Hopper Superchip 架構圖）</figcaption></figure><p>(In comparison, today's H100 GPU is a standalone Hopper GPU chip which is connected to a CPU chip via a 16x PCIe-5 I/O bus at a bi-directional bandwidth of 128GB/s.)</p><p>For simplicity, assume that our target LLM uses an FP8 to represent each parameter, most of the calculations are matrix-vector multiplications performed in FP8, and the arithmetic intensity is 1 FLOPs/Byte for FP8. Suppose we use a DGX GH200 to train the LLM, which of the following statements is/are true?</p>",
@@ -4632,6 +4804,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 15,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the arithmetic operation unit in the following figure for 32-bit MIPS CPU. Which of the following statement are correct?</p><p>（註：原卷這一題沒有附上所說的圖；從 (a) 的敘述看，指的是乘法與除法共用的硬體：一個 32-bit ALU、一個 32-bit 的 Divisor（乘法時當 Multiplicand）暫存器，以及一個 64-bit、可左右移的 Remainder（乘法時當 Product）暫存器。以下依這個標準硬體作答。）</p>",
@@ -4658,6 +4831,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 12,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）The following in-order pipelined five-stage MIPS processor design shown in Fig. 1 has a bug:</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q12.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 1（有 bug 的五級管線 MIPS 處理器）</figcaption></figure><p>Note that the processor has no forwarding paths, and if it detects data hazards at the decode stage (the hazard control unit is not shown), the pipeline stages will stall properly. If we use the buggy processor to execute the following code segment:</p><pre class=\"code\">add   $4, $1, $2\nor    $0, $1, $1\naddi  $2, $2, 3\nadd   $3, $4, $3\nadd   $1, $4, $0</pre><p>and assume that initially the registers $0 ~ $4 contains the values 0 ~ 4, respectively. That is, register $0 is 0, register $1 is 1, …, etc. Which of the following statements are true right after the writeback stage of the fourth instruction (<code>add $3, $4, $3</code>) is complete?</p>",
@@ -4684,6 +4858,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 18,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements are correct?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q18-a.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 2</figcaption></figure><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q18-b.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 3</figcaption></figure><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q18-c.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 4</figcaption></figure>",
@@ -4711,6 +4886,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 19,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements about computer arithmetic are correct?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-113-q19.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 Fig. 5</figcaption></figure>",
@@ -4739,6 +4915,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 19,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(10 pts)（複選）Which of the following statements are correct?</p>",
@@ -4766,6 +4943,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 14,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements are <u>true</u>?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/computer-organization/nycu-115-q14.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（5-bit Divisor、10-bit ALU 與 Remainder 暫存器）</figcaption></figure>",

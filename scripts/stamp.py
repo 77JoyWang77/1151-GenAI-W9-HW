@@ -20,7 +20,7 @@ def asset_version():
 
 
 def pages():
-    return [ROOT / "index.html", *ROOT.glob("subjects/**/*.html"), *ROOT.glob("templates/*.html")]
+    return [ROOT / "index.html", *ROOT.glob("subjects/**/*.html"), *ROOT.glob("exams/*.html"), *ROOT.glob("templates/*.html")]
 
 
 def stale(html, v):

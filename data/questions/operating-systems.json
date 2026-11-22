@@ -259,6 +259,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 11,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）What are the factors that should be considered when deciding the page size?",
@@ -285,6 +286,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 12,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）Choose the correct statements from the multiple choices regarding threads",
@@ -312,6 +314,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 13,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）Choose the correct statements from the multiple choices regarding deadlocks",
@@ -338,6 +341,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 14,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）Choose the correct statements from the multiple choices",
@@ -364,6 +368,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 16,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）When communicating with sockets, a client process initiates a request for a connection and is assigned a port by the host computer. Which of the following would be a valid port assignment for the host computer?",
@@ -390,6 +395,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 17,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）_____ is/are not a technique/s for handling critical sections in operating systems.",
@@ -416,6 +422,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 18,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）Assume a system has a TLB hit ratio of 90%. It requires 15 nanoseconds to access the TLB, and 85 nanoseconds to access main memory. What is the effective memory access time in nanoseconds for this system?",
@@ -442,6 +449,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 19,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）Given the reference string of page accesses: 1 2 3 4 2 3 4 1 2 1 1 3 1 4 and a system with three page frames, what is the final configuration of the three frames after the LRU algorithm is applied? Assume the FIFO queue is left out right in.",
@@ -468,6 +476,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 20,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）Which of the following is true of a blocking system call?",
@@ -494,6 +503,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 4,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "Consider the C code on the right side. A user executes the executable of the code on a Linux shell. Assume it executed successfully. How many processes have been created by executing the C code, including the original process that executes main( )?<pre class=\"code\">...\nint main() {\n  pid_t pid;\n  int i=0;\n  for (i=0;i&lt;4;i++) {\n    pid = fork();\n    if (pid &lt;0) {\n      fprintf(stderr,\"fork error\\n\");\n      exit(-1);\n    }\n  }\n  return 0;\n}</pre>",
@@ -520,6 +530,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 5,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "Consider the CPU burst timeline of four processes, as shown on the right side. The processes need to share one CPU, and the OS uses the round-robin algorithm with time quantum = 5 for scheduling. Let the context switch time be very close to 0. Let the average waiting time of the processes be <i>t</i>. Which of the following is true?<div class=\"table-scroll\"><table><tr><th>Process</th><th>Arrival Time</th><th>Burst Time</th></tr><tr><td>P1</td><td>0</td><td>10</td></tr><tr><td>P2</td><td>1</td><td>6</td></tr><tr><td>P3</td><td>12</td><td>2</td></tr><tr><td>P4</td><td>13</td><td>3</td></tr></table></div>",
@@ -546,6 +557,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 6,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "Memory page-replacement algorithms may have different page fault rates. Given the reference string “1 5 4 6 4 1 5 4 1 6 2 3 1 6” and the number of page frames 3, which of the following is true?",
@@ -572,6 +584,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 7,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "Which of the following is <u>not</u> true?",
@@ -599,6 +612,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 8,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "The right side shows a solution to the producer-consumer problem with <i>n</i> buffers using three semaphores, where <i>empty=n</i>, <i>mutex=1</i>, and <i>full=0</i> at the initial state. Some variables are missing in the consumer program. What are they?<pre class=\"code\">do {\n   wait( V1 );\n   wait( V2 );\n      . . .\n   // remove an item\n      . . .\n   signal(    );\n   signal(    );\n      . . .\n   // consume the item\n      . . .\n}while (TRUE);</pre><p>The structure of the consumer process.</p><pre class=\"code\">do {\n      . . .\n   // produce an item in nextp\n      . . .\n   wait(empty);\n   wait(mutex);\n      . . .\n   // add nextp to buffer\n      . . .\n   signal(mutex);\n   signal(full);\n}while (TRUE);</pre><p>The structure of the producer process.</p>",
@@ -626,6 +640,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 16,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices regarding contention scope",
@@ -652,6 +667,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 17,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices regarding processor affinity",
@@ -679,6 +695,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 19,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -706,6 +723,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 20,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -733,6 +751,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 2,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which statements are true about segmentation fault? The code segments are written in C.",
@@ -762,6 +781,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 11,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -788,6 +808,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 12,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices regarding pipes",
@@ -816,6 +837,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 14,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -845,6 +867,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 15,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -871,6 +894,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 16,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Identify the following environments need hard real-time scheduling.",
@@ -897,6 +921,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 17,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Which of the following scheduling algorithms would result in starvation?",
@@ -923,6 +948,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 18,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）A counting semaphore ____.",
@@ -949,6 +975,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 19,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Consider a multiprocessor system and a multithreaded program written using the many-to-many threading model. Let the number of user-level threads in the program be more than the number of processors in the system. What are the lower performance implications of the following scenarios?",
@@ -976,6 +1003,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 20,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Some computer systems do not provide a privileged mode of operation in hardware. To construct a secure operating system for these computer systems, an OS for a machine of this type would need to remain in control at all times. This is could be accomplished by the following methods:",
@@ -1003,6 +1031,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 11,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Some computer systems do not provide a privileged mode of operation in hardware. An operating system for a machine of this type would need to remain in control (or monitor mode) at all times. This could be accomplished by the following methods:",
@@ -1029,6 +1058,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 12,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）What are the factors that should be considered when deciding the page size?",
@@ -1055,6 +1085,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 13,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Consider the following page reference string:<br>7, 2, 3, 1, 2, 5, 3, 4, 6, 7, 7, 1, 0, 5, 4, 6, 2, 3, 0, 1.<br>Assuming demand paging with three frames, how many page faults would occur for the following replacement algorithms?<ul><li>LRU replacement</li><li>FIFO replacement</li><li>Optimal replacement</li></ul>Select the correct answers:",
@@ -1081,6 +1112,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 14,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1107,6 +1139,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 15,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）What are the purpose of the separation of mechanism and policy?",
@@ -1134,6 +1167,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 16,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1162,6 +1196,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 17,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1189,6 +1224,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 18,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1217,6 +1253,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 19,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1243,6 +1280,7 @@
         "year": 113,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 20,
+        "paper": "ncu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1270,6 +1308,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 11,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1299,6 +1338,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 12,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1325,6 +1365,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 13,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1351,6 +1392,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 14,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1377,6 +1419,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 15,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1403,6 +1446,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 16,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1429,6 +1473,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 17,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）What are the purpose of the separation of mechanism and policy?",
@@ -1457,6 +1502,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 18,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1485,6 +1531,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 19,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1511,6 +1558,7 @@
         "year": 114,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 20,
+        "paper": "ncu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
       },
       "question": "（多選題）Which of the following instructions should be privileged?",
@@ -1537,6 +1585,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 11,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Which of the following statements accurately describe the system startup and boot process?",
@@ -1563,6 +1612,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 12,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Which of the following are valid Process States and transitions in a standard 5-state process model?",
@@ -1591,6 +1641,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 13,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）What specific OS features are critical for high-performance AI/Machine Learning workloads?",
@@ -1617,6 +1668,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 14,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）How does OS design adapt for Solid State Drives (SSDs) compared to HDDs?",
@@ -1643,6 +1695,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 15,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Which statements accurately describe I/O Subsystem mechanisms?",
@@ -1670,6 +1723,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 16,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1696,6 +1750,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 17,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1722,6 +1777,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 18,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1749,6 +1805,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 19,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1775,6 +1832,7 @@
         "year": 115,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 20,
+        "paper": "ncu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices",
@@ -1802,6 +1860,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": 1,
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(10 pts) Operating systems can be classified into several types according to the architecture of sub-systems. The following figure shows the architecture of operating systems. Four dashed rectangles (marked by A, B, C, D) are located at applications layer, system services layer, kernel layer, and hardware layer.</p>\n<p>（圖的內容：最上層 Applications 有兩個 Applications 方塊和虛線框 A；中間 Operating Systems 分兩層，System Services 層有 System Libararies 和虛線框 B，Kernel 層有 Kernel Componets 和虛線框 C；最下層 Hardware 有 CPU、Memory、Storage Devices、I/O 和虛線框 D。）</p>\n<p>Please answer the location of the selected sub-systems in difference types of operating systems.<br>\n(a) (2 pts) In MS-DOS (monolithic operating systems), where will the memory management services be located?<br>\n(b) (3 pts) In Linux (layered operating system), where will the standard I/O libraries are located?<br>\n(c) (2 pts) In Container (virtualized operating systems), where will the scheduling services are located?<br>\n(d) (3 pts) In Mach/QNX (micro-kernel operating systems), where will the device driver be located?</p>",
@@ -1821,6 +1880,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": 2,
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(10 pts) A running process requires four different types of memory context. Please specify the locations of each context showing in the figure on the right.</p>\n<p>（圖的內容：位址由上 0xFFFFFFFF 往下到 0x00000000，依序是 Arguments and environment variables、(D)、向下的箭頭、(C)、向上的箭頭、Heap、(B)、Initialized Data、(A)。）</p>\n<p>(a) (2 pts) Stack segment<br>(b) (3 pts) Text segment<br>(c) (2 pts) Uninitialized data segment<br>(d) (3 pts) Free space</p>",
@@ -1840,6 +1900,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": 5,
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(10 pts) Please read the code segment and answer the <b>five</b> sub-questions.<br>\n(a) (2 pts) Please answer the line number where the process will be suspended when it first starts?<br>\n(b) (2 pts) When the process is suspended and a SIGUSR2 signal is sent to the process, how does the process react? (A): terminated, (B): resume, (C): no action, or (D) Add SIGUSR2 to the signal mask.<br>\n(c) (2 pts) What's the signal mask when SIGUSR2 is caught by the process: (A) SIGUSR1and SIGUSR2, (B) SIGUSR1, (C) SIGINT and SIGUSR2, and (D) Empty.<br>\n(d) (2 pts) When SIGINT is sent and caught, from which line will the process be resumed?<br>\n(e) (2 pts) When sigaction() on line 17, 19, and 21 are replaced by signal(), what's the signal mask after resumed by catching SIGINT? (A) SIGUSR1 and SIGUSR2, (B) SIGUSR1, (C) SIGINT and SIGUSR2, and (D) Empty.</p>\n<pre class=\"code\">1 %% include all the head files\n2\n3 static void sigHandling(int);\n4\n5 int\n6 main(void)\n7 {\n8     sigset_t   newmask, oldmask, waitmask;\n9     struct sigaction   handling, saveintr;\n10\n11    pr_mask(\"program start: \");\n12\n13    handling.sa_handler = sigHandling;\n14    sigemptyset(&amp;handling.sa_mask);\n15    handling.sa_flags = 0;\n16\n17    if (sigaction(SIGUSR1, &amp;handling, &amp;saveintr) &lt; 0)\n18       return(-1);\n19    if (sigaction(SIGUSR2, &amp;handling, &amp;saveintr) &lt; 0)\n20       return(-1);\n21    if (sigaction(SIGINT, &amp;handling, &amp;saveintr) &lt; 0)\n22       return(-1);\n23\n24    sigemptyset(&amp;waitmask);\n25    sigaddset(&amp;waitmask, SIGUSR1);\n26    sigemptyset(&amp;newmask);\n27    sigaddset(&amp;newmask, SIGINT);\n28\n29    /*\n30     * Block SIGINT and save current signal mask.\n31     */\n32    if (sigprocmask(SIG_BLOCK, &amp;newmask, &amp;oldmask) &lt; 0)\n33       err_sys(\"SIG_BLOCK error\");\n34\n35    /*\n36     * Critical region of code.\n37     */\n38    pr_mask(\"in critical region: \");\n39\n40    /*\n41     * Pause, allowing all signals except SIGUSR1.\n42     */\n43    if (sigsuspend(&amp;waitmask) != -1)\n44       err_sys(\"sigsuspend error\");\n45\n46    pr_mask(\"after return from sigsuspend: \");\n47\n48    /*\n49     * Reset signal mask which unblocks SIGINT.\n50     */\n51    if (sigprocmask(SIG_SETMASK, &amp;oldmask, NULL) &lt; 0)\n52       err_sys(\"SIG_SETMASK error\");\n53\n54    /*\n55     * And continue processing ...\n56     */\n57    pr_mask(\"program exit: \");\n58\n59    exit(0);\n60 }\n61\n62 static void\n63 sigHandling(int signo)\n64 {\n65    pr_mask(\"\\n in sigHandling:\");\n66    printf(\"Received signal %d\\n\", signo);\n67 }</pre>",
@@ -1859,6 +1920,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 1,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts) Given the logical address of a memory and its page tables where the page size is 4 bytes, the number of entries on each page is 4, and the size of physical memory is 32 bytes. Please provide the physical address of variable \"g\" and \"o\" shown in below figure.</p>\n<p>logical memory：</p>\n<div class=\"table-scroll\"><table><tr><th>Logical Address</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td></tr>\n<tr><th>Variable</th><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td><td>i</td><td>j</td><td>k</td><td>l</td><td>m</td><td>n</td><td>o</td><td>p</td></tr></table></div>\n<p>page table：</p>\n<div class=\"table-scroll\"><table><tr><th>Logical Page</th><th>Physical</th></tr><tr><td>0</td><td>4</td></tr><tr><td>1</td><td>6</td></tr><tr><td>2</td><td>5</td></tr><tr><td>3</td><td>2</td></tr></table></div>",
@@ -1885,6 +1947,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 2,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts) Please provide the page offset and the size of page table according to the following parameters. Consider a system with a 24-bit logical address, each entry is 1 byte, and each page is 4 KiB.</p>",
@@ -1911,6 +1974,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 8,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(4 pts)（複選）The UNIX system call <b>wait()</b> returns the process identifier of a terminated child process. Select correct description(s).</p>",
@@ -1936,6 +2000,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 9,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(4 pts)（複選）Regarding threads, select correct description(s).</p>",
@@ -1961,6 +2026,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 10,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(4 pts)（複選）Given a set of 3 <b>periodic</b> processes as shown below:</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Arrival Time</th><th>Period</th><th>Burst Time</th></tr>\n<tr><td>P<sub>1</sub></td><td>0</td><td>30</td><td>10</td></tr><tr><td>P<sub>2</sub></td><td>10</td><td>70</td><td>10</td></tr><tr><td>P<sub>3</sub></td><td>20</td><td>100</td><td>20</td></tr></table></div>\n<p>Perform the <b>rate-monotonic scheduling</b>. Select correct description(s).</p>",
@@ -1986,6 +2052,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 12,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts)（複選）Which of the following are correct for consistency semantics for file systems?</p>",
@@ -2013,6 +2080,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 13,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts)（複選）Regarding the critical-section problem and synchronization, select correct description(s).</p>",
@@ -2039,6 +2107,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 16,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts)（複選）Recent hardware architectural extensions include the support for Trusted Execution Environment (TEE). Hardware isolates the software running in the TEE from the outside attackers. Intel provides the hardware support called Software Guard Extensions (SGX) that allows programs to run in its TEE called enclave in userspace. Intel SGX encrypts the enclave's code and data in CPU registers and RAM memory. Attackers that control another application or privileged systems software such as an operating system can only read or write encrypted code and data of the enclave. Which of the following are true?</p>",
@@ -2065,6 +2134,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 18,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(8 pts)（複選）Given a set of n processes, the arrival time of the i-th process is (i-1), and the burst time of the i-th process is (2n-2i+2), as shown below:</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Arrival Time</th><th>Burst Time</th></tr>\n<tr><td>P<sub>1</sub></td><td>0</td><td>2n</td></tr><tr><td>P<sub>2</sub></td><td>1</td><td>2n-2</td></tr><tr><td>P<sub>3</sub></td><td>2</td><td>2n-4</td></tr><tr><td>...</td><td>...</td><td>...</td></tr><tr><td>P<sub>n</sub></td><td>n-1</td><td>2</td></tr></table></div>\n<p>Perform <b>preemptive scheduling</b> to minimize the <b>average turnaround time</b> (from the arrival time to the time of the completion of a process) of all processes. Assume that the minimized average turnaround time of all processes is Wn<sup>3</sup>+Xn<sup>2</sup>+Yn+Z. Select correct description(s).</p>",
@@ -2091,6 +2161,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 9,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(8pts)（複選）Modern CPU architectures provide nested page tables (NPTs) to support virtualization. The MMU hardware performs two-stage memory translation. In the first stage, it translates virtual addresses (VAs) using the virtual machine (VM)'s page tables (PTs) to intermediate physical addresses (IPAs). The VM's PTs are specified in IPAs. In the second stage, the hardware translates the IPAs using the NPTs to physical addresses (PAs). All page tables are 4K bytes, and a page table entry is 8 bytes. All VAs and IPAs are 39 bits, and the PTs and NPTs include 2M or 4K byte mappings. Assume the TLB or cache is not implemented on the hardware. Considering both PTs and NPTs are enabled, which of the following could be the number of memory accesses taken for the hardware to perform the two-stage memory translation (e.g., VA of a VM to a PA)?</p>",
@@ -2116,6 +2187,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 12,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(5pts)（複選）Regarding allocating secondary storage space, select correct description(s).</p>",
@@ -2142,6 +2214,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 13,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(5pts)（複選）Regarding security, select correct description(s).</p>",
@@ -2168,6 +2241,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 14,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(10pts)（複選）Consider two-level paging without virtual memory. Assume</p>\n<ul><li>A system uses a W-bit logical address space.</li><li>The page size is 2<sup>X</sup> bytes.</li><li>The size of an entry in the outer page table is 2<sup>Y</sup> bytes.</li><li>The size of an entry in the inner page table is 2<sup>Z</sup> bytes.</li><li>We also assume that the size of each entry in each page table is long enough to store all information needed.</li></ul>\n<p>Given the following (W, X, Y, Z), which can fit the outer page table into one page?</p>",
@@ -2194,6 +2268,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 15,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(10pts)（複選）Given 3 pages (P1, P2, P3) and 2 frames, the page reference has the following features:</p>\n<ul><li>The frames are initially empty.</li><li>There will be 4 page references.</li><li>The first page reference is P1.</li><li>At the time of a page reference, a page replacement algorithm only knows the probability of the page of the next page reference, and it does NOT know the exact page of the next page reference.</li><li>After a page reference of P1, the next page reference is P2 with 0.8 probability or P3 with 0.2 probability.</li><li>After a page reference of P2, the next page reference is P3 with 0.4 probability or P1 with 0.6 probability.</li><li>After a page reference of P3, the next page reference is P1 with 0.9 probability or P2 with 0.1 probability.</li><li>An optimal page replacement algorithm minimizes the expected number of page faults for the total 4 page references.</li></ul>\n<p>Regarding the expected number of page faults of the optimal page replacement algorithm, select correct description(s).</p>",
@@ -2220,6 +2295,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 16,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(10pts)（複選）Given 2 periodic processes in the following table:</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Period (msec)</th><th>Deadline (msec)</th><th>Processing (Burst) Time (msec)</th><th>Softness</th></tr>\n<tr><td>P1</td><td>T1</td><td>D1</td><td>C1</td><td>S1</td></tr><tr><td>P2</td><td>T2</td><td>D2</td><td>C2</td><td>S2</td></tr></table></div>\n<p>The softness is a positive integer, meaning that 1 deadline needs to be met for any Si consecutive instances of Pi. For example:</p>\n<ul><li>If Si = 1, then each instance needs to meet its deadline.</li><li>If Si = 2, then 1 deadline needs to be met for any 2 consecutive instances. (If an instance misses its deadline, then the next instance must meet its deadline.)</li></ul>\n<p>Note that, if Si &gt; 1, then Pi does not need all instances to be processed. The real-time scheduling problem has the following features:</p>\n<ul><li>For each i, Ci ≤ Di ≤ Ti.</li><li>The time of context switching and interrupt handling can be ignored.</li><li>The scheduling is preemptive.</li><li>The scheduling is based on dynamic priority assignment.</li><li>A scheduling algorithm is optimal in that if a problem cannot be scheduled by the scheduling algorithm, then it cannot be scheduled by any other scheduling algorithm.</li></ul>\n<p>Select correct description(s).</p>",
@@ -2246,6 +2322,7 @@
         "year": 112,
         "dept": "計算機結構與作業系統(B)",
         "no": 17,
+        "paper": "ntu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
       },
       "question": "<p>(10pts)（複選）A state is \"safe\" if the system can allocate resources to each thread in some order and still avoid a deadlock. A system is in a safe state only if there exists a \"safe sequence\" of threads. Given 7 threads (T0, T1, T2, T3, T4, T5, T6) and 3 resource types (R0, R1, R2), the follow tables show the current state of the system:</p>\n<ul><li>Available: the number of currently-available resources of each type.</li><li>Max: the maximum demand of each thread.</li><li>Allocation: the number of resources of each type currently allocated to each thread.</li></ul>\n<p>Available：R0 = 3, R1 = 0, R2 = 6</p>\n<div class=\"table-scroll\"><table><tr><th rowspan=\"2\"></th><th colspan=\"3\">Max</th><th colspan=\"3\">Allocation</th></tr>\n<tr><th>R0</th><th>R1</th><th>R2</th><th>R0</th><th>R1</th><th>R2</th></tr>\n<tr><td>T0</td><td>0</td><td>3</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>\n<tr><td>T1</td><td>3</td><td>6</td><td>5</td><td>1</td><td>2</td><td>2</td></tr>\n<tr><td>T2</td><td>2</td><td>1</td><td>5</td><td>1</td><td>1</td><td>0</td></tr>\n<tr><td>T3</td><td>5</td><td>6</td><td>1</td><td>1</td><td>2</td><td>0</td></tr>\n<tr><td>T4</td><td>6</td><td>1</td><td>0</td><td>2</td><td>1</td><td>0</td></tr>\n<tr><td>T5</td><td>4</td><td>1</td><td>3</td><td>1</td><td>1</td><td>1</td></tr>\n<tr><td>T6</td><td>0</td><td>6</td><td>8</td><td>0</td><td>0</td><td>0</td></tr></table></div>\n<p>How many safe sequences of threads are there? Note that there are 7! = 5,040 possible sequences. Assume that the answer is 1000W + 100X + 10Y + Z, where W, X, Y, Z are integers and 0 ≤ W, X, Y, Z ≤ 9. Select correct description(s).</p>",
@@ -2278,6 +2355,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 9,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>Part II: Operating System (50 points)<br>NOTE that in the questions, it is intended to provide redundant or miss certain assumptions to disguise you. Please describe your own assumptions if necessary to answer the questions. Answers not in the order of question number might NOT be scored. You can answer in English or Chinese.</p>\n<p>(20 points) For each of the following statements, answer <b>Yes</b> if it is TRUE or <b>brief why it is wrong.</b></p>\n<p>A. (2 points) The less threading, the less performance.<br>\nB. (2 points) The less frames, the more page fault rates.<br>\nC. (2 points) The smaller time quantum for scheduling, the longer average turnaround time.<br>\nD. (2 points) Firmware can be executed faster in ROM than in RAM.<br>\nE. (2 points) Working set model has to be supported by MMU.<br>\nF. (2 points) A safe state will not go to a deadlocked state.<br>\nG. (2 points) Context switch is usually supported in hardware instruction for performance.<br>\nH. (2 points) Section Semantics: Once the file is closed, the changes are visible only to new sessions.<br>\nI. (2 points) A real-time scheduler schedules tasks according to their real-time priorities.<br>\nJ. (2 points) The two-phase locking protocol guarantees serializability and prevents deadlock.</p>",
@@ -2297,6 +2375,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 10,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>(5 points) When a mouse device is moved, a monitor reflects by redrawing the mouse icon in windows manager. What does the mouse driver (not ISR) do in this event? How is the driver called? How does the windows manager know to start redrawing?</p>",
@@ -2316,6 +2395,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 11,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>(10 points) Intrusive linked lists are a variation of linked lists, where the links are embedded in the item structure that's being linked as follows. It is used in Linux kernel for better performance than traditional linked lists. Why? Hint: Consider memory related advantages.</p>\n<pre class=\"code\">typedef struct list {\n  struct list *next;\n} list;\n\ntypedef struct item {\n  int val;    // data\n  list links;\n} item;</pre>",
@@ -2336,6 +2416,7 @@
         "year": 113,
         "dept": "計算機結構與作業系統",
         "no": 12,
+        "paper": "ntu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
       },
       "question": "<p>(15 points) How is a Round Robin scheduler implemented so that each task is preempted accurately every 1 millisecond and resume after indefinitely? (5 points) In the same RR scheduling, please write (pseudo) codes for a daemon (looping) task T with comments as succinct as possible so that T runs for 1 second, then blocked for another 1 second. (10 points) Hint: Asynchronous I/O might be needed.</p>",
@@ -2358,6 +2439,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 2,
+        "paper": "ncku-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_hardware.pdf"
       },
       "question": "[50%] Consider a <i>key-value</i> (<i>KV</i>) storage. A KV pair stored in the storage consists of a constant length of an alphabetical string as a key, and its associated value is simply a variable-length bit string. The KV storage provides <code>PUT(x,v)</code> and <code>v=GET(x)</code> APIs to applications, where <code>PUT(x,v)</code> stores a key-value pair in the storage with the designated key <code>x</code> and value <code>v</code>, and <code>GET(x)</code> returns the value <code>v</code>, given the queried key <code>x</code>, previously stored in the KV store. Additionally, <code>SCAN(x1,x2)</code> offered by the KV storage returns a list of KV pairs such that the keys of the retrieved data items are no less than <code>x1</code> and no greater than <code>x2</code>. Let the KV storage be operated in a computer system equipped with sizes of <i>x</i> volatile memory space and of <i>y</i> persistent storage, where <i>x</i> ≪ <i>y</i>.<p>Notably, applications may introduce two types of workload patterns to the KV storage. The <i>random access</i> pattern denotes keys generated by <code>GET(.)</code>, <code>PUT(.)</code> and <code>SCAN(.)</code> are random, while the <i>sequential access</i> represents the scenario that data items are addressed with increasing (or decreasing) keys. Secondly, <code>GET(.)</code>, <code>PUT(.)</code> and <code>SCAN(.)</code> operations can be performed concurrently on the fly by the KV store. Thirdly, the total storage size of KV pairs stored in the system may be greater than <i>x</i>, the available volatile memory space as aforementioned. Finally, the KV storage may fail anytime and support the recovery for committed <code>PUT(.)</code> operations.</p><p>Please discuss designs and implementations of operating systems to provide such a KV storage service, considering to optimize the performance metrics in terms of delays and throughputs in manipulating <code>GET(.)</code>, <code>PUT(.)</code> and <code>SCAN(.)</code> operations. You shall state clearly subject to the following techniques in order.</p><ol><li>[5%] In-memory indexing</li><li>[5%] In-disk indexing</li><li>[5%] Caching</li><li>[5%] Paging</li><li>[5%] Batched I/O</li><li>[5%] Multithreading and thread scheduling</li><li>[5%] Shared memory and consistency</li><li>[5%] Encoding/Decoding</li><li>[5%] File system block layout</li><li>[5%] File system compaction</li></ol>",
@@ -2377,6 +2459,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "4-a~e",
+        "paper": "ncku-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_hardware.pdf"
       },
       "question": "[50%] For a computer system, its main job is input/output (I/O) and processing. In some cases, the main job is I/O, and the processing is merely identical. Please answer the following questions related to I/O subsystems of an operating system (OS).<p>a. [5%] OS (especially device drivers) interacts with device controllers to perform I/O operations. What kinds of commands and data to a device controller can be issued in a device driver to accomplish an I/O transfer? Hint: The commands are often issued in the forms of processor instructions through special or standard I/O instructions.</p><p>b. [5%] A special-purpose processor, called a direct-memory-access (DMA) controller, is often used to offload the burden of a central processing unit (CPU) for handling I/O operations. In such a computer system, the I/O operations can handle by CPU or DMA. Please specify which method (CPU-based or DMA-based) is suitable for latency-oriented I/O (for small-size data) and explain your answer.</p><p>c. [5%] When a DMA controller is used to transfer data, it is often the case that the source and destination addresses of the transfer should be specified in physical memory addresses. Nevertheless, in a system with the virtual memory support, the mapping from virtual to physical addresses would be time-consuming jobs. What is the hardware device that can be used to help facilitate the mapping process?</p><p>d. [6%] OS provides many services to enhance I/O performance. The descriptions of the three services are listed below. Please write down the name of the service (technique) based on its description.</p><ol type=\"i\"><li>[2%] A memory area that stores data while the data are being transferred from an application to a device.</li><li>[2%] A region of fast memory that holds copies of data, and access to the copy is more efficient than access to the original data.</li><li>[2%] A memory area that holds output for an I/O device that cannot accept interleaved data streams. Hint: Such an I/O device could serve one job at a time.</li></ol><p>e. [4%] Asynchronous I/O can greatly improve I/O throughput in a computer. Which technique(s) (of the three services/techniques mentioned in the above question) can be adopted to implement an efficient asynchronous I/O operation? Explain your answer.</p>",
@@ -2397,6 +2480,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "4-f~h",
+        "paper": "ncku-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_hardware.pdf"
       },
       "question": "[50%] For a computer system, its main job is input/output (I/O) and processing. In some cases, the main job is I/O, and the processing is merely identical. Please answer the following questions related to I/O subsystems of an operating system (OS).<p>f. [5%] A swap space is often created by using disk space as an extension of main memory. In practice, a swap space can craved from the two approaches: a file system or a separate disk partition. Which approach can be used when the implementation efficiency is desired? Explain your answer.</p><p>g. [5%] What phenomenon will occur if a computer system is assigned with a fixed swap space and the degree of multiprogramming is increasing (by introducing new processes to the system)? Explain your answer.</p><p>h. [5%] Continue with the above question. The working-set model is proposed as a measure to prevent the above phenomenon from happening. We suppose a system with three processes, A, B, and C, and their working-set sizes (WSS) are WSS(a), WSS(b), and WSS(c), respectively. Also, we suppose the swap-space size of d. In what situation will OS suspend a process to improve the system performance? Please use a mathematical formula to define the situation with the relationship of WSS(a), WSS(b), WSS(c), and d.</p>",
@@ -2416,6 +2500,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "4-i~j",
+        "paper": "ncku-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_hardware.pdf"
       },
       "question": "[50%] For a computer system, its main job is input/output (I/O) and processing. In some cases, the main job is I/O, and the processing is merely identical. Please answer the following questions related to I/O subsystems of an operating system (OS).<p>i. [5%] Scheduling of disk I/O requests in a good order would greatly improve I/O efficiency. Given a multiprogramming environment with concurrent I/O, which disk scheduling family (among FCFS, SCAN, and LOOK families) will perform better? Explain your answer.</p><p>j. [5%] Continue with the above question. When the disk queue size is set to one, which disk scheduling family will perform better? Explain your answer.</p>",
@@ -2435,6 +2520,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(1)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (1) [2%] Which one of the following is correct?",
@@ -2460,6 +2546,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(2)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (2) [2%] Which one of the following is false?",
@@ -2485,6 +2572,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(3)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (3) [2%] Which one of the following is correct?",
@@ -2511,6 +2599,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(4)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (4) [2%] Unified virtual memory uses ____________ to cache both process page and file data",
@@ -2536,6 +2625,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(5)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (5) [2%] IBM’s indexed sequential access method (ISAM) ____________.",
@@ -2561,6 +2651,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(6)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (6) [2%] In polling I/O, the main inefficiency comes from",
@@ -2586,6 +2677,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(7)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (7) [2%] Disk scheduling algorithms in operating systems consider only seek distances, because",
@@ -2611,6 +2703,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(8)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (8) [2%] If an instruction modifies several different locations, a page fault can be handled by",
@@ -2637,6 +2730,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(9)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (9) [2%] When the state for a dispatcher object moves to signaled, the Windows kernel",
@@ -2662,6 +2756,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(10)",
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (10) [2%] Which of the following statements is not true about spinlocks in Linux?",
@@ -2687,6 +2782,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 2,
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "[10%] The following table shows Solaris dispatch table for time-sharing and interactive threads. Please answer the following questions according to the dispatch table.<p>(1) [4%] What is the time quantum (in milliseconds) for a thread with priority 15? With priority 55?</p><p>(2) [3%] Assume a thread with priority 35 has used its entire time quantum without blocking. What new priority will the scheduler assign this thread?</p><p>(3) [3%] Assume a thread with priority 40 blocks for I/O before its time quantum has expired. What new priority will the scheduler assign this thread?</p><div class=\"table-scroll\"><table><tr><th>priority</th><th>time quantum</th><th>time quantum expired</th><th>return from sleep</th></tr><tr><td>0</td><td>200</td><td>0</td><td>50</td></tr><tr><td>5</td><td>200</td><td>0</td><td>50</td></tr><tr><td>10</td><td>160</td><td>0</td><td>51</td></tr><tr><td>15</td><td>160</td><td>5</td><td>51</td></tr><tr><td>20</td><td>120</td><td>10</td><td>52</td></tr><tr><td>25</td><td>120</td><td>15</td><td>52</td></tr><tr><td>30</td><td>80</td><td>20</td><td>53</td></tr><tr><td>35</td><td>80</td><td>25</td><td>54</td></tr><tr><td>40</td><td>40</td><td>30</td><td>55</td></tr><tr><td>45</td><td>40</td><td>35</td><td>56</td></tr><tr><td>50</td><td>40</td><td>40</td><td>58</td></tr><tr><td>55</td><td>40</td><td>45</td><td>58</td></tr><tr><td>59</td><td>20</td><td>49</td><td>59</td></tr></table></div>",
@@ -2707,6 +2803,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 3,
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "[10%] “<b>Tail latency</b>” is the small percentage of response times from a system, out of all of responses to the input/output (I/O) requests it serves, that take the longest in comparison to the bulk of its response times. They are, quite literally, the tail end of a system’s response time spectrum, and are often expressed as the 98th or 99th percentile response times. A long-tail latency issue is observed in the distribution of the write latency because of the management design of storage devices (e.g., HDDs and SSDs). For instance, the latency at the 99th percentile can be 100x higher than the average latency. Such a long-tail latency causes a significant problem in real-time embedded and enterprise-server systems, which need to meet the real-time and quality of service (QoS) requirements. Please answer the following questions:<p>(1) [5%] Please provide four possible causes of tail latency in the storage system design. Brief explanation is needed.</p><p>(2) [5%] Please provide two solutions for resolving the long-tail latency issue. A brief explanation is needed.</p>",
@@ -2727,6 +2824,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 4,
+        "paper": "ncku-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_hardware.pdf"
       },
       "question": "[10%] Consider a computer system with a 32-bit virtual address space where paging is used. Assuming the page size is 4K bytes and the memory is byte-addressable, please answer the following questions:<p>(1) [2%] How many pages can a process have at most? Suppose the maximum physical memory size is 32 GB. What is the maximum number of bits for physical addresses? What is the maximum number of frames for the system?</p><p>(2) [2%] Assume one-level paging is adopted. Let the memory access time and TLB access time be 100ns and 20ns, respectively. If we want an effective memory access time of less than 140ns, what is the minimal TLB hit ratio that needs to be achieved?</p><p>(3) [3%] Suppose the virtual memory of the system adopts demand paging. Assume the effective memory access time of the computer system without any page fault is 100ns, and the service time for a page fault is 15ms. If the page fault rate is 0.0000004, what is the effective access time under demand paging?</p><p>(4) [3%] Given a computer system with a 64-bit virtual address, 8KB pages, and 8 bytes per page entry, suppose that the maximum physical memory size is 64GB, and the system is byte-addressable. Let multi-level paging be implemented for the system. How many levels of paging do we have?</p>",
@@ -2746,6 +2844,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(1)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (1) [2%] What statement concerning privileged instructions is considered false?",
@@ -2771,6 +2870,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(2)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (2) [2%] A message-passing model is ____.",
@@ -2796,6 +2896,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(3)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (3) [2%] The major difficulty in designing a layered operating system approach is ____.",
@@ -2821,6 +2922,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(4)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (4) [2%] A boot block ____.",
@@ -2846,6 +2948,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(5)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (5) [2%] _____ allow operating system services to be loaded dynamically.",
@@ -2871,6 +2974,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(6)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (6) [2%] A cycle in a resource-allocation graph is ____.",
@@ -2896,6 +3000,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(7)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (7) [2%] Absolute code can be generated for ____.",
@@ -2921,6 +3026,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(8)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (8) [2%] In a dynamically linked library, ____.",
@@ -2947,6 +3053,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(9)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (9) [2%] The vfork() system call in UNIX ____.",
@@ -2972,6 +3079,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "1-(10)",
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "（單選）Please select a correct answer for each of the following questions. (10) [2%] Belady's anomaly states that ____.",
@@ -3001,6 +3109,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 2,
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "[10%] Please answer the following True/False questions.<ol><li>[1%] Solid state disks are considered volatile storage.</li><li>[1%] The process runs with effective UID all the time until the process is stopped.</li><li>[1%] Mac OS X is a hybrid system consisting of both the Mach microkernel and BSD UNIX.</li><li>[1%] Many operating system merge I/O devices and files into a combined file because of the similarity of system calls for each.</li><li>[1%] The communication with named pipes requires parent-child relationship.</li><li>[1%] All access to POSIX shared memory requires a system call.</li><li>[1%] init is the very first process for a typical Linux system.</li><li>[1%] One-to-one model provides more concurrency than the many-to-one model by allowing another thread to run when a thread makes a blocking system call.</li><li>[1%] The trend in developing parallel applications is to use implicit threading.</li><li>[1%] Grand Central Dispatch requires multiple threads.</li></ol>",
@@ -3020,6 +3129,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 3,
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "[5%] Given the following snapshot of the system: Please determine whether there exists a safe sequence. (Hint: You need to create the Need array before you examine it)<div class=\"table-scroll\"><table><tr><th rowspan=\"2\"></th><th colspan=\"3\">Allocation</th><th colspan=\"3\">Max</th><th colspan=\"3\">Available</th></tr><tr><th>A</th><th>B</th><th>C</th><th>A</th><th>B</th><th>C</th><th>A</th><th>B</th><th>C</th></tr><tr><td>P0</td><td>1</td><td>1</td><td>2</td><td>6</td><td>5</td><td>3</td><td>2</td><td>1</td><td>2</td></tr><tr><td>P1</td><td>0</td><td>0</td><td>2</td><td>3</td><td>4</td><td>2</td><td></td><td></td><td></td></tr><tr><td>P2</td><td>4</td><td>0</td><td>0</td><td>8</td><td>5</td><td>2</td><td></td><td></td><td></td></tr><tr><td>P3</td><td>0</td><td>3</td><td>0</td><td>1</td><td>4</td><td>1</td><td></td><td></td><td></td></tr><tr><td>P4</td><td>1</td><td>3</td><td>3</td><td>4</td><td>3</td><td>3</td><td></td><td></td><td></td></tr></table></div>",
@@ -3040,6 +3150,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 4,
+        "paper": "ncku-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_hardware.pdf"
       },
       "question": "[15%] Please answer the following questions for the demand paging:<p>(1) [5%] What is the maximum number of instruction re-starts when the following instruction is executed: Add A, B, C (which means C = A+B). Suppose the page which contains the instruction is already in the DRAM.</p><p>(2) [5%] If the indirect addressing is considered, what is the minimum number of frames to execute an instruction ADD (A), (B), (C)? Note that (X) is an indirect address.</p><p>(3) [5%] Modern systems tend to use much larger page sizes since the CPU speed and the memory capacity grow much faster than the disk speed. Please show three advantages and two disadvantages of adopting the larger page size in the systems. Brief explanation is required.</p>",
@@ -3059,6 +3170,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 1,
+        "paper": "ncku-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_hardware.pdf"
       },
       "question": "Part I: Operating Systems [50%]<p>Please summarize your answers, true (○) or false (×), explicitly in a table exemplified as follows.</p><div class=\"table-scroll\"><table><tr><td>1</td><td>(a)</td><td>(b)</td><td>(c)</td><td></td></tr><tr><td>2</td><td>(a) ×</td><td>(b) ○</td><td>(c) ×</td><td></td></tr><tr><td>3</td><td>(a)</td><td>(b)</td><td>(c)</td><td>(d)</td></tr></table></div><p>1) [15%] (memory system) Consider a memory hierarchy consisting of two-tier memory subsystems A and B. The access latencies averaged per unit data item for A and B are L<sub>A</sub> and L<sub>B</sub>, respectively. Additionally, denote respectively the storage capacities for A and B as S<sub>A</sub> and S<sub>B</sub>. Moreover, assume the costs per bit for A and B are C<sub>A</sub> and C<sub>B</sub>, respectively. Note that C<sub>A</sub> &gt; C<sub>B</sub>. Consider the design that a processor reads (or writes) A if A can deliver requested data items. Otherwise, the processor reads (or writes) B, and supplies A with the missed data items so that the processor can then fetch data from A. If we intend to come up with a cost-effective design in minimizing average memory access latency, please identify true (denoted by ○) or false (×) for the following questions.</p><p>(a) [5%] L<sub>A</sub> &gt; L<sub>B</sub></p><p>(b) [5%] S<sub>A</sub>C<sub>A</sub> &gt; S<sub>B</sub>C<sub>B</sub></p><p>(c) [5%] None is true</p>",
@@ -3078,6 +3190,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 2,
+        "paper": "ncku-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_hardware.pdf"
       },
       "question": "Part I: Operating Systems [50%]<p>Please summarize your answers, true (○) or false (×), explicitly in a table exemplified as follows.</p><div class=\"table-scroll\"><table><tr><td>1</td><td>(a)</td><td>(b)</td><td>(c)</td><td></td></tr><tr><td>2</td><td>(a) ×</td><td>(b) ○</td><td>(c) ×</td><td></td></tr><tr><td>3</td><td>(a)</td><td>(b)</td><td>(c)</td><td>(d)</td></tr></table></div><p>2) [15%] (task scheduling) Recall that a random variable X follows the exponential distribution of the probability density function f(X = x) = λe<sup>−λx</sup>, where is λ a given parameter. Assume that processes in a computer system have their execution time following the exponential distribution. Let two processes A and B have lifetimes represented by the random variables X<sub>A</sub> and X<sub>B</sub> with parameters λ<sub>A</sub> and λ<sub>B</sub>, respectively. Here, λ<sub>A</sub> = 100 &lt; λ<sub>B</sub> = 200. Both processes activate their execution at time 0. The computer system hosts a single processor. Please identify true (○) or false (×) for the followings.</p><p>(a) [5%] Pr(X<sub>A</sub> ≥ 101 | X<sub>A</sub> ≥ 100) = Pr(X<sub>A</sub> ≥ 111 | X<sub>A</sub> ≥ 110)</p><p>(b) [5%] If we employ the shortest job scheduling, then A shall be scheduled first and then B.</p><p>(c) [5%] For any scheduling policy, the total expected time to finish both tasks is 300.</p>",
@@ -3099,6 +3212,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 3,
+        "paper": "ncku-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_hardware.pdf"
       },
       "question": "Part I: Operating Systems [50%]<p>Please summarize your answers, true (○) or false (×), explicitly in a table exemplified as follows.</p><div class=\"table-scroll\"><table><tr><td>1</td><td>(a)</td><td>(b)</td><td>(c)</td><td></td></tr><tr><td>2</td><td>(a) ×</td><td>(b) ○</td><td>(c) ×</td><td></td></tr><tr><td>3</td><td>(a)</td><td>(b)</td><td>(c)</td><td>(d)</td></tr></table></div><p>3) [20%] (file system and synchronization) Consider a disk file 𝓕 that stores a set of key-value pairs. “y = READ(x)” API is provided to return the value y for a designated key x if the key-value pair (x, y) is available in 𝓕. “WRITE(x, y)” API is to write the provided (x, y) into 𝓕 if (x, y) is absent; otherwise, WRITE(x, y) updates the key x with the value y. Here, READ(·) and WRITE(·) are independent processes (or threads). Please identify true (○) or false (×) for the potential designs, as follows, that optimize the read and write operations (in terms of access latency) over the file 𝓕. Assume S be the set of key-value pairs stored in 𝓕.</p><p>(a) [5%] Partition S into a number of disjoint blocks {s}, i.e., S = ∪{s}. Each block s ∈ S serves as a fetching unit between the memory and disk subsystems. Given (x, y) ∈ s, we allocate a memory block m to store s copied from the disk. Then, retrieve (x, y) from m and deliver the result for READ(·). For efficiency, the keys in m shall be organized in a balanced search tree, for example.</p><p>(b) [5%] For WRITE(·), update (x, y) in m. When m is replaced, m shall be written back to 𝓕 and the original s ∈ 𝓕 may be overwritten.</p><p>(c) [5%] We shall additionally create a local file index 𝓘 in the file system for locating (x, y) in S. That is, 𝓘 helps rapidly identify which of s ∈ S storing (x, y). 𝓘 shall be replicated in the memory (denoted by 𝓘*) to minimize the number of IO operations performed over the disk subsystem. 𝓘* is updated for newly arrivals (x, y) due to WRITE(·). Consequently, 𝓘* and 𝓘 may be inconsistent.</p><p>(d) [5%] Possibly, multiple WRITE(·) operations address the identical key x. These WRITE(·) operations may be concurrently invoked by distinct clients. One potential implementation is that each WRITE(·) successfully acquires the locks for accessing both m and 𝓘* before the WRITE(·) can proceed to update the value of x. Once the value is committed, both locks are released. With such an implementation, it is NOT possible to introduce deadlock due to various WRITE(·) operations.</p>",
@@ -3119,6 +3233,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 1,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 1. (2%) If a few bits in an HDD sector or NVM page are corrupted, the controller can recover the correct values using ECC only if",
@@ -3144,6 +3259,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 2,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 2. (2%) A full bootstrap program",
@@ -3169,6 +3285,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 3,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 3. (2%) IBM’s indexed sequential access method (ISAM) ____________.",
@@ -3194,6 +3311,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 4,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 4. (2%) Which of the following is true about dynamic storage allocation?",
@@ -3219,6 +3337,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 5,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 5. In DMA-based I/O,",
@@ -3244,6 +3363,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 6,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 6. (2%) When designing an embedded I/O data acquisition path, engineers often choose between an interrupt-driven approach and polling. Which statement is correct?",
@@ -3270,6 +3390,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 7,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 7. (2%) You are implementing a very simple file system without journaling. Creating a new file involves allocating one data block, writing the data, initializing the inode, and adding a directory entry that points to that inode. Writes can be reordered by caches unless explicitly flushed. Which sequence best preserves crash consistency, meaning that after a crash you will not end up with a directory entry that references an uninitialized inode or an inode that references garbage data (you may still allow space leaks)?",
@@ -3296,6 +3417,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 8,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 8. (2%) A system has two memory tiers. Tier 0 is small and low latency. Tier 1 is large and higher latency. The operating system manages pages and can migrate them between tiers. Which policy choice most directly reduces migration thrashing (ping pong) while still capturing hot pages?",
@@ -3321,6 +3443,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 9,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 9. (2%) Assume a demand-paged system with 3 physical frames and an LRU replacement policy. The page reference string is:<br>1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5<br>How many page faults occur?",
@@ -3346,6 +3469,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 10,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 10. (2%) Consider enabling huge pages for a workload that scans large arrays with strong spatial locality. Which statement is correct?",
@@ -3371,6 +3495,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 11,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 11. (2%) On a traditional HDD (mechanical disk), which statement about common I/O schedulers and latency is correct?",
@@ -3396,6 +3521,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 12,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 12. (2%) Which situation is most likely to increase write amplification in an SSD using an FTL with garbage collection?",
@@ -3421,6 +3547,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 13,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 13. (2%) Three periodic tasks have deadlines equal to periods:<br>T1: C1 = 1 ms, P1 = 4 ms<br>T2: C2 = 1.5 ms, P2 = 6 ms<br>T3: C3 = 2 ms, P3 = 12 ms<br>Assume the standard theoretical model: independent periodic tasks, preemptive uniprocessor, deadline equals period, negligible overhead. Which statement is correct when applying utilization-based schedulability tests?",
@@ -3447,6 +3574,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 14,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 14. (2%) Which statement about priority inversion and its mitigation is correct?",
@@ -3472,6 +3600,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": 15,
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 一、選擇題（每題 2 分） 15. (2%) In a system with a non-coherent CPU data cache, a device performs DMA writes into a memory buffer that the CPU later reads. Which action is correct for the CPU/driver to ensure it reads the newly DMA-written data?",
@@ -3497,6 +3626,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "簡答1",
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 二、簡答題 1. (8%) An orphan process is a process whose parent process no longer exists, i.e., either it has finished or terminated without waiting for its child processes to terminate. Please finish the following code within the box, which can create an orphan process.<pre class=\"code\">#include &lt;sys/types.h&gt;\n#include &lt;unistd.h&gt;\n#include &lt;stdio.h&gt;\n#include &lt;stdlib.h&gt;\nint main ()\n{\n    int pid = fork();\n    if (pid &gt; 0)\n    {\n        // this is parent process\n        [ 方框 ]\n    }\n    else if (pid == 0)\n    {\n        // this is child process\n        [ 方框 ]\n    }\n    return 0;\n}</pre>",
@@ -3517,6 +3647,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機組織與系統）",
         "no": "簡答2",
+        "paper": "ncku-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_hardware.pdf"
       },
       "question": "作業系統 二、簡答題 2. (12%) Read the following description about the LSM tree and answer the questions.<p>An LSM-tree is a disk-oriented data structure that improves write efficiency by buffering updates in memory and flushing them to disk in batches. By doing so, it turns many small random writes into fewer sequential writes, which is especially beneficial for write-heavy workloads.</p><p>LevelDB is a popular open-source LSM-tree based key-value store. New updates are first appended to a write-ahead log (WAL) for crash recovery, then inserted into an in-memory MemTable (typically a skip list). When the MemTable becomes full, it is frozen as an Immutable MemTable, and a new MemTable is created for incoming writes. The Immutable MemTable is then flushed to disk as an SSTable, where keys are stored in sorted order.</p><p>On disk, LevelDB organizes SSTables into multiple levels (L0, L1, ...). Data is first flushed into L0, where SSTables may overlap in key ranges. When L0 grows beyond a threshold, LevelDB triggers compaction: it selects one or more SSTables from level Li and merges them with overlapping SSTables in level Li+1 using a merge-sort. The merged output is written as new SSTables in Li+1. From L1 onward, SSTables are maintained to be non-overlapping within each level.</p><p>Deletes are handled using tombstones. A delete inserts a marker rather than immediately removing data. During compaction, entries covered by tombstones are dropped, which permanently removes the data. Reads search for the newest version first, checking the MemTable, then the Immutable MemTable, then SSTables from L0 down to deeper levels until the key is found or confirmed absent.</p><p>Figure（以文字描述）：Memory 中有 Memtable 與 Immutable Memtable；寫入的 Key-Value 先 (1) 寫入 Disk 上的 WAL，再 (2) 插入 Memtable，(3) Memtable 轉換（Conversion）為 Immutable Memtable，(4) Flush 到 Disk 的 Level L0，(5) Compaction 由 L0 合併到 L1、L1 合併到 L2，一路到最高層 Level L6；每層由多個 SSTable 組成。</p><p>(a) (4%) Explain where write amplification comes from in an LSM-tree KV store such as LevelDB. Your answer should connect amplification to the maintenance workflow described above.</p><p>(b) (4%) Explain where read amplification comes from in an LSM-tree KV store. In particular, why can L0 increase the number of files a lookup must examine?</p><p>(c) (4%) Under what conditions does compaction become the bottleneck and lead to higher tail latency or write stalls? Describe the situation using the LSM maintenance workflow (MemTable, Immutable MemTable, flush to L0, and compaction across levels).</p>",
@@ -3536,6 +3667,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 1,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）For different directory structures, which of following statements are true?</p>",
@@ -3562,6 +3694,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 2,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Assume there are four frames in the system. Given the memory reference patterns as follows (in terms of frame number): 50, 40, 80, 20, 50, 10, 80, 40. Which of following statements are true?</p>",
@@ -3587,6 +3720,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 3,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Assume both index block and data block use the same block size of 1K bytes and assume each entry of the index block consists of 4 bytes. Which of following statements are true?</p>",
@@ -3612,6 +3746,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 4,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Buddy system and Slab allocation are two techniques for allocating memory for kernel processes. Which of following statements are true?</p>",
@@ -3637,6 +3772,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 5,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Consider a disk queue with requests for blocks on cylinders in the listed order:</p>\n<p>120, 25, 5, 11, 80, 185, 90, 85.</p>\n<p>If the disk head is initially at cylinder 88 and is moving upward to next service cylinder 90. Which of following statements are true?</p>",
@@ -3663,6 +3799,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 6,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）System calls are the interface between application programs and kernel. What descriptions about system calls are correct?</p>",
@@ -3688,6 +3825,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 7,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）State of a process switches between ready, running, and waiting, when device interrupt, clock interrupt, or system call happens. Suppose now a process is in the running state.</p>",
@@ -3713,6 +3851,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 8,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）In message passing for inter-process communication, with send() and receive() being two system calls, if send() in sender is non-blocking but receive() in receiver is blocking.</p>",
@@ -3738,6 +3877,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 9,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）For a user thread there can be a corresponding kernel thread. Do they both maintain stack and PCB (process control block)? Separately or jointly? What possibilities below are valid?</p>",
@@ -3763,6 +3903,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": 10,
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（複選題）Modern operating systems adjust priority in scheduling processes. What strategies are commonly used?</p>",
@@ -3788,6 +3929,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": "21-23",
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（題組 A）Consider the system with a 32-bit logical address space, a page size of 4K bytes, and physical memory of size 256M bytes. For all the questions below, assume each entry in the page table consists of 4 bytes.</p>\n<p>21. Assuming that the single-level page-table scheme is used, for a logical address 0xabcdef12, the value used to index the page table is ______ (a) 0xf12, (b) 0xabc, (c) 0xabcde, (d) 0xabcd.<br>\n22. Assuming that the two-level page-table scheme is used and the outer page table has 256 entries, for a logical address 0xabcdef12, the values used to index the outer and inner page tables are __A__ and __B__, respectively. (a) A=0xab, B=0xcdef12, (b) A =0xab , B =0xcde, (c) A=0xabcd, B=0xef12, (d) A=0xab, B=0xcd.<br>\n23. Assuming that the two-level page-table scheme is used and the outer page table has 256 entries, each process may need up to ____ bytes of memory space for the page table? (a) 2<sup>10</sup> + 2<sup>22</sup>, (b) 2<sup>8</sup> + 2<sup>12</sup>, (c) 2<sup>10</sup> + 2<sup>14</sup>, (d) 2<sup>13</sup> + 2<sup>25</sup>.</p>",
@@ -3813,6 +3955,7 @@
         "year": 110,
         "dept": "資訊聯招（計算機系統）",
         "no": "24-26",
+        "paper": "nycu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_hardware.pdf"
       },
       "question": "<p>（題組 B）Consider the following monitor solution to the 5 dining philosophers problem where there are 5 chopsticks between 5 philosophers who sit on a round table. A philosopher needs to get both chopsticks on the right and left sides to eat. Suppose the index <i>i</i> is incremented counterclockwise. With the monitor defined below, each philosopher <i>i</i> invokes the operations pickup() and putdown() in the following sequence:</p>\n<pre class=\"code\">DiningPhilosophers.pickup(i);\n    EAT\nDiningPhilosophers.putdown(i);\n\nmonitor DiningPhilosophers\n{\n    enum { THINKING; HUNGRY, EATING) state [5] ;\n    condition self [5];\n    void pickup (int i) {\n            state[i] = HUNGRY;\n            test(i);\n            if (state[i] != HUNGRY) self[i].wait();\n    }\n    void putdown (int i) {\n            state[i] = THINKING;\n            test((i + 4) % 5);\n            test((i + 1) % 5);\n    }\n    void test (int i) {\n            if ((state[(i + 4) % 5] != EATING) &amp;&amp;\n            (state[i] == HUNGRY) &amp;&amp;\n            (state[(i + 1) % 5] != EATING) ) {\n                    state[i] = EATING ;\n                    self[i].signal() ;\n            }\n    }\n    initialization_code() {\n        for (int i = 0; i &lt; 5; i++)\n        state[i] = THINKING;\n    }\n}</pre>\n<p>24. One statement in the above program is wrong. Name which statement.<br>\n(a) state[i] = HUNGRY,<br>(b) if (state[i] != HUNGRY) self[i].wait()<br>(c) state[i] = EATING<br>(d) self.signal()</p>\n<p>25. What is the purpose of the function test(i)?<br>\n(a) Check whether both right and left chopsticks are available.<br>\n(b) Check whether both neighbors are not EATING, and if both not, eat.<br>\n(c) Check whether both right neighbors are HUNGRY, and if both not, eat.<br>\n(d) Check whether either right neighbor or left neighbor is HUNGRY, and if yes, wake it up to eat.</p>\n<p>26. What is the purpose of the function test((i+4)%5)?<br>\n(a) Check whether my left neighbor is HUNGRY and its both neighbors are not EATING, and if both not EATING, wake it up to eat.<br>\n(b) Check whether my right neighbor is HUNGRY and its both neighbors are not EATING, and if both not EATING, wake it up to eat.<br>\n(c) Check whether my left neighbor is HUNGRY and its both neighbors are not HUNGRY, and if both not HUNGRY, wake it up to eat.<br>\n(d) Check whether my right neighbor is HUNGRY and its both neighbors are not HUNGRY, and if both not HUNGRY, wake it up to eat.</p>",
@@ -3837,6 +3980,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 1,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the following C code. Which outputs are possible?</p>\n<pre class=\"code\">int main() {\n  printf(\"A\");\n  if (fork() == 0) {\n    usleep(((rand() % 5) + 1) * 10000); /* wait for a random time */\n    printf(\"B\");\n    if (fork() == 0) {\n      usleep(((rand() % 5) + 1) * 10000); /* wait for a random time */\n      printf(\"C\");\n    }\n    else {\n      wait(NULL);\n      printf(\"D\");\n    }\n  }\n  else {\n    usleep(((rand() % 5) + 1) * 10000); /* wait for a random time */\n    printf(\"E\");\n    wait(NULL);\n  }\n  return 0;\n}</pre>",
@@ -3863,6 +4007,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 2,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Consider a system with 15 resources and 4 threads: <i>T</i><sub>0</sub>, <i>T</i><sub>1</sub>, <i>T</i><sub>2</sub>, and <i>T</i><sub>3</sub>. The second column in the following table shows the maximum number of resources need by each thread and the third column shows the number of resources each thread is currently holding. Let <i>x̂</i> be the maximum value of <i>x</i> (shown below) that can still keep the system in a safe state. Which statements are correct?</p>\n<div class=\"table-scroll\"><table><tr><th></th><th>Maximum Needs</th><th>Current Needs</th></tr>\n<tr><td><i>T</i><sub>0</sub></td><td>5</td><td>3</td></tr><tr><td><i>T</i><sub>1</sub></td><td>4</td><td>1</td></tr><tr><td><i>T</i><sub>2</sub></td><td>9</td><td>5</td></tr><tr><td><i>T</i><sub>3</sub></td><td><i>x</i></td><td>4</td></tr></table></div>",
@@ -3889,6 +4034,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 3,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Which statements about semaphore are correct?</p>",
@@ -3915,6 +4061,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 4,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）A process could be in new, running, waiting, ready, or terminated state. Which statements about process states are correct?</p>",
@@ -3940,6 +4087,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 5,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Which statements about CPU scheduling are correct?</p>",
@@ -3965,6 +4113,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 6,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）In addition to a reference bit, a modify bit can be added to form the bit pair (reference, modify) associated with a page to improve the second-chance algorithm used in page replacement, where the reference bit is 1 if the page has been referenced and the modify bit is 1 if the page has been updated in the past round. Divide the pages into four classes: (0,0), (0,1), (1,0), (1,1).</p>",
@@ -3991,6 +4140,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 7,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Consider memory-mapped files where disk blocks of a file are mapped to pages in memory, so that file I/O can be treated as routing memory access.</p>",
@@ -4016,6 +4166,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 8,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）A file can be stored in a file system with different allocation methods: contiguous, extent-based, linked, or indexed. Suppose directories are already in memory. An extent has an average of 16 blocks. Assume that a file has 512 blocks, numbered from 0 to 511, and the target of a random access read is block 239.</p>",
@@ -4041,6 +4192,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 9,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Consider UNIX UFS with 4 KB blocks. In an inode, suppose there are 2048 entries in the \"direct block\" pointing to at most 2048 data blocks. There is also an entry for each of \"single indirect\", \"double indirect\", and \"triple indirect\", pointing to an indirect node with 2048 entries for data blocks or recursively indirect nodes.</p>",
@@ -4067,6 +4219,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": 10,
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（複選題）Consider various mechanisms used in Linux, which statements are valid?</p>",
@@ -4093,6 +4246,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": "21-24",
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（題組 A）Consider using semaphores for the first readers-writers problem, which allows either one writer or at most <i>n</i> readers in the critical session at the same time (no reader be kept waiting unless a writer has already obtained permission to use the shared object). We use an integer read_count to count the number of readers that are currently reading the data. We use two binary semaphores: rw_mutex and mutex. The former is common to both reader and writer processes. The mutex semaphore is used to ensure mutual exclusion when the variable read_count is updated. The reader's code is shown below.</p>\n<pre class=\"code\">sem_wait(&amp;(1));\nread_count++;\nif (read_count == (2))\n   sem_wait(&amp;(3));\nsem_post(&amp;(4));\n(read the data)\nsem_wait(&amp;(5));\nread_count--;\nif (read_count == (6))\n   sem_post(&amp;(7));\nsem_post(&amp;(8));</pre>\n<p>（原卷以圈號 ①～⑧ 標示空格，此處寫成 (1)～(8)。）</p>\n<p>21. What is the initial value of mutex? (a) 0 (b) 1 (c) <i>n</i> (d) none above.<br>\n22. What should be in ①? (a) mutex (b) rw_mutex (c) read_count (d) <i>n</i><br>\n23. What should be in ②? (a) 0 (b) 1 (c) <i>n</i> (d) none above.<br>\n24. What should be in ⑦? (a) mutex (b) rw_mutex (c) read_count (d) <i>n</i></p>",
@@ -4118,6 +4272,7 @@
         "year": 111,
         "dept": "資訊聯招（計算機系統）",
         "no": "25,26,28",
+        "paper": "nycu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_hardware.pdf"
       },
       "question": "<p>（題組 B，節錄）Compare Oracle SPARC and ARM in supporting the page table. The former adopts 2-level caching and a hashed table with the feature of span (the number of pages an entry represent), while the latter uses also 2-level caching and a hybrid 1/2-level hierarchical page table (1-level for big pages and 2-level for small pages). Suppose 100 ns for memory access, 10 ns for 2<sup>nd</sup> cache access with cache hit ratio of 90%, and 1 ns for 1<sup>st</sup> cache access with cache hit ratio of 60%, and the remaining 10% for table lookup in the memory. Note that the 1<sup>st</sup> cache is looked up first before the 2<sup>nd</sup> cache, and then the table in the memory.</p>\n<p>25. What is the minimum access time for a desired word in a frame? (a) 11 ns (b) 101 ns (c) 111 ns (d) 201 ns<br>\n26. In ARM, what is the maximum access time for a desired word in a frame? (a) 201 ns (b) 211 ns (c) 311 ns (d) 411 ns<br>\n28. In ARM, for a large process using big pages, what is the average access time for a desired word in a frame? (a) 33 ns (b) 60 ns (c) 115 ns (d) 215 ns</p>\n<p>（第 27 題問 SPARC 雜湊表串列長度為 4 時的最大存取時間，依題意算出的值不在選項中，未收錄。）</p>",
@@ -4142,6 +4297,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 1,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on page replacement is (are) true?</p>",
@@ -4169,6 +4325,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 2,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Assume that we create a 64 MB shared memory for processes X and Y on an Intel x86 machine. Which of the following statements is (are) true?</p>",
@@ -4194,6 +4351,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 3,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements is (are) true about direct memory access (DMA)?</p>",
@@ -4219,6 +4377,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 4,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）To move file f from /x/f to /y/f, which of the following step(s) are required (cannot be skipped)?</p>",
@@ -4244,6 +4403,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 5,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Assume that a file system has no fragmentation to begin with (the disk blocks of each file are contiguous). If we want to have some files with non-contiguous data blocks on the file system, which of the following operation(s) are essential?</p>",
@@ -4270,6 +4430,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 6,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Which statement(s) about process are correct?</p>",
@@ -4295,6 +4456,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 7,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the following CPU scheduling result in a single-processor system. If all the five processes complete within 18 ms, which statement(s) are correct?</p>\n<p>Gantt chart：p<sub>1</sub>（0–2）、p<sub>2</sub>（2–3）、p<sub>3</sub>（3–8）、p<sub>4</sub>（8–12）、p<sub>5</sub>（12–18），單位 ms。</p>",
@@ -4321,6 +4483,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 8,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the following C code for creating two threads. Which statement(s) are correct?</p>\n<pre class=\"code\">// header files here\nint count = 0;\n\nvoid *mythread(void *arg) {\n  for (int i=0; i&lt;10000; i++) {\n    // wait for some time\n    count += 1;\n  }\n  return(NULL);\n}\n\nint main() {\n  pthread_t p1, p2;\n  pthread_create(&amp;p1, NULL, mythread, NULL);\n  pthread_create(&amp;p2, NULL, mythread, NULL);\n  pthread_join(p2, NULL); pthread_join(p1, NULL);\n  printf(\"%d\", count);\n  return 0;\n}</pre>",
@@ -4346,6 +4509,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 9,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Which statement(s) about condition variable are correct?</p>",
@@ -4372,6 +4536,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": 10,
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（複選題）Consider a system with <i>m</i> resources and 4 threads: <i>T</i><sub>0</sub>, <i>T</i><sub>1</sub>, <i>T</i><sub>2</sub>, and <i>T</i><sub>3</sub>. Let <i>x<sub>i</sub></i> and <i>y<sub>i</sub></i> denote the maximum number of resources requested and the current number of resources held by thread <i>T<sub>i</sub></i>, respectively, for all <i>i</i>, 0 ≤ <i>i</i> ≤ 3. Which of the following statement(s) are correct?</p>\n<div class=\"table-scroll\"><table><tr><th></th><th>Maximum Needs</th><th>Current Needs</th></tr>\n<tr><td><i>T</i><sub>0</sub></td><td><i>x</i><sub>0</sub></td><td><i>y</i><sub>0</sub></td></tr><tr><td><i>T</i><sub>1</sub></td><td><i>x</i><sub>1</sub></td><td><i>y</i><sub>1</sub></td></tr><tr><td><i>T</i><sub>2</sub></td><td><i>x</i><sub>2</sub></td><td><i>y</i><sub>2</sub></td></tr><tr><td><i>T</i><sub>3</sub></td><td><i>x</i><sub>3</sub></td><td><i>y</i><sub>3</sub></td></tr></table></div>",
@@ -4397,6 +4562,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": "21-23",
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（題組 A）Assume that we have four disks (disk0~3), and each disk has 1TB of space. We use the notation diskX[i] to denote the i<sup>th</sup> sector on diskX. Now, we form a RAID5 array with all four disks.</p>\n<p>21. Which of the following number is closest to the maximum capacity (the maximum amount of data you can store on the array) of the RAID5 array? (a). 1TB (b). 2TB (c). 3TB (d). 4TB<br>\n22. What is the maximum number of disk failures that the RAID5 array can tolerate? (a). 1 (b). 2 (c). 3 (d). 4<br>\n23. In the worst case, how many disks will be involved in writing a single byte to the RAID5 array? (a). 1 (b). 2 (c). 3 (d). 4</p>",
@@ -4422,6 +4588,7 @@
         "year": 112,
         "dept": "資訊聯招（計算機系統）",
         "no": "24-27",
+        "paper": "nycu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_hardware.pdf"
       },
       "question": "<p>（題組 B）Consider three processes P, Q, and R using message-passing for communications. Their behaviors are illustrated below. Let BS = blocking send, NS = nonblocking send, BR = blocking receive, and NR = nonblocking receive.</p>\n<div class=\"table-scroll\"><table><tr><th>Process P</th><th>Process Q</th><th>Process R</th></tr>\n<tr><td>...<br>send(Q, msg1)<br>receive(R, msg2)</td><td>...<br>send(R, msg3)<br>receive(P, msg4)</td><td>...<br>send(P, msg5)<br>receive(Q, msg6)</td></tr></table></div>\n<p>24. Which type of naming is used? (a) direct (b) indirect (c) insufficient evidence to judge (d) none above.<br>\n25. Which data structure is needed to support this type of communications? (a) mailbox (b) port (c) semaphore (d) none above.<br>\n26. Which condition will cause deadlock in this example? (a) BS (b) BR (c) both BS and BR (d) none above.<br>\n27. If deadlock is not possible, which condition will ensure each process to proceed only after receiving its message? (a) BS (b) BR (c) NS (d) NR.</p>",
@@ -4448,6 +4615,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 1,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following x86 instructions cannot be executed in Ring 3 privilege level?</p>",
@@ -4473,6 +4641,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 2,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following x86 instructions are position-independent (i.e., the code can be executed at any memory address)?</p>",
@@ -4499,6 +4668,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 3,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Consider the following C program on x86_64 Linux.</p>\n<pre class=\"code\">01  #include &lt;stdio.h&gt;\n02  #include &lt;stdlib.h&gt;\n03  #include &lt;sys/mman.h&gt;\n04  #include &lt;unistd.h&gt;\n05\n06  int main() {\n07\n08    size_t pagesize = sysconf(_SC_PAGESIZE);\n09\n10    void *buffer = aligned_alloc(pagesize, pagesize);\n11    if (!buffer) {\n12        perror(\"Failed to allocate memory\");\n13        return EXIT_FAILURE;\n14    }\n15\n16\n17    if (mprotect(buffer, pagesize, PROT_READ | PROT_WRITE | PROT_EXEC) == -1) {\n18        perror(\"mprotect - error 1\");\n19        free(buffer);\n20        return EXIT_FAILURE;\n21    }\n22\n23    sprintf((char *)buffer, \"This is a test.\\n\");\n24\n25    if (mprotect(buffer, pagesize, 0 ) == -1) {\n26        perror(\"mprotect - error2\");\n27        free(buffer);\n28        return EXIT_FAILURE;\n29    }\n30\n31    printf(\"%s\", (char *)buffer);\n32    free(buffer);\n33\n34    return EXIT_SUCCESS;\n35  }</pre>\n<p>Which of the following statement(s) are true?</p>",
@@ -4524,6 +4694,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 4,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which statement(s) best describes the Earliest Deadline First (EDF) scheduling algorithm?</p>",
@@ -4549,6 +4720,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 5,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）On x86_64 systems, the Linux system calls are made using the <code>syscall</code> instruction with the following calling conventions</p>\n<ul><li>RAX: Contains the system call number.</li><li>RDI, RSI, RDX, R10, R8, and R9: Are used to pass up to six arguments to the system call.</li><li>RCX and R11: Are clobbered after the syscall instruction.</li><li>Return Value: The return value of the system call is placed in the RAX register.</li></ul>\n<p>The implementation of the sys_write (write) system call in the Linux kernel is as follows.</p>\n<pre class=\"code\">/ fs / read_write.c\n643         return ret;\n644 }\n645\n646 SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf,\n647                 size_t, count)\n648 {\n649         return ksys_write(fd, buf, count);\n650 }</pre>\n<p>And, the man pages description for sys_write is as follows.</p>\n<pre class=\"code\">write(2)                System Calls Manual                write(2)\n\nNAME\n       write - write to a file descriptor\nLIBRARY\n       Standard C library (libc, -lc)\nSYNOPSIS\n       #include &lt;unistd.h&gt;\n\n       ssize_t write(int fd, const void buf[.count], size_t count);\nDESCRIPTION\n       write() writes up to count bytes from the buffer starting at buf\n       to the file referred to by the file descriptor fd.\n\n       The number of bytes written may be less than count if, for\n       example, there is insufficient space on the underlying physical\n       medium, or the RLIMIT_FSIZE resource limit is encountered (see\n       setrlimit(2)), or the call was interrupted by a signal handler\n       after having written less than count bytes.  (See also pipe(7).)</pre>\n<p>Which of the following statement(s) is true for invoking the sys_write system call?</p>",
@@ -4575,6 +4747,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 6,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on process are true?</p>",
@@ -4601,6 +4774,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 7,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on I/O system are true?</p>",
@@ -4628,6 +4802,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 8,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on memory management are true?</p>",
@@ -4654,6 +4829,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 9,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on virtual memory management are true?</p>",
@@ -4679,6 +4855,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 10,
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on file system are true?</p>",
@@ -4704,6 +4881,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "21-22",
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（題組 A）Consider the following C code snippet:</p>\n<pre class=\"code\">01  #include &lt;stdio.h&gt;\n02  #include &lt;string.h&gt;\n03\n04  void safeFunction() {\n05      printf(\"This is a safe function call.\\n\");\n06  }\n07\n08  void vulnerableFunction(char *str) {\n09      char buffer[50];\n10      strcpy(buffer, str);\n11  }\n12\n13  int main(int argc, char *argv[]) {\n14      if (argc &gt; 1) {\n15          vulnerableFunction(argv[1]);\n16      }\n17      return 0;\n18  }</pre>\n<p>Assume that the program runs on x86-64 Linux.</p>\n<p>21. For the command-line argument argv[1], which of the following situations would corrupt the stack?<br>\n(a) If argv[1] contains a non-printable character.<br>\n(b) If argv[1] contains a space.<br>\n(c) If argv[1] is a comma-delimited string of the phone numbers of all NYCU CS faculty members.<br>\n(d) None of the above.</p>\n<p>22. If the stack is corrupted, which of the following is least likely to be affected?<br>\n(a) The program control flow.<br>\n(b) The local variables.<br>\n(c) The function call arguments.<br>\n(d) The program code.</p>",
@@ -4728,6 +4906,7 @@
         "year": 113,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "23-24",
+        "paper": "nycu-113-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_hardware.pdf"
       },
       "question": "<p>（題組 B）Assume each page is 512 bytes in size and the size of an integer is 2 bytes. Consider two C programs (Program 1 &amp; Program 2) designed to initialize all elements of a 256-by-256 two-dimensional array (called arr as below) to 0. The array is stored in row-major order; that is, the array is stored arr[0][0], arr[0][1], …, arr[0][255], arr[1][0]. If the operating system only allocates 128 page frames on-demand to each program and adopts Least-Recently-Used (LRU) page replacement policy to manage those fames, please answer the following two questions</p>\n<pre class=\"code\">int x, y;\nint [][] arr;\n\nfor (y=0; y&lt;256; y++)\n  for (x=0; x&lt;256; x++)\n    arr[x][y] = 0;</pre>\n<p>Program 1.</p>\n<pre class=\"code\">int x, y;\nint [][] arr;\n\nfor (x=0; x&lt;256; x++)\n  for (y=0; y&lt;256; y++)\n    arr[x][y] = 0;</pre>\n<p>Program 2.</p>\n<p>23. How many page faults would be generated while running Program 1: (a) 1 (b) 128 (c) 256 (d) 65536<br>\n24. How many page faults would be generated while running Program 2: (a) 1 (b) 128 (c) 256 (d) 65536</p>",
@@ -4753,6 +4932,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 1,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）In virtual memory management, which of the following are features of paging?</p>",
@@ -4780,6 +4960,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 2,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on memory management is (are) true?</p>",
@@ -4806,6 +4987,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 3,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on virtual memory is (are) true?</p>",
@@ -4832,6 +5014,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 4,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on process is (are) true?</p>",
@@ -4858,6 +5041,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 5,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Consider a system with the following resource allocation state. There are five processes P1~P5 and three resource types. The resource allocation tuple (x, y, z) means x instances of resource type 1, y instances of resource type 2, and z instances of resource type 3.</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Max Demand</th><th>Allocated</th><th>Available</th></tr>\n<tr><td>P1</td><td>(7, 5, 3)</td><td>(0, 1, 0)</td><td>(3, 3, 2)</td></tr>\n<tr><td>P2</td><td>(3, 2, 2)</td><td>(2, 0, 0)</td><td></td></tr>\n<tr><td>P3</td><td>(9, 0, 2)</td><td>(3, 0, 2)</td><td></td></tr>\n<tr><td>P4</td><td>(2, 2, 2)</td><td>(2, 1, 1)</td><td></td></tr>\n<tr><td>P5</td><td>(4, 3, 3)</td><td>(0, 0, 2)</td><td></td></tr></table></div>\n<p>Given the current system state, which of the following is/are true when checking the safety of granting Process P2 a request of (1, 0, 1) according to the Banker's Algorithm?</p>",
@@ -4884,6 +5068,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 6,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements are true regarding interrupt handling in operating systems?</p>",
@@ -4910,6 +5095,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 7,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Following is the memory map of the Linux utility program /usr/bin/cat. Which of the following statement(s) is/are true?</p>\n<pre class=\"code\">00400000-0040b000 r-xp 00000000 fd:01 1234567  /usr/bin/cat\n0060a000-0060b000 r--p 0000a000 fd:01 1234567  /usr/bin/cat\n0060b000-0060c000 rw-p 0000b000 fd:01 1234567  /usr/bin/cat\n00e7a000-00e9b000 rw-p 00000000 00:00 0        [heap]\n7f8b6c000000-7f8b6c021000 rw-p 00000000 00:00 0\n7f8b6c021000-7f8b70000000 ---p 00000000 00:00 0\n7f8b71a8d000-7f8b71aa3000 r-xp 00000000 fd:01 2345678  /lib/x86_64-linux-gnu/libgcc_s.so.1\n7f8b71aa3000-7f8b71ca2000 ---p 00016000 fd:01 2345678  /lib/x86_64-linux-gnu/libgcc_s.so.1\n7f8b71ca2000-7f8b71ca3000 r--p 00015000 fd:01 2345678  /lib/x86_64-linux-gnu/libgcc_s.so.1\n7f8b71ca3000-7f8b71ca4000 rw-p 00016000 fd:01 2345678  /lib/x86_64-linux-gnu/libgcc_s.so.1\n7ffc445e7000-7ffc44608000 rw-p 00000000 00:00 0        [stack]\n7ffc446da000-7ffc446dd000 r--p 00000000 00:00 0        [vvar]\n7ffc446dd000-7ffc446df000 r-xp 00000000 00:00 0        [vdso]\nffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0   [vsyscall]</pre>",
@@ -4935,6 +5121,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 8,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements about the Round Robin (RR) scheduling algorithm is/are correct?</p>",
@@ -4961,6 +5148,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 9,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on process scheduler and thread is (are) true?</p>",
@@ -4987,6 +5175,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 10,
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements on I/O system is (are) true?</p>",
@@ -5012,6 +5201,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "21-24",
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（題組 A）Consider the following RAID 5 configuration using four identical disks (Disk 0–3). The specification of each disk is</p>\n<p>Capacity: 1 TB<br>Read throughput: 100MB/s<br>Write throughput: 100MB/s.</p>\n<div class=\"table-scroll\"><table><tr><th>Disk 0</th><th>Disk 1</th><th>Disk 2</th><th>Disk 3</th></tr>\n<tr><td>A1</td><td>A2</td><td>A3</td><td>A<sub>p</sub></td></tr>\n<tr><td>B1</td><td>B2</td><td>B<sub>p</sub></td><td>B3</td></tr>\n<tr><td>C1</td><td>C<sub>p</sub></td><td>C2</td><td>C3</td></tr>\n<tr><td>D<sub>p</sub></td><td>D1</td><td>D2</td><td>D3</td></tr></table></div>\n<p>21. How much data can be stored in the disk array? (a). 1TB (b). 2TB (c). 3TB (d). 4TB<br>\n22. What is the maximum read throughput when an application reads data from the disk array? (a). 100 MB/s (b). 200 MB/s (c). 300 MB/s (d). 400 MB/s<br>\n23. What is the maximum number of failed disk(s) that can be tolerated? (a). 0 (b). 1 (c). 2 (d). 3<br>\n24. Assume that none of the disk data is cached in the memory. What is the minimum number of disk(s) that need to be involved in a write to the disk array? (a). 1 (b). 2 (c). 3 (d). 4</p>",
@@ -5037,6 +5227,7 @@
         "year": 114,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "25-27",
+        "paper": "nycu-114-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_hardware.pdf"
       },
       "question": "<p>（題組 B）Assuming a custom CPU adopting multi-level page tables, where the page size, virtual address space size and the page table entry size are set to 32KB, 2<sup>64</sup>B, 16B, respectively. This custom CPU only has one register to hold the physical address of the topmost level of the multi-level page tables.</p>\n<p>25. What is the minimum level of this multi-level page tables? (a). 3 (b). 4 (c). 5 (d). 6<br>\n26. If the number of levels is set to the minimum, what is the maximum number of pages in the bottom level? (a). 2<sup>39</sup> (b). 2<sup>38</sup> (c). 2<sup>37</sup> (d). 2<sup>36</sup><br>\n27. If the number of levels is set to the minimum, how many pages are there in the top level? (a). 4 (b). 3 (c). 2 (d). 1</p>",
@@ -5062,6 +5253,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 1,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Regarding dynamic loading, which of the following statements are TRUE?</p>",
@@ -5088,6 +5280,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 2,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Which of the following statements best distinguishes software traps from hardware interrupts in terms of their origin, execution context, and privilege transition?</p>",
@@ -5113,6 +5306,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 3,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Regarding the necessity, performance, and structure of multi-level page tables compared to single-level page tables, which of the following statements are TRUE?</p>",
@@ -5138,6 +5332,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 4,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Regarding the behavior of fork() and exec() system calls in a multithreaded process (specifically under POSIX standards), which of the following statements are TRUE?</p>",
@@ -5165,6 +5360,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 5,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Regarding virtual memory management techniques, specifically Thrashing, Working-Set Model, Page Replacement Algorithms, and Copy-on-Write (COW), which of the following statements are TRUE?</p>",
@@ -5190,6 +5386,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 6,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）Which of following statement(s) about CPU scheduling are correct?</p>",
@@ -5215,6 +5412,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 7,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）The atomicity violation bug occurs when multiple operations intend to run an indivisible (atomic) unit, but are interrupted by another thread in concurrent programs. The atomicity violation bugs result in the desired serializability among multiple memory accesses being violated, leading to lost updates. Please choose the correct atomicity violation bug code pattern(s) below.</p>\n<p>(a)</p><pre class=\"code\">static int i = 0;\nstatic object a, b = default;\nvar tid1 = Task.Run( () =&gt; {\n      lock(a) {i++;}\n});\nvar tid2 = Task.Run( () =&gt; {\n      lock(b) {i++;}\n});\nTask WhenAll (tid1, tid2); print(i);</pre>\n<p>(b)</p><pre class=\"code\">static pthread_cond_var WorkDone =\nPTHREAD_COND_INIT;\nvoid main () {\n      pthread_id tid = null;\n      pthread_create(&amp;tid, NULL, &amp;fun,\nNULL);\n      pthread_wait(&amp;WorkDone);\n}\nvoid fun() {pthread_singal(&amp;WorkDone);}</pre>\n<p>(c)</p><pre class=\"code\">static int i = 0;\nvar tid1 = Task.Run( () =&gt; {\n      if (atomic_load(&amp;i) == 0) {\n            atomic_add(&amp;i, 1);\n      }\n});\nvar tid2 = Task.Run( () =&gt; {\n      if (atomic_load(&amp;i) == 0) {\n            atomic_add(&amp;i, 1);\n      }\n});\nTask WhenAll (tid1, tid2); print(i);</pre>\n<p>(d)</p><pre class=\"code\">static long int i = 101;\nvar tid1 = Task.Run( () =&gt; {\n      i++;\n});\nvar tid2 = Task.Run( () =&gt; {\n      print(i);\n});\nTask WhenAll (tid1, tid2);</pre>",
@@ -5240,6 +5438,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 8,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）The spin lock ensures the correctness of concurrent programs on multiple processors. Please choose the correct spin-lock implementation(s) and usage(s) including the Test-And-Set, Compare-And-Swap, Load-Linked and Store-Conditional, and Fetch-And-Add instructions. (Note that the LoadLinked() and StoreConditional(), respectively, perform Load-Linked and Store-Conditional operations).</p>\n<p>(a)</p><pre class=\"code\">int TestAndSet (int *old_ptr, int new) {\n    int old = *old_ptr;\n    *old_ptr = new;\n    return old;\n}</pre>\n<p>(b)</p><pre class=\"code\">int CompareAndSwap (int *ptr, int\nexpected, int new) {\n    int original = expected;\n    if (*ptr == expected)\n        original = new;\n    return original;\n}</pre>\n<p>(c)</p><pre class=\"code\">void lock (lock_t *lock) {\n    while (1) {\n        if (LoadLinked (&amp;lock-&gt;flag)\n== 1) return;\n        while (StoreConditional\n(&amp;lock-&gt;flag, 1) == 1);\n\n    }\n}</pre>\n<p>(d)</p><pre class=\"code\">int FetchAndAdd (int*ptr) {\n    int old = *ptr;\n    *ptr = old + 1;\n    return *ptr;\n}</pre>",
@@ -5265,6 +5464,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 9,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）The Linux <b>cat</b> command opens the file for reading. On Linux, the <b>strace</b> tool can dump the trace of every system call made by the <b>cat</b> Linux command shown below. Please choose the correct description(s) for system calls used by the <b>cat</b> Linux command.</p>\n<pre class=\"code\">prompt&gt; strace cat hello\n...\nopen (\"hello\", O_RDONLY| O_LARGEFILE)\nread (3, \"helloworld\\n\", 4096)\nwrite (X, \"helloworld\\n\", 11)\nhelloworld\nread(3, \"\", 4096)\nclose(3)\n...</pre>",
@@ -5290,6 +5490,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": 10,
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（複選題）The hard drive (disk) has become the main form of persistent data storage in computer systems. In the disk, the motor spins the platters around at a constant rate. The rate of hard drive rotation is measured in Rotations Per Minute (RPM). Please choose the correct description(s) about the performance of disks below.</p>",
@@ -5316,6 +5517,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "21-25",
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（題組 A）Consider a byte-addressable computer system with a 13-bit logical address, a total physical memory size of 4 KiB, and a page size of 64 Bytes. The system uses a segmented paging architecture where the logical address is divided into a Segment Number and a Segment Offset. The segment table provides a Base Address which is added to the Segment Offset to form a linear Address. This Linear Address is then translated via a single-level Page Table to a Physical Address.</p>\n<div class=\"table-scroll\"><table><tr><th>Segment Table（Segment Base Addr, Binary）</th><th>Idx</th></tr>\n<tr><td>0000,0000,0000</td><td>0</td></tr><tr><td>0010,0000,0000</td><td>1</td></tr><tr><td>0001,1000,0000</td><td>2</td></tr><tr><td>0011,0000,0000</td><td>3</td></tr><tr><td>0000,1000,0000</td><td>4</td></tr><tr><td>0100,0000,0000</td><td>5</td></tr><tr><td>0101,0000,0000</td><td>6</td></tr><tr><td>0110,0000,0000</td><td>7</td></tr></table></div>\n<div class=\"table-scroll\"><table><tr><th>Page Table（Frame Number, Decimal）</th><th>Idx</th></tr>\n<tr><td>...</td><td></td></tr><tr><td>12</td><td>24</td></tr><tr><td>5</td><td>25</td></tr><tr><td>33</td><td>26</td></tr><tr><td>8</td><td>27</td></tr><tr><td>...</td><td></td></tr></table></div>\n<p>Given the Logical Address in hexadecimal format \"16A4\", and the tables below, answer the following questions.</p>\n<p>21. What is the Segment Index derived from the logical address 16A4? (a) 3 (b) 4 (c) 5 (d) 6<br>\n22. What is the Segment Base Address (in hexadecimal) retrieved from the Segment Table? (a) 0x200 (b) 0x400 (c) 0x500 (d) 0x600<br>\n23. What is the calculated Linear Address (in hexadecimal)? (a) 0x2A4 (b) 0x6A4 (c) 0x4A4 (d) 0x5A4<br>\n24. What is the Virtual Page Number (VPN) index used to look up the Page Table? (a) 24 (b) 25 (c) 26 (d) 27<br>\n25. What is the final Physical Address (in hexadecimal)? (a) 0x864 (b) 0x424 (c) 0x244 (d) 0xD44</p>",
@@ -5343,6 +5545,7 @@
         "year": 115,
         "dept": "資訊聯招（計算機系統(含作業系統及計算機組織)）",
         "no": "26-28",
+        "paper": "nycu-115-hardware",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_hardware.pdf"
       },
       "question": "<p>（題組 B）Consider a file system called TFS that is divided into a series of blocks, the size of each block is 4 KB. The blocks are indexed from 0 to 31, assuming we have a tiny disk, with just 32 blocks. Let's refer to the region of the disk used for user data as the data region, which consists of the last 24 of the 32 blocks on the disk. Additionally, we allocate 5 of our 32 blocks for inode table denoted by I's in the diagram. An inode table is partitioned into multiple i-blocks indexed by i-block (IB) 0 to IB 4. An i-block stores multiple inodes and the size of each inode is 256 bytes. Finally, the inode bitmap (i), the data bitmap (d), and the superblock (S) respectively use one 4KB block.</p>\n<p>（圖的內容：block 0 = S、1 = i、2 = d、3～7 = I（inode table，位址 12KB 到 32KB，分成 IB0～IB4）、8～31 = D（data region）。）</p>\n<p>26. What is the maximum number of files where the TFS file system can manage? (a) 24 (b) 80 (c) 5 (d) 16</p>\n<p>27. The start address of the inode table on the TFS file system is 12 KB. This TFS file system uses five IBs to store the entire inode table. An IB stores multiple inodes, and the inode index starts from 0 in IB0 and is incrementally increased. The last inode is preserved in the IB4 with the index 79. Which IB preserves the inode where its index is 16? (a) 3 (b) 2 (c) 1 (d) 0</p>\n<p>28. The disk typically consists of a large number of addressable sectors, each of which is 512 bytes in size. To fetch the inodes where its index is 16, which sector of the disk would the file system issue a read to? (a) 32 (b) 16 (c) 8 (d) 4</p>",
@@ -5368,6 +5571,7 @@
         "year": 111,
         "dept": "計算機結構與作業系統(B)",
         "no": 11,
+        "paper": "ntu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
       },
       "question": "<p>(5 pts)（複選）Which of the following are correct for Virtual Memory?</p>",
@@ -5394,6 +5598,7 @@
         "year": 110,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 15,
+        "paper": "ncu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
       },
       "question": "（複選題）Choose the correct statements from the multiple choices",
@@ -5420,6 +5625,7 @@
         "year": 111,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 18,
+        "paper": "ncu-111-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices regarding network protocols",
@@ -5446,6 +5652,7 @@
         "year": 112,
         "dept": "資工類（作業系統與計算機組織）",
         "no": 13,
+        "paper": "ncu-112-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
       },
       "question": "（多選題）Choose the correct statements from the multiple choices regarding networking technologies",
@@ -5472,6 +5679,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": "3-(a)",
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(10 pts) The following table shows the time attributes of five processes in a uni-processor computer, including PID, priority, arrival time, CPU burst, and IO burst. Assuming that the IO burst occurs on different devices and always starts after first time unit. The less the priority value, the higher its priority. Please answer the following sub-questions.</p>\n<div class=\"table-scroll\"><table>\n<tr><th>PID</th><th>Priority</th><th>Arrival Time</th><th>CPU Burst</th><th>IO Burst</th></tr>\n<tr><td>1</td><td>2</td><td>0</td><td>4</td><td>0</td></tr>\n<tr><td>2</td><td>1 (Highest)</td><td>2</td><td>5</td><td>3</td></tr>\n<tr><td>3</td><td>3 (Lowest)</td><td>3</td><td>3</td><td>0</td></tr>\n<tr><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td></tr>\n<tr><td>5</td><td>1</td><td>10</td><td>4</td><td>2</td></tr>\n</table></div>\n<p>(a) (2 pts) When round-robin scheduling algorithm is used and the quantum size is 3, what's the completion time of PID 5 process?</p>",
@@ -5491,6 +5699,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": "3-(b)",
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(10 pts) The following table shows the time attributes of five processes in a uni-processor computer, including PID, priority, arrival time, CPU burst, and IO burst. Assuming that the IO burst occurs on different devices and always starts after first time unit. The less the priority value, the higher its priority. Please answer the following sub-questions.</p>\n<div class=\"table-scroll\"><table>\n<tr><th>PID</th><th>Priority</th><th>Arrival Time</th><th>CPU Burst</th><th>IO Burst</th></tr>\n<tr><td>1</td><td>2</td><td>0</td><td>4</td><td>0</td></tr>\n<tr><td>2</td><td>1 (Highest)</td><td>2</td><td>5</td><td>3</td></tr>\n<tr><td>3</td><td>3 (Lowest)</td><td>3</td><td>3</td><td>0</td></tr>\n<tr><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td></tr>\n<tr><td>5</td><td>1</td><td>10</td><td>4</td><td>2</td></tr>\n</table></div>\n<p>(b) (2 pts) When non-preemptive priority scheduling algorithm is used, what's the completion time of PID 5 process?</p>",
@@ -5510,6 +5719,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": "3-(c)",
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(10 pts) The following table shows the time attributes of five processes in a uni-processor computer, including PID, priority, arrival time, CPU burst, and IO burst. Assuming that the IO burst occurs on different devices and always starts after first time unit. The less the priority value, the higher its priority. Please answer the following sub-questions.</p>\n<div class=\"table-scroll\"><table>\n<tr><th>PID</th><th>Priority</th><th>Arrival Time</th><th>CPU Burst</th><th>IO Burst</th></tr>\n<tr><td>1</td><td>2</td><td>0</td><td>4</td><td>0</td></tr>\n<tr><td>2</td><td>1 (Highest)</td><td>2</td><td>5</td><td>3</td></tr>\n<tr><td>3</td><td>3 (Lowest)</td><td>3</td><td>3</td><td>0</td></tr>\n<tr><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td></tr>\n<tr><td>5</td><td>1</td><td>10</td><td>4</td><td>2</td></tr>\n</table></div>\n<p>(c) (2 pts) When preemptive SJF scheduling algorithm is used, what's the completion time of PID 5 process?</p>",
@@ -5530,6 +5740,7 @@
         "year": 110,
         "dept": "計算機結構與作業系統(B)",
         "no": 4,
+        "paper": "ntu-110-hardware",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
       },
       "question": "<p>(10 pts) Suppose that a process needs to read and write a large file from the storage sub-system. Please answer the <b>five</b> sub-questions using one of three values: (<b>A</b>) – less than, (<b>B</b>) – greater than, and (<b>C</b>) – similar to.</p>\n<p>Assume blocking I/O is adopted as the I/O model, the file to be stored has very large size, and the delay of system load can be ignored here. The file system has 4K-byte data blocks.</p>\n<p>The following table shows the setting of the process and the sub-questions to be answered. The first column defines the buffering model, the second column defines the parameters of the buffering model, and the third column shows the function calls used to store the data. The first line of below table stands for the baseline, which considers the combination of unbuffered I/O, 4K buffer size, and no disk synchronization, to be compared to.</p>\n<div class=\"table-scroll\"><table>\n<tr><th colspan=\"3\">Setting</th><th>Sub-Questions</th></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 4KB</td><td>write()</td><td>(Baseline to be compared to)</td></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 4KB</td><td>fsync() after write ()</td><td><b>(a) (2 pts) How is the Clock time compared with that of baseline?</b></td></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 8KB</td><td>fsync () after write ()</td><td><b>(b) (2 pts) How is the User CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>line-at-a-time</td><td>puts()</td><td><b>(c) (2 pts) How is the System CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>fully buffer</td><td>puts()</td><td><b>(d) (2 pts) How is the User CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>fully buffer</td><td>puts()+fflush()+fsync ()</td><td><b>(e) (2 pts) How is the System CPU time compared with that of baseline?</b></td></tr>\n</table></div>",

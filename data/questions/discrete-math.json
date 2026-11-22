@@ -259,6 +259,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "1-(a)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Assume that each vertex has a unique id, how many different spanning trees in the following figure?<br>（原題附圖，以文字描述：中間是一個 4 個頂點的正方形 cycle C<sub>4</sub>；正方形的每個頂點各自連到一個 K<sub>4</sub> 的其中兩個頂點（這兩個頂點在 K<sub>4</sub> 中彼此相鄰），四個角各掛一個 K<sub>4</sub>，全圖共 20 個頂點。）",
@@ -278,6 +279,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "1-(b)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "We can show that the set {(x,y) | x,y are positive integers} is countable by finding a 1-1 mapping from (x,y) to an integer. Given (1,1) -&gt; 1, (1,2)-&gt;2, (1,3)-&gt;4, (1,4)-&gt;7, (2,1)-&gt; 3, (2,2)-&gt;5, (2,3)-&gt;8, (3,1)-&gt;6, (3,2)-&gt;9, (4,1)-&gt;10, please find which (x,y) maps to 465?",
@@ -297,6 +299,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "2-(a)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Please prove that x<sup>5</sup>-2x<sup>4</sup>+x<sup>3</sup>-2x<sup>2</sup>-7x-1=0 has a solution x which is an integer.",
@@ -316,6 +319,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "2-(b)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Given a 4x82 grid, each vertex is colored in one of three different colors, please show that we can always find a rectangle with four vertices in the same color.",
@@ -335,6 +339,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "3-(a)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Assume N is a positive integer, please show that the statement “if 2<sup>N</sup> -1 is prime, then N is prime” is true using proof by contrapositive.",
@@ -354,6 +359,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "3-(b)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "5*n+7*m=N, where n,m,N are integers and n≥0, m≥0, N≥24. Please show that we can always find n, m to satisfy the equality. For example, (n,m)=(2,2) corresponds to 5*2+7*2=24 and (n,m)=(5,0) corresponds to 5*5+7*0=25.",
@@ -373,6 +379,7 @@
         "year": 110,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "3-(c)",
+        "paper": "ncku-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
       },
       "question": "Assume a set G whose elements are real numbers and the size of G is equal to 2<sup>k</sup>, where k is a positive integer. We just want to find the maximum value and the minimum value in this set G and develop an algorithm in the following.<pre class=\"code\">FindMaxMin(G)\n  If G contains only two numbers, then compare these two numbers,\n  set M to be the larger one, and set m to be the smaller one,\n  Else\n    Divide G into two subsets with equal size G1 and G2\n    Apply FindMaxMin(G1) to get M1 and m1\n    Apply FindMaxMin(G2) to get M2 and m2\n    M=max(M1,M2), m=min(m1,m2)\n  Return M,m</pre>We use T(N) to represent the number of comparisons when the set size is equal to N. N=2<sup>k</sup>. Please find T(N) in terms of N.",
@@ -392,6 +399,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 1,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "How many bit string of length 20 contain at most Nineteen 1s? Please expressed as A<sup>B</sup> + C<br>(a) A =______<br>(b) B =______<br>(c) C =______",
@@ -411,6 +419,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 2,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "Let (u,v) be a minimum-weight edge in a connected graph G. Show that (u,v) belongs to some minimum spanning tree of G",
@@ -430,6 +439,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 3,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "A={5,6,7,8} 、B={u,v} 、C={}<br>consider a = |Power Set(A)|<br>b = |A×B| (× is cross product)<br>c = |Power Set(C)|<br>Please calculate 2<sup>c</sup> + b + a.",
@@ -449,6 +459,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 4,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "(a) How many quadrilateral are determined by the vertices of a regular polygon of n sides? (n ≥ 4)<br>(b) How many if no side of the polygon is to be a side of any quadrilateral? (n ≥ 8)<br>Note: quadrilateral (四邊形)",
@@ -468,6 +479,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 1,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "Among the 900 three-digit integers (from 100 to 999) those such as 131, 222, 303, 717, 848, and 969, where the integer is the same whether it is read from left to right or from right to left, are called palindromes. Without actually determining all of these three-digit palindromes, we would like to determine their sum. Please calculate the sum of these palindrome ranging from 100 to 999.",
@@ -487,6 +499,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 2,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "Determine the generating function for the sequence 1, 1, 1, …, 1, 0, 0, 0,…, where the first <i>n</i>+1 terms are 1.",
@@ -506,6 +519,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 3,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "How many bijective functions are there from a finite set <i>A</i> to a finite set <i>B</i> where |<i>A</i>| = |<i>B</i>| = <i>n</i>?",
@@ -525,6 +539,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 4,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "Solve the recurrence relation<br>a<sub>n+2</sub> − 5a<sub>n+1</sub> + 6a<sub>n</sub> = 2, n ≥ 0, a<sub>0</sub> = 3, a<sub>1</sub> = 7.",
@@ -544,6 +559,7 @@
         "year": 112,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 5,
+        "paper": "ncku-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
       },
       "question": "Let <i>a</i>, <i>b</i> ∈ <b>Z</b> and let 2<i>a</i> + 3<i>b</i> be a multiple of 17. (For example, we could have <i>a</i> = 7, <i>b</i> = 1; and <i>a</i> = 4, <i>b</i> = 3 also works.) Determine that the following statement is true or false: 17 divides 9<i>a</i> + 5<i>b</i>.",
@@ -563,6 +579,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 1,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "Solve the recurrence relation a<sub>n+2</sub> − 4a<sub>n+1</sub> + 3a<sub>n</sub> = − 200 for n≥0 and a<sub>0</sub> = 3000 and a<sub>1</sub> = 3300.",
@@ -582,6 +599,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 2,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "Please list the first 5 coefficients of the generating function F(x) = √(1 + x). (請化簡為最簡分數形式)",
@@ -601,6 +619,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 3,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "If G(x) is the generating function for the sequence {a<sub>k</sub>}, what is the generating function for each of these sequences?<br>(A) 3a<sub>0</sub>, 3a<sub>1</sub>, 3a<sub>2</sub>, 3a<sub>3</sub>, …<br>(B) 0, 0, 0, 0, a<sub>2</sub>, a<sub>3</sub>, …<br>(C) a<sub>1</sub>, 2a<sub>2</sub>, 3a<sub>3</sub>, 4a<sub>4</sub>, …",
@@ -620,6 +639,7 @@
         "year": 113,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 4,
+        "paper": "ncku-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
       },
       "question": "Design a finite state machine M = (S, φ, σ, v, ω), where S = {s<sub>1</sub>, s<sub>2</sub>, s<sub>3</sub>, s<sub>4</sub>}, φ = {0,1,2}, σ = {0, 1}. The machine outputs 1 if the input string contains at least three 1s, otherwise it outputs 0. (請填問號應有的內容)<br>（原題附圖，以文字描述：Start 箭頭指向 S<sub>1</sub>；S<sub>1</sub>→S<sub>2</sub> 標 1, 0；S<sub>2</sub>→S<sub>3</sub> 標 ?；S<sub>3</sub>→S<sub>4</sub> 標 ?；S<sub>1</sub> 的自迴圈標 ?；S<sub>2</sub> 的自迴圈標 0, 0 與 2, 0；S<sub>3</sub>、S<sub>4</sub> 的自迴圈都標 ?。標籤格式為「輸入, 輸出」。）",
@@ -639,6 +659,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": "1",
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "Let M be a Finite State Machine shown below:<br>（原題附圖，以文字描述：狀態 s<sub>0</sub>, s<sub>1</sub>, s<sub>2</sub>, s<sub>3</sub>，Start 指向 s<sub>0</sub>；轉移標籤為「輸入, 輸出」。s<sub>0</sub>→s<sub>1</sub>：1, 0；s<sub>1</sub>→s<sub>2</sub>：1, 0；s<sub>2</sub>→s<sub>3</sub>：1, 0；s<sub>3</sub>→s<sub>0</sub>：1, 1；四個狀態各有自迴圈 0, 0。）<br>I. How many distinct input string x are there such that ||x||=8 and ν(s<sub>0</sub>, x)=s<sub>0</sub>? Please chose one answer:<br>II. How many distinct input string x are there such that ||x||=12 and ν(s<sub>0</sub>, x)=s<sub>0</sub>? Please chose one answer:",
@@ -663,6 +684,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 2,
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "Find the number of solutions of x<sub>1</sub> + 2x<sub>2</sub> + x<sub>3</sub> = 17, where x<sub>i</sub>’s are nonnegative integers with 2 ≤ x<sub>1</sub> ≤ 5, 3 ≤ x<sub>2</sub> ≤ 6, 4 ≤ x<sub>3</sub> ≤ 7.",
@@ -688,6 +710,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 3,
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "Let S = {1, 2, 3, 4, 5, {6, 7}}. Which one is the number of the power set of S?",
@@ -714,6 +737,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 1,
+        "paper": "ncku-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
       },
       "question": "Consider all simple (loop-free), undirected graphs on a set of <b>5 distinct labeled vertices</b> V = {1,2,3,4,5}. Every edge connects two distinct vertices, and multiple edges are not allowed. Assume that <b>no vertex is isolated</b> (i.e., every vertex has degree at least 1).<br>(a) How many such graphs have <b>exactly one connected component</b> (i.e., the graph is <b>connected</b>)?<br>(b) How many such graphs have <b>exactly two connected components</b>?",
@@ -733,6 +757,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 2,
+        "paper": "ncku-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
       },
       "question": "A network engineer is designing a <b>fault-tolerant routing backbone</b> for a data-center fabric. The backbone consists of <b>20 routers</b>, arranged physically in a <b>4×5 cylindrical grid</b>: There are 4 horizontal layers (“rings”), each containing 5 routers. Horizontally, each layer forms a <b>5-router cycle</b> (i.e., the leftmost and rightmost routers are connected). Vertically, each of the 5 columns also forms a <b>4-router cycle</b> (i.e., the top and bottom switches are connected). Thus, every router has degree 4: two connections within its horizontal ring, and two within its vertical ring. <b>Determine whether</b> this cylindrical multi-ring backbone H <b>can be embedded on a flat PCB without wiring intersections. Justify your answer using only Euler’s formula and girth-based edge bounds.</b> In graph theory, the girth of an undirected graph is the length of the shortest cycle contained in the graph",
@@ -752,6 +777,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 3,
+        "paper": "ncku-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
       },
       "question": "A self-organizing <b>ad-hoc satellite network</b> consists of multiple satellites placed at arbitrary integer coordinates in 3-dimensional space. Each satellite is modeled as a point A<sub>i</sub> ∈ ℤ<sup>3</sup>. A <b>secure communication link</b> may be established between satellites A<sub>i</sub> and A<sub>j</sub> only if the <b>midpoint</b> of the segment A<sub>i</sub>A<sub>j</sub> also lies on an integer lattice point. Equivalently, all three coordinate-wise averages must be integers:<pre>(x<sub>i</sub> + x<sub>j</sub>)/2, (y<sub>i</sub> + y<sub>j</sub>)/2, (z<sub>i</sub> + z<sub>j</sub>)/2 ∈ ℤ.</pre>The Space Agency wants to guarantee that even without knowing the positions of the satellites beforehand, <b>there must exist at least one secure link.</b><br>(a) Determine the <b>smallest integer</b> N such that: No matter how the N satellites are placed in ℤ<sup>3</sup>, <b>there is always at least one pair</b> whose midpoint is a lattice point (i.e., at least one secure link always exists).<br>(b) Now modify the secure-link condition:<br>A link is allowed if <b>the total coordinate sum of the two satellites is even</b>, i.e.<pre>x<sub>i</sub> + x<sub>j</sub> + y<sub>i</sub> + y<sub>j</sub> + z<sub>i</sub> + z<sub>j</sub> ≡ 0 (mod 2).</pre>Under this new rule, determine the <b>new minimum number of satellites</b> guaranteeing that at least one secure link must exist.",
@@ -771,6 +797,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 4,
+        "paper": "ncku-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
       },
       "question": "Consider the recurrence: E<sub>n</sub> = 4E<sub>n−1</sub> − 4E<sub>n−2</sub> + 2<sup>n</sup> + 3<sup>n</sup>, with initial values, E<sub>0</sub> = 2, E<sub>1</sub> = 10. Estimate the <b>smallest</b> n such that E<sub>n</sub> &gt; 10<sup>9</sup>.",
@@ -790,6 +817,7 @@
         "year": 115,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 5,
+        "paper": "ncku-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
       },
       "question": "You are designing the firmware logic for a high-security electronic lock. The lock receives a stream of binary signals (0 or 1) from a keypad. You need to <b>draw the state transition diagrams for two different versions of the security protocol. Use Moore Machine model for both versions.</b> Specifically, use circles to represent states with labels S<i>i</i> where <i>i</i> is the index starting from 0, use arrows to represent transitions, use an arrow to point to the start state, and mark the \"Unlock\" state as double circles.<br>(a) The Standard \"Header-Trailer\" Protocol Specification<br>1. Start-up Check: When the system first turns on, it must check for a specific \"Header.\" The very first two signals received must be a 1 followed by another 1.<br>2. Security Violation: If the first two signals are anything other than a pair of 1s, the system detects a hack. It must immediately enter a Permanent Lockout state where it ignores all future input and never unlocks.<br>3. Monitoring: Once the valid header (11) is received, the system waits. It ignores the specific pattern of the signals in the middle.<br>4. Unlocking: The door should unlock if and only if the last two signals received were a 0 followed by another 0.<br>5. Relocking: If the system receives more signals after unlocking that break the \"00\" ending, the door must lock again and go back to monitoring for a new \"00\" ending.<br>(b) The Advanced \"Strict Rhythm\" Protocol Specification<br>We request a security update to the logic designed in (a). Please modify your Finite State Machine to incorporate the following three specific changes. All other behaviors (like the \"11\" start-up check) remain the same.<br>1. Enforce Alternating Data: Instead of ignoring the signals between the header and the unlock command, the system must now strictly enforce an alternating \"0, 1, 0, 1...\" pattern.<br>2. Immediate Lockout on Error: If this alternating rhythm is broken (for example, if two 1s appear consecutively after the header), the system must immediately enter the Permanent Lockout state.<br>3. One-Time Access: The \"Relock\" feature is removed. Once the door unlocks (upon receiving the \"00\" suffix), any further input signals are considered a security violation and must trigger the Permanent Lockout state.",
@@ -809,6 +837,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 1,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Which of the following logic equivalence statements are incorrect?",
@@ -836,6 +865,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 2,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）小英、江哥、柯 P 和 3Q 哥在聊離散數學，以下哪幾句敘述有誤？",
@@ -864,6 +894,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 3,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Which of the following statements about integers are incorrect?",
@@ -890,6 +921,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 4,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Figure 1 shows the Hasse diagram of a binary relation R. Which of the following statements are incorrect?<br>（原題附圖 Figure 1，以文字描述 Hasse diagram 的覆蓋關係「x — y」表示 y 在 x 正上方相連：a — d、b — d、b — e、d — i、d — h、e — h、i — j、h — j、h — k、c — f、f — g、g — k、j — l、k — l、k — m。最底層為 a、b、c，最上層為 l、m。）",
@@ -918,6 +950,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 5,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Given the directed graph in Figure 2. Which of the following statements are correct?<br>（原題附圖 Figure 2，以文字描述：頂點 a, b, c, d, e；有向邊為 b→a、a→e、a→d、e→b、e→d、d→b、b→c、d→c，共 8 條。）",
@@ -946,6 +979,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 6,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Considering relation <b>R</b> defined as : {(x,y) ∈ N×N | x does not have more prime factors than y}, Which of the following statements are true?",
@@ -972,6 +1006,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 7,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）Suppose the set of “valuable” problems is V, where each problem can be considered by human beings, and there is a bijection between V and <b>R</b> (real number). Suppose the set of all A.I. softwares is S, where each software can solve exactly one problem. Each software can be represented as a long binary string (machine code). Which of the following statement are true?",
@@ -998,6 +1033,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 8,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）The number of ways to buy n dollars of tickets is represented by a<sub>n</sub>, if only 1-dollar and 2-dollar bills can be used. What of the following can be the recurrence relation for our question? (initial condition: a<sub>0</sub> = 1; a<sub>1</sub> = 1;)",
@@ -1025,6 +1061,7 @@
         "year": 110,
         "dept": "資工類（離散數學與線性代數）",
         "no": 9,
+        "paper": "ncu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
       },
       "question": "（複選）About algorithm complexity, which of the following claims are true?",
@@ -1052,6 +1089,7 @@
         "year": 110,
         "dept": "數學",
         "no": 1,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "A graph is bipartite if and only if it has no cycle of ________ length. A bipartite graph can be colored with ________ colors.",
@@ -1071,6 +1109,7 @@
         "year": 110,
         "dept": "數學",
         "no": 2,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "If a<sub>n</sub> = 3 a<sub>n/2</sub> + 1 for n ≥ 2 and a<sub>1</sub> = 1. Then log<sub>2</sub> a<sub>n</sub> ≈ ________ × log<sub>2</sub> n.",
@@ -1091,6 +1130,7 @@
         "year": 110,
         "dept": "數學",
         "no": 3,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "There are ________ ways a binomial random walk, starting at the origin, returns to the origin the first time after exactly 2n steps.",
@@ -1110,6 +1150,7 @@
         "year": 110,
         "dept": "數學",
         "no": 4,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "With 0 ≤ m, n, A = ________ and B = ________ in Σ<sub>k=m</sub><sup>n</sup> C(k, m) = C(A, B).<br>（C(k, m) 表示二項式係數「k 取 m」。）",
@@ -1129,6 +1170,7 @@
         "year": 110,
         "dept": "數學",
         "no": 5,
+        "paper": "ntu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
       },
       "question": "Let (G, ∘) be a finite group with subgroup H. Prove that |H| divides |G|.",
@@ -1148,6 +1190,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 2,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "Which solves a<sub>n</sub> = a<sub>n−1</sub> + 6 a<sub>n−2</sub> for a<sub>n</sub> in terms of a<sub>0</sub> = A and a<sub>1</sub> = B:",
@@ -1175,6 +1218,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 3,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "The generating function in partial fraction decomposition for the recurrence equation a<sub>n</sub> = −a<sub>n−1</sub> + 6 a<sub>n−2</sub> for a<sub>n</sub> in terms of a<sub>0</sub> = A and a<sub>1</sub> = B is:",
@@ -1201,6 +1245,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 4,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "The number of positive integer solutions of x<sub>1</sub> + x<sub>2</sub> + ⋯ + x<sub>n</sub> = r equals",
@@ -1227,6 +1272,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 5,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "R is a non-symmetric relation on A if there exist x, y ∈ A such that (x, y) ∈ R but (y, x) ∉ R. If |A| = m, how many non-symmetric relations on A are there?",
@@ -1253,6 +1299,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 2,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "Which solves a<sub>n</sub> = −a<sub>n−1</sub> + 6 a<sub>n−2</sub> for a<sub>n</sub> in terms of a<sub>0</sub> = A and a<sub>1</sub> = B:",
@@ -1280,6 +1327,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 3,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "The generating function in partial fraction decomposition for the recurrence equation a<sub>n</sub> = a<sub>n−1</sub> + 6 a<sub>n−2</sub> for a<sub>n</sub> in terms of a<sub>0</sub> = A and a<sub>1</sub> = B is:",
@@ -1306,6 +1354,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 4,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "The number of non-negative integer solutions of x<sub>1</sub> + x<sub>2</sub> + ⋯ + x<sub>4</sub> ≤ 7 equals",
@@ -1333,6 +1382,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 5,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "If |A| = 2<sup>4</sup> and |B| = 2<sup>3</sup>, how many functions from A to B are there?",
@@ -1359,6 +1409,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 1,
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Consider the following real number:<br>0.02468101214161820…<br>The 1st digit after the decimal point is 0; the second digit is 2; the 13th digit is 6; etc. What is the 1,000th digit after the decimal point?",
@@ -1378,6 +1429,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "2-(a)",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Let P = {2, {(2)}, {(2), (2)}, (2), (2, 2), {2, (2), (2), 2}, {(2, 2), (2, 2), ((2), 2)}}. How many elements are there in 2<sup>P</sup> (which is the set of all subsets of P)?",
@@ -1398,6 +1450,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "2-(b)(c)",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "(b) What is the definition of an infinite set W?<br>(c) Let N be the set of natural numbers. Assume that we already know N is an infinite set. Let S = {k/2<sup>n</sup> | n = 0, 1, 2, …; k ∈ N}. Note that / in this question is the division of real numbers. For example, 5/2 = 2.5. Prove that S is an infinite set strictly according to your definition of an infinite set.",
@@ -1417,6 +1470,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 3,
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Assume n ≥ 2. Let A = {x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub>} be a set of (not necessarily distinct) natural numbers. Let g = gcd(x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub>) and l = lcm(x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub>). Assume n, g, and l are appropriate fixed integers. Let p = x<sub>1</sub> · x<sub>2</sub> · … · x<sub>n</sub>, the product of x<sub>i</sub>'s. What is the largest possible value of p in terms of n, g, and l? What is the smallest possible value of p in terms of n, g, and l?",
@@ -1436,6 +1490,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 4,
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "How many integers between 1000 and 5000 are not divisible by 4, 5, or 6?",
@@ -1455,6 +1510,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 5,
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Let a<sub>k</sub> be the number of integer solutions of x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub> = k where x<sub>1</sub> ≥ 2, 1 ≤ x<sub>2</sub> ≤ 5, and 0 ≤ x<sub>3</sub> ≤ 3. Show the generating function for {a<sub>k</sub>}.",
@@ -1474,6 +1530,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 6,
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Let R<sub>1</sub> and R<sub>2</sub> be equivalence relations on the set S. Prove that R<sub>1</sub> ∩ R<sub>2</sub> is an equivalence relation.",
@@ -1495,6 +1552,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 7,
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Please answer TRUE or FALSE for the following statements and give CONCISE explanations.<br>(a) A simple graph is called regular if every vertex of this graph has the same degree. An n-cube, denoted by Q<sub>n</sub>, is a graph that has vertices representing the 2<sup>n</sup> bit strings of length n. Two vertices are adjacent if and only if the bit strings that they represent differ in exactly one bit position. Q<sub>n</sub> is regular.<br>(b) Let V<sub>n</sub> and E<sub>n</sub> respectively be the number of vertices and edges of Q<sub>n</sub>, the n-cube. Then, E<sub>1</sub> = 1, E<sub>2</sub> = 4, and E<sub>n+1</sub> = 2V<sub>n</sub> + E<sub>n</sub>.<br>(c) The complete bipartite graphs K<sub>2,3</sub> and K<sub>3,3</sub> are planar.<br>(d) There are exactly 2 shortest paths between v<sub>1</sub> and v<sub>2</sub> in the graph represented by the adjacency matrix<pre>      e1 e2 e3 e4 e5 e6 e7\nv1  [ 1  0  0  0  0  0  1 ]\nv2  [ 0  0  0  0  1  1  1 ]\nv3  [ 1  1  0  1  0  1  0 ]\nv4  [ 0  1  1  0  0  0  0 ]\nv5  [ 0  0  1  1  1  0  0 ]</pre>with |e<sub>1</sub>| = 1, |e<sub>2</sub>| = 2, |e<sub>3</sub>| = 1, |e<sub>4</sub>| = 4, |e<sub>5</sub>| = 1, |e<sub>6</sub>| = 4, |e<sub>7</sub>| = 5.<br>(e) In the graph given by the previous question, there exists an Euler path from v<sub>5</sub> to v<sub>1</sub>.",
@@ -1514,6 +1572,7 @@
         "year": 110,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "10-b",
+        "paper": "nycu-110-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
       },
       "question": "Given a sequence 7, −6, 20, −24, 64, −96, … comes from G<sub>k+3</sub> = −2G<sub>k+2</sub> + 2G<sub>k+1</sub> + 4G<sub>k</sub> for k ≥ 0, with G<sub>0</sub> = 7, G<sub>1</sub> = −6 and G<sub>2</sub> = 20. Please find the number G<sub>100</sub>.",
@@ -1534,6 +1593,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 1,
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Consider the game of Hanoi-Tower, where on a board with three erected pegs pile of disks of different sizes are initially stacked at one of the pegs, in a size-ordered manner with the largest disk being at the bottom and on top the smallest.<br>The player is required to relocate the disk pile to any of the rest two pegs, in compliance with the following rules at any time during the play:<br>* moving one disk at a time from one peg to another;<br>* when moving a disk to a peg already piled with disks, the disk must be smaller than any in the pile (which would entail that, during the game, a disk pile at any peg will be size-ordered with smaller ones on top of larger ones);<br>（原卷附圖：三根柱子 peg1、peg2、peg3，所有圓盤疊在 peg1。）<br>a. Suppose that H<sup>3</sup>(n) is the number of moves required to relocate a pile of n disks at a peg to any of the rest two pegs. How would you formulate H<sup>3</sup>(n) in a recursive manner? And H<sup>3</sup>(n) = ?<br>b. The game can be extended to the case of 4-peg as shown below.（原卷附圖：四根柱子 peg1～peg4，所有圓盤疊在 peg1。）Suppose that H<sup>4</sup>(n) denotes the number of moves needed to relocate a pile of n disks at a peg to any of the rest three pegs. How would you formulate H<sup>4</sup>(n) in a recursive manner? And H<sup>4</sup>(n) = ? Is there any connection that you see between H<sup>3</sup>(n) and H<sup>4</sup>(n)?<br>c. Let H<sup>5</sup>(n) be the number of moves for relocating a pile of n disks in 5-peg situation. Are there any connections that you see among H<sup>3</sup>(n), H<sup>4</sup>(n) and H<sup>5</sup>(n)?<br>d. What can you tell about H<sup>m</sup>(n) in the case of an m-peg Hanoi-Tower game? And the connections between H<sup>m<sub>1</sub></sup>(n) and H<sup>m<sub>2</sub></sup>(n)?",
@@ -1554,6 +1614,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 2,
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Please indicate if the graph G1 is a bipartite graph (TRUE or FALSE) and justify your answer.<br>（原卷附圖 G1：矩形的四個角各一個頂點（左上 a、右上 b、左下 c、右下 d），邊為 ab、ac、bd、cd；矩形中間有一個頂點 m 位於左下到右上的對角線上，邊為 cm、mb。共 5 個頂點、6 條邊。）",
@@ -1573,6 +1634,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 3,
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Given a graph G2 that contains 7 vertices. The degree of two vertices in G2 is 3. The degree of the remaining vertices is 2. Please show if the G2 contains an Euler path. Construct the G2 if G2 exists an Euler path.",
@@ -1592,6 +1654,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 4,
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "A planar graph contains 12 faces and 11 vertices. These faces consist of six triangles, four quadrilaterals (a polygon with 4 vertices and 4 edges), and the remaining ones have the same number of sides. How many sides does the last two faces have?",
@@ -1611,6 +1674,7 @@
         "year": 111,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 5,
+        "paper": "nycu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
       },
       "question": "Given a graph G3, the first vertex can be colored with any color. The second one can be colored with any color that was not chosen from the first vertex. The adjacent vertices of the G3 are colored differently.<br>a. The chromatic number is the smallest number of colors needed to produce a proper coloring of a graph. What is the chromatic number of G, denoted by χ(G)?<br>b. The chromatic polynomial is a polynomial that represents the number of distinct ways to color the vertices of a graph. What is the chromatic polynomial of G3, P<sub>G</sub>?<br>c. Let P<sub>G</sub>(n) be the number of different ways to color the vertices of G3 using n colors, where n ≥ 0 is an integer. What is minimum number of P<sub>G</sub>(n), where P<sub>G</sub>(n) &gt; 0?<br>（原卷附圖 G3：正方形四個頂點加上兩條對角線，構成 K<sub>4</sub>；另有一個頂點只和正方形右上角的頂點相連。共 5 個頂點、7 條邊。）",
@@ -1630,6 +1694,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 3,
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Which is bigger? 1.01<sup>100</sup> and 2.",
@@ -1649,6 +1714,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 4,
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Assume x is a natural number. Solve x<sup>x</sup> = 2<sup>2048</sup>.",
@@ -1668,6 +1734,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 5,
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Please translate the following statement in first-order logic. “There are infinite natural numbers.” Please use N to denote the set of natural numbers. The notation x ∈ N means that x is a member of N.",
@@ -1687,6 +1754,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 6,
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Calculate Σ<sub>k=1</sub><sup>n²</sup> ⌊√k⌋",
@@ -1706,6 +1774,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 7,
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "Let F be the set of all functions from N to the set {0, a}, where a ≠ 0. Is F countable or uncountable? You need to give an explanation.",
@@ -1725,6 +1794,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "8-1",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "[Function &amp; Relation] Given a generating function G(x) = (x<sup>6</sup> − 1)/(x − 1). Please write down the sequence generated by G(x).",
@@ -1744,6 +1814,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "8-2",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "[Function &amp; Relation] Given X = {a, b, c, d} and P<sub>1</sub> is the partition of X, P<sub>1</sub> = {a, {b, c, d}}. How many ordered pairs of the equivalence relation in P<sub>1</sub>? Please write down all ordered pairs of the equivalence relation.",
@@ -1763,6 +1834,7 @@
         "year": 112,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "9-2",
+        "paper": "nycu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
       },
       "question": "[Graph &amp; Tree] A (n, m)-dumbbell graph is constructed by the complete graph k<sub>n</sub> on n vertices, and k<sub>m</sub> on m vertices. These two graphs are connected by a single edge. Find the number of spanning tree of a dumbbell graph.<br>（原卷附圖：左邊是 K<sub>3</sub>（三角形），右邊是 K<sub>5</sub>，兩者之間由一條邊相連。）",
@@ -1783,6 +1855,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 1,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Solve the following puzzle.<br>一名醫護人員說：『醫院裡的醫護人員，包括我在內，總共是16名醫生與護士。並且下面四條狀況都成立。並且如果把我排除不計的話，下面四條狀況仍然都成立。』<br>一、護士多於醫生。<br>二、男醫生多於男護士。<br>三、男護士多於女護士。<br>四、至少有一位女醫生。<br>請問說話的人是甚麼性別和職務？<br>請注意，每個人要麼是男性，要麼是女性，不可以又是男又是女。每個人要麼是醫生，要麼是護士，不可以又是醫生又是護士。",
@@ -1803,6 +1876,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "2-a",
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Consider the following non-decreasing sequence of natural numbers a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>, ⋯: 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, ⋯. Note that there are exactly k² occurrence of k. Define a function f(n) as the largest integer m such that a<sub>m</sub> = n. For example, f(3) = 14 and f(4) = 30. What is f(f(n))?",
@@ -1822,6 +1896,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "2-b",
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Find all non-negative integers a and b so that √a + √b = √2009.",
@@ -1841,6 +1916,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "3-a",
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "The <i>Goldbach's conjecture</i> says, “every even integer greater than 2 is a sum of two prime numbers.” Please translate Goldbach's conjecture into a logical formula using ∀, ∃, <i>and</i> (∧), <i>or</i> (∨), <i>not</i> (¬), <i>implies</i> (→) and <i>if-and-only-if</i> (↔), and the four basic integer arithmetic operators (+, −, *, /). Note that / is integer division, for example, 5/2 = 2.",
@@ -1861,6 +1937,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "3-b",
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "A <i>bit string</i> is a string of 0 and 1 digits. For instance, 0011101110 is a bit string of length 10. How many bit strings of length 10 contain either five consecutive 1's or five consecutive 0's?",
@@ -1881,6 +1958,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 4,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "We want to count the number of paths from vertices m to n in the following graph. Each path is made up of a series of steps, where each step is a move one unit to the right or a move one unit upward (No moves to the left or downward are allowed.)<br>（原卷附圖：6 格寬、4 格高的方格網；m 在左下角、n 在右上角；頂點 x 在 m 往右 3 格、往上 2 格的格點上。）<br>a. What is the number of paths from vertices m to n?<br>b. What is the number of paths from vertices m to n that do not go through vertex x?<br>c. Let P be the set of all vertices in the above graph. Define a binary relation R on P such that (p, q) ∈ R if we need either one unit to the right or one unit upward to move from vertices p to q. Is (P, R) a partially ordered set? Why or why not?",
@@ -1900,6 +1978,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 5,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "If we run topological sorting on the following Hasse diagrams, how many different results can we get?<br>(a) Hasse 圖：e &lt; g &lt; i，f &lt; h &lt; i（兩條長度 2 的鏈在頂端 i 會合；e、f 為極小元素）。<br>(b) Hasse 圖：九個元素排成 3×3 菱形格子：a 在最底；a &lt; b、a &lt; c；b &lt; e、b &lt; d、c &lt; d、c &lt; f；e &lt; g、d &lt; g、d &lt; h、f &lt; h；g &lt; i、h &lt; i（i 在最頂）。",
@@ -1919,6 +1998,7 @@
         "year": 113,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 6,
+        "paper": "nycu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_113_math.pdf"
       },
       "question": "Suppose that we already have the following theorem.<br>If G is a connected planner simple graph with e edges and v vertices, where v ≥ 3, then e ≤ 3v − 6.<br>Using this theorem to prove that if G is a connected planner simple graph with at least three vertices, then G has a vertex of degree not exceeding five.",
@@ -1939,6 +2019,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 1,
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "Consider the classic Connect Four game, where players choose a color and then take turns dropping colored tokens into a six-row, seven-column vertically suspended grid. The objective of the game is to be the first to form a horizontal, vertical, or diagonal line of four of one's own tokens. Suppose that two players, one with yellow and the other with red tokens, are playing the game. Propositional functions Y(i, j), R(i, j), and B(i, j) assert that the square in the i-th row and the j-th column (refer to the figure) contains a yellow, a red, and no token, respectively. <b>Please use these predicates together with the connectives permitted to translate the statements in (a) to (c) into logic expressions.</b> Permitted connectives are ∨, ∧, ¬, →, and the pair of parentheses “()”. For any propositional function f(x, y), you should use the notation ⋁<sub>i=m</sub><sup>n</sup> f(i, j) for f(m, j) ∨ f(m + 1, j) ∨ ⋯ ∨ f(n, j) and the notation ⋀<sub>i=m</sub><sup>n</sup> f(i, j) for f(m, j) ∧ f(m + 1, j) ∧ ⋯ ∧ f(n, j).<br>（原卷附圖：6 列 × 7 行的格子，列由上而下編號 1～6，行由左而右編號 1～7。）<br>(a) Four squares in the 2nd row contains four red tokens in a row.<br>(b) Each column contains at least a yellow token.<br>(c) If the square in the i-th row and the j-th column contains a token, the square contains either a red token or a yellow token but not both.",
@@ -1959,6 +2040,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "2-(a)",
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "（複選）Given a domain D and two predicates P and Q, let R be the truth set of P(x) and S be the truth set of Q(x). Pick up all the following statements that are always true?",
@@ -1986,6 +2068,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "2-(b)",
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "Let ℵ<sub>0</sub> denote the cardinality of a countable infinite set. Name two infinite sets and use the inclusion-exclusion principle to show that ℵ<sub>0</sub> + ℵ<sub>0</sub> = ℵ<sub>0</sub> (Disregard whether the principle holds for infinite sets)",
@@ -2006,6 +2089,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 3,
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "Assigning 8 distinct tasks to 3 identical servers, where every task must be assigned to exactly one server.<br>(a) Suppose each server can handle any number of tasks, including none. How many ways can the 8 tasks be assigned to the 3 servers with no restrictions?<br>(b) Suppose that each server must handle at least one task. How many ways can the tasks be assigned?<br>(c) Suppose that each server must handle at least one task, and no server can handle 5 tasks or more, how many valid task assignments are possible?<br>(d) Now, consider that the servers are labeled (i.e., no longer identical), and each server must handle at least one task. Additionally, no server can handle 5 tasks or more. How many valid task assignments are there in this case?",
@@ -2027,6 +2111,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 4,
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "Consider the set A = {a, b, c, d, e} and the relation R on A defined as follows: R = {(a, b), (b, c), (c, d), (d, e), (a, e)}.<br>(a) Is R reflexive?<br>(b) Is R symmetric?<br>(c) Is R transitive?<br>(d) Does R define a partial ordering? If not, what is the minimal number of ordered pairs that must be added to R to make it a partial order?",
@@ -2046,6 +2131,7 @@
         "year": 114,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 5,
+        "paper": "nycu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_114_math.pdf"
       },
       "question": "Consider the following two graphs G and H:<br>（原卷附圖，以邊列表描述）<br>G：頂點 a, b, c, d, e, f, g, h；邊 {h, g}, {h, a}, {g, f}, {f, e}, {a, c}, {a, b}, {c, e}, {e, b}, {e, d}, {b, d}。<br>H：頂點 1～8；邊 {7, 8}, {7, 6}, {8, 4}, {6, 1}, {4, 5}, {5, 1}, {4, 3}, {4, 2}, {3, 2}, {2, 1}。<br>(a) Are graphs G and H isomorphic?<br>(b) If they are isomorphic, please provide the isomorphism function (a mapping from the vertices of G to the vertices of H that preserves adjacency). If they are not, explain in detail why they are not isomorphic.",
@@ -2066,6 +2152,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "6.1",
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "Is the following statement a tautology, a contradiction, or neither? You need to provide a rigirous explanation or proof.<br>∄a.∀b(b ∈ a ↔ b ∉ b)",
@@ -2085,6 +2172,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "6.2",
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "What is x in the following equation? (Assume the left-hand-side term of the equation converges.)<br>Σ<sub>r=2</sub><sup>∞</sup>(2<sup>x−r</sup>) = √(1 + 3 × 2<sup>x−2</sup>)<br>You need to show how to obtain your answer.",
@@ -2104,6 +2192,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "6.3",
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "What is the integer part of √5 + √6 + √7 + √8 + √9 + √10 + √11 + √12 + √13? You need to show how to obtain your answer.",
@@ -2124,6 +2213,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "6.4",
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "Let T =<sub>def</sub> 11…11 (there are 243 1's). Is T divisible by 243? You need to explain your answer.",
@@ -2143,6 +2233,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": "6.5",
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "Given a strictly increasing function f : N → N so that f(f(x)) = 2x + 1, what is f(6)? Note that N denotes the set of natural numbers.",
@@ -2163,6 +2254,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 7,
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "For n ≥ 0, let {x<sub>n</sub>}, {y<sub>n</sub>}, {z<sub>n</sub>} be sequences defined by the initial conditions x<sub>0</sub> = 1, y<sub>0</sub> = 0, and z<sub>0</sub> = 0. For n ≥ 1, they satisfy x<sub>n</sub> = x<sub>n−1</sub> + y<sub>n−1</sub> + z<sub>n−1</sub>, y<sub>n</sub> = x<sub>n−1</sub> + z<sub>n−1</sub>, and z<sub>n</sub> = y<sub>n−1</sub>. You must show all necessary steps. <b>Answers without justification will receive no points.</b><br>(a) Let u<sub>n</sub> = x<sub>n</sub> + y<sub>n</sub> + z<sub>n</sub>. Use mathematical induction to prove that u<sub>n</sub> = 2<sup>n</sup> for all n ≥ 0.<br>(b) Using the result from part (a), derive a recurrence relation for y<sub>n</sub> in terms of y<sub>n−1</sub> and show that y<sub>n</sub> = 2<sup>n−1</sup> − y<sub>n−1</sub> for all n ≥ 1.<br>(c) Solve the recurrence in part (b) to obtain a closed-form expression for y<sub>n</sub>, and verify that your formula satisfies the initial condition.",
@@ -2183,6 +2275,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 8,
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "Define relations R and S on ℕ = {0, 1, 2, …} by (1) xRy if and only if x ≡ y mod 7, and (2) xSy if and only if x ≡ y mod 13. For each of the following relations on ℕ, determine whether it is an equivalence relation. If it is, give a proof. If it is not, explain which property of an equivalence relation fails. In each case, justify your answer. <b>Answers without justification will receive no points.</b><br>(a) R ∩ S<br>(b) R ∪ S",
@@ -2203,6 +2296,7 @@
         "year": 115,
         "dept": "資訊聯招（線性代數與離散數學）",
         "no": 9,
+        "paper": "nycu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/nycu_115_math.pdf"
       },
       "question": "A fully connected communication network on n nodes is modeled by the complete graph K<sub>n</sub>, where n ≥ 5. Let S ⊆ V(K<sub>n</sub>) ∪ E(K<sub>n</sub>) be a set of failed nodes and links with |S| ≤ n − 3, such that no failed link is incident to a failed node. Let K<sub>n</sub> − S denote the network obtained after removing all failed nodes (and their incident links) and all failed links. Prove by induction on n that the remaining network K<sub>n</sub> − S contains a Hamiltonian cycle. <b>You may not assume any characterization theorem for Hamiltonian graphs.</b>",
@@ -2222,6 +2316,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 1,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）Let Q(x, y) be the statement “x + y = x − y,” which of the following are true?",
@@ -2248,6 +2343,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 2,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）An arm wrestler is the champion for a period of 75 hours. (Here, by an hour, we mean a period starting from an exact hour, such as 1 p.m., until the next hour.) The arm wrestler had at least one match an hour, but no more than 125 total matches. There is a period of consecutive hours during which",
@@ -2275,6 +2371,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 3,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）In the RSA public key system,",
@@ -2301,6 +2398,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 4,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）Let G be a connected planar simple graph with e edges and v vertices, then",
@@ -2327,6 +2425,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 5,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）A full m-ary tree with",
@@ -2354,6 +2453,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 6,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）Suppose |A| = 8, |B| = 3. Consider the number of possible functions f : A → B",
@@ -2380,6 +2480,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 7,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）Consider a predicate P(i,j), where i,j are elements from the same domain S. Suppose all following statements are true:<br>∀i, p(i,i);  ∀i,j, (i ≠ j), p(i,j) → ¬p(j,i);  ∀i,j,k, (p(i,j) ∧ p(j,k)) → p(i,k);<br>∀i,j, p(i,j) ∨ p(j,i);  ∃!k, ∀i ≠ k, p(k,i);<br>(∃! means “exist one and only one”)<br>Which of the following options are correct?",
@@ -2406,6 +2507,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 8,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）Consider a general recursive mechanism <b>R</b>, whose input is an array A() initially with n elements. The pseudo code of R is listed below, It takes a parameter k, use √n (n is the size of A when applied, n may change) steps to partition <b>A</b>, and may call another function Q, whose complexity may vary and depends on the size of its input.<pre>Procedure R (array A with size n, int k)\n1. if n&lt;k exit;\n2. partition A into k equal size parts\n   A1 , A2 , … , Ak, (This takes √n steps)\n3. for (i=1 to k)\n     call R(Ak,k); // may change Ak;\n4. merge A1 , A2 , … , Ak into new A with size n;\n   (This takes k steps)\n5. call Q(A);\n6. return()</pre>There are 3 derived algorithms X,Y,Z, based on R. X sets k as 2, and its Q’s complexity is θ(m), m is the size of Q’s input. Y sets k as 4, and its Q’s complexity is θ(√m), m is input size. Z sets k as 9, and its Q’s complexity is θ(m), m is input size.<br>What following comparisons are true?",
@@ -2432,6 +2534,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 9,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）Concerning the binomial coefficient C(r, k), what following formula are true?",
@@ -2459,6 +2562,7 @@
         "year": 111,
         "dept": "資工類（離散數學與線性代數）",
         "no": 10,
+        "paper": "ncu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_111_math.pdf"
       },
       "question": "（複選）There is a series of number a<sub>n</sub>, ∀n &gt; 1, (a<sub>n−1</sub> − a<sub>n−2</sub>) = 2(a<sub>n</sub> − a<sub>n−1</sub>), a<sub>0</sub>=5, a<sub>1</sub>=9. Using generating function f(z) to solve a<sub>n</sub>, what of the followings are true?",
@@ -2486,6 +2590,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 1,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）For question 1~4, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [0 0 0 0 0 1]\n    [0 0 1 1 1 0]\nA = [0 0 0 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 0 0]\n    [0 0 0 0 0 1]</pre>1. About relation <b>R</b>, which of the following statements are true?",
@@ -2514,6 +2619,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 2,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）For question 1~4, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [0 0 0 0 0 1]\n    [0 0 1 1 1 0]\nA = [0 0 0 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 0 0]\n    [0 0 0 0 0 1]</pre>2. Consider different closures of <b>R</b>. Which of the following statements are true?",
@@ -2542,6 +2648,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 3,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）For question 1~4, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [0 0 0 0 0 1]\n    [0 0 1 1 1 0]\nA = [0 0 0 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 0 0]\n    [0 0 0 0 0 1]</pre>3. If <b>G</b> is a graph representation of <b>R</b>, which of the following statements are true?",
@@ -2569,6 +2676,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 5,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）Which are <u>sufficient but not necessary</u> conditions for the corresponding goals?",
@@ -2597,6 +2705,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 6,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）Consider a set <b>S</b> of n nodes interconnecting to form a graph <b>G</b>. If two nodes “directly connect” to each other, there is an undirected edge between them. Let D(a) denote the degree of a node a. Which of the following are correct statements?",
@@ -2623,6 +2732,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 7,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）To analyze the complexity of the following procedure P, We will use the following assumptions: Suppose P and B are both procedures. B take θ(√m) time to compute, where m is the size of B’s input; each statement line in and outside the loop counts 1 step.<pre>Procedure P( array1[a1, a2, ..., an])\n1. if n&lt;9 exit.\n2. call B(array1[a1, a2, ..., an])\n   declare new empty array2, array3, array4;\n3. for (i=1 to n)\n4. { if ((i mod 9)=0)  insert ai into array2;\n5.   if ((i mod 9)=3)  insert ai into array3;\n6.   if ((i mod 9)=6)  insert ai into array4 }\n8. call P( array2 );\n9. call P( array3 );\n10. call P (array4);</pre>Which of the following relations on F<sub>n</sub> can describe the complexity of procedure P with respect to problem size n?",
@@ -2649,6 +2759,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 8,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）What <u>can be</u> the time complexity level of the procedure P in question 7?（Procedure P 的遞迴式為上一題所求）",
@@ -2675,6 +2786,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 9,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）An alphabet set {α<sub>1</sub>, α<sub>2</sub>, ..., α<sub>8</sub>} is used to form a string. A legal string cannot have consecutive {α<sub>1</sub>α<sub>1</sub>, α<sub>1</sub>α<sub>2</sub>, α<sub>2</sub>α<sub>1</sub>, α<sub>2</sub>α<sub>2</sub>} in any part of the string. Suppose <u>P<sub>n-1</sub></u> is the number of valid string of length n. Which of the following are true?",
@@ -2701,6 +2813,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 10,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）When using the generating function g(z) to solve P<sub>n</sub> in the previous question, which of the following are true?",
@@ -2727,6 +2840,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 11,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Which of these nonplanar graphs have the property that the removal of any vertex and all edges incident with that vertex produces a planar graph?",
@@ -2753,6 +2867,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 12,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Draw a graph with 64 vertices representing the squares of a chessboard. Connect two vertices with an edge if you can move legally between the corresponding squares with a single move of a knight. [The moves of a knight are L-shaped, two squares vertically (or horizontally) followed by one square horizontally (respectively, vertically).]",
@@ -2779,6 +2894,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 13,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）A sequence d<sub>1</sub>, d<sub>2</sub>,… , d<sub>n</sub> is called graphic if it is the degree sequence of a simple graph. Which of these sequences are graphic?",
@@ -2805,6 +2921,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 14,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Find the cut vertices and cut edges in the following graph.<br>（原題附圖，以文字描述：頂點 a, b, c, d, e, f, g, h；邊為 {a,b}、{b,c}、{b,d}、{c,d}、{c,e}、{e,f}、{f,g}、{e,g}、{e,h}、{g,h}。）",
@@ -2831,6 +2948,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 15,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Let G be a graph with at least three vertices.",
@@ -2859,6 +2977,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 16,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Let “P→Q is true” be a relation <b>R</b>(P,Q) between proposition P and Q, where “→” is the <b>implication</b> logic connective. Which of the followings are true?",
@@ -2886,6 +3005,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 17,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Suppose a set S, |S| =3. Consider possible function f : S×S → S. Which of the following statements are true?",
@@ -2912,6 +3032,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 18,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Consider Josephus Problem, where n people are placed clockwise around a circle, from 1, 2,..., to n, n is next to 1; every second person is eliminated each step (so the first few eliminated are 2,4,6,...), until the last one, say k, is remained, we denote J(n)=k. ∀n &gt; 1, n ∈ N, Which of the followings are true?",
@@ -2940,6 +3061,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 19,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Which of the following statements are true?",
@@ -2967,6 +3089,7 @@
         "year": 113,
         "dept": "資工類（離散數學與線性代數）",
         "no": 20,
+        "paper": "ncu-113-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_113_math.pdf"
       },
       "question": "（複選）Solving recurrence equation ∀n ≥ 2, 2a<sub>n</sub> = 7a<sub>n−1</sub> − 6a<sub>n−2</sub>, a<sub>0</sub> = 3/2, a<sub>1</sub> = 11/4. Which of the following statement are true?",
@@ -2994,6 +3117,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 11,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）For questions 11 and 12, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [1 0 0 0 1 0]\n    [1 1 1 1 1 1]\nA = [1 0 1 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 1 0]\n    [0 0 1 1 1 1]</pre>11. About relation <b>R</b>, which of the following statements are true?",
@@ -3020,6 +3144,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 13,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）Consider the divisibility relation (i.e., | ) and the poset R = (S, | ), where S = {1, 2, 3, 4, 6, 8, 12, 24}. We can conclude that:",
@@ -3046,6 +3171,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 14,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）In the following procedure P, P and B are both procedures; each statement line in and outside the loop counts 1 step.<pre>Procedure P( array1[a1, a2, ..., an])\n1. if n&lt;9 exit.\n2. call B(array1[a1, a2, ..., an])\n   declare new empty array2, array3, array4;\n3. for (i=1 to n)\n4. { if ((i mod 9)=1)  insert ai into array2;\n5.   if ((i mod 9)=4)  insert ai into array3;\n6.   if ((i mod 9)=7)  insert ai into array4 }\n8. call P( array2 );\n9. call P( array3 );\n10. call P (array4);</pre>In order to make P’s complexity O(n) , which of the following can be B’s complexity? (m is the input size of B)",
@@ -3072,6 +3198,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 16,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）Which of these graphs have an Euler circuit?",
@@ -3098,6 +3225,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 17,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）At a party, you and your partner meet three other couples. Several handshakes take place under the following rules: no one shakes hands with themselves or their own partner, no one shakes hands with the same person more than once, and the number of handshakes for the other seven people (excluding you) are all different. Based on these conditions, how many hands did you shake, and how many hands did your partner shake?",
@@ -3124,6 +3252,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 18,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）A computer system considers a string of decimal digits a valid codeword if it contains an even number of 0 digits. For instance, 1230407869 is valid, whereas 120987045608 is not valid. Let a<sub>n</sub> be the number of valid n-digit codewords. what of the followings are true?",
@@ -3150,6 +3279,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 19,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）Find the vertex connectivity and the edge connectivity in the following graph.<br>（原題附圖，以文字描述：頂點 a, b, c, d, e, f, g；邊為 {a,b}、{a,g}、{a,f}、{b,g}、{b,c}、{g,f}、{c,d}、{c,f}、{c,e}、{d,f}、{d,e}、{e,f}。）",
@@ -3178,6 +3308,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 12,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）For questions 11 and 12, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [1 0 0 0 1 0]\n    [1 1 1 1 1 1]\nA = [1 0 1 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 1 0]\n    [0 0 1 1 1 1]</pre>12. Let <b>S</b> be the transitive closure of <b>R</b> and each element is a set. If <b>S</b> reflects operators’ behavior on <b>Set</b>, what are possible operators?",
@@ -3204,6 +3335,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 11,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Consider an analytical algorithm A to take <b>n</b> items as input set. When input size <b>n</b>≤4, the process will terminate and return results, otherwise it will divide the input set into 4 roughly equal-size subsets; 2 of 4 subsets serve as samples and act as inputs to recursively apply A twice; the results of the previous 2 outcomes (from the 2 recursive A executions) each has <b>n</b>/4 items; then we will use a procedure <i>I</i> to integrate the 2 outcomes, where <i>I</i> takes θ(√(m/4)) when inputs are 2 sets of size m subsets. What about this algorithm are true?",
@@ -3231,6 +3363,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 12,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Suppose x and y are integer numbers, and we define the following predicates: D(x, y): y is a multiple of x;  C<sub>3</sub>(x,y): x is congruent to y modulo 3;  C<sub>6</sub>(,x,y): x is is congruent to y modulo 6<br>Which of the following clauses are correct interpretations of the logical statement:<br>∀x, y, (C<sub>3</sub>(x, y) ∧ (¬C<sub>6</sub>(x, y)) ∧ (D(6, x)) → ¬D(x, y)",
@@ -3258,6 +3391,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 13,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）When using the generating function g(x) to solve the recurrence relation ∀n ≥ 2, a<sub>n</sub> = −a<sub>n−1</sub> + 6a<sub>n−2</sub>, a<sub>0</sub> = 0, a<sub>1</sub> = 5, what of the followings are true?",
@@ -3285,6 +3419,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 14,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）In history, which of the following statements about mathematic concepts are true?",
@@ -3312,6 +3447,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 15,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）for functions <i>f</i>: C→D, <i>g</i>: A→B, there exist a function composition <i>f</i> o <i>g</i>, and we know <i>f</i> o <i>g</i> is an onto function. What about the following comparisons <u>can be true</u>?",
@@ -3338,6 +3474,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 16,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let a<sub>n</sub> be the number of ways in which a line of n people can be formed such that no two males are standing beside each other (each person is either <i>M</i> or <i>F</i>). For example, a<sub>3</sub> = 5.<br>Which of the following statements are correct?",
@@ -3365,6 +3502,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 17,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let <i>G</i> be a connected simple graph with n ≥ 3 vertices. Which of the following statements are correct?",
@@ -3391,6 +3529,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 18,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let G be a connected graph. Which of these graphs have an Euler circuit?",
@@ -3419,6 +3558,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 19,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Which of the following statements about bipartite graphs are true?",
@@ -3447,6 +3587,7 @@
         "year": 115,
         "dept": "資工類（離散數學與線性代數）",
         "no": 20,
+        "paper": "ncu-115-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
       },
       "question": "（複選）Let <i>G</i> be a <b>simple planar graph</b> with <i>n</i> ≥ <b>3 vertices</b> and <i>m</i> <b>edges</b>. Which of the following statements are <b>true</b>?",
@@ -3475,6 +3616,7 @@
         "year": 112,
         "dept": "資工類（離散數學與線性代數）",
         "no": 4,
+        "paper": "ncu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_112_math.pdf"
       },
       "question": "（複選）For question 1~4, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [0 0 0 0 0 1]\n    [0 0 1 1 1 0]\nA = [0 0 0 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 0 0]\n    [0 0 0 0 0 1]</pre>4. Let <b>S</b> be the symmetric and reflexive closure of <b>R</b> and each element is a proposition. If <b>S</b> reflects Boolean operators’ behavior, what are possible operators?",
@@ -3501,6 +3643,7 @@
         "year": 114,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 4,
+        "paper": "ncku-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
       },
       "question": "Which one is the solution of the recurrence relation<br>a<sub>n</sub> −3a<sub>n</sub> −1=5(3<sup>n</sup>), where n≥1 and a<sub>0</sub>=2?<br>（原卷印刷如此，依選項與初始條件判斷應為 a<sub>n</sub> − 3a<sub>n−1</sub> = 5(3<sup>n</sup>)，下標 n−1 印成了 n −1。）",
@@ -3526,6 +3669,7 @@
         "year": 111,
         "dept": "電機資訊學院-資訊聯招（計算機數學）",
         "no": 5,
+        "paper": "ncku-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
       },
       "question": "一、離散數學 (50%)<p>5. (10 points) Calculate the chromatic number of figure(a) (5 points) and figure(b) (5 points). (not need to explain)</p><figure class=\"fig\"><div class=\"q-fig\" data-spec=\"{&quot;width&quot;: 640, &quot;height&quot;: 318, &quot;nodes&quot;: [{&quot;id&quot;: &quot;v1&quot;, &quot;label&quot;: &quot;v1&quot;, &quot;x&quot;: 165, &quot;y&quot;: 42, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v2&quot;, &quot;label&quot;: &quot;v2&quot;, &quot;x&quot;: 102, &quot;y&quot;: 63, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v3&quot;, &quot;label&quot;: &quot;v3&quot;, &quot;x&quot;: 62, &quot;y&quot;: 117, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v4&quot;, &quot;label&quot;: &quot;v4&quot;, &quot;x&quot;: 62, &quot;y&quot;: 183, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v5&quot;, &quot;label&quot;: &quot;v5&quot;, &quot;x&quot;: 102, &quot;y&quot;: 237, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v6&quot;, &quot;label&quot;: &quot;v6&quot;, &quot;x&quot;: 165, &quot;y&quot;: 258, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v7&quot;, &quot;label&quot;: &quot;v7&quot;, &quot;x&quot;: 228, &quot;y&quot;: 237, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v8&quot;, &quot;label&quot;: &quot;v8&quot;, &quot;x&quot;: 268, &quot;y&quot;: 183, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v9&quot;, &quot;label&quot;: &quot;v9&quot;, &quot;x&quot;: 268, &quot;y&quot;: 117, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v10&quot;, &quot;label&quot;: &quot;v10&quot;, &quot;x&quot;: 228, &quot;y&quot;: 63, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 15, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bT&quot;, &quot;label&quot;: &quot;T&quot;, &quot;x&quot;: 487, &quot;y&quot;: 32, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bL&quot;, &quot;label&quot;: &quot;L&quot;, &quot;x&quot;: 360, &quot;y&quot;: 129, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bR&quot;, &quot;label&quot;: &quot;R&quot;, &quot;x&quot;: 621, &quot;y&quot;: 122, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bBL&quot;, &quot;label&quot;: &quot;BL&quot;, &quot;x&quot;: 414, &quot;y&quot;: 281, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bBR&quot;, &quot;label&quot;: &quot;BR&quot;, &quot;x&quot;: 576, &quot;y&quot;: 276, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;ba&quot;, &quot;label&quot;: &quot;a&quot;, &quot;x&quot;: 459, &quot;y&quot;: 126, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bb&quot;, &quot;label&quot;: &quot;b&quot;, &quot;x&quot;: 520, &quot;y&quot;: 125, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bc&quot;, &quot;label&quot;: &quot;c&quot;, &quot;x&quot;: 442, &quot;y&quot;: 186, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;bd&quot;, &quot;label&quot;: &quot;d&quot;, &quot;x&quot;: 541, &quot;y&quot;: 184, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;be&quot;, &quot;label&quot;: &quot;e&quot;, &quot;x&quot;: 492, &quot;y&quot;: 220, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 13, &quot;state&quot;: &quot;default&quot;}], &quot;edges&quot;: [{&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v2&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v3&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v3&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v4&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v3&quot;, &quot;to&quot;: &quot;v4&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v3&quot;, &quot;to&quot;: &quot;v5&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v3&quot;, &quot;to&quot;: &quot;v8&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v5&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v9&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v5&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v5&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v5&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v6&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v6&quot;, &quot;to&quot;: &quot;v8&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v7&quot;, &quot;to&quot;: &quot;v8&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v7&quot;, &quot;to&quot;: &quot;v9&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v8&quot;, &quot;to&quot;: &quot;v9&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v8&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v9&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v9&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v10&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bT&quot;, &quot;to&quot;: &quot;bL&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bT&quot;, &quot;to&quot;: &quot;bR&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bL&quot;, &quot;to&quot;: &quot;bBL&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bR&quot;, &quot;to&quot;: &quot;bBR&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBL&quot;, &quot;to&quot;: &quot;bBR&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bT&quot;, &quot;to&quot;: &quot;ba&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bT&quot;, &quot;to&quot;: &quot;bb&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bL&quot;, &quot;to&quot;: &quot;ba&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bL&quot;, &quot;to&quot;: &quot;bc&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bR&quot;, &quot;to&quot;: &quot;bb&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bR&quot;, &quot;to&quot;: &quot;bd&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bc&quot;, &quot;to&quot;: &quot;bd&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bb&quot;, &quot;to&quot;: &quot;bc&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;ba&quot;, &quot;to&quot;: &quot;bd&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;ba&quot;, &quot;to&quot;: &quot;be&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bb&quot;, &quot;to&quot;: &quot;be&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBL&quot;, &quot;to&quot;: &quot;bc&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBL&quot;, &quot;to&quot;: &quot;be&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBR&quot;, &quot;to&quot;: &quot;bd&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;bBR&quot;, &quot;to&quot;: &quot;be&quot;, &quot;directed&quot;: false}], &quot;labels&quot;: [{&quot;id&quot;: &quot;la&quot;, &quot;x&quot;: 165, &quot;y&quot;: 308, &quot;text&quot;: &quot;figure(a)&quot;, &quot;cls&quot;: &quot;strong&quot;, &quot;anchor&quot;: &quot;middle&quot;}, {&quot;id&quot;: &quot;lb&quot;, &quot;x&quot;: 490, &quot;y&quot;: 308, &quot;text&quot;: &quot;figure(b)&quot;, &quot;cls&quot;: &quot;strong&quot;, &quot;anchor&quot;: &quot;middle&quot;}]}\"></div><figcaption><b>圖</b>：依原卷重畫。figure(a)：v1～v10 排成一圈，每個頂點和左右各 1 個、各 2 個的頂點相連，另有 5 條直徑 v1v6、v2v7、v3v8、v4v9、v5v10（在中心交叉）；figure(b)：外圈五邊形加內部 5 個頂點，共 10 個頂點、20 條邊（頂點代號 T、L、R、BL、BR、a～e 是為了詳解方便而加，原卷沒有標）。</figcaption></figure>",
@@ -3545,6 +3689,7 @@
         "year": 114,
         "dept": "資工類（離散數學與線性代數）",
         "no": 20,
+        "paper": "ncu-114-math",
         "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
       },
       "question": "（複選）Which of these graphs are homeomorphic to K<sub>3,3</sub>?<figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ncu-114-q20-a.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 (a)、(b)</figcaption></figure><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ncu-114-q20-b.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖 (c)、(d)、(e)</figcaption></figure>",
@@ -3571,6 +3716,7 @@
         "year": 111,
         "dept": "數學(A)",
         "no": 1,
+        "paper": "ntu-111-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
       },
       "question": "<p>(10%) Which one of the following graphs has an Eulerian cycle?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ntu-111-q1.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（選項 (A)～(E) 五張圖）</figcaption></figure>",
@@ -3597,6 +3743,7 @@
         "year": 112,
         "dept": "數學(A)",
         "no": 1,
+        "paper": "ntu-112-math",
         "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
       },
       "question": "<p>(10%) Which one of the following graphs has no Hamiltonian cycles?</p><figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ntu-112-q1.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（選項 (A)～(E) 五張圖）</figcaption></figure>",

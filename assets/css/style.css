@@ -442,6 +442,43 @@ details.qans .qa > :last-child { margin-bottom: 0; }
 /* 很長、沒有空白的式子（例如 x<sub>1</sub>x<sub>2</sub>…、長的 tag）在窄螢幕可以斷行 */
 .qcard, .qbank, .prose { overflow-wrap: anywhere; }
 
+/* ---------- 考古題：總覽與單份考卷 ---------- */
+.page-sub { color: var(--ink-soft); margin: 6px 0 0; }
+.exam-entry { max-width: none; margin: 0 0 18px; }
+.exam-school { margin: 22px 0 8px; }
+.exam-school h2 { font-size: 1.15em; margin: 0 0 10px; }
+.exam-grid { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.exam-grid th, .exam-grid td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+.exam-grid tr:last-child th, .exam-grid tr:last-child td { border-bottom: 0; }
+.exam-grid thead th { background: var(--bg); font-size: .9em; }
+.exam-grid thead th small { display: block; font-weight: 400; color: var(--ink-soft); font-size: .85em; }
+.exam-grid tbody th { font-family: var(--mono); width: 5.5em; }
+.exam-grid th { white-space: nowrap; }
+.exam-grid td.is-empty { color: var(--ink-soft); }
+.paper-link { white-space: nowrap; display: inline-flex; align-items: baseline; gap: 8px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); text-decoration: none; transition: border-color .15s, color .15s; }
+.paper-link:hover { border-color: var(--brand); color: var(--brand); }
+.paper-link small { color: var(--ink-soft); font-size: .8em; }
+.paper-head h1 small { display: block; font-size: .55em; font-weight: 500; color: var(--ink-soft); margin-top: 4px; }
+.paper-head .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.paper-head a.chip { text-decoration: none; }
+.paper-head a.chip:hover { border-color: var(--brand); color: var(--brand); }
+.paper-topics { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 14px; }
+.paper-topics-label { font-size: .82em; color: var(--ink-soft); margin-right: 4px; }
+.topic-chip { text-decoration: none; }
+.topic-chip b { margin-left: 2px; color: var(--brand); }
+a.topic-chip:hover { border-color: var(--brand); color: var(--brand); }
+.topic-chip.is-planned { opacity: .75; }
+.paper-tools { justify-content: space-between; margin: 14px 0 4px; }
+.grade-score { font-size: .9em; color: var(--ink-soft); margin-right: auto; }
+.qcard.is-skipped { background: var(--bg); border-style: dashed; }
+.qcard.is-skipped .qempty { margin: 0; }
+.qgrade { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: .85em; color: var(--ink-soft); }
+.qgrade .linkbtn { display: inline-flex; align-items: center; gap: 4px; }
+.qgrade .icon { width: 14px; height: 14px; }
+.qgrade .grade-ok[aria-pressed="true"] { color: var(--s-found); border-color: var(--s-found); background: color-mix(in srgb, var(--s-found) 10%, transparent); }
+.qgrade .grade-ng[aria-pressed="true"] { color: var(--s-removed); border-color: var(--s-removed); background: color-mix(in srgb, var(--s-removed) 10%, transparent); }
+a.qsrc:hover { color: var(--accent); border-color: var(--accent); }
+
 /* ---------- 窄螢幕（手機）：放在檔案最後，才能蓋過上面的基本樣式 ---------- */
 @media (max-width: 600px) {
   .site-header .wrap { height: 52px; gap: 8px; }
@@ -465,4 +502,8 @@ details.qans .qa > :last-child { margin-bottom: 0; }
   /* 圖和動畫保留最小寬度，字才不會縮到看不清楚；放不下時在框內左右滑動，不讓整頁橫向捲動 */
   .viz-stage { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .viz-svg { min-width: 520px; }
+  .exam-grid th, .exam-grid td { padding: 8px 8px; }
+  .exam-grid thead th small { display: none; }
+  .exam-grid tbody th { width: auto; }
+  .paper-link { padding: 3px 9px; gap: 4px; }
 }
