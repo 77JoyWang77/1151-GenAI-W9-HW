@@ -163,8 +163,17 @@
           "en": "Deadlock Avoidance and Banker's Algorithm",
           "zh": "死結避免與銀行家演算法",
           "book": "8.6–8.7",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "Banker's algorithm",
+            "safe state",
+            "safe sequence",
+            "claim edge"
+          ],
+          "updated": "2026-11-21"
         }
       ]
     },

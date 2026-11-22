@@ -101,6 +101,122 @@
       "question": "快取有 4 個區塊、每個區塊 1 word，存取序列 0、2、4、0、2、4、0、2、4。比較直接映射和 2-way 集合關聯（LRU）的命中次數，並解釋為什麼「關聯度比較高」的反而比較差。",
       "answer": "直接映射命中 2 次，2-way 命中 0 次",
       "explanation": "<p><b>直接映射</b>（set = 位址 mod 4）：0、4 對到 set 0，2 對到 set 2。0 和 4 在 set 0 互相擠掉，每次都 miss；但 2 獨佔 set 2，除了第一次以外都命中：<b>命中 2 次</b>。</p><p><b>2-way</b>（set = 位址 mod 2）：0、2、4 都是偶數，三個區塊全擠在 set 0 的兩格裡。LRU 每次都換掉「最久沒用的」，而那正好是下一個要用的：0、2 進來 → 4 換掉 0 → 0 換掉 2 → 2 換掉 4 ……，<b>9 次全部 miss</b>。</p><p>原因：提高關聯度的同時 set 數變少（4 → 2），原本分散在兩個 set 的區塊被集中到同一個 set。當一個 set 裡循環使用的區塊數剛好比格數多一個時，LRU 每次都換掉下一個要用的，是 LRU 的最壞情況。所以「關聯度越高越好」只是一般趨勢，不是定理。（已用程式模擬驗證。）</p>"
+    },
+    {
+      "id": "co-0007",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "把單週期處理器改成五階段管線後，下列敘述何者正確？",
+      "choices": [
+        "(A) 每一條指令從開始到結束的時間（latency）一定縮短",
+        "(B) 每單位時間完成的指令數（throughput）提高，但單一指令的 latency 不會縮短",
+        "(C) 只要有 forwarding，CPI 就一定等於 1",
+        "(D) 管線的時脈週期一定等於單週期時脈 ÷ 5"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>管線化是讓多條指令<b>重疊</b>執行，每一條指令還是要走完五個階段，而且每個階段都要湊滿一個（由最慢階段決定的）時脈，再加上管線暫存器的延遲，所以單一指令的 latency 不變甚至變長；變快的是填滿後每個週期完成一條指令的 throughput，選 (B)。</p><ul><li>(A) 錯：例如各階段 250/150/200/300/100 ps、暫存器延遲 20 ps，單週期 latency 1000 ps，管線是 5 × 320 = 1600 ps。</li><li>(C) 錯：load-use 仍要 stall 1，分支也可能造成 stall；而且算總週期時還有填滿管線的 4 個週期。</li><li>(D) 錯：只有五個階段完全平衡、沒有暫存器延遲時才成立，一般時脈 = 最慢階段 + 暫存器延遲。</li></ul>"
+    },
+    {
+      "id": "co-0008",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某處理器五個階段的延遲是 IF 180 ps、ID 120 ps、EX 200 ps、MEM 250 ps、WB 90 ps，忽略管線暫存器的延遲。單週期設計和五階段管線設計的時脈週期分別是多少？",
+      "choices": [
+        "(A) 840 ps、168 ps",
+        "(B) 840 ps、250 ps",
+        "(C) 250 ps、840 ps",
+        "(D) 840 ps、90 ps"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>單週期要讓最慢的指令（lw 會用到全部五個階段）在一個週期內走完：180 + 120 + 200 + 250 + 90 = <b>840 ps</b>。</p><p>管線的每個階段都要在一個週期內做完，所有階段共用同一個時脈，所以時脈由最慢的 MEM 決定：<b>250 ps</b>。選 (B)。</p><p>常見錯誤是 (A)：840 ÷ 5 = 168 ps 是「五個階段完全平衡」時才有的時脈；實際上 MEM 要 250 ps，168 ps 根本做不完。另外注意管線中一條指令的 latency 是 5 × 250 = 1250 ps，比單週期的 840 ps 還長。（已用程式計算驗證。）</p>"
+    },
+    {
+      "id": "co-0009",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "五個階段的延遲是 220、160、240、280、140 ps，改成管線後每級管線暫存器多 20 ps。執行 1000 條指令（不考慮危障）：(1) 單週期和管線各要多少時間？加速比是多少？(2) 單一指令的 latency 各是多少？(3) 指令數趨近無限大時，加速比的極限是多少？為什麼不是 5？",
+      "answer": "(1) 單週期 1,040,000 ps，管線 301,200 ps，加速比約 3.45；(2) 1040 ps 與 1500 ps；(3) 約 3.47",
+      "explanation": "<p><b>(1)</b> 單週期時脈 = 220 + 160 + 240 + 280 + 140 = 1040 ps，1000 條共 1000 × 1040 = <b>1,040,000 ps</b>。</p><p>管線時脈 = 最慢的 280 ps + 20 ps = 300 ps。第一條要 5 個週期，之後每週期完成一條：(5 + 1000 − 1) × 300 = 1004 × 300 = <b>301,200 ps</b>。加速比 = 1,040,000 ÷ 301,200 ≈ <b>3.453</b>。</p><p><b>(2)</b> 單週期 latency 1040 ps；管線 latency = 5 × 300 = <b>1500 ps</b>，反而長了約 44%。</p><p><b>(3)</b> n → ∞ 時填滿的 4 個週期可以忽略，加速比 → 1040 ÷ 300 ≈ <b>3.467</b>。不是 5 的原因有兩個：階段不平衡（平衡時每階段只要 1040 ÷ 5 = 208 ps，實際要等最慢的 280 ps），以及管線暫存器多出來的 20 ps。常見錯誤是忘了 +20，或用 n × 時脈 而不是 (k + n − 1) × 時脈。（已用程式計算驗證。）</p>"
+    },
+    {
+      "id": "co-0010",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "五階段 MIPS 管線，暫存器檔前半週期寫、後半週期讀。對下面的程式，分別在 (1) 沒有 forwarding、(2) 有 forwarding 時畫出時序圖，並算出總週期數。<pre class=\"formula\">lw  $t1, 4($s0)\nadd $t2, $t1, $s1\nsw  $t2, 8($s0)\nor  $t3, $s2, $s3\nsub $t4, $t3, $t1</pre>",
+      "answer": "(1) 15 個週期（6 個 stall）；(2) 10 個週期（1 個 stall）",
+      "explanation": "<p>先找 RAW 相依：add 用 lw 的 $t1；sw 用 add 的 $t2；sub 用 or 的 $t3，也用 lw 的 $t1（但隔很遠）。</p><p><b>(1) 沒有 forwarding</b>：使用者的 ID 最早只能和生產者的 WB 在同一個週期（前半寫、後半讀）。</p><div class=\"table-scroll\"><table><thead><tr><th>指令</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr></thead><tbody><tr><td>lw $t1,4($s0)</td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>add $t2,$t1,$s1</td><td></td><td>IF</td><td>stall</td><td>stall</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>sw $t2,8($s0)</td><td></td><td></td><td></td><td></td><td>IF</td><td>stall</td><td>stall</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td></tr><tr><td>or $t3,$s2,$s3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td></tr><tr><td>sub $t4,$t3,$t1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IF</td><td>stall</td><td>stall</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td></tr></tbody></table></div><p>add 的 ID 要對齊 lw 的 WB（週期 5），stall 2；sw 的 ID 對齊 add 的 WB（週期 8），stall 2；or 沒有相依；sub 的 ID 對齊 or 的 WB（週期 12），stall 2。共 6 個 stall，總週期 = 5 + 4 + 6 = <b>15</b>。</p><p><b>(2) 有 forwarding</b>：只有 lw 後面馬上使用的 add 是 load-use，要 stall 1；sw 從 EX/MEM 拿到 $t2、sub 從 EX/MEM 拿到 $t3，都不用停。</p><div class=\"table-scroll\"><table><thead><tr><th>指令</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead><tbody><tr><td>lw $t1,4($s0)</td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>add $t2,$t1,$s1</td><td></td><td>IF</td><td>stall</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td></tr><tr><td>sw $t2,8($s0)</td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td></tr><tr><td>or $t3,$s2,$s3</td><td></td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td></tr><tr><td>sub $t4,$t3,$t1</td><td></td><td></td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td></tr></tbody></table></div><p>總週期 = 5 + 4 + 1 = <b>10</b>。常見錯誤：(1) 把 ID 放在 WB 的<b>下一個</b>週期，會多算 3 個 stall；(2) 以為有 forwarding 就完全不用停，漏掉 load-use。（已用程式模擬驗證。）</p>"
+    },
+    {
+      "id": "co-0011",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "有 forwarding 的五階段 MIPS 管線執行下面的程式：<pre class=\"formula\">lw  $t0, 0($a0)\nadd $t1, $t0, $s1\nlw  $t2, 4($a0)\nsub $t3, $t2, $s2\nsw  $t1, 8($a0)\nsw  $t3, 12($a0)</pre>(1) 會發生幾次 stall？總共幾個週期？(2) 在不改變執行結果的前提下重排指令，消除所有 stall，寫出新的順序與總週期數，並說明為什麼重排是安全的。",
+      "answer": "(1) 2 次 stall，12 個週期；(2) 把第二個 lw 搬到 add 前面，0 次 stall，10 個週期",
+      "explanation": "<p><b>(1)</b> lw $t0 → add 用 $t0、lw $t2 → sub 用 $t2，兩處都是 load-use，各 stall 1；兩個 sw 的資料都能轉送。總週期 = 5 + (6 − 1) + 2 = <b>12</b>。</p><div class=\"table-scroll\"><table><thead><tr><th>指令</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr></thead><tbody><tr><td>lw $t0,0($a0)</td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>add $t1,$t0,$s1</td><td></td><td>IF</td><td>stall</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>lw $t2,4($a0)</td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td></tr><tr><td>sub $t3,$t2,$s2</td><td></td><td></td><td></td><td></td><td>IF</td><td>stall</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td></tr><tr><td>sw $t1,8($a0)</td><td></td><td></td><td></td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td></tr><tr><td>sw $t3,12($a0)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td></tr></tbody></table></div><p><b>(2)</b> 把 lw $t2 移到 add 前面：</p><pre class=\"formula\">lw  $t0, 0($a0)\nlw  $t2, 4($a0)\nadd $t1, $t0, $s1\nsub $t3, $t2, $s2\nsw  $t1, 8($a0)\nsw  $t3, 12($a0)</pre><div class=\"table-scroll\"><table><thead><tr><th>指令</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead><tbody><tr><td>lw $t0,0($a0)</td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>lw $t2,4($a0)</td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td></tr><tr><td>add $t1,$t0,$s1</td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td></tr><tr><td>sub $t3,$t2,$s2</td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td></tr><tr><td>sw $t1,8($a0)</td><td></td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td></tr><tr><td>sw $t3,12($a0)</td><td></td><td></td><td></td><td></td><td></td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td></tr></tbody></table></div><p>現在每個 lw 和使用它的指令之間都隔了一條：add 在 EX（週期 5）時 lw $t0 已經 MEM 結束（週期 4），從 MEM/WB 轉送；sub 同理。沒有 stall，總週期 = 5 + 5 = <b>10</b>，比原本少 2 個週期（約 17%）。</p><p>為什麼安全：lw $t2 只寫 $t2，而被它越過的 add 不讀也不寫 $t2；lw 只讀 $a0，add 也沒有改 $a0；兩個 lw 讀的位址（0、4($a0)）和 sw 寫的位址（8、12($a0)）不同，記憶體的讀寫順序也沒有被改變。所以每個暫存器和記憶體位置的最終值都和原本一樣。常見錯誤是把 sw $t1 往前搬到 add 前面，會讀到舊的 $t1。（已用程式模擬重排前後的時序驗證。）</p>"
+    },
+    {
+      "id": "co-0012",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個有 forwarding 的五階段管線，時脈 220 ps；對照的單週期設計時脈 1000 ps。某程式的指令中 25% 是 lw，其中 40% 的 lw 下一條指令馬上使用它的結果；15% 是分支，每個分支造成 2 個週期的 stall；其他指令沒有 stall。(1) 管線的平均 CPI 是多少？(2) 相對於單週期的加速比是多少（指令很多，忽略填滿管線的時間）？(3) 如果編譯器重排指令，消除一半的 load-use stall，加速比變成多少？",
+      "answer": "(1) CPI = 1.40；(2) 約 3.25；(3) CPI = 1.35，加速比約 3.37",
+      "explanation": "<p><b>(1)</b> 平均每條指令的 stall：</p><ul><li>load-use：0.25 × 0.4 × 1 = 0.10</li><li>分支：0.15 × 2 = 0.30</li></ul><p>CPI = 1 + 0.10 + 0.30 = <b>1.40</b>，表示平均每條指令比理想多花 40% 的時間，其中四分之三來自分支。</p><p><b>(2)</b> 兩種設計的時脈不同，要比「每條指令的平均時間」：單週期 = 1 × 1000 = 1000 ps；管線 = 1.40 × 220 = 308 ps。加速比 = 1000 ÷ 308 ≈ <b>3.247</b>。沒有 stall 時是 1000 ÷ 220 ≈ 4.545，危障讓加速比掉了約 29%。</p><p><b>(3)</b> load-use 剩 0.05：CPI = 1 + 0.05 + 0.30 = 1.35，加速比 = 1000 ÷ (1.35 × 220) ≈ <b>3.367</b>，只進步約 3.7%。分支才是這個程式的瓶頸，要靠分支預測或提早決定分支來改善。</p><p>常見錯誤：只拿 CPI 比（1 ÷ 1.4），忘了時脈不同；或把「40% 的 lw」當成「40% 的指令」，算成 0.4 × 1。（已用程式計算驗證。）</p>"
+    },
+    {
+      "id": "co-0013",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個五階段管線的指令和資料<b>共用同一個單埠記憶體</b>，第 1 條指令是 lw，之後是一連串沒有相依的 add。如果不做任何處理，lw 的 MEM 會和第幾條指令的 IF 在同一個週期搶記憶體？這屬於哪一種危障？",
+      "choices": [
+        "(A) 第 2 條，data hazard",
+        "(B) 第 4 條，structural hazard",
+        "(C) 第 4 條，control hazard",
+        "(D) 第 5 條，structural hazard"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>lw 在週期 1 IF，MEM 是第 4 個階段，在<b>週期 4</b>。沒有 stall 時第 k 條指令在週期 k 做 IF，所以週期 4 做 IF 的是<b>第 4 條</b>。兩者同一個週期都要用唯一的記憶體，是「硬體資源不夠」造成的 <b>structural hazard</b>，選 (B)。</p><p>這和資料有沒有相依無關，所以不是 data hazard；也和分支無關，不是 control hazard。常見錯誤是以為 MEM 在第 4 個週期就是「後面第 4 條」，於是選第 5 條；其實 lw 自己是第 1 條，後面第 3 條才是第 4 條。解法是分開指令記憶體和資料記憶體（分開的 I-cache、D-cache），或讓第 4 條的 IF 延後一個週期。</p>"
     }
   ]
 }

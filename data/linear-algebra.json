@@ -47,8 +47,17 @@
           "en": "Elementary Matrices and Inverses",
           "zh": "基本矩陣與反矩陣",
           "book": "1.4–1.5",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "inverse",
+            "elementary matrix",
+            "Gauss–Jordan",
+            "nonsingular"
+          ],
+          "updated": "2026-11-21"
         },
         {
           "id": "lu-decomposition",

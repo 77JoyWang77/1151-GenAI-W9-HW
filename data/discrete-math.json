@@ -22,8 +22,18 @@
           "en": "Propositional Logic",
           "zh": "命題邏輯",
           "book": "1.1–1.3",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "truth table",
+            "implication",
+            "tautology",
+            "De Morgan",
+            "CNF/DNF"
+          ],
+          "updated": "2026-11-21"
         },
         {
           "id": "predicate-logic",

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Propositional Logic 命題邏輯 · 離散數學 | 資工考研互動學習站</title>
+  <meta name="description" content="連接詞、蘊含與逆否、真值表、恆真與等價律；考研必考的命題邏輯基礎。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=7f68026e">
+  <script src="../../../assets/js/theme.js?v=7f68026e"></script>
+</head>
+<body data-subject="discrete-math" data-chapter="logic" data-chno="1" data-topic="discrete-math/logic/propositional-logic" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Discrete Mathematics 離散數學</a> › Ch1 Logic and Proofs 邏輯與證明 › Propositional Logic 命題邏輯</nav>
+      <div class="topic-head">
+        <h1>Propositional Logic 命題邏輯<small>蘊含只在 T → F 時為假</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch1 Logic and Proofs</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">truth table</span>
+          <span class="chip">implication</span>
+          <span class="chip">tautology</span>
+          <span class="chip">De Morgan</span>
+          <span class="chip">CNF/DNF</span>
+        </div>
+      </div>
+
+      <section id="motivation">
+        <h2>為什麼要學命題邏輯</h2>
+        <div class="panel prose">
+          <p>寫程式時你天天在用邏輯：<code>if (x &gt; 0 &amp;&amp; !done)</code>、<code>while (i &lt; n || retry)</code>。可是當條件一長，例如「不是（A 而且 B）」到底等不等於「不是 A 或不是 B」？「如果下雨就不出門」和「如果出門就沒下雨」是不是同一句話？靠直覺很容易搞錯，這時就需要一套<b>可以機械式檢查</b>的規則。</p>
+          <p><span class="term">Propositional Logic<small>（命題邏輯）</small></span>就是這套規則的最基礎版本：把一句句「非真即假」的話當成變數，用少數幾個連接詞組合起來，然後用<b>真值表</b>或<b>等價律</b>判斷整句話什麼時候成立、兩句話是不是同一個意思。它是後面述詞邏輯、推論規則、證明方法的地基，也直接對應到計算機組織的邏輯電路和布林代數。</p>
+          <p>考研題目在這裡最常考三件事：(1) 蘊含 p → q 的真值與它的逆、否、逆否命題；(2) 用真值表或等價律判斷恆真式、矛盾式、兩式是否等價；(3) 把中文或英文句子翻成邏輯式（特別是「只有……才……」）。這一頁會把這些一次講清楚，並附上一個可以自己輸入公式的真值表動畫。</p>
+        </div>
+      </section>
+
+      <section id="propositions">
+        <h2>命題是什麼</h2>
+        <div class="panel prose">
+          <p><span class="term">Proposition<small>（命題）</small></span>是一個<b>有明確真假</b>的敘述句：要嘛為真（記作 T），要嘛為假（記作 F），不能兩者都是，也不能都不是。重點不在於「我們知不知道答案」，而在於「它本身有沒有確定的真假」。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>句子</th><th>是不是命題</th><th>原因</th></tr></thead>
+              <tbody>
+                <tr><td>7 是質數。</td><td>是（T）</td><td>有確定真假</td></tr>
+                <tr><td>台北在台南的南邊。</td><td>是（F）</td><td>假的也是命題</td></tr>
+                <tr><td>每個大於 2 的偶數都能寫成兩個質數的和。</td><td>是</td><td>真假目前沒人證明出來，但它本身一定有答案</td></tr>
+                <tr><td>今天會不會下雨？</td><td>不是</td><td>問句沒有真假</td></tr>
+                <tr><td>把作業交上來。</td><td>不是</td><td>命令句沒有真假</td></tr>
+                <tr><td>x + 3 = 5</td><td>不是</td><td>x 沒給值，真假不確定（這是下一個主題「述詞」）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>不能再拆的命題叫 <span class="term">Atomic Proposition<small>（原子命題）</small></span>，我們用小寫字母 p、q、r、s 代表它們，叫做<b>命題變數</b>。用連接詞把原子命題組起來，就得到 <span class="term">Compound Proposition<small>（複合命題）</small></span>，例如「p 而且非 q」。複合命題的真假完全由它的原子命題決定，這正是真值表能運作的原因：n 個變數只有 2<sup>n</sup> 種真假組合，全部列出來就能看清楚整句話的行為。</p>
+        </div>
+      </section>
+
+      <section id="connectives">
+        <h2>六個連接詞</h2>
+        <div class="panel prose">
+          <p>命題邏輯常用的連接詞有六個。下表左邊是數學寫法，右邊是本頁動畫和 C 程式用的 ASCII 寫法：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>名稱</th><th>符號</th><th>ASCII</th><th>讀法</th><th>什麼時候為真</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Negation<small>（否定）</small></span></td><td>¬p</td><td><code>~p</code></td><td>非 p</td><td>p 為假時</td></tr>
+                <tr><td><span class="term">Conjunction<small>（合取）</small></span></td><td>p ∧ q</td><td><code>p &amp; q</code></td><td>p 且 q</td><td>兩個<b>都</b>為真</td></tr>
+                <tr><td><span class="term">Disjunction<small>（析取）</small></span></td><td>p ∨ q</td><td><code>p | q</code></td><td>p 或 q</td><td><b>至少一個</b>為真</td></tr>
+                <tr><td><span class="term">Exclusive Or<small>（互斥或）</small></span></td><td>p ⊕ q</td><td><code>p ^ q</code></td><td>p 或 q 但不同時</td><td><b>剛好一個</b>為真</td></tr>
+                <tr><td><span class="term">Conditional<small>（條件句／蘊含）</small></span></td><td>p → q</td><td><code>p -&gt; q</code></td><td>若 p 則 q</td><td>除了「p 真 q 假」以外都為真</td></tr>
+                <tr><td><span class="term">Biconditional<small>（雙條件）</small></span></td><td>p ↔ q</td><td><code>p &lt;-&gt; q</code></td><td>p 若且唯若 q</td><td>p、q 真值<b>相同</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="propositional-logic-connectives"></div>
+            <figcaption><b>圖 1</b>：六個連接詞的真值表。藍框是 p → q：只有 p = T、q = F 那一列（橘色）為假；p = F 的兩列（綠色）不管 q 是什麼都為真。∨ 和 ⊕ 只差在第一列。</figcaption>
+          </figure>
+          <p>有兩個地方特別容易和日常用語混淆：</p>
+          <ul>
+            <li><b>「或」預設是可兼的</b>：數學裡 p ∨ q 在兩個都真時也是真。日常說「飲料可以選紅茶或綠茶」通常是二選一，那其實是 ⊕。題目沒特別說明時，「或」一律當 ∨。</li>
+            <li><b>⊕ 和 ↔ 互為否定</b>：⊕ 是「真值不同才真」，↔ 是「真值相同才真」，所以 p ⊕ q ≡ ¬(p ↔ q)。在電路裡 ⊕ 就是 XOR 閘，↔ 是 XNOR 閘。</li>
+          </ul>
+          <p>在程式裡，每個連接詞都只是一行運算：∧ 是 <code>&amp;&amp;</code>、∨ 是 <code>||</code>、⊕ 可以寫成「兩邊不相等」，→ 用下一節會講的 ¬p ∨ q，↔ 是「兩邊相等」。下面的 <code>eval()</code> 用遞迴算出一個公式在某一組變數值下的真值，<code>row</code> 的二進位每一位代表一個變數（1 = T）：</p>
+          <details class="code-fold">
+            <summary>看程式碼：eval()：遞迴求出公式的真值</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="eval">
+                <div class="code-head">eval()：遞迴求出公式的真值</div>
+                <pre class="code">int eval(int k, int row) {
+  Node *t = &amp;node[k];
+  switch (t-&gt;op) {
+  case VAR:   return (row &gt;&gt; (nvar - 1 - pos[t-&gt;var])) &amp; 1;
+  case CONST: return t-&gt;var;
+  case NOT:   return !eval(t-&gt;l, row);
+  case AND:   return eval(t-&gt;l, row) &amp;&amp; eval(t-&gt;r, row);
+  case XOR:   return eval(t-&gt;l, row) != eval(t-&gt;r, row);   /* 剛好一個為真 */
+  case OR:    return eval(t-&gt;l, row) || eval(t-&gt;r, row);
+  case IMP:   return !eval(t-&gt;l, row) || eval(t-&gt;r, row);  /* 前提假就為真 */
+  case IFF:   return eval(t-&gt;l, row) == eval(t-&gt;r, row);   /* 真值相同才為真 */
+  }
+  return 0;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="語法樹節點">
+                <div class="code-head">Node：公式存成語法樹</div>
+                <pre class="code">enum { VAR, CONST, NOT, AND, XOR, OR, IMP, IFF };
+enum { CONTRADICTION, CONTINGENT, TAUTOLOGY };
+
+typedef struct {
+  int op;          /* VAR、CONST、NOT、AND …… */
+  int var;         /* VAR：0..3 代表 p q r s；CONST：1 = T、0 = F */
+  int l, r;        /* 左右子樹在 node[] 裡的位置（NOT 只用 l） */
+} Node;
+
+#define MAXN 128
+Node node[MAXN];
+int nn;                        /* 已經用掉幾個節點 */
+int pos[4], nvar;              /* pos[字母] = 它是真值表的第幾個變數；nvar = 變數個數 */</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="implication">
+        <h2>蘊含：前提假就為真</h2>
+        <div class="panel prose">
+          <p>p → q 是整個命題邏輯最違反直覺的地方。p 叫 <span class="term">Hypothesis<small>（前提）</small></span>，q 叫 <span class="term">Conclusion<small>（結論）</small></span>。它的真值表只有一列是 F：<b>前提為真、結論為假</b>。很多人卡在「p 是假的，為什麼 p → q 還是真？」</p>
+          <p>把 p → q 想成一個<b>承諾</b>最好懂。學長說：「<b>如果你期中考 90 分以上，我就請你喝飲料。</b>」什麼情況下學長算是「說謊」？</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>你考 90 以上（p）</th><th>學長請客（q）</th><th>學長有沒有食言</th><th>p → q</th></tr></thead>
+              <tbody>
+                <tr><td>T</td><td>T</td><td>說到做到</td><td>T</td></tr>
+                <tr><td>T</td><td>F</td><td><b>食言了</b>，承諾被打破</td><td><b>F</b></td></tr>
+                <tr><td>F</td><td>T</td><td>你沒考到，他還是請了，大方而已，沒違反承諾</td><td>T</td></tr>
+                <tr><td>F</td><td>F</td><td>你沒考到，他也沒請，沒違反承諾</td><td>T</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>承諾只規定了「p 發生時要怎樣」，p 沒發生時完全沒有約束，所以不能說它是假的。在二值邏輯裡「不是假」就是真，這種前提為假而成立的情況叫 <span class="term">Vacuous Truth<small>（空虛的真）</small></span>。也因此 p → q 和 ¬p ∨ q 真值完全一樣：「要嘛前提不成立，要嘛結論成立」。這條 <b>蘊含消去</b> 是化簡時最常用的一條，等於是把 → 換成 ∨ 的公式。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 記法：p → q 只在「<b>T → F</b>」時為假。看到 → 就想 ¬p ∨ q。</p></div>
+          <h3>p → q 的各種說法</h3>
+          <p>翻譯句子是必考題，特別是 <b>only if</b>（只有……才……）和 <b>unless</b>（除非）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>說法</th><th>邏輯式</th><th>理解方式</th></tr></thead>
+              <tbody>
+                <tr><td>若 p 則 q；p implies q</td><td>p → q</td><td>標準形式</td></tr>
+                <tr><td>p 是 q 的<b>充分</b>條件</td><td>p → q</td><td>有 p 就足以保證 q</td></tr>
+                <tr><td>q 是 p 的<b>必要</b>條件</td><td>p → q</td><td>沒有 q 就不可能有 p</td></tr>
+                <tr><td>p <b>only if</b> q；只有 q 才 p</td><td>p → q</td><td>p 發生的前提是 q 必須成立</td></tr>
+                <tr><td>p <b>if</b> q；q 的話就 p</td><td><b>q → p</b></td><td>if 後面的才是前提</td></tr>
+                <tr><td>p unless q；除非 q，否則 p</td><td>¬q → p（≡ p ∨ q）</td><td>q 不成立時一定是 p</td></tr>
+                <tr><td>p if and only if q；p 若且唯若 q</td><td>p ↔ q</td><td>(p → q) ∧ (q → p)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>舉例：「<b>只有</b>繳了學費，<b>才</b>能選課」。令 p = 能選課、q = 繳了學費，「能選課」的必要條件是「繳學費」，所以是 p → q，不是 q → p：繳了學費不保證能選課（可能還有擋修），但能選課的人一定繳了學費。</p>
+        </div>
+      </section>
+
+      <section id="variants">
+        <h2>逆、否、逆否命題</h2>
+        <div class="panel prose">
+          <p>從 p → q 出發，把前後對調、或兩邊都加上否定，可以得到三個相關的條件句：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>名稱</th><th>形式</th><th>和 p → q 等價嗎</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Converse<small>（逆命題）</small></span></td><td>q → p</td><td>不等價</td></tr>
+                <tr><td><span class="term">Inverse<small>（否命題）</small></span></td><td>¬p → ¬q</td><td>不等價</td></tr>
+                <tr><td><span class="term">Contrapositive<small>（逆否命題）</small></span></td><td>¬q → ¬p</td><td><b>等價</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="propositional-logic-variants"></div>
+            <figcaption><b>圖 2</b>：四個條件句排成正方形。橫向是「前後對調」、直向是「兩邊否定」；綠色對角線上的兩個彼此等價：原命題 ≡ 逆否命題、逆命題 ≡ 否命題。</figcaption>
+          </figure>
+          <p><b>為什麼逆否等價？</b>用蘊含消去：¬q → ¬p ≡ ¬(¬q) ∨ ¬p ≡ q ∨ ¬p ≡ ¬p ∨ q ≡ p → q。直覺上也很合理：「下雨 → 地濕」等於「地沒濕 → 沒下雨」。逆命題卻不同：「地濕 → 下雨」不成立，地濕可能是有人灑水。用真值表看，p = T、q = F 那一列 p → q 為 F，但 q → p 為 T，這一列就是反例。</p>
+          <p>否命題 ¬p → ¬q 則是逆命題的逆否，所以它和逆命題等價，和原命題不等價。考試常把這四個混在一起出選擇題，記住「<b>對角線等價</b>」就不會錯。逆否等價也是「<span class="term">Proof by Contraposition<small>（逆否證法）</small></span>」的基礎：要證 p → q 很難時，可以改證 ¬q → ¬p。</p>
+        </div>
+      </section>
+
+      <section id="truth-tables">
+        <h2>運算優先順序與真值表</h2>
+        <div class="panel prose">
+          <p>p ∨ q ∧ ¬r → s 要怎麼讀？跟算術的「先乘除後加減」一樣，連接詞也有<b>優先順序</b>，越高的越先結合：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>優先順序</th><th>連接詞</th><th>備註</th></tr></thead>
+              <tbody>
+                <tr><td>1（最高）</td><td>¬</td><td>只作用在緊接著的那一項：¬p ∧ q 是 (¬p) ∧ q</td></tr>
+                <tr><td>2</td><td>∧</td><td></td></tr>
+                <tr><td>3</td><td>⊕</td><td>⊕ 的位置沒有統一規定，本頁跟 C 語言的 <code>&amp; ^ |</code> 一樣放在 ∧ 和 ∨ 之間</td></tr>
+                <tr><td>4</td><td>∨</td><td></td></tr>
+                <tr><td>5</td><td>→</td><td>連續的 → 從右邊結合：p → q → r 是 p → (q → r)</td></tr>
+                <tr><td>6（最低）</td><td>↔</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>¬ &gt; ∧ &gt; ∨ &gt; → &gt; ↔ 這個順序是大多數教材的共識；但 ⊕ 的位置和 → 的結合方向各家寫法不一，<b>考試作答時有疑慮就加括號</b>，看到題目沒括號時也要先確認題目的約定。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="propositional-logic-parse-tree"></div>
+            <figcaption><b>圖 3</b>：p ∨ q ∧ ¬r → s 的語法樹。優先順序越低的運算子越靠近根，最後才算；真值表的子式欄就是從葉子往根（第 1 步到第 4 步）一層一層算。</figcaption>
+          </figure>
+          <h3>怎麼畫真值表</h3>
+          <ol>
+            <li><b>列出變數</b>：n 個變數有 2<sup>n</sup> 列。習慣從全 T 排到全 F，最左邊的變數每 2<sup>n−1</sup> 列換一次，最右邊的每列換一次，就像二進位倒著數。</li>
+            <li><b>拆子式</b>：照語法樹由內往外，每個子式一欄，先算的放左邊。</li>
+            <li><b>逐欄計算</b>：每一欄只用到它左邊已經算好的欄，套那個連接詞的真值表。</li>
+            <li><b>看最後一欄</b>：整個公式的真值，用來判斷恆真、矛盾或可滿足。</li>
+          </ol>
+          <h3>例子：(p → q) ∧ ¬q → ¬p</h3>
+          <p>這個公式說「如果 p 推得出 q，而 q 不成立，那 p 也不成立」。先看結構：→ 優先順序最低，所以整句是 [(p → q) ∧ ¬q] → ¬p。子式由內往外依序是 p → q、¬q、(p → q) ∧ ¬q、¬p、整個公式：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>p</th><th>q</th><th>p → q</th><th>¬q</th><th>(p → q) ∧ ¬q</th><th>¬p</th><th>整個公式</th></tr></thead>
+              <tbody>
+                <tr><td>T</td><td>T</td><td>T</td><td>F</td><td>F</td><td>F</td><td>T（前提 F）</td></tr>
+                <tr><td>T</td><td>F</td><td>F</td><td>T</td><td>F</td><td>F</td><td>T（前提 F）</td></tr>
+                <tr><td>F</td><td>T</td><td>T</td><td>F</td><td>F</td><td>T</td><td>T（前提 F）</td></tr>
+                <tr><td>F</td><td>F</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T（T → T）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>最後一欄 4 列全是 T，所以它是恆真式，這就是推論規則裡的 <span class="term">Modus Tollens<small>（否定後件）</small></span>。注意前三列都是靠「前提為 F 所以蘊含為 T」成立的，真正要檢查的只有第 4 列：前提 (p → q) ∧ ¬q 為真時，結論 ¬p 也真。</p>
+          <p><b>真值表的代價</b>：每多一個變數，列數就翻倍。4 個變數 16 列還能手算，10 個變數就有 1024 列，30 個變數超過 10 億列。所以真值表適合變數少的題目，變數多時要改用下面的等價律化簡，或在考試中用「假設為假找矛盾」的方法（見練習題）。</p>
+          <p>下面的程式是一個完整的小型剖析器：用 <span class="term">Recursive Descent<small>（遞迴下降）</small></span>的方式，每一層優先順序寫一個函式，低優先的函式呼叫高優先的函式，所以高優先的運算子會先被組成子樹。</p>
+          <details class="code-fold">
+            <summary>看程式碼：剖析公式、印出子式、產生真值表</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="剖析器">
+                <div class="code-head">parse()：遞迴下降剖析器（一層優先順序一個函式）</div>
+                <pre class="code">void skip(void) { while (src[at] == ' ') at++; }
+
+int eat(const char *tok) {     /* 下一個符號是 tok 就吃掉它，回傳 1 */
+  skip();
+  int n = strlen(tok);
+  if (strncmp(src + at, tok, n) == 0) { at += n; return 1; }
+  return 0;
+}
+
+int fail(const char *msg) {
+  if (!err) { err = msg; errAt = at; }   /* 只記第一個錯誤 */
+  return -1;
+}
+
+int mk(int op, int var, int l, int r) {
+  if (nn &gt;= MAXN) return fail("公式太長");
+  node[nn] = (Node){ op, var, l, r };
+  return nn++;
+}
+
+int parseIff(void);
+
+int parseAtom(void) {          /* 變數、常數、括號 */
+  skip();
+  char c = src[at];
+  if (c &gt;= 'p' &amp;&amp; c &lt;= 's') { at++; return mk(VAR, c - 'p', -1, -1); }
+  if (c == 'T' || c == 'F') { at++; return mk(CONST, c == 'T', -1, -1); }
+  if (c == '(') {
+    at++;
+    int k = parseIff();
+    if (k &lt; 0) return -1;
+    if (!eat(")")) return fail("少了右括號 )");
+    return k;
+  }
+  if (c == '\0') return fail("公式還沒結束，這裡需要一個變數或左括號");
+  return fail("這裡需要變數 p q r s、常數 T F 或左括號");
+}
+
+int parseNot(void) {           /* ~ 只作用在緊接著的那一項 */
+  if (eat("~")) {
+    int k = parseNot();
+    return k &lt; 0 ? -1 : mk(NOT, 0, k, -1);
+  }
+  return parseAtom();
+}
+
+int parseAnd(void) {
+  int k = parseNot();
+  while (k &gt;= 0 &amp;&amp; eat("&amp;")) { int r = parseNot(); k = r &lt; 0 ? -1 : mk(AND, 0, k, r); }
+  return k;
+}
+
+int parseXor(void) {
+  int k = parseAnd();
+  while (k &gt;= 0 &amp;&amp; eat("^")) { int r = parseAnd(); k = r &lt; 0 ? -1 : mk(XOR, 0, k, r); }
+  return k;
+}
+
+int parseOr(void) {
+  int k = parseXor();
+  while (k &gt;= 0 &amp;&amp; eat("|")) { int r = parseXor(); k = r &lt; 0 ? -1 : mk(OR, 0, k, r); }
+  return k;
+}
+
+int parseImp(void) {           /* p -&gt; q -&gt; r 讀成 p -&gt; (q -&gt; r) */
+  int k = parseOr();
+  if (k &gt;= 0 &amp;&amp; eat("-&gt;")) { int r = parseImp(); k = r &lt; 0 ? -1 : mk(IMP, 0, k, r); }
+  return k;
+}
+
+int parseIff(void) {
+  int k = parseImp();
+  while (k &gt;= 0 &amp;&amp; eat("&lt;-&gt;")) { int r = parseImp(); k = r &lt; 0 ? -1 : mk(IFF, 0, k, r); }
+  return k;
+}
+
+int parse(const char *s) {     /* 成功回傳根節點，失敗回傳 -1（err、errAt 說明原因） */
+  src = s; at = 0; err = NULL;
+  int k = parseIff();
+  skip();
+  if (k &gt;= 0 &amp;&amp; src[at] != '\0')
+    return fail(src[at] == ')' ? "多了一個右括號 )" : "這裡多出了無法辨識的符號");
+  return k;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="印出子式">
+                <div class="code-head">show()：依優先順序只加必要的括號</div>
+                <pre class="code">int prec(int op) {
+  switch (op) {
+  case IFF: return 1;
+  case IMP: return 2;
+  case OR:  return 3;
+  case XOR: return 4;
+  case AND: return 5;
+  case NOT: return 6;
+  }
+  return 7;                                     /* 變數、常數 */
+}
+
+void show(int k, char *out) {                   /* 把子樹 k 接在 out 後面 */
+  static const char *sym[] = { "", "", "~", " &amp; ", " ^ ", " | ", " -&gt; ", " &lt;-&gt; " };
+  Node *t = &amp;node[k];
+  if (t-&gt;op == VAR) { char v[2] = { (char)('p' + t-&gt;var), '\0' }; strcat(out, v); return; }
+  if (t-&gt;op == CONST) { strcat(out, t-&gt;var ? "T" : "F"); return; }
+  int p = prec(t-&gt;op);
+  if (t-&gt;op == NOT) {
+    int paren = prec(node[t-&gt;l].op) &lt; p;
+    strcat(out, "~");
+    if (paren) strcat(out, "(");
+    show(t-&gt;l, out);
+    if (paren) strcat(out, ")");
+    return;
+  }
+  int pl = prec(node[t-&gt;l].op), pr = prec(node[t-&gt;r].op);
+  int lp = pl &lt; p || (pl == p &amp;&amp; t-&gt;op == IMP);  /* -&gt; 從右結合：左邊同級一定要括號 */
+  int rp = pr &lt;= p;                              /* 右邊同級也加括號，讀起來比較清楚 */
+  if (lp) strcat(out, "(");
+  show(t-&gt;l, out);
+  if (lp) strcat(out, ")");
+  strcat(out, sym[t-&gt;op]);
+  if (rp) strcat(out, "(");
+  show(t-&gt;r, out);
+  if (rp) strcat(out, ")");
+}</pre>
+              </div>
+              <div class="code-block" data-tab="真值表">
+                <div class="code-head">addCols() 與 truthTable()：依計算順序列出子式欄</div>
+                <pre class="code">/* 依「先算子式、再算整體」的順序列出要算的欄位（後序，重複的子式只列一次） */
+int cols[MAXN], ncol;
+char colText[MAXN][160];
+
+void addCols(int k) {
+  if (node[k].op == VAR || node[k].op == CONST) return;
+  addCols(node[k].l);
+  if (node[k].r &gt;= 0) addCols(node[k].r);
+  char buf[160] = "";
+  show(k, buf);
+  for (int i = 0; i &lt; ncol; i++) if (strcmp(colText[i], buf) == 0) return;
+  strcpy(colText[ncol], buf);
+  cols[ncol++] = k;
+}
+
+void truthTable(int root) {
+  ncol = 0;
+  addCols(root);
+  for (int v = 0; v &lt; 4; v++) if (pos[v] &gt;= 0) printf("%c ", 'p' + v);
+  for (int i = 0; i &lt; ncol; i++) printf("| %s ", colText[i]);
+  printf("\n");
+  for (int row = (1 &lt;&lt; nvar) - 1; row &gt;= 0; row--) {
+    for (int i = 0; i &lt; nvar; i++) printf("%c ", (row &gt;&gt; (nvar - 1 - i)) &amp; 1 ? 'T' : 'F');
+    for (int i = 0; i &lt; ncol; i++) {
+      int w = strlen(colText[i]);
+      printf("| %*c ", w, eval(cols[i], row) ? 'T' : 'F');
+    }
+    printf("\n");
+  }
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="classification">
+        <h2>恆真式、矛盾式與可滿足</h2>
+        <div class="panel prose">
+          <p>看真值表的最後一欄，可以把公式分成三類：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>分類</th><th>最後一欄</th><th>例子</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Tautology<small>（恆真式）</small></span></td><td>每一列都是 T</td><td>p ∨ ¬p、(p ∧ q) → p</td></tr>
+                <tr><td><span class="term">Contradiction<small>（矛盾式）</small></span></td><td>每一列都是 F</td><td>p ∧ ¬p、p ⊕ p</td></tr>
+                <tr><td><span class="term">Contingency<small>（可能式）</small></span></td><td>有 T 也有 F</td><td>p → q（4 列中 3 列為真）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>另一個常用的詞是 <span class="term">Satisfiable<small>（可滿足）</small></span>：<b>至少有一列為 T</b>，也就是存在一組變數值讓公式成立。所以「可滿足」包含恆真式和可能式，只有矛盾式是不可滿足的。三者的關係可以用否定互相轉換：</p>
+          <ul>
+            <li>A 是恆真式 ⇔ ¬A 是矛盾式（每一列都反過來）。</li>
+            <li>A 可滿足 ⇔ A 不是矛盾式 ⇔ ¬A 不是恆真式。</li>
+            <li>A 是可能式 ⇔ ¬A 也是可能式。</li>
+          </ul>
+          <p>程式只要數最後一欄有幾個 T：等於 2<sup>n</sup> 是恆真、等於 0 是矛盾，其他是可能式。這需要把 2<sup>n</sup> 列全部算完，每列求值和公式長度 m 成正比，總共 <code>O(2<sup>n</sup> · m)</code>。</p>
+          <details class="code-fold">
+            <summary>看程式碼：classify()：數有幾列為真</summary>
+            <div class="code-block">
+              <div class="code-head">classify()：數有幾列為真</div>
+              <pre class="code">int classify(int root) {
+  int t = 0, rows = 1 &lt;&lt; nvar;
+  for (int row = rows - 1; row &gt;= 0; row--)     /* 由全 T 到全 F，共 2^n 列 */
+    t += eval(root, row);                       /* 數有幾列為真 */
+  if (t == rows) return TAUTOLOGY;              /* 每一列都真 */
+  if (t == 0) return CONTRADICTION;             /* 每一列都假 */
+  return CONTINGENT;                            /* 有真有假：可滿足但不是恆真 */
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>在第一格輸入公式 A，按「填真值表」：動畫會先決定列數，然後每一列先代入變數值（橘色），再照優先順序一欄一欄算子式（藍色是正在算的子式和它用到的欄，紫色是剛算出的值），最後判斷恆真、矛盾或可滿足。第二格輸入公式 B 時，會多一欄「相同？」逐列比較兩式，紅色的列就是反例。右側程式碼會跟著亮起 <code>eval()</code> 裡對應的那一行。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>要寫</th><th>輸入</th><th>要寫</th><th>輸入</th></tr></thead>
+              <tbody>
+                <tr><td>變數</td><td><code>p q r s</code></td><td>常數真／假</td><td><code>T F</code></td></tr>
+                <tr><td>¬</td><td><code>~</code> 或 <code>!</code></td><td>∧</td><td><code>&amp;</code></td></tr>
+                <tr><td>∨</td><td><code>|</code></td><td>⊕</td><td><code>^</code></td></tr>
+                <tr><td>→</td><td><code>-&gt;</code></td><td>↔</td><td><code>&lt;-&gt;</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>例如 <code>~p | q</code>、<code>p -&gt; (q &amp; r)</code>、<code>p &lt;-&gt; q</code>。輸入有錯時會指出是第幾個字元、原因是什麼（例如少了右括號、運算子後面沒有東西）。表格比較大時，前幾列逐欄播放，後面一次填一列。</p>
+        </div>
+        <div class="viz" data-viz="truth-table"></div>
+      </section>
+
+      <section id="equivalence">
+        <h2>邏輯等價與常用等價律</h2>
+        <div class="panel prose">
+          <p>兩個公式 A、B 如果在<b>每一組</b>變數值下真值都相同，就說它們 <span class="term">Logically Equivalent<small>（邏輯等價）</small></span>，記作 A ≡ B。換個角度：A ≡ B ⇔ A ↔ B 是恆真式。判斷方法有兩種：畫出兩者的真值表逐列比較（只要有一列不同就不等價，那一列就是反例），或用已知的等價律一步步改寫。</p>
+          <p>注意 ≡ 不是連接詞，它是在描述「兩個公式之間的關係」；↔ 才是公式裡的連接詞。p ↔ q 本身可能真可能假，但 p → q ≡ ¬p ∨ q 是一個永遠成立的事實。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>名稱</th><th>等價式</th></tr></thead>
+              <tbody>
+                <tr><td>恆等律 Identity</td><td>p ∧ T ≡ p　　p ∨ F ≡ p</td></tr>
+                <tr><td>支配律 Domination</td><td>p ∨ T ≡ T　　p ∧ F ≡ F</td></tr>
+                <tr><td>冪等律 Idempotent</td><td>p ∨ p ≡ p　　p ∧ p ≡ p</td></tr>
+                <tr><td>雙重否定 Double Negation</td><td>¬(¬p) ≡ p</td></tr>
+                <tr><td>交換律、結合律</td><td>p ∧ q ≡ q ∧ p；(p ∨ q) ∨ r ≡ p ∨ (q ∨ r)（∧、∨ 都成立）</td></tr>
+                <tr><td>分配律 Distributive</td><td>p ∧ (q ∨ r) ≡ (p ∧ q) ∨ (p ∧ r)<br>p ∨ (q ∧ r) ≡ (p ∨ q) ∧ (p ∨ r)</td></tr>
+                <tr><td><span class="term">De Morgan's Laws<small>（De Morgan 定律）</small></span></td><td>¬(p ∧ q) ≡ ¬p ∨ ¬q<br>¬(p ∨ q) ≡ ¬p ∧ ¬q</td></tr>
+                <tr><td>吸收律 Absorption</td><td>p ∨ (p ∧ q) ≡ p　　p ∧ (p ∨ q) ≡ p</td></tr>
+                <tr><td>否定律 Negation</td><td>p ∨ ¬p ≡ T　　p ∧ ¬p ≡ F</td></tr>
+                <tr><td>蘊含消去</td><td>p → q ≡ ¬p ∨ q</td></tr>
+                <tr><td>逆否</td><td>p → q ≡ ¬q → ¬p</td></tr>
+                <tr><td>雙條件</td><td>p ↔ q ≡ (p → q) ∧ (q → p) ≡ (p ∧ q) ∨ (¬p ∧ ¬q)</td></tr>
+                <tr><td>互斥或</td><td>p ⊕ q ≡ ¬(p ↔ q) ≡ (p ∧ ¬q) ∨ (¬p ∧ q)</td></tr>
+                <tr><td>輸出律 Exportation</td><td>(p ∧ q) → r ≡ p → (q → r)</td></tr>
+                <tr><td>蘊含的合併</td><td>(p → r) ∧ (q → r) ≡ (p ∨ q) → r<br>(p → q) ∧ (p → r) ≡ p → (q ∧ r)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>和代數不同的是，∨ 對 ∧ <b>也可以分配</b>（第二條分配律），這在一般數的加法和乘法是不成立的：a + bc ≠ (a + b)(a + c)。De Morgan 定律口訣是「<b>否定進括號，且或互換</b>」，也就是把 ¬ 分配進去時 ∧、∨ 要對調。</p>
+          <p><b>對偶</b>：把一條只含 ¬、∧、∨ 的等價式中所有 ∧ 和 ∨ 互換、T 和 F 互換，得到的式子仍然成立。上表大部分的等價律都是兩兩成對，就是這個原因。</p>
+          <details class="code-fold">
+            <summary>看程式碼：equivalent()：逐列比較找反例</summary>
+            <div class="code-block">
+              <div class="code-head">equivalent()：逐列比較找反例</div>
+              <pre class="code">int equivalent(int a, int b) {                  /* 回傳反例那一列；-1 表示等價 */
+  for (int row = (1 &lt;&lt; nvar) - 1; row &gt;= 0; row--)
+    if (eval(a, row) != eval(b, row)) return row;   /* 這一列兩式真值不同 */
+  return -1;                                    /* 每一列都相同：a ≡ b */
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="simplify">
+        <h2>用等價律化簡與證明</h2>
+        <div class="panel prose">
+          <p>真值表很可靠但很長；等價律則像代數化簡，一步一步改寫，每一步都要能說出用了哪一條律。常見的套路是：<b>先用蘊含消去把 → 、↔ 換掉</b>，<b>再用 De Morgan 把 ¬ 推到變數旁邊</b>，最後用分配律、吸收律、否定律收尾。</p>
+          <h3>例 1：化簡 ¬(p → q) ∨ (p ∧ q)</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>式子</th><th>理由</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>¬(p → q) ∨ (p ∧ q)</td><td>原式</td></tr>
+                <tr><td>1</td><td>¬(¬p ∨ q) ∨ (p ∧ q)</td><td>蘊含消去</td></tr>
+                <tr><td>2</td><td>(¬¬p ∧ ¬q) ∨ (p ∧ q)</td><td>De Morgan</td></tr>
+                <tr><td>3</td><td>(p ∧ ¬q) ∨ (p ∧ q)</td><td>雙重否定</td></tr>
+                <tr><td>4</td><td>p ∧ (¬q ∨ q)</td><td>分配律（反向，提出 p）</td></tr>
+                <tr><td>5</td><td>p ∧ T</td><td>否定律</td></tr>
+                <tr><td>6</td><td>p</td><td>恆等律</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>所以 ¬(p → q) ∨ (p ∧ q) ≡ p：看起來有兩個變數，其實結果和 q 完全無關。直覺上也通：第一項是「p 真且 q 假」、第二項是「p 真且 q 真」，合起來就是「p 真」。</p>
+          <h3>例 2：證明 (p → r) ∧ (q → r) ≡ (p ∨ q) → r</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>式子</th><th>理由</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>(p → r) ∧ (q → r)</td><td>左式</td></tr>
+                <tr><td>1</td><td>(¬p ∨ r) ∧ (¬q ∨ r)</td><td>蘊含消去（兩次）</td></tr>
+                <tr><td>2</td><td>(¬p ∧ ¬q) ∨ r</td><td>分配律（反向，∨ 對 ∧ 的版本提出 r）</td></tr>
+                <tr><td>3</td><td>¬(p ∨ q) ∨ r</td><td>De Morgan</td></tr>
+                <tr><td>4</td><td>(p ∨ q) → r</td><td>蘊含消去（反向）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>這條的意思是「p 會導致 r、q 也會導致 r」等於「p 或 q 任一個發生就會導致 r」，是分情況證明的依據。小心不要和 (p → q) ∨ (p → r) 搞混，後者等價於 p → (q ∨ r)。</p>
+          <h3>證明恆真式</h3>
+          <p>要證 A 是恆真式，可以把 A 化簡到 T。例如 [p ∧ (p → q)] → q：先換成 ¬[p ∧ (¬p ∨ q)] ∨ q，分配律得 p ∧ (¬p ∨ q) ≡ (p ∧ ¬p) ∨ (p ∧ q) ≡ p ∧ q，所以整式 ≡ ¬(p ∧ q) ∨ q ≡ ¬p ∨ ¬q ∨ q ≡ ¬p ∨ T ≡ T。另一個更快的方法是<b>假設它為假找矛盾</b>：→ 為假只有「前提 T、結論 F」一種可能，所以 q = F，且 p ∧ (p → q) = T，即 p = T 且 p → q = T；但 p = T、q = F 時 p → q = F，矛盾，所以它不可能為假。</p>
+        </div>
+      </section>
+
+      <section id="normal-forms">
+        <h2>DNF 與 CNF</h2>
+        <div class="panel prose">
+          <p>任何公式都能改寫成兩種標準形式，方便比較、化簡和交給電腦處理。先定義 <b>literal</b>（文字）：一個變數或它的否定，例如 p、¬q。</p>
+          <ul>
+            <li><span class="term">Disjunctive Normal Form<small>（析取範式，DNF）</small></span>：好幾個「literal 的 ∧」用 ∨ 接起來，例如 (p ∧ ¬q) ∨ (¬p ∧ q ∧ r)。</li>
+            <li><span class="term">Conjunctive Normal Form<small>（合取範式，CNF）</small></span>：好幾個「literal 的 ∨」用 ∧ 接起來，例如 (p ∨ q) ∧ (¬p ∨ r)。</li>
+          </ul>
+          <p><b>從真值表直接寫出來</b>：DNF 看最後一欄為 <b>T</b> 的列，每一列寫一個 ∧ 項（變數為 T 寫原樣、F 寫否定），再全部用 ∨ 接起來；CNF 看為 <b>F</b> 的列，每一列寫一個 ∨ 項（變數為 F 寫原樣、T 寫否定，讓那一列的這一項變成 F），再全部用 ∧ 接起來。以 p ↔ q 為例：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>p</th><th>q</th><th>p ↔ q</th><th>DNF 用的項</th><th>CNF 用的項</th></tr></thead>
+              <tbody>
+                <tr><td>T</td><td>T</td><td>T</td><td>p ∧ q</td><td></td></tr>
+                <tr><td>T</td><td>F</td><td>F</td><td></td><td>¬p ∨ q</td></tr>
+                <tr><td>F</td><td>T</td><td>F</td><td></td><td>p ∨ ¬q</td></tr>
+                <tr><td>F</td><td>F</td><td>T</td><td>¬p ∧ ¬q</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>得到 DNF：(p ∧ q) ∨ (¬p ∧ ¬q)，CNF：(¬p ∨ q) ∧ (p ∨ ¬q)，兩者都和 p ↔ q 等價（程式已逐列驗證）。這個構造方法也證明了一件重要的事：只用 ¬、∧、∨ 就能表示<b>任何</b>真值表，這叫 <span class="term">Functionally Complete<small>（功能完備）</small></span>。再用 De Morgan 把 ∨ 換成 ¬ 和 ∧，可知 {¬, ∧} 本身就完備；單獨一個 NAND（¬(p ∧ q)）也完備，所以晶片可以只用 NAND 閘做出所有電路。</p>
+          <p>n 個變數的真值表有 2<sup>n</sup> 列，每列可以自由填 T 或 F，所以互不等價的公式總共有 2<sup>2<sup>n</sup></sup> 種：2 個變數有 2<sup>4</sup> = 16 種，3 個變數就有 256 種。DNF、CNF 最差也要 2<sup>n</sup> 項，更精簡的化簡方法（卡諾圖）在布林代數那一章。</p>
+        </div>
+      </section>
+
+      <section id="applications">
+        <h2>應用與比較</h2>
+        <div class="panel prose">
+          <ul>
+            <li><b>邏輯電路</b>：每個連接詞就是一個邏輯閘，T / F 對應高 / 低電位。化簡公式等於減少閘的數量，電路更便宜、更快。</li>
+            <li><b>程式條件與搜尋條件</b>：<code>if (!(a &amp;&amp; b))</code> 可以用 De Morgan 改成 <code>if (!a || !b)</code>；資料庫查詢 <code>WHERE NOT (age &gt;= 18 AND member = 1)</code>、搜尋引擎的 AND / OR / NOT 也都是命題邏輯。C 的 <code>&amp;&amp;</code>、<code>||</code> 還有「短路」：左邊已能決定結果就不算右邊，和本頁 <code>eval()</code> 的寫法一樣。</li>
+            <li><b>SAT 問題</b>：給一個 CNF 公式，問它是否可滿足。這是第一個被證明為 NP-complete 的問題（Cook–Levin 定理），目前沒有已知的多項式時間演算法，真值表法要 2<sup>n</sup> 列。但實務上的 SAT solver 用大量剪枝技巧，能處理上百萬個變數的工業問題，用在硬體驗證、排程、軟體測試。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="propositional-logic-circuit"></div>
+            <figcaption><b>圖 4</b>：(p ∧ ¬q) ∨ r 對應的邏輯電路。訊號從左邊的輸入 p、q、r 流向右邊；每個閘下方寫的是它輸出的子式，順序和真值表的子式欄一樣由內往外。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較</th><th>真值表</th><th>等價律化簡</th><th>假設為假找矛盾</th></tr></thead>
+              <tbody>
+                <tr><td>適用</td><td>變數少（≤ 4）、要列出所有情況</td><td>證明兩式等價、化簡</td><td>證明恆真式（尤其是 → 結構）</td></tr>
+                <tr><td>工作量</td><td>2<sup>n</sup> 列，變數多時爆炸</td><td>步數不固定，要熟練等價律</td><td>通常很快，但要分情況討論</td></tr>
+                <tr><td>出錯風險</td><td>低，但容易抄錯欄</td><td>每一步都要寫理由，容易跳步出錯</td><td>漏掉情況</td></tr>
+                <tr><td>能找反例嗎</td><td>能，不同的那一列就是</td><td>不行，只能證明等價</td><td>找不到矛盾時，得到的就是反例</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>逆、否、逆否命題</td><td>很常考</td><td>寫成 p → q 的形式，對角線等價：原 ≡ 逆否、逆 ≡ 否</td><td><a class="q-link" href="#q-dm-0008">例題</a></td></tr>
+                <tr><td>句子翻譯（only if、unless、充分必要）</td><td>很常考</td><td>先找出誰是前提：only if 後面是結論、if 後面是前提</td><td><a class="q-link" href="#q-dm-0009">例題</a></td></tr>
+                <tr><td>判斷恆真、矛盾、可滿足</td><td>很常考</td><td>變數少用真值表；有 → 時假設為假找矛盾</td><td><a class="q-link" href="#q-dm-0010">例題</a> <a class="q-link" href="#q-dm-0013">例題</a></td></tr>
+                <tr><td>優先順序與真值表計算</td><td>常考</td><td>先加括號畫語法樹，再由內往外逐欄算</td><td><a class="q-link" href="#q-dm-0011">例題</a></td></tr>
+                <tr><td>用等價律化簡、證明等價</td><td>常考</td><td>蘊含消去 → De Morgan 推 ¬ → 分配、吸收、否定律</td><td><a class="q-link" href="#q-dm-0012">例題</a> <a class="q-link" href="#q-dm-0015">例題</a></td></tr>
+                <tr><td>布林函數計數</td><td>偶爾</td><td>n 個變數 2<sup>n</sup> 列，每列 T / F 兩種：2<sup>2<sup>n</sup></sup> 種函數；有限制就只數自由的列</td><td><a class="q-link" href="#q-dm-0014">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> p 為假時，p → q 也為假</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 前提為假時蘊含一律為真；p → q 只在 p 真 q 假時為假</span> <a class="q-link" href="#q-dm-0010">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> p → q 和它的逆命題 q → p 等價</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 和 p → q 等價的是逆否命題 ¬q → ¬p；逆命題和否命題彼此等價</span> <a class="q-link" href="#q-dm-0008">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 「p only if q」翻成 q → p</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> only if 引出的是必要條件，是 p → q；「p if q」才是 q → p</span> <a class="q-link" href="#q-dm-0009">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> ¬(p ∧ q) ≡ ¬p ∧ ¬q</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> De Morgan 要把 ∧ 換成 ∨：¬(p ∧ q) ≡ ¬p ∨ ¬q</span> <a class="q-link" href="#q-dm-0012">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> → 有結合律，(p → q) → r ≡ p → (q → r)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> → 沒有結合律；p → (q → r) ≡ (p ∧ q) → r，和 (p → q) → r 不等價</span> <a class="q-link" href="#q-dm-0015">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> p ∨ q ∧ r 從左算到右，讀成 (p ∨ q) ∧ r</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> ∧ 比 ∨ 優先，是 p ∨ (q ∧ r)；→ 的優先順序最低</span> <a class="q-link" href="#q-dm-0011">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 可滿足就是恆真</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 可滿足只要至少一列為真；恆真要每一列都真</span> <a class="q-link" href="#q-dm-0014">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="propositional-logic"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-21 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz-core.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz/discrete-math/propositional-logic.js?v=7f68026e"></script>
+</body>
+</html>

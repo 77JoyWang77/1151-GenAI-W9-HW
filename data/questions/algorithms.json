@@ -2137,6 +2137,130 @@
       ],
       "answer": "(B)(C)(D)",
       "explanation": "<ul><li>P：(3) Bellman-Ford 偵測負環；(4) 權重全取負號後找負環；(6) 從每個點 BFS 求最短環（girth）；(8) 先求 max flow 再找 min cut；(9) 區間圖最大獨立集 = activity selection 的 greedy；(10) 2-SAT 用 implication graph 的 SCC，線性時間。共 x = 6。</li><li>NP-hard：(1) 最長簡單路徑（含 Hamiltonian path）；(2) 有負環時的最短<b>簡單</b>路徑（權重取負就是最長路徑）；(5) 最大環（含 Hamiltonian cycle）；(7) 最大割。共 y = 4。</li><li>兩者都不是：z = 0。</li></ul><p>代入：(A) 6+4+0 = 10 ≠ 11；(B) 4+0 = 4 對；(C) 6+8 = 14 對；(D) 12+0 = 12 對；(E) 10 ≠ 9。</p>"
+    },
+    {
+      "id": "al-0091",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某分治演算法把大小 n 的問題分成 4 個大小 n/2 的子問題，分割與合併共花 Θ(n)。它的時間複雜度是？",
+      "choices": [
+        "(A) Θ(n)",
+        "(B) Θ(n lg n)",
+        "(C) Θ(n²)",
+        "(D) Θ(n² lg n)"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>遞迴式是 T(n) = 4T(n/2) + n，a = 4、b = 2、f(n) = n。臨界指數 e = log₂4 = 2，葉子總共 n² 片。</p><p>f(n) = n = O(n<sup>2 − 1</sup>)，比 n² 小了一個多項式倍（ε = 1），是 <b>case 1</b>：葉子主導，T(n) = Θ(n²)。遞迴樹上每層成本是上一層的 a/b<sup>k</sup> = 4/2 = 2 倍，越往下越大。（已用程式驗證：T(n)/n² 收斂到 2。）</p><p>常見錯誤是看到 f(n) = n 就答 (A) 或 (B)：主定理要比的是 f(n) 和 n<sup>log<sub>b</sub> a</sup>，不是只看 f(n)。另一個錯誤是把「分成 4 個」和「大小除以 2」搞混；a 和 b 分別是子問題個數與縮小倍數，題目刻意讓它們不同。</p>"
+    },
+    {
+      "id": "al-0092",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "T(n) = 9T(n/3) + n²。(1) log<sub>b</sub> a = ＿＿；(2) 遞迴樹第 i 層的總成本 = ＿＿；(3) 落在哪個 case？T(n) = ＿＿。",
+      "answer": "(1) 2；(2) n²；(3) case 2，Θ(n² lg n)",
+      "explanation": "<p>(1) a = 9、b = 3，log₃9 = 2，葉子有 n² 片。</p><p>(2) 第 i 層有 9<sup>i</sup> 個節點，每個大小 n/3<sup>i</sup>，成本 (n/3<sup>i</sup>)² = n²/9<sup>i</sup>，相乘得 9<sup>i</sup> · n²/9<sup>i</sup> = <b>n²</b>，每層都一樣大。例如 n = 81 時，四層內部節點各是 6561 = 81²，葉子層 9⁴ = 6561 也一樣。</p><p>(3) f(n) = n² = Θ(n<sup>log₃9</sup>)，是 <b>case 2</b>。每層 n²、共 log₃ n + 1 層，所以 T(n) = Θ(n² lg n)。（已用程式驗證：T(n)/(n² lg n) 穩定在 0.63 附近，約等於 1/lg 3，因為層數是 log₃ n = lg n / lg 3。）</p><p>常見錯誤：case 2 寫成 Θ(n²)，忘了乘上層數 lg n。</p>"
+    },
+    {
+      "id": "al-0093",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "用主定理求 T(n) = 3T(n/4) + n lg n，並寫出正則條件的驗證過程（要寫出 c 的值）。",
+      "answer": "case 3，c = 3/4，T(n) = Θ(n lg n)",
+      "explanation": "<p>a = 3、b = 4，e = log₄3 ≈ 0.792，葉子約 n<sup>0.792</sup> 片。</p><p>f(n) = n lg n ≥ n = n<sup>0.792 + 0.208</sup>，所以取 ε = 0.2 就有 f(n) = Ω(n<sup>e + ε</sup>)，f 比葉子大一個多項式倍，往 case 3 走。</p><p>正則條件：a·f(n/b) = 3 · (n/4) · lg(n/4) = (3/4) · n · (lg n − 2) ≤ (3/4) · n lg n = c · f(n)，<b>c = 3/4 &lt; 1</b>，對所有 n ≥ 4 成立。也就是遞迴樹每往下一層，總成本至少縮成 3/4，是遞減的等比級數。</p><p>所以 T(n) = Θ(f(n)) = <b>Θ(n lg n)</b>。（已用程式驗證：T(n)/(n lg n) 隨 n 增大往 1/(1 − 3/4) = 4 收斂，n = 4⁶⁴ 時約 3.81。）</p><p>常見錯誤：只說「n lg n 比 n<sup>0.792</sup> 大」就下結論，沒有寫出 ε 和 c；考試要求驗證時這兩個都要寫。</p>"
+    },
+    {
+      "id": "al-0094",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列哪一個遞迴式<b>可以</b>直接用主定理（三種標準情況）求解？",
+      "choices": [
+        "(A) T(n) = 2T(n/2) + n / lg n",
+        "(B) T(n) = T(n/3) + T(2n/3) + n",
+        "(C) T(n) = n · T(n/2) + n",
+        "(D) T(n) = 16T(n/4) + n²"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>逐一檢查主定理的前提（a ≥ 1、b &gt; 1 是常數，子問題大小相同，f 不落在空隙）：</p><ul><li>(A) e = 1，n/lg n 比 n 小但只小 lg n 倍，不是 O(n<sup>1−ε</sup>)，也不是 Θ(n)，落在 case 1 和 case 2 之間的空隙。實際答案 Θ(n lg lg n)。</li><li>(B) 兩個子問題大小不同（n/3 和 2n/3），沒有單一的 b；用遞迴樹可得 Θ(n lg n)。</li><li>(C) a = n 不是常數。</li><li>(D) a = 16、b = 4，log₄16 = 2，f = n² = Θ(n²)，<b>case 2</b>，T(n) = Θ(n² lg n)。（已用程式驗證：T(n)/(n² lg n) 收斂到 1/2，因為層數 log₄ n = (lg n)/2。）</li></ul>"
+    },
+    {
+      "id": "al-0095",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "求 T(n) = 2T(√n) + lg n 的漸近解。（提示：主定理不能直接用，先做變數代換。）",
+      "answer": "T(n) = Θ(lg n · lg lg n)",
+      "explanation": "<p>子問題大小是 √n，不是 n/b，不能直接套。令 m = lg n，也就是 n = 2<sup>m</sup>，則 √n = 2<sup>m/2</sup>：</p><pre class=\"formula\">T(2^m) = 2T(2^(m/2)) + m</pre><p>定義 S(m) = T(2<sup>m</sup>)，就得到 S(m) = 2S(m/2) + m。這是 a = 2、b = 2、f = m 的遞迴式，log₂2 = 1，f = Θ(m¹)，case 2，S(m) = Θ(m lg m)。</p><p>換回 n：T(n) = S(lg n) = <b>Θ(lg n · lg lg n)</b>。（已用程式驗證：n = 2<sup>2<sup>j</sup></sup> 時 T(n)/(lg n · lg lg n) 從 1.25 降到 1.125，往 1 收斂。）</p><p>常見錯誤：代換後忘記把 S(m) 換回 T(n)，答成 Θ(m lg m) 或 Θ(n lg n)。</p>"
+    },
+    {
+      "id": "al-0096",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "T(n) = 2T(n/2) + n / lg n（n 是 2 的次方，T(1) = 1）。(1) 說明為什麼不能用主定理；(2) 用遞迴樹求出 T(n) 的緊漸近界。",
+      "answer": "(1) n/lg n 不是 O(n<sup>1−ε</sup>) 也不是 Θ(n)；(2) Θ(n lg lg n)",
+      "explanation": "<p>(1) a = b = 2，e = 1。case 1 需要 f(n) = O(n<sup>1−ε</sup>)，也就是 (n/lg n) / n<sup>1−ε</sup> = n<sup>ε</sup>/lg n 有界；但對任何 ε &gt; 0，n<sup>ε</sup>/lg n → ∞，不成立。case 2 需要 f = Θ(n)，但 (n/lg n)/n = 1/lg n → 0，也不成立。case 3 更不可能（f 比 n 小）。所以 f 落在 case 1 與 case 2 之間的空隙。</p><p>(2) 令 L = lg n。第 i 層（0 ≤ i ≤ L − 1）有 2<sup>i</sup> 個大小 n/2<sup>i</sup> 的節點，總成本</p><pre class=\"formula\">2^i · (n/2^i) / lg(n/2^i) = n / (L − i)</pre><p>令 j = L − i，j 從 L 跑到 1：內部節點總和 = n · (1 + 1/2 + … + 1/L) = n · H<sub>L</sub>。葉子層有 n 片，成本 n。調和數 H<sub>L</sub> = ln L + O(1) = Θ(lg L)，所以</p><pre class=\"formula\">T(n) = n · H_(lg n) + n = Θ(n lg lg n)</pre><p>（已用程式驗證：T(n)/(n lg lg n) 在 n = 2⁸、2¹⁶、2³²、2⁶⁴ 時分別是 1.24、1.10、1.01、0.96，逐漸穩定，趨近 ln 2 ≈ 0.69，因為 H<sub>L</sub> ≈ ln L = ln 2 · lg L。）</p><p>常見錯誤：看到 f 比 n 小就套 case 1 答 Θ(n)；這比真正的答案少了 lg lg n 倍。</p>"
+    },
+    {
+      "id": "al-0097",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "演算法 X 的執行時間 T<sub>X</sub>(n) = 5T<sub>X</sub>(n/2) + n。演算法 Y 的執行時間 T<sub>Y</sub>(n) = a · T<sub>Y</sub>(n/3) + n，a 是正整數。要讓 Y 在漸近意義上<b>比 X 快</b>（T<sub>Y</sub> = o(T<sub>X</sub>)），a 最大可以是多少？",
+      "answer": "a = 12",
+      "explanation": "<p>X：log₂5 ≈ 2.322 &gt; 1，f = n 是 case 1，T<sub>X</sub> = Θ(n<sup>log₂5</sup>) ≈ Θ(n<sup>2.322</sup>)。</p><p>Y：只要 log₃a &gt; 1（a ≥ 4），也是 case 1，T<sub>Y</sub> = Θ(n<sup>log₃a</sup>)。a ≤ 3 時 T<sub>Y</sub> 只有 O(n lg n)，一定比 X 快，所以要找的是大的 a。</p><p>Y 比 X 快 ⇔ log₃a &lt; log₂5 ⇔ a &lt; 3<sup>log₂5</sup> = 5<sup>log₂3</sup> ≈ 12.82。所以 a 最大是 <b>12</b>：log₃12 ≈ 2.262 &lt; 2.322；而 a = 13 時 log₃13 ≈ 2.335 &gt; 2.322，Y 反而比較慢。（已用程式驗證這三個對數值與 3<sup>log₂5</sup>。）</p><p>a = 12 時兩者指數只差約 0.06，n = 2<sup>20</sup> 時 n<sup>0.06</sup> ≈ 2.3，差距要在很大的 n 才明顯。常見錯誤：把 a &lt; 12.82 誤寫成 a ≤ 13，或直接比較 a/b（5/2 vs a/3）得到 a &lt; 7.5。</p>"
+    },
+    {
+      "id": "al-0098",
+      "topics": [
+        "master-theorem"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "求下列三個遞迴式的緊漸近界：(1) T(n) = 8T(n/2) + n³ lg² n；(2) T(n) = 8T(n/2) + n³ / lg n；(3) T(n) = 8T(n/2) + n³ / lg² n。",
+      "answer": "(1) Θ(n³ lg³ n)；(2) Θ(n³ lg lg n)；(3) Θ(n³)",
+      "explanation": "<p>三題都是 a = 8、b = 2，log₂8 = 3，f = n³ lg<sup>p</sup> n 和 n³ 只差 lg 的次方，標準的三種情況都套不上，要用遞迴樹（或延伸版 case 2）。第 i 層的成本是</p><pre class=\"formula\">8^i · (n/2^i)^3 · lg^p(n/2^i) = n^3 · (lg n − i)^p</pre><p>令 j = lg n − i（j = 1 … lg n），總和 ≈ n³ · Σ j<sup>p</sup>：</p><ul><li>(1) p = 2：Σ j² ≈ (lg n)³/3，T(n) = <b>Θ(n³ lg³ n)</b>（延伸 case 2：p ≥ 0 時答案是 lg<sup>p+1</sup>）。</li><li>(2) p = −1：Σ 1/j 是調和數 ≈ ln lg n，T(n) = <b>Θ(n³ lg lg n)</b>。</li><li>(3) p = −2：Σ 1/j² 收斂到 π²/6，內部節點總和是 Θ(n³)，葉子也是 n³，T(n) = <b>Θ(n³)</b>。</li></ul><p>（已用程式驗證：三者除以各自答案的比值分別往 1/3、ln 2、1 + π²/6 收斂，n = 2⁶⁴ 時為 0.341、0.957、2.629。）</p><p>常見錯誤：(1) 答 Θ(n³ lg² n)，忘了再乘一個 lg n；(3) 以為 f 比 n³ 小就一定還有 lg 因子，其實 p &lt; −1 時答案和 case 1 一樣。</p>"
     }
   ]
 }

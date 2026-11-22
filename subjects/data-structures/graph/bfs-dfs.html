@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BFS & DFS 廣度與深度優先搜尋 · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="BFS 用 queue 求最短邊數、DFS 用遞迴或 stack 走到底；串列 O(V+E)、矩陣 O(V²)，含生成樹與連通元件。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=7f68026e">
+  <script src="../../../assets/js/theme.js?v=7f68026e"></script>
+</head>
+<body data-subject="data-structures" data-chapter="graph" data-chno="6" data-topic="data-structures/graph/bfs-dfs" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures 資料結構</a> › Ch6 Graphs 圖 › BFS & DFS 廣度與深度優先搜尋</nav>
+      <div class="topic-head">
+        <h1>BFS & DFS 廣度與深度優先搜尋<small>queue 一層一層擴散，stack 一條路走到底</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch6 Graphs</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">BFS</span>
+          <span class="chip">DFS</span>
+          <span class="chip">queue</span>
+          <span class="chip">stack</span>
+          <span class="chip">spanning tree</span>
+        </div>
+      </div>
+      <section id="why-traverse">
+        <h2>為什麼要走訪圖</h2>
+        <div class="panel prose">
+          <p>很多問題拿到手，第一步都是「從某個點出發，看看能走到哪些點」：地圖上兩個城市有沒有路相通、社群網路裡某人的朋友的朋友有誰、迷宮從入口走得到出口嗎、網路上的封包最少要轉幾次。把這些東西畫成 <span class="term">Graph<small>（圖）</small></span>：頂點代表城市或人，邊代表道路或朋友關係，問題就變成<b>有系統地把圖上每個能到的頂點拜訪一次</b>，這就是 <span class="term">Graph Traversal<small>（圖的走訪）</small></span>。</p>
+          <p>二元樹的走訪在<a href="../tree/binary-tree-traversal.html">二元樹走訪</a>那一頁已經講過，圖的走訪是它的推廣，但圖比樹麻煩三件事：</p>
+          <ul>
+            <li><b>沒有根</b>：圖沒有天生的起點，題目要指定一個 <b>起點 s</b>，不同起點得到的順序不同。</li>
+            <li><b>有環（cycle）</b>：樹從父節點往下走永遠不會繞回來，圖卻可能 0 → 1 → 4 → 3 → 0 繞一圈回到原點。如果不記錄「誰已經拜訪過」，就會無限繞圈。所以每個圖走訪演算法都有一個 <code>visited[]</code> 陣列。</li>
+            <li><b>不一定連通</b>：從 s 出發可能根本走不到某些頂點，要把整張圖都走完，得在外面再包一層迴圈，換新的起點繼續走（後面講<a href="#components">連通元件</a>時會用到）。</li>
+          </ul>
+          <p>最基本的走訪方式有兩種，差別在於「發現了好幾個新頂點，<b>先處理哪一個</b>」：</p>
+          <ul>
+            <li><span class="term">Breadth-First Search<small>（BFS，廣度優先搜尋）</small></span>：先把離起點近的全部處理完，再往外一圈，像水波一樣擴散。用 <b>queue</b> 實現「先發現的先處理」。</li>
+            <li><span class="term">Depth-First Search<small>（DFS，深度優先搜尋）</small></span>：有路就往深處走，走到死路才退回上一個岔路口換另一條，像走迷宮時「右手扶牆」。用 <b>stack</b>（或遞迴）實現「最後發現的先處理」。</li>
+          </ul>
+          <h3>本頁的範例圖與表示法</h3>
+          <p>圖在程式裡常見兩種存法。<span class="term">Adjacency Matrix<small>（相鄰矩陣）</small></span>用一個 n × n 的二維陣列，<code>adj[v][w] = 1</code> 表示 v 和 w 之間有邊；<span class="term">Adjacency List<small>（相鄰串列）</small></span>則替每個頂點準備一條鏈結串列，串起它所有的相鄰點。無向圖的一條邊 (u, v) 在兩邊都要記：u 的串列裡有 v，v 的串列裡也有 u，所以 10 條邊的圖會有 20 個串列節點。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bfs-dfs-graph"></div>
+            <figcaption><b>圖 1</b>：本頁範例圖（無向圖，8 個頂點、10 條邊）與相鄰串列。每條串列都依編號<b>由小到大</b>排好，這樣走訪時就會「編號小的先走」，這也是考題最常見的規定。</figcaption>
+          </figure>
+          <details class="code-fold">
+            <summary>看程式碼：圖的宣告與建立（相鄰串列＋相鄰矩陣）</summary>
+            <div class="code-block">
+              <div class="code-head">宣告與 addEdge()</div>
+              <pre class="code">typedef struct Node {
+  int v;                                 /* 相鄰的頂點編號 */
+  struct Node *next;
+} Node;
+
+int n;                                   /* 頂點數，編號 0 ~ n-1 */
+Node *list[MAXV];                        /* 相鄰串列：list[v] 是 v 的所有相鄰點 */
+int adj[MAXV][MAXV];                     /* 相鄰矩陣：adj[v][w] = 1 表示有邊 (v, w) */
+int visited[MAXV];
+int parent[MAXV];                        /* 生成樹上的父節點，起點是 -1 */
+int dist[MAXV];                          /* BFS：起點到 v 的最少邊數 */
+int d[MAXV], f[MAXV], timer;             /* DFS：發現時間、完成時間 */
+
+void addEdge(int u, int v) {             /* 無向圖：兩邊都要記 */
+  adj[u][v] = adj[v][u] = 1;
+  insertSorted(u, v);
+  insertSorted(v, u);
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="bfs">
+        <h2>BFS：一層一層往外擴</h2>
+        <div class="panel prose">
+          <p>BFS 的想法是：先拜訪起點 s，再拜訪所有「離 s 一條邊」的頂點，接著是「離 s 兩條邊」的頂點……一層一層往外。要做到「同一層全部處理完才換下一層」，只要用 <b>queue</b>（先進先出）排隊就好：第 k 層的頂點一定比第 k + 1 層的頂點早進 queue，所以也一定比較早出來。這和二元樹的<a href="../tree/binary-tree-traversal.html#level-order">層序走訪</a>是同一個招式，差別只在圖要多一個 visited 防止重複。</p>
+          <ol>
+            <li>把起點 s 標記為 visited，放進 queue。</li>
+            <li>只要 queue 不空：從前端取出一個頂點 v 並拜訪它。</li>
+            <li>依序看 v 的每個相鄰點 w：如果 w 還沒 visited，就<b>立刻標記</b>、記下 <code>parent[w] = v</code> 和 <code>dist[w] = dist[v] + 1</code>，放到 queue 尾端。</li>
+          </ol>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>放進 queue 的那一刻就要標記 visited</b>，不要等到取出時才標。否則一個頂點可能被好幾個鄰居各放一次，queue 裡出現重複，輸出順序也會跟著錯。</p></div>
+          <h3>例子：範例圖從 0 開始 BFS</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>取出 v</th><th>v 的相鄰點（由小到大）</th><th>新放進 queue</th><th>queue（左邊是 front）</th></tr></thead>
+              <tbody>
+                <tr><td>（開始）</td><td>—</td><td>0</td><td>0</td></tr>
+                <tr><td>0</td><td>1, 3</td><td>1, 3（dist 1）</td><td>1 3</td></tr>
+                <tr><td>1</td><td>0 已訪, 2, 4</td><td>2, 4（dist 2）</td><td>3 2 4</td></tr>
+                <tr><td>3</td><td>0、4 都已訪</td><td>—</td><td>2 4</td></tr>
+                <tr><td>2</td><td>1 已訪, 5</td><td>5（dist 3）</td><td>4 5</td></tr>
+                <tr><td>4</td><td>1、3、5 已訪, 6</td><td>6（dist 3）</td><td>5 6</td></tr>
+                <tr><td>5</td><td>2、4 已訪, 7</td><td>7（dist 4）</td><td>6 7</td></tr>
+                <tr><td>6</td><td>4、7 都已訪</td><td>—</td><td>7</td></tr>
+                <tr><td>7</td><td>5、6 都已訪</td><td>—</td><td>（空）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>BFS 順序是 <b>0 1 3 2 4 5 6 7</b>。注意第 4 列：輪到 4 的時候，5 已經在 queue 裡（是 2 放進去的），因為放進去時就標記了，4 不會再放一次。最後 dist 依序是 0、1、2、1、2、3、3、4，例如 dist[7] = 4 表示 0 到 7 <b>最少要走 4 條邊</b>，沒有更短的路。</p>
+          <h3>為什麼 BFS 能求最短路徑邊數</h3>
+          <p>queue 裡的頂點，dist 永遠是「前面一段是 k、後面一段是 k + 1」，不會出現 k + 2。所以頂點是依照 dist 由小到大被取出的。一個頂點 w 第一次被發現時，發現它的 v 是「所有鄰居裡最早被取出的」，也就是 dist 最小的鄰居，因此 dist[w] = dist[v] + 1 就是最少邊數。這只在<b>每條邊的成本都一樣</b>（無權圖）時成立；邊有不同權重時要用 Dijkstra 演算法。</p>
+          <details class="code-fold">
+            <summary>看程式碼：bfs()（相鄰串列／相鄰矩陣）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="相鄰串列"><div class="code-head">bfs()：相鄰串列，O(V + E)</div><pre class="code">void bfs(int s) {
+  int queue[MAXV], front = 0, rear = 0;
+  visited[s] = 1;                        /* 起點先標記再放進 queue */
+  dist[s] = 0;
+  queue[rear++] = s;
+  while (front &lt; rear) {
+    int v = queue[front++];              /* 取出 queue 前端 */
+    printf("%d ", v);
+    for (Node *p = list[v]; p != NULL; p = p-&gt;next) {
+      int w = p-&gt;v;
+      if (!visited[w]) {                 /* 第一次看到 w：標記、記父節點、放進 queue */
+        visited[w] = 1;
+        dist[w] = dist[v] + 1;
+        parent[w] = v;                   /* (v, w) 是 BFS 生成樹的樹邊 */
+        queue[rear++] = w;
+      }
+    }
+  }
+}</pre></div>
+              <div class="code-block" data-tab="相鄰矩陣"><div class="code-head">bfsMatrix()：相鄰矩陣，O(V²)</div><pre class="code">void bfsMatrix(int s) {
+  int queue[MAXV], front = 0, rear = 0;
+  visited[s] = 1;
+  queue[rear++] = s;
+  while (front &lt; rear) {
+    int v = queue[front++];
+    printf("%d ", v);
+    for (int w = 0; w &lt; n; w++)          /* 整列 n 格都要看：每個頂點 O(n) */
+      if (adj[v][w] &amp;&amp; !visited[w]) {
+        visited[w] = 1;
+        queue[rear++] = w;
+      }
+  }
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="dfs">
+        <h2>DFS：一條路走到底再回頭</h2>
+        <div class="panel prose">
+          <p>DFS 的規則只有一句：<b>站在 v，找一個還沒拜訪的相鄰點 w，馬上走過去</b>；在 w 也照做；直到某個頂點的相鄰點全部都拜訪過了（死路），才退回上一個頂點，看它還有沒有別條路。這種「先處理最後發現的」正是 stack 的 LIFO，最簡潔的寫法是遞迴：系統的 call stack 自動幫我們記住退回去的路。</p>
+          <ol>
+            <li><code>dfs(v)</code>：標記 v 為 visited 並拜訪它。</li>
+            <li>依序看 v 的每個相鄰點 w，遇到還沒 visited 的就呼叫 <code>dfs(w)</code>；它回來之後再繼續看下一個相鄰點。</li>
+            <li>所有相鄰點都看完，<code>dfs(v)</code> 結束，回到呼叫它的頂點。</li>
+          </ol>
+          <h3>發現時間與完成時間</h3>
+          <p>給 DFS 加一個計時器：進入 dfs(v) 時記下 <span class="term">Discovery Time<small>（發現時間）</small></span> d[v]，離開時記下 <span class="term">Finish Time<small>（完成時間）</small></span> f[v]。因為遞迴是「進去 → 處理所有子孫 → 出來」，所以子孫的 [d, f] 區間一定<b>完整包在</b>祖先的區間裡，兩個頂點的區間不是包含就是完全不重疊，這叫括號定理。之後的拓樸排序、強連通元件都靠完成時間。</p>
+          <h3>例子：範例圖從 0 開始 DFS</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>動作</th><th>理由</th><th>呼叫堆疊（左是底）</th><th>時間</th></tr></thead>
+              <tbody>
+                <tr><td>進入 0</td><td>起點</td><td>0</td><td>d[0] = 1</td></tr>
+                <tr><td>進入 1</td><td>0 的相鄰點 1、3 中最小的未訪點</td><td>0 1</td><td>d[1] = 2</td></tr>
+                <tr><td>進入 2</td><td>1 的相鄰點 0 已訪，下一個 2</td><td>0 1 2</td><td>d[2] = 3</td></tr>
+                <tr><td>進入 5</td><td>2 的相鄰點 1 已訪，下一個 5</td><td>0 1 2 5</td><td>d[5] = 4</td></tr>
+                <tr><td>進入 4</td><td>5 的相鄰點 2 已訪，下一個 4</td><td>0 1 2 5 4</td><td>d[4] = 5</td></tr>
+                <tr><td>進入 3</td><td>4 的相鄰點 1 已訪，下一個 3</td><td>0 1 2 5 4 3</td><td>d[3] = 6</td></tr>
+                <tr><td>離開 3</td><td>3 的相鄰點 0、4 都已訪</td><td>0 1 2 5 4</td><td>f[3] = 7</td></tr>
+                <tr><td>進入 6 → 7</td><td>回到 4 繼續看：5 已訪，6 未訪；6 再走到 7</td><td>0 1 2 5 4 6 7</td><td>d[6] = 8、d[7] = 9</td></tr>
+                <tr><td>依序離開 7、6、4、5、2、1、0</td><td>每個頂點剩下的相鄰點都已訪</td><td>（空）</td><td>f = 10、11、12、13、14、15、16</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>DFS 順序是 <b>0 1 2 5 4 3 6 7</b>，和 BFS 的 0 1 3 2 4 5 6 7 不同：BFS 拜訪完 1 會先處理同一層的 3，DFS 卻從 1 一路往下鑽到 2、5、4、3，最深時呼叫堆疊有 7 層（0 1 2 5 4 6 7）。8 個頂點各進出一次，計時器剛好跑到 2 × 8 = 16。</p>
+          <details class="code-fold">
+            <summary>看程式碼：dfs()（遞迴，相鄰串列／相鄰矩陣）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="相鄰串列"><div class="code-head">dfs()：遞迴，記錄發現與完成時間</div><pre class="code">void dfs(int v) {
+  visited[v] = 1;
+  d[v] = ++timer;                        /* 發現時間 */
+  printf("%d ", v);
+  for (Node *p = list[v]; p != NULL; p = p-&gt;next)
+    if (!visited[p-&gt;v]) {
+      parent[p-&gt;v] = v;                  /* (v, w) 是 DFS 生成樹的樹邊 */
+      dfs(p-&gt;v);
+    }
+  f[v] = ++timer;                        /* 完成時間：v 的相鄰點都處理完了 */
+}</pre></div>
+              <div class="code-block" data-tab="相鄰矩陣"><div class="code-head">dfsMatrix()：遞迴，相鄰矩陣</div><pre class="code">void dfsMatrix(int v) {
+  visited[v] = 1;
+  printf("%d ", v);
+  for (int w = 0; w &lt; n; w++)            /* 整列 n 格都要看：每個頂點 O(n) */
+    if (adj[v][w] &amp;&amp; !visited[w])
+      dfsMatrix(w);
+}</pre></div>
+            </div>
+          </details>
+          <h3>不用遞迴：自己準備 stack</h3>
+          <p>遞迴太深怕 stack overflow，或考題要求非遞迴時，就自己用 stack，概念和<a href="../tree/binary-tree-traversal.html#iterative">二元樹的非遞迴走訪</a>相同。常見兩種寫法：</p>
+          <ul>
+            <li><b>看頂端、走一步</b>（預設頁籤）：看 stack 頂端的 v，找它下一個未拜訪的相鄰點 w；有就拜訪 w 並 push，沒有就 pop 退回。stack 裡永遠是「從起點到目前位置的路徑」，和遞迴的呼叫堆疊一模一樣，最多 V 個。用 <code>cur[v]</code> 記住 v 的串列看到哪裡，總共仍是 O(V + E)。</li>
+            <li><b>pop 出來才標記、相鄰點全部 push</b>：寫起來短，但同一個頂點可能被不同鄰居 push 好幾次，stack 最多要 2E + 1 格；而且要<b>由大到小 push</b>，編號小的才會先被 pop，順序才會和遞迴版一樣。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：DFS 的 stack 寫法（看頂端版／全部 push 版）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="看頂端版"><div class="code-head">dfsStack()：stack 內容就是目前路徑</div><pre class="code">void dfsStack(int s) {
+  int stack[MAXV], top = -1;
+  Node *cur[MAXV];                       /* cur[v]：v 的串列下一個要檢查的位置 */
+  for (int i = 0; i &lt; n; i++) cur[i] = list[i];
+  visited[s] = 1;
+  printf("%d ", s);
+  stack[++top] = s;
+  while (top != -1) {
+    int v = stack[top];                  /* 看 stack 頂端，先不 pop */
+    while (cur[v] != NULL &amp;&amp; visited[cur[v]-&gt;v])
+      cur[v] = cur[v]-&gt;next;             /* 跳過已經拜訪過的相鄰點 */
+    if (cur[v] == NULL) {                /* v 沒有路可走了：pop，退回上一個頂點 */
+      top--;
+      continue;
+    }
+    int w = cur[v]-&gt;v;
+    visited[w] = 1;
+    parent[w] = v;
+    printf("%d ", w);
+    stack[++top] = w;                    /* 往更深的 w 走 */
+  }
+}</pre></div>
+              <div class="code-block" data-tab="全部 push 版"><div class="code-head">dfsPushAll()：pop 才標記，相鄰點由大到小 push</div><pre class="code">void dfsPushAll(int s) {
+  int stack[MAXV * MAXV], top = -1;      /* 最多 push 2E + 1 次，不是 V 次 */
+  stack[++top] = s;
+  while (top != -1) {
+    int v = stack[top--];
+    if (visited[v]) continue;            /* 已經拜訪過的舊紀錄，直接丟掉 */
+    visited[v] = 1;
+    printf("%d ", v);
+    for (int w = n - 1; w &gt;= 0; w--)     /* 由大到小 push，編號小的才會先被 pop */
+      if (adj[v][w] &amp;&amp; !visited[w])
+        stack[++top] = w;
+  }
+}</pre></div>
+            </div>
+          </details>
+          <p>範例圖用三種 DFS 寫法（遞迴、看頂端版、全部 push 版）跑出來都是 0 1 2 5 4 3 6 7（已用程式驗證）。</p>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>在第一個輸入框用「頂點-頂點」輸入無向圖的邊（用空白隔開，頂點編號 0～9、最多 20 條邊），第二個輸入框是起點，再選 <b>BFS</b>、<b>DFS（遞迴）</b>或 <b>DFS（stack）</b>。相鄰點一律由小到大。畫面下方會顯示 queue、呼叫堆疊或 stack 的內容與目前的走訪順序；綠色的邊是生成樹的樹邊；BFS 時頂點下方是 dist，遞迴 DFS 時是「發現 / 完成時間」。按「非連通圖」可以看到從 0 出發走不到其他連通元件。</p>
+        </div>
+        <div class="viz" data-viz="graph-search"></div>
+      </section>
+
+      <section id="spanning-tree">
+        <h2>BFS 樹與 DFS 樹</h2>
+        <div class="panel prose">
+          <p>走訪時每個頂點（起點除外）都是被某一條邊「第一次發現」的，把這些邊 (parent[w], w) 收集起來，就得到一棵包含所有可到達頂點的樹，稱為 <span class="term">Spanning Tree<small>（生成樹）</small></span>：BFS 得到 BFS 樹，DFS 得到 DFS 樹。連通圖有 V 個頂點，生成樹一定剛好有 V − 1 條邊（範例圖是 8 − 1 = 7 條），剩下的 E − V + 1 條（範例圖 10 − 7 = 3 條）是非樹邊。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bfs-dfs-trees"></div>
+            <figcaption><b>圖 2</b>：範例圖從 0 出發的 (a) BFS 樹，依 dist 分層；(b) DFS 樹，旁邊是發現 / 完成時間。兩棵都是 7 條樹邊，但形狀很不一樣。</figcaption>
+          </figure>
+          <p>兩棵樹的非樹邊有各自的性質，考題很愛問：</p>
+          <ul>
+            <li><b>BFS 樹</b>：樹上從根到 v 的路徑就是一條最短路徑。非樹邊連接的兩個頂點，層數相差<b>最多 1</b>（同一層或相鄰層），不可能跨兩層，否則深的那個早就被淺的那個發現了。圖 2(a) 的非樹邊 (3,4)、(4,5)、(6,7)，都在相鄰層或同一層。</li>
+            <li><b>DFS 樹（無向圖）</b>：每條非樹邊都連接一個頂點和它的<b>祖先</b>，叫 <span class="term">Back Edge<small>（回邊）</small></span>；不會連到旁支。圖 2(b) 的 (0,3)、(1,4)、(5,7) 都是從子孫連回祖先。這個性質是找關節點（articulation point）的基礎。</li>
+          </ul>
+          <h3>印出最短路徑</h3>
+          <p>BFS 記下的 parent[] 就是一條條「往回指」的路：從終點沿 parent 一路走回起點，再倒過來印出。範例圖 0 到 7 的路徑是 7 → 5 → 2 → 1 → 0，倒過來就是 0 1 2 5 7，共 4 條邊，和 dist[7] = 4 一致。</p>
+          <details class="code-fold">
+            <summary>看程式碼：printPath()：沿著 parent 印出路徑</summary>
+            <div class="code-block">
+              <div class="code-head">printPath()</div>
+              <pre class="code">void printPath(int v) {                  /* 沿著 parent 回推起點，再倒著印出來 */
+  if (parent[v] != -1) printPath(parent[v]);
+  printf("%d ", v);
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="order">
+        <h2>走訪順序由相鄰點的順序決定</h2>
+        <div class="panel prose">
+          <p>BFS、DFS 都說「依序看 v 的相鄰點」，可是「依序」是什麼順序？演算法本身沒有規定，取決於<b>相鄰串列裡的排列</b>（矩陣版則固定是 w = 0, 1, …, n−1，也就是編號由小到大）。所以同一張圖、同一個起點，可能有很多種合法的 BFS 或 DFS 順序。考題為了讓答案唯一，通常會寫「相鄰點依編號（或字母）由小到大拜訪」；沒寫的題目則可能考「下列何者<b>不可能</b>是 DFS 順序」。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="bfs-dfs-order"></div>
+            <figcaption><b>圖 3</b>：同一張圖、同一個起點 0。(a) 串列由小到大；(b) 建串列時每個新節點都插在前端，串列變成由大到小，BFS、DFS 的順序全變了。</figcaption>
+          </figure>
+          <p>最容易中招的是用程式建圖的題目：如果 addEdge 把新節點<b>插在串列前端</b>（O(1)，很多程式這樣寫），那串列順序會和邊的輸入順序<b>相反</b>。題目給的是程式碼與邊的輸入順序時，一定要先畫出真正的串列，再開始追蹤。</p>
+          <details class="code-fold">
+            <summary>看程式碼：建串列（依序插入／插在前端）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="依序插入"><div class="code-head">insertSorted()：保持由小到大</div><pre class="code">void insertSorted(int v, int w) {
+  Node **pp = &amp;list[v];
+  while (*pp != NULL &amp;&amp; (*pp)-&gt;v &lt; w) pp = &amp;(*pp)-&gt;next;
+  Node *p = malloc(sizeof(Node));
+  p-&gt;v = w;
+  p-&gt;next = *pp;
+  *pp = p;
+}</pre></div>
+              <div class="code-block" data-tab="插在前端"><div class="code-head">insertFront()：順序會反過來</div><pre class="code">void insertFront(int v, int w) {         /* 對照用：插在串列前端，相鄰點順序會反過來 */
+  Node *p = malloc(sizeof(Node));
+  p-&gt;v = w;
+  p-&gt;next = list[v];
+  list[v] = p;
+}</pre></div>
+            </div>
+          </details>
+          <h3>判斷一個序列是不是合法的 DFS 順序</h3>
+          <p>手動模擬一個「路徑 stack」：每讀到下一個頂點 x，它必須是 stack 頂端的鄰居；如果不是，代表頂端已經沒路了才能退回，所以先檢查頂端是不是<b>真的</b>沒有未拜訪的鄰居，是才 pop 再比對下一層。只要遇到「頂端還有未拜訪的鄰居，序列卻跳去別的地方」，這個序列就不合法。BFS 則檢查：每個頂點被發現的先後，必須和「發現它的那個頂點」被取出的先後一致。</p>
+        </div>
+      </section>
+
+      <section id="complexity">
+        <h2>時間複雜度：O(V + E) 與 O(V²)</h2>
+        <div class="panel prose">
+          <p>不管 BFS 還是 DFS，每個頂點只會被標記、進出 queue（或遞迴）<b>一次</b>，花費 O(V)。真正的差別在「找相鄰點」：</p>
+          <ul>
+            <li><b>相鄰串列</b>：處理頂點 v 時走過它的串列，長度是 deg(v)。所有頂點加起來是 Σ deg(v) = 2E（每條無向邊在兩條串列各出現一次），所以總共 <code>O(V + E)</code>。</li>
+            <li><b>相鄰矩陣</b>：要找 v 的相鄰點，得把第 v 列 n 格全部看一遍，不管 v 實際上有幾個鄰居。V 個頂點各看 V 格，總共 <code>O(V²)</code>。</li>
+          </ul>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>表示法</th><th>BFS / DFS 時間</th><th>空間</th><th>適合</th></tr></thead>
+              <tbody>
+                <tr><td>相鄰串列</td><td><code>O(V + E)</code></td><td><code>O(V + E)</code></td><td>稀疏圖（E 遠小於 V²），實務上大部分的圖</td></tr>
+                <tr><td>相鄰矩陣</td><td><code>O(V²)</code></td><td><code>O(V²)</code></td><td>稠密圖、需要 O(1) 判斷「v、w 有沒有邊」</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>拿數字感受一下：1000 個頂點、3000 條邊的稀疏圖，串列版大約檢查 1000 + 2 × 3000 = 7000 次，矩陣版要看 1000² = 1,000,000 格，<b>差了約 140 倍</b>。反過來，如果是完全圖（E = V(V − 1)/2），V + E 本身就是 Θ(V²)，兩種表示法就一樣快了。</p>
+          <p>額外空間方面：visited、parent 各 O(V)。BFS 的 queue 最多同時放 O(V) 個頂點（例如星狀圖，起點一次放進 V − 1 個）；DFS 的遞迴深度最多 O(V)（例如一條長鏈，要深入 V 層）。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 一句話記：<b>走訪 = 每個點一次 + 每條邊兩次</b>。用串列，邊數直接算進去；用矩陣，每個點都要掃一整列，所以是 V × V。</p></div>
+        </div>
+      </section>
+
+      <section id="components">
+        <h2>應用：連通元件</h2>
+        <div class="panel prose">
+          <p>無向圖中，彼此能互相走到的頂點組成一個 <span class="term">Connected Component<small>（連通元件）</small></span>。從 s 做一次 BFS 或 DFS，拜訪到的頂點剛好就是 s 所在的那一個連通元件。要找出所有元件，就從 0 到 n − 1 掃一遍：遇到還沒 visited 的頂點，就從它開始做一次走訪，每做一次就是一個新元件。</p>
+          <p>以「非連通圖」範例（邊 0-2 2-4 4-0 1-5 3-6 6-7 3-7）來說：從 0 走到 {0, 2, 4}；掃到 1 時它還沒拜訪，走到 {1, 5}；掃到 3 時走到 {3, 6, 7}。共 <b>3 個連通元件</b>（已用程式驗證）。雖然外層迴圈呼叫了好幾次 dfs，但每個頂點與每條邊仍只處理一次，總時間仍是 <code>O(V + E)</code>。</p>
+          <p>每個元件各得到一棵生成樹，合起來稱為 <span class="term">Spanning Forest<small>（生成樹林）</small></span>。V 個頂點、k 個連通元件時，樹林的邊數是 V − k（每棵樹少一條），這個公式在計算題裡很好用。</p>
+          <details class="code-fold">
+            <summary>看程式碼：components()：數連通元件</summary>
+            <div class="code-block">
+              <div class="code-head">components()</div>
+              <pre class="code">int components(void) {
+  int k = 0;
+  resetVisited();
+  for (int v = 0; v &lt; n; v++)
+    if (!visited[v]) {                   /* 還沒被走到的點：屬於一個新的連通元件 */
+      printf("元件 %d：", ++k);
+      dfs(v);
+      printf("\n");
+    }
+  return k;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="compare">
+        <h2>BFS 與 DFS 比較</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>項目</th><th>BFS</th><th>DFS</th></tr></thead>
+              <tbody>
+                <tr><td>輔助結構</td><td>queue</td><td>stack（或遞迴）</td></tr>
+                <tr><td>探索方式</td><td>由近到遠，一層一層</td><td>一條路走到底，死路再回頭</td></tr>
+                <tr><td>何時標記 visited</td><td>放進 queue 時</td><td>進入 dfs(v) 時</td></tr>
+                <tr><td>時間（串列／矩陣）</td><td><code>O(V + E)</code> ／ <code>O(V²)</code></td><td><code>O(V + E)</code> ／ <code>O(V²)</code></td></tr>
+                <tr><td>生成樹形狀</td><td>寬而矮，根到每點是最短路徑</td><td>窄而深，非樹邊都是回邊</td></tr>
+                <tr><td>典型應用</td><td>無權圖最短路徑、依層處理、二分圖判斷</td><td>連通性、找環、拓樸排序、關節點、強連通元件、迷宮與回溯</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩者都能判斷連通性、數連通元件、找生成樹，這些用哪個都行。需要「最少步數」時選 BFS；需要「祖先 / 子孫關係」或完成時間時選 DFS。另外 DFS 的遞迴寫法程式最短，但圖很大（例如百萬個頂點的一條鏈）時可能 stack overflow，要改成自己管理 stack。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>寫出 BFS / DFS 順序</td><td>很常考</td><td>先列每個頂點的相鄰點（照題目規定的順序），BFS 畫 queue、DFS 畫呼叫堆疊，一步一步追</td><td><a class="q-link" href="#q-ds-0234">例題</a></td></tr>
+                <tr><td>程式建圖後的走訪順序</td><td>常考</td><td>先依程式畫出真正的相鄰串列（插在前端會反序），再追蹤</td><td><a class="q-link" href="#q-ds-0236">例題</a></td></tr>
+                <tr><td>判斷哪個序列不可能</td><td>常考</td><td>DFS：模擬路徑 stack，頂端還有未訪鄰居卻跳走就不合法；BFS：檢查分層與發現順序</td><td><a class="q-link" href="#q-ds-0238">例題</a></td></tr>
+                <tr><td>複雜度：串列 vs 矩陣</td><td>很常考</td><td>串列 O(V + E)、矩陣 O(V²)，理由是找相鄰點要掃整列</td><td><a class="q-link" href="#q-ds-0233">例題</a></td></tr>
+                <tr><td>發現 / 完成時間、最短邊數</td><td>常考</td><td>DFS 進入 +1、離開 +1；BFS 的 dist = 父節點 + 1</td><td><a class="q-link" href="#q-ds-0235">例題</a></td></tr>
+                <tr><td>生成樹林、連通元件計數</td><td>偶爾</td><td>樹邊 = V − k，非樹邊 = E − V + k</td><td><a class="q-link" href="#q-ds-0239">例題</a></td></tr>
+                <tr><td>證明 BFS 求得最短路徑</td><td>偶爾</td><td>證明 queue 內 dist 單調、最多差 1，再對 dist 歸納</td><td><a class="q-link" href="#q-ds-0237">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> BFS 從 queue 取出時才標記 visited</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 放進 queue 時就要標記，否則同一個頂點會被重複放入</span> <a class="q-link" href="#q-ds-0232">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 走訪順序只跟圖的形狀有關</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 也取決於相鄰串列的順序；插在前端建立的串列是反序的</span> <a class="q-link" href="#q-ds-0236">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> DFS 拜訪完 v 的一個鄰居，就接著拜訪 v 的下一個鄰居</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是 BFS 的做法；DFS 會先從那個鄰居繼續往深處走，走到死路才回到 v</span> <a class="q-link" href="#q-ds-0234">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 用相鄰矩陣也是 O(V + E)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 矩陣找鄰居要掃整列 n 格，總共 O(V²)，和邊數無關</span> <a class="q-link" href="#q-ds-0233">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> DFS 也能求最短路徑</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> DFS 樹的路徑可能繞遠路；無權圖的最短邊數要用 BFS</span> <a class="q-link" href="#q-ds-0235">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 題目沒規定相鄰點順序時，只要每個點都拜訪一次就是合法的 DFS 順序</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 合法序列可以有很多種，但只要目前頂點還有未拜訪的鄰居，就不能跳去別的分支</span> <a class="q-link" href="#q-ds-0238">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="bfs-dfs"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-21 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz-core.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz/data-structures/bfs-dfs.js?v=7f68026e"></script>
+</body>
+</html>

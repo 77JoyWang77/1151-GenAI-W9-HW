@@ -135,6 +135,130 @@
       "source": {
         "kind": "original"
       }
+    },
+    {
+      "id": "la-0009",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "下列哪一個是 <b>基本矩陣</b>（elementary matrix）？",
+      "choices": [
+        "(A) [1 0 0; 0 0 1; 0 1 0]",
+        "(B) [2 0; 0 3]",
+        "(C) [1 2 0; 0 1 0; 3 0 1]",
+        "(D) [1 0; 0 0]"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>基本矩陣必須<b>恰好</b>是單位矩陣 I 做<b>一次</b>基本列運算的結果。</p><p>(A) 是 I 的第 2、3 列交換（第 1 型），是基本矩陣。(B) 把 (1,1) 換成 2、(2,2) 換成 3，需要兩次第 2 型列運算，是兩個基本矩陣的乘積，但本身不是。(C) 和 I 差了 (1,2) = 2 和 (3,1) = 3 兩個位置，也要兩次第 3 型列運算。(D) 相當於第 2 列乘以 0，乘以 0 不是合法的列運算（不可逆），所以不是基本矩陣；它的行列式是 0，本身也不可逆。</p><p>常見錯誤：以為「看起來很接近 I」就是基本矩陣，忽略了「只能一次」這個條件。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0010",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "question": "(1) A = [4 7; 1 2]，求 A<sup>−1</sup>。 (2) 3×3 基本矩陣 E 對應列運算 R<sub>3</sub> ← R<sub>3</sub> + 4R<sub>1</sub>，寫出 E 與 E<sup>−1</sup>。",
+      "answer": "(1) A<sup>−1</sup> = [2 −7; −1 4]　(2) E = [1 0 0; 0 1 0; 4 0 1]，E<sup>−1</sup> = [1 0 0; 0 1 0; −4 0 1]",
+      "explanation": "<p>(1) ad − bc = 4·2 − 7·1 = 1 ≠ 0，所以可逆。公式：主對角 4、2 對調，副對角 7、1 變號，再除以 1：A<sup>−1</sup> = [2 −7; −1 4]。驗算第一列乘第一行：4·2 + 7·(−1) = 1；第一列乘第二行：4·(−7) + 7·4 = 0，正確（已用程式驗證 AA<sup>−1</sup> = I）。常見錯誤是把 b、c 對調而不是 a、d 對調。</p><p>(2) 對 I 做 R<sub>3</sub> ← R<sub>3</sub> + 4R<sub>1</sub>，就是在 (3,1) 放 4。要還原必須做相反的列運算 R<sub>3</sub> ← R<sub>3</sub> − 4R<sub>1</sub>，所以 E<sup>−1</sup> 只要把 4 變號成 −4。注意不是改成 1/4（那是第 2 型的規則），也不是 E 自己（那是第 1 型）。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0011",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "question": "用 [A | I] 的方法求 A = [1 0 2; 2 1 3; 0 1 1] 的反矩陣，並寫出每一步的列運算。",
+      "answer": "A<sup>−1</sup> = [−1 1 −1; −1 1/2 1/2; 1 −1/2 1/2]",
+      "explanation": "<p>起點 [1 0 2 | 1 0 0]、[2 1 3 | 0 1 0]、[0 1 1 | 0 0 1]。</p><ol><li>R<sub>2</sub> ← R<sub>2</sub> − 2R<sub>1</sub>：R<sub>2</sub> = [0 1 −1 | −2 1 0]。第 1 行完成。</li><li>第 2 行 pivot 是 R<sub>2</sub> 的 1，R<sub>1</sub> 的第 2 行已經是 0；R<sub>3</sub> ← R<sub>3</sub> − R<sub>2</sub>：R<sub>3</sub> = [0 0 2 | 2 −1 1]。</li><li>R<sub>3</sub> ← (1/2)R<sub>3</sub>：R<sub>3</sub> = [0 0 1 | 1 −1/2 1/2]。</li><li>R<sub>1</sub> ← R<sub>1</sub> − 2R<sub>3</sub>：R<sub>1</sub> = [1 0 0 | −1 1 −1]。</li><li>R<sub>2</sub> ← R<sub>2</sub> + R<sub>3</sub>：R<sub>2</sub> = [0 1 0 | −1 1/2 1/2]。</li></ol><p>左半變成 I，右半就是 A<sup>−1</sup> = [−1 1 −1; −1 1/2 1/2; 1 −1/2 1/2]。總共用了 5 個基本矩陣（4 個第 3 型、1 個第 2 型）。驗算 A 第 1 列乘 A<sup>−1</sup> 第 1 行：1·(−1) + 0·(−1) + 2·1 = 1。（已用程式驗證 AA<sup>−1</sup> = A<sup>−1</sup>A = I）</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0012",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "question": "A = [0 2; 1 3]。(1) 找出基本矩陣 E<sub>1</sub>、E<sub>2</sub>、E<sub>3</sub> 使 E<sub>3</sub>E<sub>2</sub>E<sub>1</sub>A = I，並求 A<sup>−1</sup>。 (2) 把 A 寫成基本矩陣的乘積。",
+      "answer": "(1) E<sub>1</sub> = [0 1; 1 0]、E<sub>2</sub> = [1 0; 0 1/2]、E<sub>3</sub> = [1 −3; 0 1]，A<sup>−1</sup> = [−3/2 1; 1/2 0]　(2) A = [0 1; 1 0]·[1 0; 0 2]·[1 3; 0 1]",
+      "explanation": "<p>(1) 第 1 行的 pivot 位置是 0，先交換：E<sub>1</sub>（R<sub>1</sub> ↔ R<sub>2</sub>）得 [1 3; 0 2]。再 E<sub>2</sub>（R<sub>2</sub> ← (1/2)R<sub>2</sub>）得 [1 3; 0 1]。最後 E<sub>3</sub>（R<sub>1</sub> ← R<sub>1</sub> − 3R<sub>2</sub>）得 I。所以 A<sup>−1</sup> = E<sub>3</sub>E<sub>2</sub>E<sub>1</sub> = [−3/2 1; 1/2 0]。用 2×2 公式核對：ad − bc = 0·3 − 2·1 = −2，A<sup>−1</sup> = (1/−2)[3 −2; −1 0] = [−3/2 1; 1/2 0]，一致。</p><p>(2) 由 E<sub>3</sub>E<sub>2</sub>E<sub>1</sub>A = I 得 A = E<sub>1</sub><sup>−1</sup>E<sub>2</sub><sup>−1</sup>E<sub>3</sub><sup>−1</sup>。三個反矩陣：E<sub>1</sub><sup>−1</sup> = E<sub>1</sub>、E<sub>2</sub><sup>−1</sup> = [1 0; 0 2]、E<sub>3</sub><sup>−1</sup> = [1 3; 0 1]。驗算：[1 0; 0 2][1 3; 0 1] = [1 3; 0 2]，再左乘 E<sub>1</sub>（交換兩列）得 [0 2; 1 3] = A。（已用程式驗證）</p><p>常見錯誤：寫成 A = E<sub>3</sub>E<sub>2</sub>E<sub>1</sub>（那其實是 A<sup>−1</sup>），或取了反矩陣卻忘了把順序反過來。答案不唯一，用不同的列運算順序會得到不同但都正確的乘積。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0013",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "question": "A = [1 1 1; 1 2 3; 1 3 k]。(1) k 為何值時 A 可逆？ (2) k = 6 時求 A<sup>−1</sup>。 (3) k = 5 時，對 [A | I] 做 Gauss–Jordan 會看到什麼？由此寫出 A 的列之間的關係。",
+      "answer": "(1) k ≠ 5　(2) A<sup>−1</sup> = [3 −3 1; −3 5 −2; 1 −2 1]　(3) 左半第 3 列變成零列，右半該列為 (1, −2, 1)，即 R<sub>1</sub> − 2R<sub>2</sub> + R<sub>3</sub> = 0",
+      "explanation": "<p>(1) 消去：R<sub>2</sub> ← R<sub>2</sub> − R<sub>1</sub>、R<sub>3</sub> ← R<sub>3</sub> − R<sub>1</sub> 得 [1 1 1]、[0 1 2]、[0 2 k − 1]；再 R<sub>3</sub> ← R<sub>3</sub> − 2R<sub>2</sub> 得 [0 0 k − 5]。第 3 個 pivot 是 k − 5，所以 <b>k ≠ 5 時有 3 個 pivot，A 可逆</b>；k = 5 時只有 2 個 pivot，不可逆。（等價地 det A = k − 5；已用程式對 k = 3～7 驗證只有 k = 5 不可逆）</p><p>(2) k = 6 時 det A = 1，反矩陣全是整數。照 [A | I] 做完 6 次列運算得 A<sup>−1</sup> = [3 −3 1; −3 5 −2; 1 −2 1]。驗算 A 第 3 列乘 A<sup>−1</sup> 第 3 行：1·1 + 3·(−2) + 6·1 = 1。（已用程式驗證 AA<sup>−1</sup> = I）</p><p>(3) k = 5 時，第 3 行在 R<sub>3</sub> 找不到 pivot，最後 [A | I] 的第 3 列是 [0 0 0 | 1 −2 1]。左半零列代表 A 不可逆；右半 (1, −2, 1) 表示 1·R<sub>1</sub> − 2·R<sub>2</sub> + 1·R<sub>3</sub> = 0：(1,1,1) − 2(1,2,3) + (1,3,5) = (0,0,0)，A 的列線性相依。（已用程式驗證 yA = 0）</p><p>常見錯誤：k = 5 時還硬要把左半化成 I，或以為換列順序就能救回來。pivot 個數不隨列運算順序改變。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0014",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "question": "設 A、B 都是 n×n 矩陣且 AB = I。證明 B 可逆、A 可逆，而且 BA = I。（可以使用「n×n 矩陣 M 可逆 ⇔ Mx = 0 只有零解」）",
+      "answer": "先證 Bx = 0 只有零解，得 B 可逆；再由 A = (AB)B<sup>−1</sup> = B<sup>−1</sup> 得 A 可逆且 BA = I。",
+      "explanation": "<p><b>Step 1：B 可逆</b>。設 Bx = 0，兩邊左乘 A：A(Bx) = A0 = 0；另一方面 A(Bx) = (AB)x = Ix = x。所以 x = 0，Bx = 0 只有零解，由題給的等價條件知 B 可逆。</p><p><b>Step 2：A = B<sup>−1</sup></b>。A = AI = A(BB<sup>−1</sup>) = (AB)B<sup>−1</sup> = IB<sup>−1</sup> = B<sup>−1</sup>。B<sup>−1</sup> 是可逆矩陣（反矩陣是 B），所以 A 可逆。</p><p><b>Step 3：BA = I</b>。BA = BB<sup>−1</sup> = I。</p><p>常見錯誤：(1) 一開始就寫「兩邊左乘 A<sup>−1</sup>」，但 A 可逆正是要證明的，不能先用；所以要從 B 下手，看 Bx = 0。(2) 對 A 看 Ax = 0 是推不出來的：由 AB = I 只能看出 A 的行空間是全部，直接討論要用到秩的觀念。(3) 這個結論只對方陣成立：例如 A = [1 0]（1×2）、B = [1; 0]（2×1），AB = [1] 是 1×1 的 I，但 BA = [1 0; 0 0] ≠ I。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0015",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "question": "設 A、B 都是 n×n 可逆矩陣，下列敘述何者<b>一定</b>正確？",
+      "choices": [
+        "(A) (AB)<sup>−1</sup> = A<sup>−1</sup>B<sup>−1</sup>",
+        "(B) A + B 也可逆",
+        "(C) (A<sup>T</sup>B)<sup>−1</sup> = B<sup>−1</sup>(A<sup>−1</sup>)<sup>T</sup>",
+        "(D) (2A)<sup>−1</sup> = 2A<sup>−1</sup>"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>(C) 正確：(XY)<sup>−1</sup> = Y<sup>−1</sup>X<sup>−1</sup>，取 X = A<sup>T</sup>、Y = B，得 (A<sup>T</sup>B)<sup>−1</sup> = B<sup>−1</sup>(A<sup>T</sup>)<sup>−1</sup> = B<sup>−1</sup>(A<sup>−1</sup>)<sup>T</sup>，最後一步用 (A<sup>T</sup>)<sup>−1</sup> = (A<sup>−1</sup>)<sup>T</sup>。</p><p>(A) 錯：順序要顛倒。反例 A = [1 2; 3 4]、B = [0 1; 1 1]，(AB)<sup>−1</sup> 和 A<sup>−1</sup>B<sup>−1</sup> 的 (1,1) 元素差 1/2（已用程式驗算）。只有 A、B 可交換時兩者才會相等。</p><p>(B) 錯：取 B = −A，B 可逆，但 A + B = 0 不可逆。</p><p>(D) 錯：(cA)<sup>−1</sup> = (1/c)A<sup>−1</sup>，所以 (2A)<sup>−1</sup> = (1/2)A<sup>−1</sup>。驗算 (2A)(2A<sup>−1</sup>) = 4I ≠ I。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0016",
+      "topics": [
+        "matrix-inverse"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "question": "要對同一個 100×100 的可逆矩陣 A 解 50 個方程組 Ax = b<sub>1</sub>, …, Ax = b<sub>50</sub>。只計算乘除法次數，比較三種做法：(1) 每個 b 都重新做一次高斯消去＋回代（每次 n³/3 + n² − n/3 次）；(2) 先用 Gauss–Jordan 求 A<sup>−1</sup>（n³ 次），再算 50 次 A<sup>−1</sup>b（每次 n² 次）；(3) 只消去 A 一次並把倍數記下來（(n³ − n)/3 次），之後每個 b 只做前代與回代（每次 n² 次）。",
+      "answer": "(1) 17,165,000 次　(2) 1,500,000 次　(3) 833,300 次；(3) 最省，約是 (2) 的 56%",
+      "explanation": "<p>n = 100：</p><ul><li>(1) 一次是 1,000,000/3 + 10,000 − 100/3 = 343,300，乘 50 得 <b>17,165,000</b>。每次都重新消去 A，浪費在重複的 n³/3 上。</li><li>(2) 求反矩陣 100³ = 1,000,000，加上 50 × 10,000 = 500,000，共 <b>1,500,000</b>，比 (1) 少了約 91%。</li><li>(3) 消去一次 (1,000,000 − 100)/3 = 333,300，加上 50 × 10,000 = 500,000，共 <b>833,300</b>，大約是 (2) 的 56%。</li></ul><p>結論：b 很多時，「把消去做一次存起來」最好；求反矩陣雖然比每次重算好，但光是求 A<sup>−1</sup> 的 n³ 就是消去 n³/3 的 3 倍。(3) 就是 LU 分解的想法。注意 (1) 單次的 343,300 正好等於 (3) 的消去 333,300 加上一次 n² = 10,000，兩個公式是一致的。（公式中的次數已用程式逐步計數驗證）</p><p>常見錯誤：以為「有了 A<sup>−1</sup>，每個 b 只要一次矩陣乘法」就是最快，忽略了求 A<sup>−1</sup> 本身的成本。</p>",
+      "source": {
+        "kind": "original"
+      }
     }
   ]
 }

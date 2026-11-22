@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Master Theorem 主定理 · 演算法 | 資工考研互動學習站</title>
+  <meta name="description" content="用遞迴樹理解主定理的三種情況、正則條件、延伸 case 2 與不能套用的情形。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=7f68026e">
+  <script src="../../../assets/js/theme.js?v=7f68026e"></script>
+</head>
+<body data-subject="algorithms" data-chapter="divide-and-conquer" data-chno="2" data-topic="algorithms/divide-and-conquer/master-theorem" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Algorithms 演算法</a> › Ch2 Divide and Conquer 分治法 › Master Theorem 主定理</nav>
+      <div class="topic-head">
+        <h1>Master Theorem 主定理<small>比較樹根的 f(n) 和葉子的 n^(log_b a)，誰大誰決定答案</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch2 Divide and Conquer</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">master theorem</span>
+          <span class="chip">recurrence</span>
+          <span class="chip">recursion tree</span>
+          <span class="chip">divide and conquer</span>
+        </div>
+      </div>
+
+      <section id="motivation">
+        <h2>分治遞迴式從哪裡來</h2>
+        <div class="panel prose">
+          <p><span class="term">Divide and Conquer<small>（分治法）</small></span>的演算法都長得很像：把大小 n 的問題切成 a 個小問題，每個小問題的大小是 n/b，遞迴解完之後再合併。把「切」和「合」花的時間記成 f(n)，執行時間就寫成一條 <span class="term">Recurrence<small>（遞迴式）</small></span>：</p>
+          <pre class="formula">T(n) = a · T(n/b) + f(n)
+        ↑     ↑         ↑
+   子問題個數  每個子問題的大小  這一層自己做的事（分割 + 合併）</pre>
+          <p>先看幾個一定會遇到的例子，每一個都可以直接讀出 a、b、f(n)：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>演算法</th><th>怎麼分</th><th>遞迴式</th><th>a</th><th>b</th><th>f(n)</th></tr></thead>
+              <tbody>
+                <tr><td>Merge sort</td><td>切成左右兩半各自排序，再花線性時間合併</td><td>T(n) = 2T(n/2) + Θ(n)</td><td>2</td><td>2</td><td>Θ(n)</td></tr>
+                <tr><td>Binary search</td><td>和中間比一次，只往其中一半找</td><td>T(n) = T(n/2) + Θ(1)</td><td>1</td><td>2</td><td>Θ(1)</td></tr>
+                <tr><td>分塊矩陣乘法</td><td>n×n 矩陣切成 4 塊，要做 8 次 (n/2)×(n/2) 的乘法，再做矩陣加法</td><td>T(n) = 8T(n/2) + Θ(n²)</td><td>8</td><td>2</td><td>Θ(n²)</td></tr>
+                <tr><td>Strassen</td><td>同樣切 4 塊，但用巧妙的組合只做 7 次乘法，多做一些加減法</td><td>T(n) = 7T(n/2) + Θ(n²)</td><td>7</td><td>2</td><td>Θ(n²)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>注意 a 和 b 是兩件不同的事：a 是「遞迴呼叫幾次」，b 是「每次呼叫的問題縮小幾倍」。Binary search 雖然把陣列切成兩半，但只往其中一半走，所以 a = 1、b = 2；Merge sort 兩半都要排，所以 a = 2。很多人看到「切兩半」就寫 2T(n/2)，是第一個常見錯誤。</p>
+          <p>有了遞迴式之後，問題就變成「T(n) 到底是多少」。最一般的方法是 <span class="term">Substitution Method<small>（代入法）</small></span>：先猜答案，再用數學歸納法證明；或是畫 <span class="term">Recursion Tree<small>（遞迴樹）</small></span>把每一層的成本加起來。這兩種方法都要動手算，而考試最常見的分治遞迴式其實都長成 aT(n/b) + f(n) 這個固定形狀，所以有人把遞迴樹的加總「一次做完」，整理成可以直接套的結論，這就是 <span class="term">Master Theorem<small>（主定理）</small></span>。它的價值在於：只要比較兩個函數的大小，幾秒鐘就能寫出答案。</p>
+          <p>例如 Strassen 的答案是 Θ(n<sup>log₂7</sup>) ≈ Θ(n<sup>2.807</sup>)，分塊乘法是 Θ(n³)。指數只差 0.193 看起來不多，但 n = 2<sup>20</sup>（大約一百萬）時 n³ / n<sup>2.807</sup> = 2<sup>20 × 0.193</sup> ≈ 14，也就是少做了一個數量級的工作；而這個差距完全來自「8 次乘法變 7 次」，也就是 a 從 8 變成 7。主定理會讓你一眼看出 a 才是關鍵。</p>
+        </div>
+      </section>
+
+      <section id="recursion-tree">
+        <h2>遞迴樹：每層成本與葉子數</h2>
+        <div class="panel prose">
+          <p>要理解主定理，先把 T(n) = aT(n/b) + f(n) 展開成一棵樹。樹根代表原問題，它自己花 f(n)；它有 a 個孩子，每個是大小 n/b 的子問題，各自花 f(n/b)；每個孩子又有 a 個孩子……一直到子問題大小變成常數為止。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="master-theorem-tree"></div>
+            <figcaption><b>圖 1</b>：T(n) = aT(n/b) + f(n) 的遞迴樹（畫的是 a = 3）。左邊是樹，右邊是每一層所有節點加起來的成本。大小每層除以 b，所以總共 log<sub>b</sub> n 層；最底層的葉子有 n<sup>log<sub>b</sub> a</sup> 片。</figcaption>
+          </figure>
+          <h3>三個關鍵數字</h3>
+          <ul>
+            <li><b>第 i 層有 a<sup>i</sup> 個節點</b>，每個子問題的大小是 n/b<sup>i</sup>，所以第 i 層的總成本是 <b>a<sup>i</sup> · f(n/b<sup>i</sup>)</b>。</li>
+            <li><b>樹高是 log<sub>b</sub> n</b>：大小每層除以 b，除到 1 要除 log<sub>b</sub> n 次。</li>
+            <li><b>葉子數是 n<sup>log<sub>b</sub> a</sup></b>：最底層是第 log<sub>b</sub> n 層，有 a<sup>log<sub>b</sub> n</sup> 片葉子。用換底公式 a<sup>log<sub>b</sub> n</sup> = n<sup>log<sub>b</sub> a</sup>（兩邊取 log<sub>b</sub> 都等於 log<sub>b</sub> a · log<sub>b</sub> n），每片葉子成本是常數，所以葉子層總共 Θ(n<sup>log<sub>b</sub> a</sup>)。</li>
+          </ul>
+          <p>把所有層加起來就是 T(n)：</p>
+          <pre class="formula">T(n) = Θ(n^(log_b a))  +  Σ (i = 0 到 log_b n − 1)  a^i · f(n / b^i)
+       └─ 葉子層 ─┘        └──────── 內部節點每一層的成本 ────────┘</pre>
+          <p>n<sup>log<sub>b</sub> a</sup> 這個量很重要，我們把它的指數 e = log<sub>b</sub> a 叫做 <b>臨界指數</b>。它代表「如果每個節點都只花常數時間，光是葉子就有這麼多工作」。主定理整件事就是在問：樹根那層的 f(n) 和葉子那層的 n<sup>e</sup>，<b>誰比較大、大多少</b>。</p>
+          <h3>實際算一次：n = 32</h3>
+          <p>下表是用程式把三個遞迴式在 n = 32 時逐層展開的結果（T(1) = 1，f 的常數都取 1）。每格是「這一層的總成本」：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>層</th><th>2T(n/2) + n（Merge sort）</th><th>7T(n/2) + n²（Strassen）</th><th>2T(n/2) + n²</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>1 × 32 = 32</td><td>1 × 32² = 1024</td><td>1 × 32² = <b>1024</b></td></tr>
+                <tr><td>1</td><td>2 × 16 = 32</td><td>7 × 16² = 1792</td><td>2 × 16² = 512</td></tr>
+                <tr><td>2</td><td>4 × 8 = 32</td><td>49 × 8² = 3136</td><td>4 × 8² = 256</td></tr>
+                <tr><td>3</td><td>8 × 4 = 32</td><td>343 × 4² = 5488</td><td>8 × 4² = 128</td></tr>
+                <tr><td>4</td><td>16 × 2 = 32</td><td>2401 × 2² = 9604</td><td>16 × 2² = 64</td></tr>
+                <tr><td>葉子</td><td>32 × 1 = 32</td><td>16807 × 1 = <b>16807</b></td><td>32 × 1 = 32</td></tr>
+                <tr><td>總和 T(32)</td><td>192</td><td>37851</td><td>2016</td></tr>
+                <tr><td>每層是上一層的</td><td>1 倍</td><td>7/4 = 1.75 倍</td><td>2/4 = 0.5 倍</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>三種形狀一目了然：</p>
+          <ul>
+            <li><b>Merge sort</b>：每層都是 32 = n，一共 6 = lg 32 + 1 層，總和 192 = n(lg n + 1)。每層一樣大，答案就是「每層成本 × 層數」= Θ(n lg n)。</li>
+            <li><b>Strassen</b>：每層是上一層的 1.75 倍，越往下越重。光是葉子層 16807 就佔了總和 37851 的 44%，最底下兩層加起來佔 70%。總和由葉子決定：Θ(n<sup>log₂7</sup>)。</li>
+            <li><b>2T(n/2) + n²</b>：每層只剩上一層的一半，越往下越輕。樹根的 1024 就佔了總和 2016 的 51%。總和由樹根決定：Θ(n²)。</li>
+          </ul>
+          <p>相鄰兩層的比值為什麼是 a / b<sup>k</sup>？當 f(n) = n<sup>k</sup>，第 i 層成本是 a<sup>i</sup> (n/b<sup>i</sup>)<sup>k</sup> = n<sup>k</sup> (a/b<sup>k</sup>)<sup>i</sup>，是一個公比 r = a/b<sup>k</sup> 的等比數列。r &gt; 1、r = 1、r &lt; 1 恰好對應 k &lt; e、k = e、k &gt; e（因為 a = b<sup>e</sup>），也就是主定理的三個 case。</p>
+          <details class="code-fold">
+            <summary>看程式碼：逐層加總遞迴樹與直接遞迴</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="遞迴樹逐層加總"><div class="code-head">recursionTree()：n = b^L 時逐層印出每層成本</div><pre class="code">double f(double n, double k, int p) {
+  return pow(n, k) * pow(log2(n), p);
+}
+
+double recursionTree(int a, int b, double k, int p, int L) {
+  double n = pow(b, L), total = 0;
+  for (int i = 0; i &lt; L; i++) {
+    double nodes = pow(a, i);              /* 第 i 層的節點數 */
+    double size = n / pow(b, i);           /* 每個子問題的大小 */
+    double level = nodes * f(size, k, p);  /* 這一層的總成本 */
+    printf("  第 %d 層：%g 個 × f(%g) = %g\n", i, nodes, size, level);
+    total += level;
+  }
+  double leaves = pow(a, L);               /* a^L = n^(log_b a) 片葉子，每片 T(1) = 1 */
+  printf("  葉子：%g 個 × T(1) = %g\n", leaves, leaves);
+  return total + leaves;
+}</pre></div>
+              <div class="code-block" data-tab="直接照遞迴式算"><div class="code-head">T()：照遞迴式直接算 T(n)</div><pre class="code">double T(double n, int a, int b, double k, int p) {
+  if (n &lt; b) return 1;                     /* T(1) = 1 */
+  return a * T(n / b, a, b, k, p) + f(n, k, p);
+}</pre></div>
+              <div class="code-block" data-tab="真的分成 a 個子問題"><div class="code-head">Tsplit()：真的遞迴 a 次並數呼叫次數</div><pre class="code">long calls;
+double Tsplit(long n, int a, int b, double k, int p) {
+  calls++;
+  if (n &lt; b) return 1;
+  double cost = f(n, k, p);                /* 這一層自己的分割、合併成本 */
+  for (int j = 0; j &lt; a; j++) cost += Tsplit(n / b, a, b, k, p);
+  return cost;
+}</pre></div>
+            </div>
+          </details>
+          <p>三種寫法算出的 T(n) 完全一樣（程式裡逐一比對過）。Tsplit() 真的把問題分成 a 份去遞迴，順便數呼叫次數：merge sort 在 n = 65536 時呼叫 131071 次（= 2n − 1，就是遞迴樹的節點總數）；binary search 只呼叫 17 次（= lg n + 1，樹只有一條路徑）；Strassen 在 n = 256 時呼叫 6,725,601 次，等於 (7<sup>9</sup> − 1)/6，也就是 9 層、每層 7 倍的等比級數總和。</p>
+        </div>
+      </section>
+
+      <section id="three-cases">
+        <h2>主定理的三種情況</h2>
+        <div class="panel prose">
+          <p>設 a ≥ 1、b &gt; 1 是常數，f(n) 是漸近為正的函數，T(n) = aT(n/b) + f(n)（n/b 取上高斯或下高斯都可以，不影響答案）。令 e = log<sub>b</sub> a：</p>
+          <pre class="formula">case 1：若 f(n) = O(n^(e − ε))，某個常數 ε &gt; 0          → T(n) = Θ(n^e)
+case 2：若 f(n) = Θ(n^e)                                → T(n) = Θ(n^e · lg n)
+case 3：若 f(n) = Ω(n^(e + ε))，某個常數 ε &gt; 0
+        而且 a·f(n/b) ≤ c·f(n)，某個常數 c &lt; 1，n 夠大  → T(n) = Θ(f(n))</pre>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="master-theorem-three-cases"></div>
+            <figcaption><b>圖 2</b>：三種 case 每一層總成本的形狀。綠色是主導總和的部分：case 1 由葉子主導，case 2 每一層都一樣重要，case 3 由樹根主導。</figcaption>
+          </figure>
+          <h3>case 1：葉子主導</h3>
+          <p>f(n) 比 n<sup>e</sup> <b>小了一個多項式倍</b> n<sup>ε</sup>。每層成本越往下越大，是遞增的等比級數，總和是最後一項（葉子層）的常數倍，所以 T(n) = Θ(n<sup>e</sup>)。例：9T(n/3) + n，e = log₃9 = 2，f = n = O(n<sup>2 − 1</sup>)，ε = 1，答案 Θ(n²)。程式驗算 T(n)/n² 從 n = 81 的 1.494 收斂到 1.500，比值固定，表示真的是 Θ(n²)。</p>
+          <h3>case 2：每層一樣大</h3>
+          <p>f(n) 和 n<sup>e</sup> 同階。每層成本都是 Θ(n<sup>e</sup>)，共有 log<sub>b</sub> n + 1 層，答案就是 n<sup>e</sup> 再乘一個 lg n。Merge sort（e = 1、f = n）得 Θ(n lg n)；binary search（e = log₂1 = 0、f = 1 = n⁰）得 Θ(lg n)。程式驗算 binary search 的 T(2<sup>20</sup>) = 21 = lg n + 1，正是層數。</p>
+          <h3>case 3：樹根主導</h3>
+          <p>f(n) 比 n<sup>e</sup> <b>大了一個多項式倍</b>。每層越往下越小，是遞減的等比級數，總和是第一項（樹根）的常數倍，所以 T(n) = Θ(f(n))。例：2T(n/2) + n²，e = 1，f = n² = Ω(n<sup>1+1</sup>)，答案 Θ(n²)；程式算出 T(n)/n² 收斂到 2，就是等比級數 1 + 1/2 + 1/4 + … 的和。</p>
+          <h3>正則條件：case 3 多出來的那一句</h3>
+          <p>case 3 除了「f 夠大」，還要求 <span class="term">Regularity Condition<small>（正則條件）</small></span>：a·f(n/b) ≤ c·f(n)，c 是小於 1 的常數。翻成遞迴樹的語言，a·f(n/b) 是第 1 層的總成本、f(n) 是第 0 層，這條件就是在說「<b>下一層一定比這一層小一個固定比例</b>」，這樣每層成本才會像等比級數一樣衰減，總和才會被樹根壓住。光有 f = Ω(n<sup>e+ε</sup>) 只保證樹根比葉子大，不保證中間每一層都乖乖變小；如果 f 忽大忽小（在某些 n 特別大、某些 n 特別小），中間的層可能反而比較重，就不能說總和是 Θ(f(n))。</p>
+          <p>好消息是：對考試常見的 f(n) = n<sup>k</sup> lg<sup>p</sup> n，只要 k &gt; e，正則條件<b>一定成立</b>。因為 a·f(n/b) = a(n/b)<sup>k</sup> lg<sup>p</sup>(n/b) = (a/b<sup>k</sup>) · n<sup>k</sup> lg<sup>p</sup>(n/b)，而 k &gt; e 代表 b<sup>k</sup> &gt; b<sup>e</sup> = a，所以 a/b<sup>k</sup> &lt; 1。p ≥ 0 時 lg<sup>p</sup>(n/b) ≤ lg<sup>p</sup> n，直接取 c = a/b<sup>k</sup>；p &lt; 0 時 lg<sup>p</sup>(n/b) / lg<sup>p</sup> n 會隨 n 變大趨近 1，取一個介於 a/b<sup>k</sup> 和 1 之間的 c 即可。考試要求「驗證正則條件」時，就把 c 寫出來。</p>
+          <p>例：3T(n/4) + n lg n。e = log₄3 ≈ 0.792，f = n lg n = Ω(n<sup>0.792 + 0.2</sup>)，ε 取 0.2 就好。正則條件：3 · (n/4) lg(n/4) ≤ (3/4) n lg n，c = 3/4 &lt; 1，成立。所以 T(n) = Θ(n lg n)。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 一句話記憶：<b>比 f(n) 和 n<sup>log<sub>b</sub> a</sup></b>。葉子大取葉子、樹根大取樹根、一樣大多乘一個 lg n；「大」一定要大一個多項式 n<sup>ε</sup>，樹根大時再檢查正則條件。</p></div>
+          <details class="code-fold">
+            <summary>看程式碼：計算臨界指數並判斷 case</summary>
+            <div class="code-block"><div class="code-head">critExp()、masterCase()：f(n) = n^k lg^p n 時判斷落在哪個 case</div><pre class="code">#define EPS 1e-9
+
+double critExp(int a, int b) {
+  return log(a) / log(b);
+}
+
+int masterCase(int a, int b, double k, int p) {
+  double e = critExp(a, b);
+  if (k &lt; e - EPS) {                       /* f 比 n^e 小了一個多項式倍：葉子主導 */
+    printf("case 1：T(n) = Θ(n^%.3f)\n", e);
+    return 1;
+  }
+  if (k &gt; e + EPS) {                       /* f 比 n^e 大了一個多項式倍：樹根主導 */
+    double c = a / pow(b, k);              /* 正則條件：a·f(n/b) ≤ c·f(n)，c = a / b^k &lt; 1 */
+    printf("case 3（c = %.3f &lt; 1）：T(n) = Θ(n^%g lg^%d n)\n", c, k, p);
+    return 3;
+  }
+  if (p &gt;= 0) {                            /* 同階：每層差不多一樣大，再乘上層數 lg n */
+    printf("case 2：T(n) = Θ(n^%.3f lg^%d n)\n", e, p + 1);
+    return 2;
+  }
+  printf("不能套用：f = n^%.3f / lg^%d n 落在 case 1 和 case 2 之間\n", e, -p);
+  return 0;
+}</pre></div>
+          </details>
+          <p>程式裡比較 k 和 e 時用 EPS = 10<sup>−9</sup> 容許浮點誤差：log₂4 用浮點數算可能是 1.9999999999，直接用 == 比會誤判成 case 1。</p>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>輸入 a、b 和 f(n) = n<sup>k</sup> lg<sup>p</sup> n 的 k、p（例如 merge sort 是 a = 2、b = 2、k = 1、p = 0；p = −1 代表 n / lg n），動畫會取 n = b⁵，一層一層畫出遞迴樹：框內是子問題大小，中間是「節點數 × 每個成本」，右邊長條是這一層的總成本，長條的長短變化就是三種 case 的形狀。最後比較 k 和 log<sub>b</sub> a，判斷落在哪個 case、寫出答案；落在空隙時會說明為什麼不能套用。某一層節點太多畫不下時，整層用一個長框代表，框內寫出節點數和子問題大小。</p>
+        </div>
+        <div class="viz" data-viz="master-tree"></div>
+      </section>
+
+      <section id="examples">
+        <h2>完整例題：一步一步套用</h2>
+        <div class="panel prose">
+          <p>套用主定理永遠是同樣四步：(1) 讀出 a、b、f(n)，確認 a ≥ 1、b &gt; 1 是常數；(2) 算 e = log<sub>b</sub> a；(3) 比較 f(n) 和 n<sup>e</sup>，確認差距是多項式倍還是同階；(4) case 3 再驗證正則條件。下表是幾個典型例子：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>遞迴式</th><th>e = log<sub>b</sub> a</th><th>f(n) vs n<sup>e</sup></th><th>case</th><th>答案</th></tr></thead>
+              <tbody>
+                <tr><td>T(n) = 2T(n/2) + n</td><td>1</td><td>n = Θ(n¹)，同階</td><td>2</td><td>Θ(n lg n)</td></tr>
+                <tr><td>T(n) = T(n/2) + 1</td><td>0</td><td>1 = Θ(n⁰)，同階</td><td>2</td><td>Θ(lg n)</td></tr>
+                <tr><td>T(n) = 7T(n/2) + n²</td><td>log₂7 ≈ 2.807</td><td>n² = O(n<sup>2.807 − 0.8</sup>)</td><td>1</td><td>Θ(n<sup>log₂7</sup>)</td></tr>
+                <tr><td>T(n) = 8T(n/2) + n²</td><td>3</td><td>n² = O(n<sup>3 − 1</sup>)</td><td>1</td><td>Θ(n³)</td></tr>
+                <tr><td>T(n) = 2T(n/4) + 1</td><td>1/2</td><td>1 = O(n<sup>1/2 − 1/2</sup>)</td><td>1</td><td>Θ(√n)</td></tr>
+                <tr><td>T(n) = 3T(n/9) + √n</td><td>1/2</td><td>√n = Θ(n<sup>1/2</sup>)，同階</td><td>2</td><td>Θ(√n lg n)</td></tr>
+                <tr><td>T(n) = 4T(n/2) + n<sup>2.5</sup></td><td>2</td><td>n<sup>2.5</sup> = Ω(n<sup>2 + 0.5</sup>)；c = 4/2<sup>2.5</sup> ≈ 0.707</td><td>3</td><td>Θ(n<sup>2.5</sup>)</td></tr>
+                <tr><td>T(n) = 3T(n/4) + n lg n</td><td>≈ 0.792</td><td>n lg n = Ω(n<sup>0.792 + 0.2</sup>)；c = 3/4</td><td>3</td><td>Θ(n lg n)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>用程式驗證：T(n) / 答案 會趨近常數</h3>
+          <p>Θ 的意思是「T(n) 和答案只差常數倍」。所以驗證方法很直接：把 T(n) 實際算出來，除以主定理給的答案 g(n)，看 n 變大時比值是否穩定在某個常數。下表是程式（T(1) = 1）算出的 T(n)/g(n)：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>遞迴式</th><th>g(n)</th><th>n = 2⁸</th><th>n = 2¹⁶</th><th>n = 2²⁴</th><th>收斂到</th></tr></thead>
+              <tbody>
+                <tr><td>2T(n/2) + n</td><td>n lg n</td><td>1.125</td><td>1.063</td><td>1.042</td><td>1（多出來的是葉子層的 n，佔 1/lg n）</td></tr>
+                <tr><td>7T(n/2) + n²</td><td>n<sup>log₂7</sup></td><td>2.318</td><td>2.333</td><td>2.333</td><td>7/3（等比級數 Σ(4/7)<sup>j</sup> = 7/3）</td></tr>
+                <tr><td>2T(n/2) + n²</td><td>n²</td><td>1.996</td><td>2.000</td><td>2.000</td><td>2（等比級數 Σ(1/2)<sup>i</sup> = 2）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>比值穩定，就代表答案的「階」是對的。如果把 Strassen 誤答成 Θ(n³)，比值會是 2.333 / n<sup>0.193</sup>，n 每大 2⁸ 倍就縮小約 2.9 倍，一路趨近 0，馬上就看得出錯。</p>
+          <details class="code-fold">
+            <summary>看程式碼：主定理的答案 g(n)</summary>
+            <div class="code-block"><div class="code-head">answer()：主定理給的 g(n)，用來算 T(n)/g(n)</div><pre class="code">double answer(int a, int b, double k, int p, double n) {
+  double e = critExp(a, b), lg = log2(n);
+  if (k &lt; e - EPS) return pow(n, e);
+  if (k &gt; e + EPS) return f(n, k, p);
+  if (p &gt;= 0) return pow(n, e) * pow(lg, p + 1);
+  if (p == -1) return pow(n, e) * log2(lg);  /* 空隙裡的 n^e / lg n：Θ(n^e lg lg n) */
+  return pow(n, e);                          /* p &lt; -1：每層成本加起來收斂，Θ(n^e) */
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="extended">
+        <h2>延伸的 case 2：多了 lg 的次方</h2>
+        <div class="panel prose">
+          <p>三個 case 的標準版本有一個明顯的漏洞：2T(n/2) + n lg n。這裡 e = 1，f = n lg n 比 n 大，但只大了 lg n 倍，<b>不是多項式倍</b>（對任何 ε &gt; 0，lg n 最後都比 n<sup>ε</sup> 小），所以不符合 case 3；它也不是 Θ(n)，不符合 case 2。這類 f 很常見，所以 case 2 有一個一般化的版本：</p>
+          <pre class="formula">延伸 case 2：若 f(n) = Θ(n^e · lg^p n)，p ≥ 0   → T(n) = Θ(n^e · lg^(p+1) n)</pre>
+          <p>p = 0 就是原本的 case 2。為什麼多乘一個 lg n？看遞迴樹的第 i 層：a<sup>i</sup> · (n/b<sup>i</sup>)<sup>e</sup> · lg<sup>p</sup>(n/b<sup>i</sup>) = n<sup>e</sup> · lg<sup>p</sup>(n/b<sup>i</sup>)，因為 a<sup>i</sup> = (b<sup>i</sup>)<sup>e</sup> 剛好抵掉。lg(n/b<sup>i</sup>) 從最上面的 lg n 一層一層變小到常數，令 j = log<sub>b</sub>(n/b<sup>i</sup>)，總和大約是：</p>
+          <pre class="formula">n^e · Σ (j = 1 到 log_b n) (j · lg b)^p  ≈  n^e · (lg b)^p · (log_b n)^(p+1) / (p + 1)  =  Θ(n^e · lg^(p+1) n)</pre>
+          <p>所以 2T(n/2) + n lg n = Θ(n lg² n)，4T(n/2) + n² lg n = Θ(n² lg² n)。程式驗算這兩個的 T(n) / (n<sup>e</sup> lg² n) 都從 0.578（n = 2⁸）降到 0.523（n = 2²⁴），往 1/2 收斂，正好是上式的 1/(p + 1)。</p>
+          <h3>p 是負數呢？</h3>
+          <p>同樣的加總在 p &lt; 0 時也算得出來，只是答案的形狀不一樣，這兩種不在延伸 case 2 的範圍內，要自己用遞迴樹算：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>f(n)</th><th>每層成本加總</th><th>結果</th><th>程式驗算</th></tr></thead>
+              <tbody>
+                <tr><td>n<sup>e</sup> lg<sup>p</sup> n，p ≥ 0</td><td>Σ j<sup>p</sup> ≈ (log n)<sup>p+1</sup>/(p+1)</td><td>Θ(n<sup>e</sup> lg<sup>p+1</sup> n)</td><td>p = 1 時比值 → 1/2</td></tr>
+                <tr><td>n<sup>e</sup> / lg n（p = −1）</td><td>Σ 1/j 是調和級數 ≈ ln(log n)</td><td>Θ(n<sup>e</sup> lg lg n)</td><td>2T(n/2) + n/lg n 對 n lg lg n 的比值 1.24 → 1.04（n = 2⁸ → 2²⁴），慢慢穩定</td></tr>
+                <tr><td>n<sup>e</sup> / lg² n（p = −2）</td><td>Σ 1/j² 收斂到常數 π²/6</td><td>Θ(n<sup>e</sup>)</td><td>比值 2.53 → 2.60，往 1 + π²/6 ≈ 2.64 收斂</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>直覺上：p 越負，f 越小，越靠近 case 1。p &lt; −1 時 f 已經小到每層加起來不會比葉子多，答案和 case 1 一樣是 Θ(n<sup>e</sup>)；p = −1 剛好卡在邊界，多出一個長得極慢的 lg lg n（n = 2<sup>32</sup>，大約 43 億，lg lg n 也才 5）。</p>
+        </div>
+      </section>
+
+      <section id="limitations">
+        <h2>主定理不能用的情況</h2>
+        <div class="panel prose">
+          <p>主定理只是「aT(n/b) + f(n) 這個形狀的遞迴樹」的整理結果，條件不符時直接套會得到錯的答案。考試很喜歡出「下列哪個不能用主定理」，常見的有下面幾類。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="master-theorem-gap"></div>
+            <figcaption><b>圖 3</b>：把 f(n) 由小到大排，主定理涵蓋的是綠色的部分。n<sup>e</sup>/lg n、n<sup>e</sup>/lg² n 比 n<sup>e</sup> 小，但只小了 lg 的次方倍，不是多項式倍，落在 case 1 和 case 2 之間的空隙（紅色）。</figcaption>
+          </figure>
+          <h3>1. f(n) 落在空隙裡</h3>
+          <p>最經典的是 <b>T(n) = 2T(n/2) + n / lg n</b>。e = 1，f = n/lg n 比 n 小，看起來像 case 1，但 case 1 要求 f = O(n<sup>1−ε</sup>)，也就是小一個多項式倍 n<sup>ε</sup>；n/lg n 只比 n 小 lg n 倍，而 lg n 比任何 n<sup>ε</sup> 都長得慢，所以不成立。它也不是 Θ(n)。這時用遞迴樹：第 i 層成本 2<sup>i</sup> · (n/2<sup>i</sup>) / lg(n/2<sup>i</sup>) = n / (lg n − i)，加總得到 n · (1/lg n + 1/(lg n − 1) + … + 1/1) = n · H<sub>lg n</sub>，調和數 H<sub>m</sub> ≈ ln m，所以 <b>T(n) = Θ(n lg lg n)</b>。</p>
+          <p>同理，在只有三個標準 case 的版本裡，2T(n/2) + n lg n 落在 case 2 和 case 3 之間的空隙，要靠上一節的延伸 case 2 才能處理。題目若說「用主定理（三種情況）」，遇到它要回答不能直接套用，再用延伸版或遞迴樹算出 Θ(n lg² n)。</p>
+          <h3>2. 形狀不是 aT(n/b) + f(n)</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>遞迴式</th><th>不能套的原因</th><th>改用的方法與答案</th></tr></thead>
+              <tbody>
+                <tr><td>T(n) = T(n/3) + T(2n/3) + n</td><td>子問題大小不一樣，沒有單一的 b</td><td>遞迴樹：每層總成本 ≤ n，最長路徑 log<sub>3/2</sub> n 層，最短 log₃ n 層 → Θ(n lg n)</td></tr>
+                <tr><td>T(n) = n · T(n/2) + n</td><td>a = n 不是常數</td><td>不能套，要另外展開分析</td></tr>
+                <tr><td>T(n) = 0.5 · T(n/2) + n</td><td>a &lt; 1，「半個子問題」沒有意義</td><td>不符合前提</td></tr>
+                <tr><td>T(n) = T(n − 1) + n</td><td>是「減掉常數」不是「除以 b」</td><td>展開：n + (n−1) + … + 1 → Θ(n²)</td></tr>
+                <tr><td>T(n) = 2T(n − 1) + 1</td><td>同上</td><td>每層節點數加倍，共 n 層 → Θ(2<sup>n</sup>)</td></tr>
+                <tr><td>T(n) = 2T(√n) + lg n</td><td>不是除以常數 b</td><td>變數代換 m = lg n，S(m) = T(2<sup>m</sup>) 滿足 S(m) = 2S(m/2) + m，S(m) = Θ(m lg m)，所以 T(n) = Θ(lg n · lg lg n)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>反過來也要注意：f(n) 不是多項式不代表不能用。例如 T(n) = 2T(n/2) + 2<sup>n</sup>，f = 2<sup>n</sup> 遠大於 n<sup>1+ε</sup>，正則條件 2 · 2<sup>n/2</sup> ≤ c · 2<sup>n</sup> 在 n 夠大時對 c = 1/2 成立，所以是 case 3，T(n) = Θ(2<sup>n</sup>)。判斷能不能用，看的是三個條件，不是 f 長得像不像多項式。</p>
+          <h3>3. 不必擔心的事：取整數</h3>
+          <p>實際的 merge sort 是 T(⌈n/2⌉) + T(⌊n/2⌋) + Θ(n)，兩個子問題差 1。這種上下高斯的差異不影響漸近結果，主定理照樣適用，答案還是 Θ(n lg n)。</p>
+        </div>
+      </section>
+
+      <section id="relation">
+        <h2>和代入法、遞迴樹的關係</h2>
+        <div class="panel prose">
+          <p>三種解遞迴式的方法不是互相取代，而是分工合作：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>方法</th><th>做什麼</th><th>優點</th><th>缺點</th></tr></thead>
+              <tbody>
+                <tr><td>主定理</td><td>比較 f(n) 和 n<sup>log<sub>b</sub> a</sup>，直接讀答案</td><td>最快，幾秒鐘寫出答案</td><td>只適用 aT(n/b) + f(n)，有空隙</td></tr>
+                <tr><td>遞迴樹</td><td>畫出每層成本再加總</td><td>任何形狀都能畫，直覺清楚，常用來「猜」答案</td><td>加總不嚴謹時只能當猜測</td></tr>
+                <tr><td>代入法</td><td>猜一個答案，用數學歸納法證明</td><td>最嚴謹，可以證明任何猜對的答案</td><td>要先猜得到；歸納時常數要處理好</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>主定理其實就是<b>預先算好的遞迴樹</b>：三個 case 對應等比級數遞增、每項相等、遞減三種加總結果，正則條件就是保證「遞減」的那一句。所以忘記公式時，畫遞迴樹重推一遍一定推得出來，這也是本頁動畫的設計方式。</p>
+          <p>考題若要求「證明」或「用代入法」，就要把主定理得到的答案拿去做歸納。例如證明 2T(n/2) + n = O(n lg n)：假設對比 n 小的值 T(m) ≤ c·m lg m 都成立，則</p>
+          <pre class="formula">T(n) ≤ 2 · c(n/2) lg(n/2) + n
+     = c·n lg n − c·n + n
+     ≤ c·n lg n          （只要 c ≥ 1）</pre>
+          <p>最後一步要寫出「−cn + n ≤ 0」才算完整，這正是代入法最常被扣分的地方：歸納的結論必須和假設的形式<b>完全一樣</b>（c·n lg n），寫成 c·n lg n + n 就不能說證完了。基底情況則選 n = 2、3 這種 lg n &gt; 0 的小值，用常數 c 夠大蓋過去。</p>
+          <p>遞迴樹與代入法的完整寫法會在「Substitution and Recursion-Tree Methods 代入法與遞迴樹」這個主題頁詳細說明（籌備中）。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>直接套主定理求 Θ</td><td>很常考</td><td>讀出 a、b、f → 算 log<sub>b</sub> a → 比較 f 與 n<sup>log<sub>b</sub> a</sup> → 寫答案</td><td><a class="q-link" href="#q-al-0091">例題</a> <a class="q-link" href="#q-al-0092">例題</a></td></tr>
+                <tr><td>case 3 與正則條件</td><td>常考</td><td>確認 f = Ω(n<sup>e+ε</sup>)，寫出 a·f(n/b) ≤ c·f(n) 的 c &lt; 1</td><td><a class="q-link" href="#q-al-0093">例題</a></td></tr>
+                <tr><td>判斷能不能用主定理</td><td>很常考</td><td>檢查 a ≥ 1、b &gt; 1 是常數、子問題大小相同、f 是否落在空隙</td><td><a class="q-link" href="#q-al-0094">例題</a> <a class="q-link" href="#q-al-0096">例題</a></td></tr>
+                <tr><td>變數代換後再套</td><td>常考</td><td>T(√n) 型：令 m = lg n、S(m) = T(2<sup>m</sup>)，化成 aS(m/b) + g(m)</td><td><a class="q-link" href="#q-al-0095">例題</a></td></tr>
+                <tr><td>比較兩個分治演算法</td><td>常考</td><td>分別求出 n<sup>log<sub>b</sub> a</sup>，比指數；解不等式 log<sub>b</sub> a &lt; 某值</td><td><a class="q-link" href="#q-al-0097">例題</a></td></tr>
+                <tr><td>f 含 lg 次方（延伸 case 2、空隙）</td><td>偶爾</td><td>同階再乘 lg<sup>p</sup> n → 答案 lg<sup>p+1</sup> n；p = −1 得 lg lg n；p &lt; −1 得 n<sup>e</sup></td><td><a class="q-link" href="#q-al-0098">例題</a> <a class="q-link" href="#q-al-0096">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Binary search 切兩半，所以是 2T(n/2) + 1</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> a 是遞迴呼叫的次數；binary search 只往一半走，是 T(n/2) + 1 = Θ(lg n)</span> <a class="q-link" href="#q-al-0091">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> f(n) = n² 比較大，所以 4T(n/2) + n 的答案是 Θ(n)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要比的是 f 和 n<sup>log<sub>b</sub> a</sup>，不是 f 和 n；log₂4 = 2，葉子 n² 主導，答案 Θ(n²)</span> <a class="q-link" href="#q-al-0091">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> case 2 的答案是 Θ(f(n))</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每層一樣大、共 log n 層，要多乘一個 lg n：Θ(n<sup>e</sup> lg n)</span> <a class="q-link" href="#q-al-0092">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> case 3 只要 f 比 n<sup>e</sup> 大就好</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要大一個多項式倍，而且要驗證正則條件 a·f(n/b) ≤ c·f(n)、c &lt; 1</span> <a class="q-link" href="#q-al-0093">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> n/lg n 比 n 小，所以 2T(n/2) + n/lg n 是 case 1</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只小了 lg n 倍不是多項式倍，落在空隙；用遞迴樹得 Θ(n lg lg n)</span> <a class="q-link" href="#q-al-0096">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> T(n/3) + T(2n/3) + n 也能套主定理</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 子問題大小不同就沒有單一的 b，要用遞迴樹（或代入法）</span> <a class="q-link" href="#q-al-0094">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> T(√n) 型的遞迴式沒辦法處理</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 令 m = lg n 做變數代換，就變回 aS(m/b) + g(m) 的形狀</span> <a class="q-link" href="#q-al-0095">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="master-theorem"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-21 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz-core.js?v=7f68026e"></script>
+  <script src="../../../assets/js/viz/algorithms/master-theorem.js?v=7f68026e"></script>
+</body>
+</html>
