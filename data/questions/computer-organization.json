@@ -4722,6 +4722,35 @@
       ],
       "answer": "(b)(d)",
       "explanation": "<p><b>(a) 錯</b>：前兩句對：同一組硬體可以做乘法和除法；乘法時 Product 暫存器每步右移，除法時 Remainder 暫存器每步左移。錯在第三句的對應：乘法每一步要看的是乘數目前的<b>最低位元</b>（Product 暫存器最右邊那一位），決定要不要把被乘數加進去；除法每一步要看的是減完之後<b>餘數的正負</b>（左半部的最高位元，也就是 ALU 結果的符號），決定要不要還原。圖中 P2 是從暫存器左半部拉出、同時接回 ALU 的那條線，對應除法的餘數；P1 是另一個測試位元，對應乘法。題目把兩者講反了。</p><p><b>(b) 對</b>：對齊時把指數小的那個數的 significand 右移：被移出去的是很小的位元，只影響精確度一點點（還有 guard、round、sticky 位元幫忙）。如果反過來把指數大的數左移，最高位元會被擠出 significand 的範圍，造成溢位、錯得很嚴重。</p><p><b>(c) 錯</b>：整數加法（不考慮溢位、或用 2's complement 模 2<sup>n</sup> 運算）有結合律，但浮點數沒有。例如 (−1.5 × 10<sup>38</sup> + 1.5 × 10<sup>38</sup>) + 1.0 = 1.0，而 −1.5 × 10<sup>38</sup> + (1.5 × 10<sup>38</sup> + 1.0) = 0，因為 1.0 在和 10<sup>38</sup> 相加時被捨入掉了。</p><p><b>(d) 對</b>：精確到小數點後第二位，也就是有效位數 3 位。對齊：5.01 × 10<sup>2</sup> = 0.00501 × 10<sup>5</sup>，相加得 1.56501 × 10<sup>5</sup>。保留 1.56，後面的 guard 位是 5、round 位是 0、sticky 位是 1（後面還有非 0 的 1）。以最後一位為單位，x = 156.501，round half down = ⌈156.501 − 0.5⌉ = ⌈156.001⌉ = 157，結果 1.57 × 10<sup>5</sup>。誤差 = 1.57 − 1.56501 = 0.00499（× 10<sup>5</sup>），而 1 ulp = 0.01 × 10<sup>5</sup>，所以誤差是 <b>0.499 ulp</b>，敘述正確（已用程式以十進位精確運算驗算）。</p><p>（待確認：Fig. 5 中 P1、P2 的接法畫得不夠清楚，(a) 是依「P2 來自左半部（餘數），P1 是乘法的測試位元」判讀。）</p>"
+    },
+    {
+      "id": "co-0190",
+      "topics": [
+        "multiprocessors",
+        "amdahls-law",
+        "cache-performance",
+        "cache-coherence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(10 pts)（複選）Which of the following statements are correct?</p>",
+      "choices": [
+        "(A) ARM big.LITTLE is a multi-core architecture designed for energy-efficiency.",
+        "(B) You are asked to deliver 90x speedup from a 100-processor system. The target application can only have at most 5% of codes that can’t be serialized.",
+        "(C) A RISC processor can always deliver better performance than a CISC processor.",
+        "(D) A larger block size could potentially lead to more false sharing misses.",
+        "(E) A larger block size could potentially help reduce compulsory misses."
+      ],
+      "answer": "(A)(D)(E)",
+      "explanation": "<p><b>(A) 對</b>：ARM big.LITTLE 是 heterogeneous multi-core（異質多核心）架構，把高效能的「大核」和省電的「小核」放在同一顆晶片上，輕負載交給小核、重負載才叫醒大核，設計目的就是能源效率。</p>\n<p><b>(B) 錯</b>：這個選項原文寫「codes that can’t be serialized」（不能被序列化的程式碼），字面上語意不通；照 Amdahl’s Law（阿姆達爾定律）題型的慣例，應該是想寫「can’t be <b>parallelized</b>」，也就是必須循序執行的部分（serial fraction）最多 5%（待確認）。用 Amdahl’s Law 算要達成 90 倍需要的循序比例 s：</p>\n<pre class=\"formula\">Speedup = 1 / (s + (1 − s) / 100) = 90\n→ 100s + (1 − s) = 100 / 90\n→ 99s = 1/9\n→ s = 1/891 ≈ 0.11%</pre>\n<p>也就是說循序部分最多只能約 0.11%，遠比 5% 嚴格。反過來驗證：如果循序部分真的有 5%，speedup 只有 1 / (0.05 + 0.95/100) ≈ 16.8 倍，離 90 倍差很遠（已用程式驗算）。所以「最多 5% 就夠」是錯的。另一種字面解讀「不能被序列化（即可平行）的部分最多 5%」也一樣達不到 90 倍，所以不管怎麼讀，(B) 都是錯的。</p>\n<p><b>(C) 錯</b>：「always」太絕對。效能 = 指令數 × CPI × cycle time，RISC 指令簡單、CPI 低，但同一個程式往往需要更多指令；實際效能還受製程、微架構、編譯器影響。現代 x86（CISC）在內部也會把指令拆成類 RISC 的 micro-op 執行，效能不見得輸。</p>\n<p><b>(D) 對</b>：block 越大，兩個處理器各自存取的不同變數越容易落在同一個 block，一方寫入就會 invalidate 另一方的副本，造成 false sharing（偽共享）miss 變多。</p>\n<p><b>(E) 對</b>：block 越大，一次 miss 會把附近更多資料一起搬進來，利用 spatial locality（空間區域性），後面存取相鄰資料時就不用再 cold miss，所以 compulsory miss（強制失誤）會減少。代價是 block 數變少，conflict／capacity miss 可能上升、miss penalty 也變大。</p>\n<p>答案 <b>(A)(D)(E)</b>。</p>"
     }
   ]
 }
