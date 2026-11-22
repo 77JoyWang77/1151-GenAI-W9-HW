@@ -245,6 +245,2102 @@
       "question": "系統只有一種資源，共 R 個。有 n 個行程，每個行程執行期間最多同時需要 k 個（k ≥ 1），用完一定會歸還。<br>(1) 若 n = 4、k = 3，R 至少要多少，才能保證無論怎麼配置都不會死結？<br>(2) 若 R = 7、k = 3，最多可以有幾個行程而保證不會死結？請說明推導。",
       "answer": "(1) R ≥ n(k − 1) + 1 = 9　(2) 最多 3 個行程",
       "explanation": "<p>最壞的情況是每個行程都拿到 k − 1 個，差一個才能完成，而且資源剛好發完：這時所有人都在等，死結。這個情況用掉 n(k − 1) 個資源。只要再多 1 個，也就是 R ≥ n(k − 1) + 1，無論怎麼配置，總會有某個行程能拿到第 k 個而完成，完成後歸還的資源又能讓其他人完成，所以不會死結。反過來，R ≤ n(k − 1) 時就能構造出全部卡住的配置。</p><p>(1) n = 4、k = 3：R ≥ 4 × 2 + 1 = 9。R = 8 時，四個行程各拿 2 個，剩 0 個，大家都還差 1 個，死結。</p><p>(2) 要 n(k − 1) + 1 ≤ 7，也就是 2n + 1 ≤ 7，n ≤ 3。n = 4 時可以讓 7 個全部發完、每人都還沒到 3 個（例如 2、2、2、1），全部等待，死結。</p><p>以上結論已用程式窮舉所有配置驗證。常見錯誤：寫成 nk 或 n(k − 1)，少了「再多 1 個」那一步。</p>"
+    },
+    {
+      "id": "os-0016",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）What are the factors that should be considered when deciding the page size?",
+      "choices": [
+        "(a) Size of page table",
+        "(b) Fragmentation",
+        "(c) I/O overhead",
+        "(d) Number of page faults",
+        "(e) None of the above"
+      ],
+      "answer": "(a)(b)(c)(d)",
+      "explanation": "<p>選 page size 是一連串取捨：</p><ul><li>(a) page 越大，page 數越少，page table 越小，傾向大 page。</li><li>(b) <b>internal fragmentation（內部碎片）</b>平均是半個 page，page 越小浪費越少，傾向小 page。</li><li>(c) 磁碟 I/O 時間主要花在 seek 和 rotation，一次讀大 page 比讀很多小 page 划算，傾向大 page；但小 page 只讀真正需要的部分，總傳輸量較少。</li><li>(d) page 越大，同樣的 locality 只需要較少的 page，page fault 次數較少。</li></ul><p>四個都是考量因素，所以不選 (e)。</p>"
+    },
+    {
+      "id": "os-0017",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）Choose the correct statements from the multiple choices regarding threads",
+      "choices": [
+        "(a) Kernel-level threads are easier and faster to create than user-level threads",
+        "(b) Different user-level threads of the same process can have different scheduling priorities",
+        "(c) A blocking kernel-level thread blocks all threads in the process",
+        "(d) For the Many-to-One multithreading model, one thread blocking causes all to block",
+        "(e) None of the above"
+      ],
+      "answer": "(b)(d)",
+      "explanation": "<ul><li>(a) 錯：<b>user-level thread（使用者層級執行緒）</b>由 thread library 在 user space 建立，不用進 kernel，比 kernel thread 快也簡單。</li><li>(b) 對：thread library 可以讓程式設計者替同一個 process 裡的 user thread 設不同的優先權，由 library 自己排程。</li><li>(c) 錯：kernel thread 由 kernel 個別排程，一條 block 住，其他 thread 照樣能跑，這正是 kernel thread 的優點。</li><li>(d) 對：many-to-one 只有一個 kernel thread，任何一個 user thread 做 blocking system call，整個 process 都卡住。</li></ul>"
+    },
+    {
+      "id": "os-0018",
+      "topics": [
+        "deadlock-characterization",
+        "bankers-algorithm"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）Choose the correct statements from the multiple choices regarding deadlocks",
+      "choices": [
+        "(a) If the resource allocation graph contains a cycle, then the system is deadlocked",
+        "(b) If a system is in an unsafe state, then there is no allocation sequence that allows the processes to finish executing",
+        "(c) Pretending that deadlocks never occur in the system is a method to deal with deadlocks",
+        "(d) Banker's algorithm is a deadlock prevention algorithm",
+        "(e) None of the above"
+      ],
+      "answer": "(c)",
+      "explanation": "<ul><li>(a) 錯：cycle 是 deadlock 的必要條件；每種資源只有一個 instance 時 cycle 才等於 deadlock，有多個 instance 時有 cycle 也不一定 deadlock。</li><li>(b) 錯：unsafe 只代表「<b>有可能</b>」走到 deadlock，process 不一定會把最大需求要滿，仍可能全部做完。</li><li>(c) 對：忽略 deadlock（ostrich approach）是三種處理方式之一，Linux、Windows 都這樣做。</li><li>(d) 錯：Banker's algorithm 是 deadlock <b>avoidance（避免）</b>；prevention 是破壞四個必要條件之一。</li></ul>"
+    },
+    {
+      "id": "os-0019",
+      "topics": [
+        "virtual-machines"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(a) Each <b>container</b> includes the application, the necessary binaries and libraries and an entire guest operating system",
+        "(b) Containers running on a single machine all share the same operating system kernel",
+        "(c) Virtual machine run as an isolated process in user space on the host operating system",
+        "(d) Containers are <b>lightweight than virtual machines</b>",
+        "(e) None of the above"
+      ],
+      "answer": "(b)(d)",
+      "explanation": "<ul><li>(a) 錯：帶著完整 guest OS 的是 virtual machine；container 只包應用程式和它需要的 binaries、libraries。</li><li>(b) 對：同一台機器上的 container 共用 host 的 kernel，靠 namespace、cgroup 隔離。</li><li>(c) 錯：「在 host OS 上以 user space 中隔離的 process 執行」是 container 的描述；VM 是跑在 hypervisor 上、有自己 kernel 的完整虛擬機器。</li><li>(d) 對：不用開一整個 OS，container 啟動快、佔用資源少。</li></ul>"
+    },
+    {
+      "id": "os-0020",
+      "topics": [
+        "ipc"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）When communicating with sockets, a client process initiates a request for a connection and is assigned a port by the host computer. Which of the following would be a valid port assignment for the host computer?",
+      "choices": [
+        "(a) 21",
+        "(b) 23",
+        "(c) 80",
+        "(d) 1625",
+        "(e) None of the above"
+      ],
+      "answer": "(d)",
+      "explanation": "<p>1024 以下是 <b>well-known port（公認埠）</b>，保留給標準服務：21 是 FTP、23 是 telnet、80 是 HTTP。client 端連線時由 host 自動配一個大於 1024 的任意 port，所以只有 1625 合理。</p>"
+    },
+    {
+      "id": "os-0021",
+      "topics": [
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）_____ is/are not a technique/s for handling critical sections in operating systems.",
+      "choices": [
+        "(a) Nonpreemptive kernels",
+        "(b) Preemptive kernels",
+        "(c) Spinlocks",
+        "(d) Peterson's solution",
+        "(e) Dekker’s algorithm"
+      ],
+      "answer": "(d)(e)（待確認）",
+      "explanation": "<p>作業系統 kernel 處理自己的 critical section，主要有兩種設計：<b>nonpreemptive kernel</b>（在 kernel mode 不會被搶，自然沒有 race）和 <b>preemptive kernel</b>（可以被搶，要靠 lock 保護），而 spinlock 就是 kernel 裡常用的鎖，所以 (a)(b)(c) 都是 OS 會用的技術。</p><p>Peterson's solution 和 Dekker's algorithm 是純軟體、只適用兩個 process 的經典演算法，在現代會重排 load/store 的處理器上不保證正確，OS 實際上不用它們處理 critical section，所以答 (d)(e)。</p><p>（待確認）這題沒有公布答案；也有人把 Peterson、Dekker 視為「critical section 的解法」而認為沒有選項成立，本題答案依「OS 實際採用的技術」判斷。</p>"
+    },
+    {
+      "id": "os-0022",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）Assume a system has a TLB hit ratio of 90%. It requires 15 nanoseconds to access the TLB, and 85 nanoseconds to access main memory. What is the effective memory access time in nanoseconds for this system?",
+      "choices": [
+        "(a) 108.5",
+        "(b) 100",
+        "(c) 22",
+        "(d) 176.5",
+        "(e) 32"
+      ],
+      "answer": "(a)",
+      "explanation": "<ul><li>TLB hit（90%）：查 TLB 15 ns + 存取資料 85 ns = 100 ns。</li><li>TLB miss（10%）：查 TLB 15 ns + 讀 page table 85 ns + 存取資料 85 ns = 185 ns。</li><li>EAT = 0.9 × 100 + 0.1 × 185 = 90 + 18.5 = 108.5 ns，比沒有 miss 的理想值 100 ns 多 8.5%。</li></ul><p>選 (b) 的人是忘了 miss 要多讀一次 page table。</p>"
+    },
+    {
+      "id": "os-0023",
+      "topics": [
+        "page-replacement"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）Given the reference string of page accesses: 1 2 3 4 2 3 4 1 2 1 1 3 1 4 and a system with three page frames, what is the final configuration of the three frames after the LRU algorithm is applied? Assume the FIFO queue is left out right in.",
+      "choices": [
+        "(a) 1, 3, 4",
+        "(b) 3, 1, 4",
+        "(c) 4, 1, 2",
+        "(d) 1, 2, 3",
+        "(e) 1, 4, 3"
+      ],
+      "answer": "(b)",
+      "explanation": "<p>把 frame 依「最久沒用 → 最近用過」由左到右排（左邊出、右邊進），每次存取就把該 page 移到最右邊：</p><div class=\"table-scroll\"><table><tr><th>存取</th><th>狀態</th><th>說明</th></tr><tr><td>1 2 3</td><td>1 2 3</td><td>前 3 次都是 fault</td></tr><tr><td>4</td><td>2 3 4</td><td>fault，換掉 1</td></tr><tr><td>2 3 4</td><td>2 3 4</td><td>都 hit</td></tr><tr><td>1</td><td>3 4 1</td><td>fault，換掉 2</td></tr><tr><td>2</td><td>4 1 2</td><td>fault，換掉 3</td></tr><tr><td>1 1</td><td>4 2 1</td><td>hit</td></tr><tr><td>3</td><td>2 1 3</td><td>fault，換掉 4</td></tr><tr><td>1</td><td>2 3 1</td><td>hit</td></tr><tr><td>4</td><td>3 1 4</td><td>fault，換掉 2</td></tr></table></div><p>最後是 3, 1, 4，共 8 次 page fault。(a)(e) 的集合一樣，但題目規定了左出右進的順序，所以只有 (b) 正確。</p>"
+    },
+    {
+      "id": "os-0024",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（複選題）Which of the following is true of a blocking system call?",
+      "choices": [
+        "(a) The application continues to execute its code when the call is issued.",
+        "(b) The call returns immediately without waiting for the I/O to complete.",
+        "(c) The execution of the application is suspended when the call is issued.",
+        "(d) Blocking application code is harder to understand than nonblocking application code",
+        "(e) None of the above"
+      ],
+      "answer": "(c)",
+      "explanation": "<ul><li>(a)(b) 錯：那是 nonblocking / asynchronous call 的行為。</li><li>(c) 對：blocking call 發出後，process 從 running 移到 waiting queue，等 I/O 完成才回來。</li><li>(d) 錯：blocking 的程式是「呼叫完就拿到結果」的直線流程，反而比 nonblocking 好懂。</li></ul>"
+    },
+    {
+      "id": "os-0025",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "Consider the C code on the right side. A user executes the executable of the code on a Linux shell. Assume it executed successfully. How many processes have been created by executing the C code, including the original process that executes main( )?<pre class=\"code\">...\nint main() {\n  pid_t pid;\n  int i=0;\n  for (i=0;i&lt;4;i++) {\n    pid = fork();\n    if (pid &lt;0) {\n      fprintf(stderr,\"fork error\\n\");\n      exit(-1);\n    }\n  }\n  return 0;\n}</pre>",
+      "choices": [
+        "(a) 4",
+        "(b) 5",
+        "(c) 16",
+        "(d) 17",
+        "(e) 33"
+      ],
+      "answer": "(c)",
+      "explanation": "<p>迴圈裡的 fork() 沒有被 if 擋住，parent 和 child 都會繼續跑完剩下的迴圈。每執行一輪，現有的 process 都各自 fork 一次，數量翻倍：</p><ul><li>開始：1 個</li><li>i=0 之後 2 個、i=1 之後 4 個、i=2 之後 8 個、i=3 之後 16 個</li></ul><p>包含原本的 process 共 2⁴ = 16 個（新建立的是 15 個）。選 (b) 5 的人是以為只有原本的 process 在 fork。</p>"
+    },
+    {
+      "id": "os-0026",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "Consider the CPU burst timeline of four processes, as shown on the right side. The processes need to share one CPU, and the OS uses the round-robin algorithm with time quantum = 5 for scheduling. Let the context switch time be very close to 0. Let the average waiting time of the processes be <i>t</i>. Which of the following is true?<div class=\"table-scroll\"><table><tr><th>Process</th><th>Arrival Time</th><th>Burst Time</th></tr><tr><td>P1</td><td>0</td><td>10</td></tr><tr><td>P2</td><td>1</td><td>6</td></tr><tr><td>P3</td><td>12</td><td>2</td></tr><tr><td>P4</td><td>13</td><td>3</td></tr></table></div>",
+      "choices": [
+        "(a) 6 ≥ t ≥ 5",
+        "(b) 12 ≥ t ≥ 11",
+        "(c) 11 ≥ t ≥ 10",
+        "(d) 5 ≥ t ≥ 4",
+        "(e) None of the above"
+      ],
+      "answer": "(a)",
+      "explanation": "<p>Gantt chart（RR，q = 5）：</p><pre>| P1 | P2 | P1 | P2 | P3 | P4 |\n0    5    10   15   16   18   21</pre><ul><li>0–5 P1；P2 在 1 到達排隊。5 時 P1 用完 quantum 排到 P2 後面。</li><li>5–10 P2（剩 1）；10–15 P1 跑完最後 5。期間 P3（12）、P4（13）依序到達，排在 P2 後面。</li><li>15–16 P2 完成；16–18 P3；18–21 P4。</li></ul><p>waiting time = 完成時間 − 到達時間 − burst：P1 = 15 − 0 − 10 = 5，P2 = 16 − 1 − 6 = 9，P3 = 18 − 12 − 2 = 4，P4 = 21 − 13 − 3 = 5。</p><p>平均 t = 23 / 4 = 5.75，落在 5 和 6 之間。</p>"
+    },
+    {
+      "id": "os-0027",
+      "topics": [
+        "page-replacement"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "Memory page-replacement algorithms may have different page fault rates. Given the reference string “1 5 4 6 4 1 5 4 1 6 2 3 1 6” and the number of page frames 3, which of the following is true?",
+      "choices": [
+        "(a) The number of page faults is 8 when the FIFO algorithm is used.",
+        "(b) The number of page faults is 8 when the stack-based LRU algorithm is used.",
+        "(c) The number of page faults is 8 when the optimal algorithm is used",
+        "(d) The optimal algorithm has the best performance among all the page replacement algorithms, and thus modern OSes usually use this algorithm to implement memory page replacement.",
+        "(e) None of the above."
+      ],
+      "answer": "(c)",
+      "explanation": "<p>用程式模擬 14 次存取、3 個 frame：FIFO 12 次 fault、LRU 11 次、OPT 8 次。</p><p>OPT 的過程：1、5、4 先 fault（3 次）；6 進來時往後看，1、5、4 中 5 最晚再用到，換掉 5（4 次）；4、1 hit；5 換掉 6（5 次，6 最晚才再用）；4、1 hit；6 換掉 5 或 4（6 次）；2 換掉（7 次）；3 換掉（8 次）；1、6 hit。共 8 次，(c) 對。</p><p>(d) 錯：OPT 要知道「未來」的存取順序，實際上做不到，只能當作比較其他演算法的基準；實際的 OS 用 LRU 近似（如 clock / second-chance）。</p>"
+    },
+    {
+      "id": "os-0028",
+      "topics": [
+        "virtual-machines"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "Which of the following is <u>not</u> true?",
+      "choices": [
+        "(a) Kubernetes, also known as K8s, is a system for automating deployment, scaling, and management of containerized applications.",
+        "(b) Docker is a system that virtualizes hardware.",
+        "(c) Para-virtualization is the technique in which the guest operating system is modified to work in cooperation with the VMM to optimize performance.",
+        "(d) Para-virtualization allows virtualization of older x86 CPUs (and others) without binary translation.",
+        "(e) Java virtual machine includes garbage collection to automatically reclaim memory (Java objects) no longer in use."
+      ],
+      "answer": "(b)",
+      "explanation": "<ul><li>(a) 正確：K8s 就是管理 container 的編排系統。</li><li>(b) <b>錯誤</b>：Docker 是 container 技術，做的是 <b>OS-level virtualization</b>（共用 host kernel，隔離 process 的檔案系統、網路等），不模擬硬體；模擬硬體的是 VMware、KVM 這類 hypervisor。</li><li>(c) 正確：<b>para-virtualization（半虛擬化）</b>修改 guest OS，讓它主動呼叫 VMM（hypercall）。</li><li>(d) 正確：早期 x86 有些敏感指令在 user mode 不會 trap，無法直接 trap-and-emulate；改 guest OS 就不必用 binary translation 偵測那些指令。</li><li>(e) 正確：JVM 內建 garbage collection。</li></ul>"
+    },
+    {
+      "id": "os-0029",
+      "topics": [
+        "semaphores",
+        "classic-sync-problems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "The right side shows a solution to the producer-consumer problem with <i>n</i> buffers using three semaphores, where <i>empty=n</i>, <i>mutex=1</i>, and <i>full=0</i> at the initial state. Some variables are missing in the consumer program. What are they?<pre class=\"code\">do {\n   wait( V1 );\n   wait( V2 );\n      . . .\n   // remove an item\n      . . .\n   signal(    );\n   signal(    );\n      . . .\n   // consume the item\n      . . .\n}while (TRUE);</pre><p>The structure of the consumer process.</p><pre class=\"code\">do {\n      . . .\n   // produce an item in nextp\n      . . .\n   wait(empty);\n   wait(mutex);\n      . . .\n   // add nextp to buffer\n      . . .\n   signal(mutex);\n   signal(full);\n}while (TRUE);</pre><p>The structure of the producer process.</p>",
+      "choices": [
+        "(a) V1=mutex, V2=empty",
+        "(b) V1=mutex, V2=full",
+        "(c) V1=empty, V2=mutex",
+        "(d) V1=full, V2=empty",
+        "(e) V1=full, V2=mutex"
+      ],
+      "answer": "(e)",
+      "explanation": "<p>consumer 和 producer 對稱：producer 先等空位（empty）再搶鎖（mutex）；consumer 要先等「有東西可拿」（full），再搶鎖，所以 V1 = full、V2 = mutex。拿完之後 signal(mutex) 放鎖、signal(empty) 告訴 producer 多了一個空位。</p><p>順序很重要：如果寫成 (b) 先 wait(mutex) 再 wait(full)，buffer 空時 consumer 拿著鎖卡在 full 上，producer 又拿不到鎖放東西，就 deadlock 了。</p>"
+    },
+    {
+      "id": "os-0030",
+      "topics": [
+        "cpu-scheduling",
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices regarding contention scope",
+      "choices": [
+        "(a) Kernel thread scheduled onto available CPU is SCS.",
+        "(b) Linux allows only PTHREAD_SCOPE_PROCESS.",
+        "(c) Systems using the one-to-one model schedule threads using only SCS.",
+        "(d) In Pthread scheduling API, PTHREAD_SCOPE_SYSTEM schedules threads using PCS scheduling.",
+        "(e) None of the above"
+      ],
+      "answer": "(a)(c)",
+      "explanation": "<p><b>PCS（process-contention scope）</b>：thread library 在同一個 process 內決定哪個 user thread 用 LWP；<b>SCS（system-contention scope）</b>：kernel 在全系統所有 thread 中決定誰用 CPU。</p><ul><li>(a) 對：kernel 把 kernel thread 排到 CPU 上，競爭對象是全系統，就是 SCS。</li><li>(b) 錯：Linux（和 macOS）只允許 PTHREAD_SCOPE_<b>SYSTEM</b>。</li><li>(c) 對：one-to-one 每個 user thread 直接對應 kernel thread，只有 SCS。</li><li>(d) 錯：PTHREAD_SCOPE_SYSTEM 是 SCS；PTHREAD_SCOPE_PROCESS 才是 PCS。</li></ul>"
+    },
+    {
+      "id": "os-0031",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices regarding processor affinity",
+      "choices": [
+        "(a) Linux supports hard affinity only.",
+        "(b) Load balancing often counteracts the benefits of processor affinity.",
+        "(c) The main-memory architecture of a system can affect processor affinity.",
+        "(d) Soft affinity means that the process may require software that is available at only a particular site.",
+        "(e) None of the above"
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<ul><li>(a) 錯：Linux 預設是 soft affinity，也提供 sched_setaffinity() 做 hard affinity，兩種都支援。</li><li>(b) 對：<b>processor affinity（處理器親和性）</b>想讓 process 留在同一顆 CPU 用熱 cache；load balancing 卻會把它搬走，兩者互相抵銷。</li><li>(c) 對：NUMA 架構下，CPU 存取自己附近的記憶體較快，排程器會盡量讓 process 留在記憶體所在的 node。</li><li>(d) 錯：soft affinity 是「OS 盡量但不保證讓 process 留在同一顆 CPU」；(d) 描述的是分散式系統中 process migration 的「software preference」。</li></ul>"
+    },
+    {
+      "id": "os-0032",
+      "topics": [
+        "threads",
+        "thrashing"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(a) Threads that are part of the same process share the same stack",
+        "(b) Threads that are part of the same process can access the same TLB entries.",
+        "(c) A process is trashing if it is spending more time executing than paging.",
+        "(d) Thrashing can be entirely solved by using a local replacement algorithm.",
+        "(e) None of the above"
+      ],
+      "answer": "(b)",
+      "explanation": "<ul><li>(a) 錯：同一 process 的 thread 共用 code、data、heap、open files，但每個 thread 有<b>自己的 stack</b> 和暫存器。</li><li>(b) 對：它們共用同一個位址空間、同一張 page table，所以 TLB 的對應關係可以共用。</li><li>(c) 錯：說反了，<b>thrashing（輾轉現象）</b>是花在 paging 的時間比執行還多。</li><li>(d) 錯：local replacement 只能避免一個 process thrashing 時去搶別人的 frame、拖垮全部，但它自己仍然在 thrashing，而且等 paging device 的 queue 變長，其他 process 也會變慢，不能完全解決；要靠 working-set 或 page-fault frequency 控制。</li></ul>"
+    },
+    {
+      "id": "os-0033",
+      "topics": [
+        "ipc",
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(a) Data access is one of reasons for process migration.",
+        "(b) The standard UNIX pipe mechanism allows process migration.",
+        "(c) Modularity is one of reasons for process cooperation.",
+        "(d) Shared memory is one of models for interprocess communications among cooperating processes.",
+        "(e) None of the above"
+      ],
+      "answer": "(a)(c)(d)",
+      "explanation": "<ul><li>(a) 對：分散式系統把 process 搬到別台機器的理由包括 load balancing、computation speedup、hardware preference、software preference、<b>data access</b>（資料很大時，把程式搬過去比搬資料划算）。</li><li>(b) 錯：標準 UNIX pipe 只能在同一台機器、有親屬關係的 process 之間使用，process 搬到別台機器後 pipe 就斷了。</li><li>(c) 對：process 合作的理由有 information sharing、computation speedup、<b>modularity</b>、convenience。</li><li>(d) 對：IPC 的兩大模型是 shared memory 和 message passing。</li></ul>"
+    },
+    {
+      "id": "os-0034",
+      "topics": [
+        "protection",
+        "segmentation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which statements are true about segmentation fault? The code segments are written in C.",
+      "choices": [
+        "(A) Segmentation fault happens when a program attempts to access memory in the heap segment.",
+        "(B) Executing the following code may cause a segmentation fault. <code>char* p = NULL; printf(\"%c\\n\", *p);</code>",
+        "(C) Executing the following code may cause a segmentation fault. <code>char* p; printf(\"%c\\n\", *p);</code>",
+        "(D) Executing the following code may cause a segmentation fault. <code>int foo() {return foo();}</code>",
+        "(E) None of the above."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<p><b>Segmentation fault（區段錯誤）</b>是程式存取了不屬於它、或權限不允許的位址，被硬體（MMU）抓到、OS 送出 SIGSEGV。</p><ul><li>(A) 錯：存取 malloc 來的 heap 記憶體是合法的，heap 本來就屬於這個 process。</li><li>(B) 對：位址 0 所在的 page 刻意不對應，解參考 NULL 一定出錯。</li><li>(C) 對：p 沒有初始化，內容是垃圾值，指到哪裡不知道，「可能」造成 segfault。</li><li>(D) 對：沒有終止條件的遞迴會不斷長 stack，超過 stack 上限就 segfault（stack overflow）。</li></ul>"
+    },
+    {
+      "id": "os-0035",
+      "topics": [
+        "deadlock-characterization",
+        "paging",
+        "cpu-scheduling",
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) Deadlock can be avoided by using a deadlock detection algorithm.",
+        "(B) A user-level process cannot modify its own page table entries",
+        "(C) Shortest Remaining Time First is the best preemptive scheduling algorithm that can be implemented in an Operating System.",
+        "(D) When a process is created using the classical fork() system call, process ID is inherited by the child process",
+        "(E) None of the above"
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(A) 錯：detection 是讓 deadlock 發生後再偵測、恢復，並沒有「避免」它；避免要用 Banker's algorithm 這類 avoidance。</li><li>(B) 對：page table 只有 kernel 能改，否則 process 可以把別人的記憶體映射進來，保護機制就破功了。</li><li>(C) 錯：SRTF 在平均等待時間上是最佳的，但它要知道下一個 CPU burst 多長，實際只能用預測值近似，無法真正實作。</li><li>(D) 錯：child 會拿到新的 PID；fork() 在 parent 回傳 child 的 PID，在 child 回傳 0。</li></ul>"
+    },
+    {
+      "id": "os-0036",
+      "topics": [
+        "ipc"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices regarding pipes",
+      "choices": [
+        "(A) Ordinary pipes are unidirectional, allowing only one-way communication.",
+        "(B) The system call pipe() provides reliable, bidirectional communication between processes on the same host.",
+        "(C) If two-way communication is required, two named pipes must be used with each pipe sending data in a different direction.",
+        "(D) Only byte-oriented data may be transmitted across a UNIX FIFO.",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(D)（(C) 待確認）",
+      "explanation": "<ul><li>(A) 對：ordinary pipe 一端寫、一端讀，是單向的。</li><li>(B) 錯：pipe() 建立的是單向 pipe（fd[0] 讀、fd[1] 寫），要雙向得建兩個。</li><li>(C) 判為錯（待確認）：「必須用兩個」的是 <b>ordinary pipe</b>；named pipe 本身就允許雙向（UNIX FIFO 是 half-duplex，雖然通常也會開兩個；Windows named pipe 則是 full-duplex），所以「must」不成立。這個選項有爭議。</li><li>(D) 對：UNIX FIFO 只傳 byte stream；Windows named pipe 才可以傳 message。</li></ul>"
+    },
+    {
+      "id": "os-0037",
+      "topics": [
+        "process-concept",
+        "page-replacement",
+        "os-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) A process can move form a ready state to the waiting state.",
+        "(B) The reference bit is set by the hardware.",
+        "(C) The mode bit provides ability to identify in which particular mode the current instruction is executing.",
+        "(D) If the valid-invalid bit for a page is set, it is required to write the memory page to the disk for page replacement.",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<ul><li>(A) 錯：process 要在 running 時發出 I/O 或等事件才會進 waiting；ready 的 process 根本沒在跑，不會直接變 waiting。</li><li>(B) 對：每次存取該 page，硬體自動把 reference bit 設成 1，OS 只負責定期清 0（second-chance 演算法靠它）。</li><li>(C) 對：mode bit 0 代表 kernel mode、1 代表 user mode。</li><li>(D) 錯：決定要不要寫回磁碟的是 <b>dirty（modify）bit</b>；valid-invalid bit 只表示這個 page 是否在記憶體中、是否合法。</li></ul>"
+    },
+    {
+      "id": "os-0038",
+      "topics": [
+        "demand-paging",
+        "ipc",
+        "security",
+        "deadlock-characterization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) The copy-on-write technique allows the parent and child processes initially to share the same pages.",
+        "(B) No parent-child relationship is required for named pipes.",
+        "(C) IPSec can be used to setup virtual private networks.",
+        "(D) The race condition can be solved by the banker’s algorithm.",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<ul><li>(A) 對：<b>copy-on-write</b> 讓 fork 後 parent 和 child 先共用同一批 page，等有人寫入時才複製那一頁。</li><li>(B) 對：named pipe 在檔案系統中有名字，任何有權限的 process 都能開，不需要親屬關係；ordinary pipe 才需要。</li><li>(C) 對：IPSec 在 IP 層加密與認證，是建立 VPN 的常用協定。</li><li>(D) 錯：Banker's algorithm 處理的是 deadlock avoidance，跟 race condition 無關；race condition 要靠 lock、semaphore 等同步機制解決。</li></ul>"
+    },
+    {
+      "id": "os-0039",
+      "topics": [
+        "realtime-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Identify the following environments need hard real-time scheduling.",
+      "choices": [
+        "(A) Thermostat in a household.",
+        "(B) Control system for a nuclear power plant.",
+        "(C) Fuel economy system in an automobile.",
+        "(D) Landing system in a jet airliner.",
+        "(E) Mailing system."
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<p><b>Hard real-time</b> 是錯過 deadline 就等於系統失敗、可能造成嚴重後果；soft real-time 只是品質變差。</p><ul><li>(B) 核電廠控制、(D) 飛機降落系統：晚一點反應可能就出大事，需要 hard real-time。</li><li>(A) 家用溫控器晚幾秒調溫沒關係、(C) 汽車省油系統晚一點只是油耗差一些，屬於 soft real-time。</li><li>(E) 郵件系統沒有即時要求。</li></ul>"
+    },
+    {
+      "id": "os-0040",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following scheduling algorithms would result in starvation?",
+      "choices": [
+        "(A) First-come, first-served",
+        "(B) Shortest job first",
+        "(C) Round robin",
+        "(D) Priority",
+        "(E) Weighted fair queueing"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(B) SJF：一直有短工作進來，長工作就永遠排不到。</li><li>(D) Priority：低優先權的 process 可能一直被高優先權的插隊，要用 aging 解決。</li><li>(A) FCFS、(C) RR：照順序輪流，每個人遲早會輪到。</li><li>(E) Weighted fair queueing：每個佇列依權重保證分到一定比例，也不會餓死。</li></ul>"
+    },
+    {
+      "id": "os-0041",
+      "topics": [
+        "semaphores"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）A counting semaphore ____.",
+      "choices": [
+        "(A) is essentially an integer variable",
+        "(B) is accessed through only one standard operation",
+        "(C) can be modified simultaneously by multiple threads",
+        "(D) cannot be used to control access to a thread's critical sections",
+        "(E) executes as a single, uninterruptible unit"
+      ],
+      "answer": "(A)",
+      "explanation": "<ul><li>(A) 對：semaphore 本質上是一個整數，值可以是任何非負整數（binary semaphore 只有 0、1）。</li><li>(B) 錯：有兩個標準操作 wait()（P）和 signal()（V）。</li><li>(C) 錯：對 semaphore 的修改必須是互斥的，不能同時被多個 thread 改。</li><li>(D) 錯：初值設 1 就能保護 critical section。</li><li>(E) 錯：要「不可中斷地執行」的是 wait()、signal() 這兩個<b>操作</b>；semaphore 本身是個變數，談不上執行。這是容易被字面混淆的選項。</li></ul>"
+    },
+    {
+      "id": "os-0042",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Consider a multiprocessor system and a multithreaded program written using the many-to-many threading model. Let the number of user-level threads in the program be more than the number of processors in the system. What are the lower performance implications of the following scenarios?",
+      "choices": [
+        "(A) The number of kernel threads allocated to the program is less than the number of processors.",
+        "(B) The number of kernel threads allocated to the program is equal to the number of processors.",
+        "(C) The number of kernel threads allocated to the program is greater than the number of processors but less than the number of userlevel threads.",
+        "(D) The number of kernel threads allocated to the program is equal to two.",
+        "(E) The number of kernel threads allocated to the program is greater than the number of processors and also greater than the number of userlevel threads."
+      ],
+      "answer": "(A)(B)(D)（待確認）",
+      "explanation": "<p>CPU 只能執行 kernel thread，所以要看 kernel thread 夠不夠多、會不會因為 blocking 而閒置：</p><ul><li>(A) 效能低：kernel thread 比處理器少，有些處理器根本沒事做。</li><li>(B) 效能較低：剛好一個處理器一個 kernel thread，只要有一個 kernel thread 因為 I/O 被 block，那顆處理器就閒著，沒有別的 kernel thread 可以補上。</li><li>(C) 效能好：kernel thread 比處理器多，一個 block 了還有別的可以接手。</li><li>(D) 效能低：多處理器系統只有 2 個 kernel thread，處理器多於 2 顆時同 (A)，剛好 2 顆時同 (B)。</li><li>(E) many-to-many 模型中 kernel thread 不會多於 user thread；即使配了，多出來的也只是閒置，不會比 (C) 更差太多，不算「效能較低」的情況。</li></ul><p>（待確認）題目問法「lower performance implications」語意不太清楚，本題依「哪些情況會造成效能較差」作答；(E) 也有人認為浪費 kernel 資源而算在內。</p>"
+    },
+    {
+      "id": "os-0043",
+      "topics": [
+        "os-basics",
+        "protection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Some computer systems do not provide a privileged mode of operation in hardware. To construct a secure operating system for these computer systems, an OS for a machine of this type would need to remain in control at all times. This is could be accomplished by the following methods:",
+      "choices": [
+        "(A) software interpretation of all user programs.",
+        "(B) co-execution with co-processor to execute all programs.",
+        "(C) networked server support to execute programs.",
+        "(D) all programs be written in high-level languages so that all object code is compiler produced and checked.",
+        "(E) cluster computing in database cloud system."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>沒有硬體的 dual mode，就沒辦法靠「user mode 不能執行特權指令」來保護 OS，只能確保使用者程式根本沒機會直接下危險指令：</p><ul><li>(A) 對：用軟體直譯（像模擬器、直譯器）執行所有使用者程式，每條指令都先經過 OS 檢查。</li><li>(D) 對：規定所有程式都用高階語言寫，由受信任的編譯器產生並檢查 object code，保證裡面沒有特權指令。</li><li>(B)(C)(E) 只是換個地方執行程式，並沒有解決「程式可以直接下特權指令」這個問題。</li></ul>"
+    },
+    {
+      "id": "os-0044",
+      "topics": [
+        "os-basics",
+        "protection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Some computer systems do not provide a privileged mode of operation in hardware. An operating system for a machine of this type would need to remain in control (or monitor mode) at all times. This could be accomplished by the following methods:",
+      "choices": [
+        "(A) Software interpretation of all user programs.",
+        "(B) All programs are written in high-level languages. The compiler would generate the protection checks that the hardware is missing.",
+        "(C) Program executing in cloud server.",
+        "(D) Open sourced user program.",
+        "(E) ROM-based operating system."
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<p>沒有硬體 dual mode，就只能保證使用者程式沒機會直接執行特權指令：</p><ul><li>(A) 對：所有使用者程式都由 OS 用軟體直譯，每條指令先檢查再執行。</li><li>(B) 對：只允許高階語言，由受信任的編譯器插入硬體缺少的保護檢查。</li><li>(C) 換個地方執行，並沒有解決本機沒有保護的問題。</li><li>(D) 開放原始碼不代表程式不會（或不能）下特權指令。</li><li>(E) OS 放在 ROM 只能防止 OS 程式碼被改寫，但使用者程式仍能直接存取 I/O、關中斷，OS 無法一直保有控制權。</li></ul>"
+    },
+    {
+      "id": "os-0045",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）What are the factors that should be considered when deciding the page size?",
+      "choices": [
+        "(A) Size of page table",
+        "(B) Fragmentation",
+        "(C) I/O overhead",
+        "(D) Number of page faults",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<ul><li>(A) page 越大，page table 越小。</li><li>(B) page 越小，internal fragmentation 越少（平均浪費半頁）。</li><li>(C) 一次 I/O 的 seek、rotation 時間固定，大 page 傳輸較划算；小 page 只讀需要的部分，總量較少。</li><li>(D) page 越大，同樣的 locality 需要的 page 越少，page fault 越少。</li></ul><p>四個都要考慮，所以不選 (E)。這題和 110 年第 11 題相同。</p>"
+    },
+    {
+      "id": "os-0046",
+      "topics": [
+        "page-replacement"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Consider the following page reference string:<br>7, 2, 3, 1, 2, 5, 3, 4, 6, 7, 7, 1, 0, 5, 4, 6, 2, 3, 0, 1.<br>Assuming demand paging with three frames, how many page faults would occur for the following replacement algorithms?<ul><li>LRU replacement</li><li>FIFO replacement</li><li>Optimal replacement</li></ul>Select the correct answers:",
+      "choices": [
+        "(A) 18 for LRU",
+        "(B) 17 for LRU",
+        "(C) 17 for FIFO",
+        "(D) 13 for LRU",
+        "(E) 13 for optimal replacement"
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<p>用程式模擬 20 次存取、3 個 frame：LRU 18 次、FIFO 17 次、OPT 13 次。</p><ul><li>LRU：只有第 5 次存取（2）和第 11 次（第二個 7）hit，其餘 18 次都 fault。這串 reference 的 locality 很差，LRU 幾乎全錯。</li><li>FIFO：hit 發生在 2（第 5 次）、3（第 7 次）、7（第 11 次），共 3 次 hit，17 次 fault；這裡 FIFO 比 LRU 還少一次，說明 LRU 不保證永遠比 FIFO 好。</li><li>OPT：每次換掉「最晚才會再用到」的 page，共 13 次，是下限。</li></ul>"
+    },
+    {
+      "id": "os-0047",
+      "topics": [
+        "virtual-machines"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) Each container includes the application, the necessary binaries and libraries and an entire guest operating system",
+        "(B) Containers running on a single machine all share the same operating system kernel",
+        "(C) Virtual machine run as an isolated process in user space on the host operating system",
+        "(D) Containers are lightweight than virtual machines",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯：帶完整 guest OS 的是 VM；container 只包應用程式、binaries 和 libraries。</li><li>(B) 對：container 共用 host kernel。</li><li>(C) 錯：「以 isolated process 在 host 的 user space 執行」是 container 的描述，VM 是在 hypervisor 上跑一整套 OS。</li><li>(D) 對：不用開機一整個 OS，啟動快、資源少。</li></ul><p>和 110 年第 14 題相同。</p>"
+    },
+    {
+      "id": "os-0048",
+      "topics": [
+        "os-structures"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）What are the purpose of the separation of mechanism and policy?",
+      "choices": [
+        "(A) Easy to programming",
+        "(B) Systems are easy to modify",
+        "(C) Flexibility to suit its needs",
+        "(D) Increasing utilization",
+        "(E) Quick and fast system response"
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<p><b>Mechanism（機制）</b>決定「怎麼做」，<b>policy（政策）</b>決定「做什麼」。例如 timer 是機制，每個 process 分多少時間是政策。</p><p>分開之後，要改政策（例如換排程演算法）時不必動底層機制，系統容易修改 (B)，也能依不同需求調整 (C)。它的目的不是讓程式好寫、提高使用率或加快回應，那些是個別政策才會追求的目標。</p>"
+    },
+    {
+      "id": "os-0049",
+      "topics": [
+        "raid",
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) The RAID structure is used to address the performance and reliability issues of disk organization",
+        "(B) RAID level 5 can tolerate two disk failures",
+        "(C) Inverted page table is used to reduce the size of memory dedicated to page tables",
+        "(D) An inverted page table has one entry for each page of virtual memory",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<ul><li>(A) 對：RAID 用 striping 提升效能、用 mirroring / parity 提升可靠度。</li><li>(B) 錯：RAID 5 只有一份分散的 parity，只能容忍 1 顆磁碟壞掉；容忍 2 顆的是 RAID 6。</li><li>(C) 對：一般 page table 每個 process 一張、依虛擬位址空間大小而定；<b>inverted page table（反轉分頁表）</b>全系統只有一張，大小只跟實體記憶體有關。</li><li>(D) 錯：inverted page table 是每個<b>實體 frame</b> 一個 entry，不是每個虛擬 page。</li></ul>"
+    },
+    {
+      "id": "os-0050",
+      "topics": [
+        "cpu-scheduling",
+        "threads",
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) Process-contention scope involves the decision of which kernel thread to schedule onto which CPU",
+        "(B) PCS will typically preempt the thread currently running in favor of a higher-priority thread",
+        "(C) Priority inversion occurs when lower-priority process holds a lock needed by higher-priority process",
+        "(D) A race condition results when several threads try to access the same data concurrently",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯：決定哪個 kernel thread 上哪顆 CPU 的是 SCS（system-contention scope）；PCS 是在同一個 process 的 user thread 之間競爭 LWP。</li><li>(B) 對：PCS 通常是依優先權的 preemptive 排程，高優先權 thread 會搶走正在執行的低優先權 thread。</li><li>(C) 對：低優先權的拿著高優先權需要的鎖，高優先權只能等，形成 <b>priority inversion（優先權反轉）</b>，可用 priority inheritance 解決。</li><li>(D) 對：多個 thread 同時存取同一筆資料、結果取決於執行順序，就是 race condition。</li></ul>"
+    },
+    {
+      "id": "os-0051",
+      "topics": [
+        "cpu-scheduling",
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) If all jobs have the same run length and the round-robin (RR) scheduler's time quantum is much shorter than the jobs' run length, the RR scheduler provides better average turnaround time than FIFO",
+        "(B) A SJF scheduler may preempt a previously running longer job",
+        "(C) Each queue in a multilevel queue scheduling algorithm has its own scheduling algorithm.",
+        "(D) With a constant number of bits in a virtual address, the size of a page table decreases as the page size increases.",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯：工作一樣長時 RR 最差。例如 3 個工作各 10，FIFO 完成時間 10、20、30，平均 turnaround = 20；RR 小 quantum 會讓三個幾乎同時在 28～30 才做完，平均約 29。</li><li>(B) 對：SJF 可以是 preemptive（也就是 SRTF），新來的短工作可以搶走正在跑的長工作。</li><li>(C) 對：multilevel queue 的每個佇列各有自己的排程演算法（例如前景 RR、背景 FCFS）。</li><li>(D) 對：虛擬位址 bit 數固定時，page 越大 page 數越少，page table 越小。</li></ul>"
+    },
+    {
+      "id": "os-0052",
+      "topics": [
+        "demand-paging",
+        "monitors",
+        "bankers-algorithm"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) The valid-invalid bit is adopted to reduce the overhead of page transfers",
+        "(B) Only one process may be active within the monitor at a time",
+        "(C) The Banker’s Algorithm is an example of a technique for deadlock prevention",
+        "(D) Copy-on-Write allows more efficient process creation",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯：減少 page 傳輸（不必寫回）的是 dirty（modify）bit；valid-invalid bit 標示 page 是否在記憶體、是否合法。</li><li>(B) 對：monitor 保證同一時間只有一個 process 在 monitor 裡活動。</li><li>(C) 錯：Banker's algorithm 是 deadlock <b>avoidance</b>。</li><li>(D) 對：fork 時不必複製整個位址空間，等寫入才複製，建立 process 快很多。</li></ul>"
+    },
+    {
+      "id": "os-0053",
+      "topics": [
+        "security"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) ISO/IEC 27001 is an international standard to manage information security",
+        "(B) The DOS attack is a kind of the man-in-the-middle attacks.",
+        "(C) TLS is used by IPSec to provide network security",
+        "(D) The nsloopup tool allows you to query the DNS to obtain the mapping between domain name and IP address.",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<ul><li>(A) 對：ISO/IEC 27001 是資訊安全管理系統（ISMS）的國際標準。</li><li>(B) 錯：<b>DoS（阻斷服務）</b>攻擊是讓服務無法使用（灌爆資源）；man-in-the-middle 是攻擊者夾在雙方中間竊聽或竄改，兩者不同類。</li><li>(C) 錯：IPSec 在網路層，自己用 AH / ESP 做認證和加密；TLS 是傳輸層之上的另一套協定，兩者互相獨立。</li><li>(D) 對：題目把 nslookup 拼成 nsloopup，但描述的就是 nslookup：查 DNS 取得網域名稱與 IP 的對應。</li></ul>"
+    },
+    {
+      "id": "os-0054",
+      "topics": [
+        "paging",
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) A TLB caches translations from frame numbers to page numbers.",
+        "(B) TLBs are more beneficial with multi-level page tables than with single-level page tables.",
+        "(C) The number of pages is always identical to the number of frames.",
+        "(D) Each thread has its own page table.",
+        "(E) None of the above."
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(A) 錯：方向反了，TLB 存的是 page number → frame number。</li><li>(B) 對：multi-level 的 TLB miss 要走好幾層表，代價更高，TLB 命中時省下的時間也更多。</li><li>(C) 錯：page 數由虛擬位址空間決定、frame 數由實體記憶體決定，通常虛擬遠大於實體。</li><li>(D) 錯：同一個 process 的 thread 共用位址空間，也就共用一張 page table。</li></ul>"
+    },
+    {
+      "id": "os-0055",
+      "topics": [
+        "bankers-algorithm",
+        "deadlock-characterization",
+        "process-concept",
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) The Banker’s Algorithm is an example of a technique for deadlock avoidance.",
+        "(B) A deadlock-free solution is guaranteed to be starvation-free.",
+        "(C) A context switch always involves updating the page table, whether it is between processes or threads.",
+        "(D) Average context switching overhead for threads is usually less than average context switching overhead for processes",
+        "(E) None of the above."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<ul><li>(A) 對：Banker's algorithm 每次分配前檢查是否仍在 safe state，屬於 avoidance。</li><li>(B) 錯：沒有 deadlock 不代表沒有 starvation，例如 priority 排程不會 deadlock，低優先權的卻可能一直等。</li><li>(C) 錯：同一 process 內的 thread 切換，位址空間不變，不必換 page table（也不必清 TLB）。</li><li>(D) 對：正因為 (C)，thread 切換只要存取暫存器和 stack，比 process 切換便宜。</li></ul>"
+    },
+    {
+      "id": "os-0056",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) Little’s Law cannot be applied to a system with multiple queues.",
+        "(B) Pull migration occurs when an idle processor pulls a waiting task from a busy processor",
+        "(C) Push migration and pull migration do not need to be mutually exclusive on load-balancing systems.",
+        "(D) Push migration often enhances the benefits of processor affinity.",
+        "(E) None of the above."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<ul><li>(A) 錯：<b>Little's Law</b>（n = λ × W）對任何穩定狀態的系統都成立，不論裡面有幾個佇列。</li><li>(B) 對：閒下來的處理器主動從忙的處理器拉工作，就是 pull migration。</li><li>(C) 對：Linux 的 CFS 就同時使用兩者。</li><li>(D) 錯：搬走 process 會讓它離開熱 cache，push migration 會<b>抵銷</b> processor affinity 的好處。</li></ul>"
+    },
+    {
+      "id": "os-0057",
+      "topics": [
+        "virtual-machines"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) The virtual memory manager runs the guest operating systems, manages their resource use, and protects each guest from the others.",
+        "(B) In paravirtualization, the guest operating system has direct control over hardware resources.",
+        "(C) Paravirtualization presents the guest with a system that is identical to the guest's preferred system.",
+        "(D) The guest must be modified to run on the paravirtualized virtual hardware",
+        "(E) None of the above."
+      ],
+      "answer": "(D)（(A) 待確認）",
+      "explanation": "<ul><li>(A) 判為錯（待確認）：「執行 guest OS、管理資源、保護每個 guest」這段話描述的是 <b>VMM（virtual machine manager，又稱 hypervisor）</b>；題目寫成 virtual <b>memory</b> manager，照字面就不對。若命題者只是筆誤，這個選項原意為對。</li><li>(B) 錯：para-virtualization 的 guest 透過 hypercall 請 VMM 代為操作硬體，並沒有直接控制。</li><li>(C) 錯：para-virtualization 給 guest 的是「類似但不完全相同」的系統，所以 guest 必須修改；完全相同的是 full virtualization。</li><li>(D) 對：guest OS 必須修改才能在 para-virtualized 的虛擬硬體上執行。</li></ul>"
+    },
+    {
+      "id": "os-0058",
+      "topics": [
+        "security"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) Buffer-overflow attacks can occur within communication protocols.",
+        "(B) Breach of confidentiality involves unauthorized modification of data.",
+        "(C) A worm is a process that uses the spawn mechanism to duplicate itself.",
+        "(D) The DOS attacks are aimed at breaking a target host and stealing its resources.",
+        "(E) None of the above."
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<ul><li>(A) 對：網路服務解析封包時若沒檢查長度，攻擊者送超長的封包就能造成 buffer overflow（Morris worm 攻擊 finger daemon 就是例子）。</li><li>(B) 錯：<b>breach of confidentiality（破壞機密性）</b>是未經授權<b>讀取</b>資料；未經授權修改是 breach of integrity。</li><li>(C) 對：worm 利用 spawn 機制複製自己，耗盡系統資源並散播出去。</li><li>(D) 錯：DoS 的目的是讓合法使用者無法使用服務，並不是入侵主機偷資源。</li></ul>"
+    },
+    {
+      "id": "os-0059",
+      "topics": [
+        "virtual-machines"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) Each container includes the application, the necessary binaries and libraries and an entire guest operating system",
+        "(B) Containers running on a single machine all share the same operating system kernel",
+        "(C) Virtual machine run as an isolated process in user space on the host operating system",
+        "(D) Containers are lightweight than virtual machines",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯：container 不含整個 guest OS，那是 VM。</li><li>(B) 對：container 共用 host kernel。</li><li>(C) 錯：「在 host user space 以 isolated process 執行」描述的是 container。</li><li>(D) 對：container 比 VM 輕量。</li></ul><p>和 110 年第 14 題、113 年第 14 題相同。</p>"
+    },
+    {
+      "id": "os-0060",
+      "topics": [
+        "os-structures"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）What are the purpose of the separation of mechanism and policy?",
+      "choices": [
+        "(A) Easy to programming",
+        "(B) Systems are easy to modify",
+        "(C) Flexibility to suit its needs",
+        "(D) Increasing utilization",
+        "(E) Quick and fast system response"
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<p>mechanism 是「怎麼做」、policy 是「做什麼」。分開後，換政策（例如調整排程的優先順序）不必改底層機制，系統容易修改 (B)，也能依需求彈性調整 (C)。和 113 年第 15 題相同。</p>"
+    },
+    {
+      "id": "os-0061",
+      "topics": [
+        "cpu-scheduling",
+        "threads",
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) Process-contention scope involves the decision of which kernel thread to schedule onto which CPU",
+        "(B) PCS will typically preempt the thread currently running in favor of a higher-priority thread",
+        "(C) Priority inversion occurs when lower-priority process holds a lock needed by higher-priority process",
+        "(D) A race condition results when several threads try to access the same data concurrently",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯：那是 SCS；PCS 是同一 process 的 user thread 競爭 LWP。</li><li>(B) 對：PCS 通常依優先權搶先。</li><li>(C) 對：這就是 priority inversion。</li><li>(D) 對：多個 thread 同時存取同一筆資料、結果取決於順序，就是 race condition。</li></ul><p>和 113 年第 17 題相同。</p>"
+    },
+    {
+      "id": "os-0062",
+      "topics": [
+        "demand-paging",
+        "monitors",
+        "bankers-algorithm"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) The valid-invalid bit is adopted to reduce the overhead of page transfers",
+        "(B) Only one process may be active within the monitor at a time",
+        "(C) The Banker’s Algorithm is an example of a technique for deadlock prevention",
+        "(D) Copy-on-Write allows more efficient process creation",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯：減少寫回的是 dirty bit。</li><li>(B) 對：monitor 一次只讓一個 process 在裡面活動。</li><li>(C) 錯：Banker's 是 avoidance。</li><li>(D) 對：copy-on-write 讓 fork 不必立刻複製整個位址空間。</li></ul><p>和 113 年第 19 題相同。</p>"
+    },
+    {
+      "id": "os-0063",
+      "topics": [
+        "os-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following instructions should be privileged?",
+      "choices": [
+        "(A) Set value of timer.",
+        "(B) Read the clock.",
+        "(C) Clear memory.",
+        "(D) Issue a trap instruction.",
+        "(E) Turn off interrupts."
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<p>判斷原則：會影響 OS 控制權或其他 process 的操作才需要特權。</p><ul><li>(A) 要：使用者若能改 timer，就能讓自己永遠不被中斷、霸佔 CPU。</li><li>(C) 要：清除記憶體可能毀掉 OS 或別的 process 的資料。</li><li>(E) 要：關掉中斷等於 OS 拿不回控制權。</li><li>(B) 不用：讀時間無害。</li><li>(D) 不用：trap（system call）正是 user mode 程式「進入」kernel 的合法管道，必須在 user mode 就能執行。</li></ul>"
+    },
+    {
+      "id": "os-0064",
+      "topics": [
+        "os-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements accurately describe the system startup and boot process?",
+      "choices": [
+        "(A) The BIOS/UEFI resides in volatile RAM and is the first program executed when the computer is powered on.",
+        "(B) The Bootloader (e.g., GRUB) is typically responsible for loading the Operating System kernel from the disk into the main memory.",
+        "(C) UEFI (Unified Extensible Firmware Interface) supports \"Secure Boot,\" which checks the cryptographic signature of the bootloader and kernel to prevent malware injection.",
+        "(D) The kernel initialization phase includes probing hardware, mounting the root file system, and starting the first user-space process (e.g., init or systemd).",
+        "(E) The Master Boot Record (MBR) partition scheme is required for drives larger than 4 TB to function as a boot drive."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯：BIOS/UEFI 放在主機板上的 non-volatile 韌體（ROM / flash），一開機 RAM 裡什麼都沒有，不可能放在 RAM。</li><li>(B) 對：bootloader 把 kernel 從磁碟載入記憶體再跳過去執行。</li><li>(C) 對：Secure Boot 驗證簽章，只允許受信任的 bootloader 和 kernel 執行。</li><li>(D) 對：kernel 初始化會偵測硬體、掛載 root file system，最後啟動 PID 1（init / systemd）。</li><li>(E) 錯：MBR 用 32-bit 記錄磁區，最多只支援約 2 TB；大於 2 TB 的開機碟要用 GPT（搭配 UEFI）。</li></ul>"
+    },
+    {
+      "id": "os-0065",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following are valid Process States and transitions in a standard 5-state process model?",
+      "choices": [
+        "(A) Running → Ready: This transition happens when a process is preempted by the scheduler (e.g., time quantum expires).",
+        "(B) Blocked (Waiting) → Running: A process moves directly to Running when its I/O operation completes.",
+        "(C) Ready → Running: This transition is managed by the Dispatcher.",
+        "(D) Running → Blocked (Waiting): This transition occurs when a process requests an I/O operation or waits for an event.",
+        "(E) Terminated → Ready: A zombie process can be restarted by the parent process."
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<p>五狀態模型：new → ready ⇄ running → terminated，running → waiting → ready。</p><ul><li>(A) 對：被搶先（例如 quantum 用完）回到 ready。</li><li>(B) 錯：I/O 完成後先回到 <b>ready</b>，等排程器選中才 running；不會直接跳到 running。</li><li>(C) 對：<b>dispatcher</b> 負責 context switch，把 CPU 交給選中的 process。</li><li>(D) 對：要求 I/O 或等待事件就進 waiting。</li><li>(E) 錯：zombie 只剩 PCB 等 parent 呼叫 wait() 回收，不能復活。</li></ul>"
+    },
+    {
+      "id": "os-0066",
+      "topics": [
+        "paging",
+        "cpu-scheduling",
+        "virtual-machines"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）What specific OS features are critical for high-performance AI/Machine Learning workloads?",
+      "choices": [
+        "(A) Huge Pages / Large Pages support reduces TLB miss rates when training models with massive datasets.",
+        "(B) NUMA (Non-Uniform Memory Access) awareness allows the OS to schedule threads on CPU cores that are physically closer to the memory bank holding the training data.",
+        "(C) GPUDirect (or similar RDMA technologies) enables network adapters to move data directly to/from GPU memory, bypassing the CPU and system RAM.",
+        "(D) AI Workloads typically prefer Fine-Grained Context Switching (frequent switching) to maximize CPU responsiveness during training.",
+        "(E) Containerization (e.g., Docker/Kubernetes) is preferred over full Virtual Machines for AI deployment due to lower overhead and direct access to hardware drivers."
+      ],
+      "answer": "(A)(B)(C)(E)",
+      "explanation": "<ul><li>(A) 對：資料量大，用 huge page 擴大 TLB reach，減少 TLB miss。</li><li>(B) 對：NUMA-aware 排程讓 thread 在資料所在記憶體的附近執行，存取較快。</li><li>(C) 對：GPUDirect RDMA 讓網卡直接讀寫 GPU 記憶體，省掉經過 CPU 和主記憶體的複製。</li><li>(D) 錯：訓練是長時間、計算密集的批次工作，追求 throughput，頻繁 context switch 只會增加 overhead、破壞 cache。</li><li>(E) 對：container 共用 host kernel，可以直接使用 host 的 GPU driver，overhead 比 VM 小，是 AI 部署的主流做法。</li></ul>"
+    },
+    {
+      "id": "os-0067",
+      "topics": [
+        "disk-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）How does OS design adapt for Solid State Drives (SSDs) compared to HDDs?",
+      "choices": [
+        "(A) SSDs perform \"in-place updates\" just like HDDs, allowing data to be overwritten physically in the same location without erasure.",
+        "(B) The Flash Translation Layer (FTL) maps logical block addresses (LBA) to physical pages, hiding the complexity of erase blocks from the OS.",
+        "(C) The TRIM command allows the OS to inform the SSD which data blocks are no longer considered in use (e.g., after file deletion), aiding internal Garbage Collection.",
+        "(D) Write Amplification is a phenomenon where the actual amount of data written to the flash chips is greater than the amount of data written by the host OS.",
+        "(E) Wear Leveling algorithms are implemented by the OS kernel to ensure all SSD cells effectively have the same lifespan."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯：NAND flash 不能原地覆寫，必須先以 block 為單位抹除才能再寫；所以更新資料時是寫到新的 page，舊的標成無效。</li><li>(B) 對：<b>FTL（快閃記憶體轉換層）</b>維護邏輯位址到實體 page 的對應，讓 OS 看到的仍是普通的 block device。</li><li>(C) 對：TRIM 告訴 SSD 哪些資料已經不用，garbage collection 就不必搬這些無效資料。</li><li>(D) 對：garbage collection 搬移有效資料，會讓實際寫入 flash 的量大於 host 寫的量。</li><li>(E) 錯：wear leveling 由 SSD 控制器的韌體（FTL）負責，OS 看不到實體 cell。</li></ul>"
+    },
+    {
+      "id": "os-0068",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Which statements accurately describe I/O Subsystem mechanisms?",
+      "choices": [
+        "(A) DMA (Direct Memory Access) allows an I/O device to transfer data directly to/from memory without continuous CPU intervention.",
+        "(B) Interrupt-driven I/O requires the CPU to constantly poll the device status register to check if data is ready.",
+        "(C) Blocking I/O suspends the execution of the calling process until the I/O operation is complete.",
+        "(D) Double Buffering allows the producer (device) and consumer (CPU) to operate in parallel, smoothing out speed mismatches.",
+        "(E) The Kernel I/O Subsystem manages issues like caching, spooling, and device reservation."
+      ],
+      "answer": "(A)(C)(D)(E)",
+      "explanation": "<ul><li>(A) 對：DMA controller 負責搬資料，CPU 只在開始設定、結束收中斷。</li><li>(B) 錯：不停檢查 status register 是 <b>polling</b>；interrupt-driven 是裝置好了主動發中斷通知，CPU 中間可以做別的事。</li><li>(C) 對。</li><li>(D) 對：裝置寫一個 buffer 時，CPU 處理另一個，輪流交換。</li><li>(E) 對：kernel I/O subsystem 提供 scheduling、buffering、caching、spooling、device reservation、error handling 等服務。</li></ul>"
+    },
+    {
+      "id": "os-0069",
+      "topics": [
+        "threads",
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) In a multithreaded process using kernel-level threads, a blocking I/O operation in one thread causes the entire process to block.",
+        "(B) During a context switch between two threads belonging to the same process, the operating system must update the CPU's page table base register.",
+        "(C) When two processes share the same physical memory page, they use the same virtual address to refer to that page.",
+        "(D) If two processes share a physical memory page, any modification to that page is immediately visible to both processes.",
+        "(E) None of the above."
+      ],
+      "answer": "(D)",
+      "explanation": "<ul><li>(A) 錯：kernel thread 由 kernel 個別排程，一個 block 其他照跑；整個 process 被卡住的是 many-to-one 的 user thread。</li><li>(B) 錯：同一 process 的 thread 共用位址空間，page table base register 不用換。</li><li>(C) 錯：兩個 process 的 page table 可以把<b>不同</b>的虛擬位址對應到同一個 frame（例如 shared library 在各 process 中的位置不同）。</li><li>(D) 對：真的是同一塊實體記憶體，一邊寫另一邊馬上看得到（copy-on-write 則是寫入時才複製，屬於另一種情況）。</li></ul>"
+    },
+    {
+      "id": "os-0070",
+      "topics": [
+        "security"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) An attack that compromises data confidentiality does not necessarily affect data integrity.",
+        "(B) If Alice encrypts a document using her private key in an asymmetric cryptographic system, the operation provides authentication rather than confidentiality.",
+        "(C) Transport-layer encryption protects data from eavesdropping and also prevents traffic analysis.",
+        "(D) Side-channel attacks are fundamentally designed to exploit mathematical weaknesses or logical flaws within a cryptographic algorithm's design.",
+        "(E) None of the above."
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<ul><li>(A) 對：偷看資料（破壞機密性）不一定會改到資料（破壞完整性），兩者獨立。</li><li>(B) 對：用私鑰加密，任何人都能用 Alice 的公鑰解開，所以沒有保密效果；但只有 Alice 做得出來，能證明是她發的（數位簽章的原理）。</li><li>(C) 錯：TLS 加密內容，但封包的 IP 位址、大小、時間仍看得到，擋不了 traffic analysis。</li><li>(D) 錯：<b>side-channel attack（旁通道攻擊）</b>利用的是實作時洩漏的物理資訊（執行時間、耗電、電磁波、cache 行為），不是演算法數學上的弱點。</li></ul>"
+    },
+    {
+      "id": "os-0071",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) When the OS switches to a process with a different address space, the existing TLB entries are typically no longer valid and therefore need to be flushed or invalidated.",
+        "(B) A TLB miss is a sufficient condition to conclude that the referenced page is not resident in physical memory.",
+        "(C) Reducing the frequency of TLB misses can significantly improve system performance.",
+        "(D) The TLB indexes translations by virtual address, so different virtual addresses mapping to the same physical page require separate TLB entries.",
+        "(E) None of the above."
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<ul><li>(A) 對：新 process 的虛擬位址對應不同，舊的 TLB entry 不能用；硬體有 ASID 時可以不清，但沒有的話必須 flush。</li><li>(B) 錯：TLB miss 只是沒快取到，page 很可能還在記憶體裡，查 page table 就有。</li><li>(C) 對：每次 TLB miss 都要多讀一次（多層的話好幾次）記憶體。</li><li>(D) 對：TLB 用虛擬 page number 查詢，兩個虛擬位址就是兩筆 entry，即使指向同一個 frame。</li></ul>"
+    },
+    {
+      "id": "os-0072",
+      "topics": [
+        "critical-section",
+        "semaphores"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) Spinlocks are generally more efficient than binary semaphores because they avoid putting threads to sleep.",
+        "(B) In an interrupt handler, a spinlock is usually a better synchronization choice than a semaphore because interrupt handlers are not allowed to sleep.",
+        "(C) Disabling interrupts while holding a spinlock can prevent deadlock between a thread and an interrupt handler.",
+        "(D) The optimal maximum spin time for a spinlock is independent of the time required to perform a context switch.",
+        "(E) None of the above."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<ul><li>(A) 錯：spinlock 只有在「鎖很快就會釋放」（短於兩次 context switch）且是多核心時才划算；等得久就白白浪費 CPU，不能說「一般」比較有效率。</li><li>(B) 對：interrupt handler 不能 sleep，semaphore 的 wait 可能讓它睡著，所以要用 spinlock。</li><li>(C) 對：thread 拿著鎖時若被中斷，而 handler 也要同一把鎖，handler 會永遠 spin、thread 又回不來，形成 deadlock；拿鎖時關中斷可以避免。</li><li>(D) 錯：spin 的上限應該和 context switch 的成本比較，spin 超過「睡覺再被叫醒」的成本就不划算了，兩者直接相關。</li></ul>"
+    },
+    {
+      "id": "os-0073",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Choose the correct statements from the multiple choices",
+      "choices": [
+        "(A) GPU internal thread scheduling is physically managed and allocated directly by the OS kernel scheduler.",
+        "(B) When a GPU reads system memory via DMA, the CPU is not directly involved in the data movement during the transfer.",
+        "(C) The OS interrupt handling mechanism can be used to notify the CPU upon completion of a GPU computation.",
+        "(D) The OS, through its GPU drivers, enforces access control and resource-sharing policies that determine which processes are permitted to submit work to the GPU.",
+        "(E) None of the above."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯：GPU 裡 warp / thread block 的排程由 GPU 硬體自己的排程器負責，OS 只負責把工作交給 GPU。</li><li>(B) 對：DMA 傳輸期間由 DMA 引擎搬資料，CPU 不參與。</li><li>(C) 對：GPU 算完可以發中斷通知 CPU，由 driver 的 interrupt handler 處理。</li><li>(D) 對：driver 是 OS 的一部分，決定哪些 process 可以使用 GPU、如何分享 GPU 資源。</li></ul>"
+    },
+    {
+      "id": "os-0074",
+      "topics": [
+        "os-structures",
+        "virtual-machines"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(10 pts) Operating systems can be classified into several types according to the architecture of sub-systems. The following figure shows the architecture of operating systems. Four dashed rectangles (marked by A, B, C, D) are located at applications layer, system services layer, kernel layer, and hardware layer.</p>\n<p>（圖的內容：最上層 Applications 有兩個 Applications 方塊和虛線框 A；中間 Operating Systems 分兩層，System Services 層有 System Libararies 和虛線框 B，Kernel 層有 Kernel Componets 和虛線框 C；最下層 Hardware 有 CPU、Memory、Storage Devices、I/O 和虛線框 D。）</p>\n<p>Please answer the location of the selected sub-systems in difference types of operating systems.<br>\n(a) (2 pts) In MS-DOS (monolithic operating systems), where will the memory management services be located?<br>\n(b) (3 pts) In Linux (layered operating system), where will the standard I/O libraries are located?<br>\n(c) (2 pts) In Container (virtualized operating systems), where will the scheduling services are located?<br>\n(d) (3 pts) In Mach/QNX (micro-kernel operating systems), where will the device driver be located?</p>",
+      "answer": "(a) C；(b) B；(c) C；(d) B（官方未公布答案，(a)(d) 的分層解讀可能有出入，待確認）",
+      "explanation": "<p>先對好四個框：A = 應用程式層、B = system services（系統服務／函式庫）層、C = kernel 層、D = 硬體層。</p>\n<p><b>(a)</b> MS-DOS 是 monolithic（單體式）系統，記憶體管理這類核心功能都做在 kernel 裡 → <b>C</b>。</p>\n<p><b>(b)</b> 標準 I/O 函式庫（像 stdio 的 printf、fopen）是 user space 的 library，包在 system call 外面，屬於 system services 層 → <b>B</b>。</p>\n<p><b>(c)</b> Container（容器）和 VM 不同：所有容器共用同一個 host kernel，排程由 host kernel 負責，容器裡沒有自己的排程器 → <b>C</b>。</p>\n<p><b>(d)</b> Microkernel（微核心）只把最基本的 IPC、排程、低階記憶體管理留在 kernel，device driver 被搬到 kernel 外面、以 user-level server 的形式執行 → 放在 kernel 之上的系統服務層 <b>B</b>。常見錯誤是以為 driver 一定在 kernel 裡，那是 monolithic 的做法。</p>\n<p>（官方沒有公布答案，(a) 與 (d) 依圖的分層方式可能有不同解讀，待確認。）</p>"
+    },
+    {
+      "id": "os-0075",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(10 pts) A running process requires four different types of memory context. Please specify the locations of each context showing in the figure on the right.</p>\n<p>（圖的內容：位址由上 0xFFFFFFFF 往下到 0x00000000，依序是 Arguments and environment variables、(D)、向下的箭頭、(C)、向上的箭頭、Heap、(B)、Initialized Data、(A)。）</p>\n<p>(a) (2 pts) Stack segment<br>(b) (3 pts) Text segment<br>(c) (2 pts) Uninitialized data segment<br>(d) (3 pts) Free space</p>",
+      "answer": "(a) D；(b) A；(c) B；(d) C",
+      "explanation": "<p>典型的行程記憶體配置由低位址往高位址是：text（程式碼）→ initialized data → uninitialized data（BSS）→ heap（往上長）→ 空白 → stack（往下長）→ 命令列參數與環境變數。</p>\n<p>對照圖：最底下 (A) 在 Initialized Data 下方，是 <b>text segment</b>；(B) 夾在 Initialized Data 和 Heap 之間，是 <b>uninitialized data（BSS）</b>；(C) 上下各有一個指向它的箭頭，是 heap 與 stack 中間互相成長的 <b>free space</b>；(D) 緊貼在參數與環境變數下面、往下長，是 <b>stack</b>。所以 (a) D、(b) A、(c) B、(d) C。</p>\n<p>容易搞混的是 BSS 和 initialized data 的上下順序：BSS 在 initialized data 之上，因為執行檔裡只需記錄它的大小，載入時才清成 0。</p>"
+    },
+    {
+      "id": "os-0076",
+      "topics": [
+        "ipc"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(10 pts) Please read the code segment and answer the <b>five</b> sub-questions.<br>\n(a) (2 pts) Please answer the line number where the process will be suspended when it first starts?<br>\n(b) (2 pts) When the process is suspended and a SIGUSR2 signal is sent to the process, how does the process react? (A): terminated, (B): resume, (C): no action, or (D) Add SIGUSR2 to the signal mask.<br>\n(c) (2 pts) What's the signal mask when SIGUSR2 is caught by the process: (A) SIGUSR1and SIGUSR2, (B) SIGUSR1, (C) SIGINT and SIGUSR2, and (D) Empty.<br>\n(d) (2 pts) When SIGINT is sent and caught, from which line will the process be resumed?<br>\n(e) (2 pts) When sigaction() on line 17, 19, and 21 are replaced by signal(), what's the signal mask after resumed by catching SIGINT? (A) SIGUSR1 and SIGUSR2, (B) SIGUSR1, (C) SIGINT and SIGUSR2, and (D) Empty.</p>\n<pre class=\"code\">1 %% include all the head files\n2\n3 static void sigHandling(int);\n4\n5 int\n6 main(void)\n7 {\n8     sigset_t   newmask, oldmask, waitmask;\n9     struct sigaction   handling, saveintr;\n10\n11    pr_mask(\"program start: \");\n12\n13    handling.sa_handler = sigHandling;\n14    sigemptyset(&amp;handling.sa_mask);\n15    handling.sa_flags = 0;\n16\n17    if (sigaction(SIGUSR1, &amp;handling, &amp;saveintr) &lt; 0)\n18       return(-1);\n19    if (sigaction(SIGUSR2, &amp;handling, &amp;saveintr) &lt; 0)\n20       return(-1);\n21    if (sigaction(SIGINT, &amp;handling, &amp;saveintr) &lt; 0)\n22       return(-1);\n23\n24    sigemptyset(&amp;waitmask);\n25    sigaddset(&amp;waitmask, SIGUSR1);\n26    sigemptyset(&amp;newmask);\n27    sigaddset(&amp;newmask, SIGINT);\n28\n29    /*\n30     * Block SIGINT and save current signal mask.\n31     */\n32    if (sigprocmask(SIG_BLOCK, &amp;newmask, &amp;oldmask) &lt; 0)\n33       err_sys(\"SIG_BLOCK error\");\n34\n35    /*\n36     * Critical region of code.\n37     */\n38    pr_mask(\"in critical region: \");\n39\n40    /*\n41     * Pause, allowing all signals except SIGUSR1.\n42     */\n43    if (sigsuspend(&amp;waitmask) != -1)\n44       err_sys(\"sigsuspend error\");\n45\n46    pr_mask(\"after return from sigsuspend: \");\n47\n48    /*\n49     * Reset signal mask which unblocks SIGINT.\n50     */\n51    if (sigprocmask(SIG_SETMASK, &amp;oldmask, NULL) &lt; 0)\n52       err_sys(\"SIG_SETMASK error\");\n53\n54    /*\n55     * And continue processing ...\n56     */\n57    pr_mask(\"program exit: \");\n58\n59    exit(0);\n60 }\n61\n62 static void\n63 sigHandling(int signo)\n64 {\n65    pr_mask(\"\\n in sigHandling:\");\n66    printf(\"Received signal %d\\n\", signo);\n67 }</pre>",
+      "answer": "(a) 43；(b) (B)；(c) (A)；(d) 46；(e) (B)（(e) 依 signal() 的語意而定，待確認）",
+      "explanation": "<p><b>(a)</b> 前面都是設定，真正讓行程停下來等 signal 的是第 <b>43</b> 行的 sigsuspend()。它會「原子地」把 mask 換成 waitmask（只擋 SIGUSR1）並睡著。</p>\n<p><b>(b)</b> 睡著時 mask 只有 SIGUSR1，SIGUSR2 沒被擋，而且已用 sigaction 裝了 handler，所以會執行 sigHandling，handler 返回後 sigsuspend 跟著返回 → 行程<b>繼續執行（B）</b>。不會終止，因為 SIGUSR2 的預設動作（終止）已被 handler 取代。</p>\n<p><b>(c)</b> 進 handler 時的 mask = 當下的 mask（waitmask = {SIGUSR1}）∪ sa_mask（空）∪ 正在處理的 signal 本身（sigaction 預設會自動擋住它，避免重入）= {SIGUSR1, SIGUSR2} → <b>(A)</b>。常見錯誤是以為 SIGINT 也在 mask 裡：sigsuspend 期間 mask 已被換成 waitmask，SIGINT 暫時解除阻擋。</p>\n<p><b>(d)</b> SIGINT 在臨界區被擋住，但 sigsuspend 期間解開，所以會被送達、執行 handler；handler 返回後 sigsuspend 回傳 −1（errno = EINTR），第 43 行的條件不成立、跳過 44，從第 <b>46</b> 行繼續。</p>\n<p><b>(e)</b> 若改用傳統（System V 式、不可靠的）signal()，進 handler 時不會自動把正在處理的 signal 加進 mask，所以捕捉 SIGINT 時的 mask 就是 waitmask = {SIGUSR1} → <b>(B)</b>。不過 Linux glibc 的 signal() 其實採 BSD 語意，會自動阻擋該 signal，那就會是 {SIGUSR1, SIGINT}，不在選項中；而若指的是 sigsuspend 返回之後，mask 已還原成 {SIGINT}，也不在選項中。依選項推斷出題者想問的是傳統語意下 handler 內的 mask，答案取 (B)（待確認）。</p>"
+    },
+    {
+      "id": "os-0077",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts) Given the logical address of a memory and its page tables where the page size is 4 bytes, the number of entries on each page is 4, and the size of physical memory is 32 bytes. Please provide the physical address of variable \"g\" and \"o\" shown in below figure.</p>\n<p>logical memory：</p>\n<div class=\"table-scroll\"><table><tr><th>Logical Address</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td></tr>\n<tr><th>Variable</th><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td><td>i</td><td>j</td><td>k</td><td>l</td><td>m</td><td>n</td><td>o</td><td>p</td></tr></table></div>\n<p>page table：</p>\n<div class=\"table-scroll\"><table><tr><th>Logical Page</th><th>Physical</th></tr><tr><td>0</td><td>4</td></tr><tr><td>1</td><td>6</td></tr><tr><td>2</td><td>5</td></tr><tr><td>3</td><td>2</td></tr></table></div>",
+      "choices": [
+        "(A) 26 and 10",
+        "(B) 26 and 7",
+        "(C) 22 and 10",
+        "(D) 10 and 26",
+        "(E) 7 and 10"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>page size = 4 bytes，所以邏輯位址 = 頁號 × 4 + offset，實體位址 = frame 號 × 4 + offset。</p>\n<p><b>g</b> 在邏輯位址 6 → 頁號 6 / 4 = 1、offset 2；page 1 對到 frame 6 → 6 × 4 + 2 = <b>26</b>。<br>\n<b>o</b> 在邏輯位址 14 → 頁號 3、offset 2；page 3 對到 frame 2 → 2 × 4 + 2 = <b>10</b>。</p>\n<p>答案 (A)。實體記憶體 32 bytes 共 8 個 frame，26 和 10 都在範圍內。(D) 是把順序顛倒的陷阱。</p>"
+    },
+    {
+      "id": "os-0078",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts) Please provide the page offset and the size of page table according to the following parameters. Consider a system with a 24-bit logical address, each entry is 1 byte, and each page is 4 KiB.</p>",
+      "choices": [
+        "(A) 9 and 32 KiB",
+        "(B) 10 and 16 KiB",
+        "(C) 11 and 8 KiB",
+        "(D) 12 and 4 KiB",
+        "(E) 13 and 1 KiB"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>4 KiB = 2<sup>12</sup> bytes，page offset 要 <b>12</b> bits。剩下 24 − 12 = 12 bits 是頁號，共 2<sup>12</sup> = 4096 個 entry，每個 1 byte → page table 大小 4096 bytes = <b>4 KiB</b>，剛好一頁放得下。答案 (D)。</p>"
+    },
+    {
+      "id": "os-0079",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(4 pts)（複選）The UNIX system call <b>wait()</b> returns the process identifier of a terminated child process. Select correct description(s).</p>",
+      "choices": [
+        "(A) Cascading termination means that \"if a process terminates, then all its children must also be terminated.\"",
+        "(B) The process identifier of a zombie process is released even if its parent has not yet invoked <b>wait().</b>",
+        "(C) If there is no child process when <b>wait()</b> is invoked, then it is as if no <b>wait()</b> is there.",
+        "(D) If there is an orphan process, the system can assign a process as the new parent which periodically invokes <b>wait()</b>."
+      ],
+      "answer": "(A)(C)(D)（(C) 待確認）",
+      "explanation": "<p><b>(A) 對</b>：這正是 cascading termination（連鎖終止）的定義，有些系統不允許子行程在父行程結束後繼續存在。<br>\n<b>(B) 錯</b>：zombie（殭屍行程）就是「已結束但父行程還沒 wait()」的狀態，它的 PID 和 process table entry 要等父行程 wait() 收屍之後才釋放。<br>\n<b>(C) 對</b>：沒有子行程時，wait() 不會阻塞，立刻回傳 −1（errno = ECHILD），程式就像沒有呼叫一樣繼續往下走。（嚴格說它會回傳錯誤值，若出題者著重這點可能判為錯，待確認。）<br>\n<b>(D) 對</b>：orphan（孤兒行程）會被重新指派給 init（或 systemd），它會定期呼叫 wait() 回收這些孤兒，避免它們變成永久的 zombie。</p>"
+    },
+    {
+      "id": "os-0080",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(4 pts)（複選）Regarding threads, select correct description(s).</p>",
+      "choices": [
+        "(A) Implicit threading transfers the creation and management of threading from application developers to compilers and run-time libraries.",
+        "(B) Thread pools limit the number of threads that exist at any time, which is advantageous to resource-constrained systems.",
+        "(C) A system with a single computing core cannot support concurrent computation.",
+        "(D) POSIX thread (Pthread) cancellation occurs only when a thread reaches a cancellation point, which is an asynchronous cancellation."
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<p><b>(A) 對</b>：implicit threading（隱式執行緒，例如 OpenMP、thread pool、fork-join）就是把建立與管理 thread 的工作交給編譯器與執行期函式庫。<br>\n<b>(B) 對</b>：thread pool（執行緒池）事先建好固定數量的 thread，限制同時存在的數量，對資源有限的系統有利，也省去每次建立 thread 的成本。<br>\n<b>(C) 錯</b>：單核心可以靠時間分割交錯執行，達成 concurrency（並行）；做不到的是 parallelism（平行，同一時刻真的同時執行）。這兩個詞是常考的陷阱。<br>\n<b>(D) 錯</b>：只在 cancellation point 才取消的是 <b>deferred cancellation</b>（延遲取消，Pthread 的預設）；asynchronous cancellation（非同步取消）是立刻終止目標 thread。</p>"
+    },
+    {
+      "id": "os-0081",
+      "topics": [
+        "realtime-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(4 pts)（複選）Given a set of 3 <b>periodic</b> processes as shown below:</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Arrival Time</th><th>Period</th><th>Burst Time</th></tr>\n<tr><td>P<sub>1</sub></td><td>0</td><td>30</td><td>10</td></tr><tr><td>P<sub>2</sub></td><td>10</td><td>70</td><td>10</td></tr><tr><td>P<sub>3</sub></td><td>20</td><td>100</td><td>20</td></tr></table></div>\n<p>Perform the <b>rate-monotonic scheduling</b>. Select correct description(s).</p>",
+      "choices": [
+        "(A) The worst-case turnaround time (from the arrival time to the time of the completion of a process) of P<sub>2</sub> is 10.",
+        "(B) The worst-case turnaround time of P<sub>3</sub> is 30.",
+        "(C) If we increase the burst time of P<sub>3</sub> by X time units, the worst-case turnaround time of P<sub>3</sub> will also be increased by X time units.",
+        "(D) If we change the arrival time of a process, the worst-case turnaround times of all processes will be the same."
+      ],
+      "answer": "(D)（待確認）",
+      "explanation": "<p>Rate-monotonic（速率單調）排程：週期越短優先權越高，P1（30）&gt; P2（70）&gt; P3（100），可搶占。</p>\n<p>最差情況發生在 critical instant（臨界時刻）：某行程和所有更高優先權的行程同時釋放。這組資料裡 P1 每 30 釋放一次、P2 在 10、80、150… 釋放，150 時兩者同時釋放，所以最差情況真的會出現。</p>\n<p><b>(A) 錯</b>：P2 和 P1 同時到時，要先等 P1 跑 10，自己再跑 10，最差 turnaround = <b>20</b>。<br>\n<b>(B) 錯</b>：P3 的最差回應時間用反覆代入 R = 20 + ⌈R/30⌉×10 + ⌈R/70⌉×10：R = 40 → 20+20+10 = 50 → 20+20+10 = 50 收斂，最差 turnaround = <b>50</b>。<br>\n<b>(C) 錯</b>：多出來的執行時間可能剛好跨過下一次 P1 或 P2 的釋放，被多搶一次。例如 X = 12 時 R：32 + ⌈R/30⌉×10 + ⌈R/70⌉×10，迭代會收斂到 82，增加 32 而不是 12。<br>\n<b>(D) 對</b>：最差情況由 critical instant 決定，對這組週期（30、70、100），不論怎麼改到達時間，在足夠長的時間內都會出現同時釋放（或等效）的情況。用程式隨機試了 300 組不同到達時間，模擬兩個 hyperperiod（每個 2100），三個行程的最差 turnaround 都維持 (10, 20, 50)。不過一般而言改變相位是可能讓最差情況變好的，此選項的判定依出題者意圖，待確認。</p>"
+    },
+    {
+      "id": "os-0082",
+      "topics": [
+        "file-system-interface"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts)（複選）Which of the following are correct for consistency semantics for file systems?</p>",
+      "choices": [
+        "(A) Consistent semantic specify when the ownership of a lock will be transferred to another process.",
+        "(B) Consistent semantics specify when modification of data by one process will be observable by other processes.",
+        "(C) UNIX semantic is supported by modern distributed file systems.",
+        "(D) Session semantic requires one file to be associated with a single physical image that is accessed as an exclusive resource.",
+        "(E) Consistent semantic specify how multiple processes of a system are to access a shared file."
+      ],
+      "answer": "(B)(E)",
+      "explanation": "<p>Consistency semantics（一致性語意）規範的是：多個行程同時存取同一個共享檔案時，一個行程的修改什麼時候會被其他行程看到。</p>\n<p><b>(A) 錯</b>：和鎖的所有權轉移無關。<br>\n<b>(B) 對</b>、<b>(E) 對</b>：正是定義本身的兩個面向。<br>\n<b>(C) 錯</b>：UNIX semantics（寫入立刻對所有開啟者可見）在分散式環境成本太高，像 AFS 改用 session semantics（關檔後才讓之後開檔的人看到）。<br>\n<b>(D) 錯</b>：「一個檔案對應單一實體映像、當作互斥資源存取」描述的是 <b>UNIX semantics</b>；session semantics 反而允許一個檔案同時有多個映像。</p>"
+    },
+    {
+      "id": "os-0083",
+      "topics": [
+        "critical-section",
+        "deadlock-characterization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts)（複選）Regarding the critical-section problem and synchronization, select correct description(s).</p>",
+      "choices": [
+        "(A) A resource-allocation graph has a cycle if and only if there is a deadlock.",
+        "(B) The \"progress\" requirement implies the \"bounded waiting\" requirement.",
+        "(C) The \"bounded waiting\" requirement implies the \"progress\" requirement.",
+        "(D) The \"freedom from deadlock\" property implies the \"freedom from starvation\" property.",
+        "(E) The \"freedom from starvation\" property implies the \"freedom from deadlock\" property."
+      ],
+      "answer": "(E)",
+      "explanation": "<p><b>(A) 錯</b>：有 cycle 只是 deadlock 的必要條件；每種資源只有一個 instance 時才是充要條件，多 instance 時有 cycle 也可能沒 deadlock。<br>\n<b>(B) 錯</b>、<b>(C) 錯</b>：progress（進行）和 bounded waiting（有限等待）互相獨立。反例：只用一個 turn 變數輪流進入的 strict alternation（嚴格輪替）滿足 bounded waiting（最多等對方一次），但對方不想進去時自己也進不去，違反 progress；反過來，有 progress 但某個行程可能一直搶輸，則違反 bounded waiting。<br>\n<b>(D) 錯</b>：沒有 deadlock 時，系統整體還在前進，但某個行程仍可能一直輪不到（starvation，飢餓）。<br>\n<b>(E) 對</b>：如果發生 deadlock，卡在裡面的行程永遠等不到，那就是 starvation；所以保證沒有 starvation 就一定沒有 deadlock。</p>"
+    },
+    {
+      "id": "os-0084",
+      "topics": [
+        "security"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts)（複選）Recent hardware architectural extensions include the support for Trusted Execution Environment (TEE). Hardware isolates the software running in the TEE from the outside attackers. Intel provides the hardware support called Software Guard Extensions (SGX) that allows programs to run in its TEE called enclave in userspace. Intel SGX encrypts the enclave's code and data in CPU registers and RAM memory. Attackers that control another application or privileged systems software such as an operating system can only read or write encrypted code and data of the enclave. Which of the following are true?</p>",
+      "choices": [
+        "(A) Intel SGX ensures that the software running in the TEE can never crash.",
+        "(B) As the OS kernel is involved when loading the application's binary into the enclave, Intel SGX supports remote attestation to authenticate the binary to ensure the application's safety.",
+        "(C) It is possible to run an entire OS kernel such as Linux in the SGX enclave.",
+        "(D) Although the enclave is encrypted by the Intel SGX hardware, an attacker residing in the OS kernel could still modify the enclave's page tables to affect the enclave's execution.",
+        "(E) To support encrypting the enclave's secrets for persistent storage, the SGX enclave could use a persistent hardware-based encryption key to securely encrypt and store its sensitive data in a way that ensures the data can be retrieved only when the trusted environment is restored."
+      ],
+      "answer": "(B)(D)(E)",
+      "explanation": "<p><b>(A) 錯</b>：SGX 保護的是機密性與完整性，不保證程式本身沒有 bug；enclave 裡的程式照樣可能當掉，OS 也可以不給它 CPU 時間（availability 不在保護範圍）。<br>\n<b>(B) 對</b>：載入 enclave 需要不可信的 OS 協助，所以 SGX 提供 remote attestation（遠端證明），讓遠端驗證 enclave 裡載入的確實是預期的程式碼。<br>\n<b>(C) 錯</b>：enclave 只能跑在 user mode（ring 3），不能執行特權指令，無法跑完整的 OS kernel；能放進去的是 library OS 這類 user-level 的東西。<br>\n<b>(D) 對</b>：page table 仍由 OS 管理，惡意 kernel 可以改 page table、觸發 page fault 觀察存取模式（controlled-channel attack），影響 enclave 的執行。<br>\n<b>(E) 對</b>：這就是 sealing（封存）：用 CPU 內建、與 enclave 身分綁定的金鑰加密資料存到磁碟，只有相同的 enclave 才能解開。</p>"
+    },
+    {
+      "id": "os-0085",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(8 pts)（複選）Given a set of n processes, the arrival time of the i-th process is (i-1), and the burst time of the i-th process is (2n-2i+2), as shown below:</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Arrival Time</th><th>Burst Time</th></tr>\n<tr><td>P<sub>1</sub></td><td>0</td><td>2n</td></tr><tr><td>P<sub>2</sub></td><td>1</td><td>2n-2</td></tr><tr><td>P<sub>3</sub></td><td>2</td><td>2n-4</td></tr><tr><td>...</td><td>...</td><td>...</td></tr><tr><td>P<sub>n</sub></td><td>n-1</td><td>2</td></tr></table></div>\n<p>Perform <b>preemptive scheduling</b> to minimize the <b>average turnaround time</b> (from the arrival time to the time of the completion of a process) of all processes. Assume that the minimized average turnaround time of all processes is Wn<sup>3</sup>+Xn<sup>2</sup>+Yn+Z. Select correct description(s).</p>",
+      "choices": [
+        "(A) W + X + Y + Z = 1.",
+        "(B) X - Y + Z = -1.",
+        "(C) 2XY = 1.",
+        "(D) W<sup>2</sup> + 3Z = 2."
+      ],
+      "answer": "(D)",
+      "explanation": "<p>可搶占時讓平均 turnaround 最小的是 SRTF（Shortest Remaining Time First，最短剩餘時間優先）。</p>\n<p><b>追蹤</b>：時間 0～1 只有 P1，跑 1 單位，剩 2n−1。時間 1 P2 到（2n−2 &lt; 2n−1），搶占；之後每過 1 單位就來一個更短的新行程，而且新行程的長度都比目前剩下的短，所以一直被搶占。到時間 n−1 時 Pn（長度 2）到達，此後沒有新行程，各行程剩餘時間為：P1 剩 2n−1，P<sub>i</sub>（2 ≤ i ≤ n−1）各跑了 1 單位、剩 2n−2i+1，Pn 剩 2。接著依剩餘時間由短到長跑完：Pn、P<sub>n−1</sub>、…、P2、P1。</p>\n<p><b>算總和</b>：後半段依序完成的剩餘長度是 2、3、5、7、…、2n−3、2n−1，完成時間是從 n−1 開始的前綴和。整理後平均 turnaround = <b>(1/3)n<sup>2</sup> + n + 2/3</b>，也就是 W = 0、X = 1/3、Y = 1、Z = 2/3。驗算：n = 1 時只有 P1，turnaround = 2，公式 1/3 + 1 + 2/3 = 2；n = 2 時 P1 先跑 1、P2 跑 2（在時間 3 完成，turnaround 2）、P1 跑完剩下 3（在時間 6 完成，turnaround 6），平均 4，公式 4/3 + 2 + 2/3 = 4。另外用程式模擬 n = 1～8 的 SRTF，全部和公式吻合。</p>\n<p>代入選項：(A) 0 + 1/3 + 1 + 2/3 = 2 ≠ 1；(B) 1/3 − 1 + 2/3 = 0 ≠ −1；(C) 2 × (1/3) × 1 = 2/3 ≠ 1；(D) 0 + 3 × (2/3) = <b>2</b>，正確。答案 (D)。</p>\n<p>容易錯的地方是以為 W ≠ 0：總 turnaround 是 n<sup>3</sup> 等級，但題目問的是<b>平均</b>，除以 n 之後最高只剩 n<sup>2</sup>。</p>"
+    },
+    {
+      "id": "os-0086",
+      "topics": [
+        "virtual-machines",
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(8pts)（複選）Modern CPU architectures provide nested page tables (NPTs) to support virtualization. The MMU hardware performs two-stage memory translation. In the first stage, it translates virtual addresses (VAs) using the virtual machine (VM)'s page tables (PTs) to intermediate physical addresses (IPAs). The VM's PTs are specified in IPAs. In the second stage, the hardware translates the IPAs using the NPTs to physical addresses (PAs). All page tables are 4K bytes, and a page table entry is 8 bytes. All VAs and IPAs are 39 bits, and the PTs and NPTs include 2M or 4K byte mappings. Assume the TLB or cache is not implemented on the hardware. Considering both PTs and NPTs are enabled, which of the following could be the number of memory accesses taken for the hardware to perform the two-stage memory translation (e.g., VA of a VM to a PA)?</p>",
+      "choices": [
+        "(A) 10",
+        "(B) 11",
+        "(C) 12",
+        "(D) 13"
+      ],
+      "answer": "(A)(B)(C)(D)（待確認）",
+      "explanation": "<p><b>層數</b>：一張表 4KB、每個 entry 8 bytes → 512 個 entry，每層吃 9 bits。39-bit 位址扣掉 4K page 的 12-bit offset 剩 27 bits = 3 層；若是 2M mapping，offset 21 bits，只要 2 層。</p>\n<p><b>兩段式走表</b>：guest 走 n 層 PT，每讀一層 guest PT 之前，那張表的位址是 IPA，要先用 NPT 走 m 層翻成 PA，再讀它本身 1 次；最後拿到的資料 IPA 也要再走一次 NPT。總次數 = n × (m + 1) + m。</p>\n<p>guest 用 4K（n = 3）或 2M（n = 2）；每一次 NPT 查詢依那塊 IPA 的對映大小走 3 層或 2 層，而且不同 IPA 的對映大小可以不同。把所有組合列出來，總次數可以是 8 到 15 之間的每個整數：例如全部 4K 是 3 × 4 + 3 = 15；全部 2M 是 2 × 3 + 2 = 8；guest 2M、host 全 4K 是 2 × 4 + 3 = 11；guest 4K、host 全 2M 是 3 × 3 + 2 = 11；混合時 10、12、13 都湊得出來（例如 guest 2 層、三次 NPT 查詢為 2、3、3 層 → 2 + 8 = 10）。用程式窮舉所有組合確認 {8, …, 15} 都可達，四個選項都可能。</p>\n<p>若出題者假設 PT 與 NPT 各自全用同一種對映大小，可能的值只有 8、11、15，那答案就只有 (B)；本題依「include 2M or 4K byte mappings」解讀為可混用，答案待確認。</p>"
+    },
+    {
+      "id": "os-0087",
+      "topics": [
+        "file-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(5pts)（複選）Regarding allocating secondary storage space, select correct description(s).</p>",
+      "choices": [
+        "(A) Contiguous allocation suffers from the problem of external fragmentation more than linked allocation and indexed allocation.",
+        "(B) Linked allocation is good if files are large and usually accessed randomly.",
+        "(C) Indexed allocation is good if files are large and usually accessed sequentially.",
+        "(D) File-allocation table (FAT) is one variation of linked allocation.",
+        "(E) If a linked list is used for free-space management, although traversing the whole list is not efficient, traversing the whole list is not a frequent action of an operating system."
+      ],
+      "answer": "(A)(D)(E)",
+      "explanation": "<p><b>(A) 對</b>：連續配置要找一段夠長的連續空間，會留下很多零碎空洞；linked 和 indexed 都能用任何零散的 block，沒有 external fragmentation（外部碎裂）問題。<br>\n<b>(B) 錯</b>：linked allocation 要隨機存取第 k 個 block 得從頭沿著指標走 k 步，適合循序存取，不適合隨機存取。<br>\n<b>(C) 錯</b>：indexed allocation 的優勢是隨機存取（查 index block 直接找到第 k 塊）；大檔案又以循序為主時，contiguous 或 linked 就夠了，用 indexed 反而多了 index block 的負擔。一般建議是「隨機存取的大檔案用 indexed」。<br>\n<b>(D) 對</b>：FAT 把每個 block 的「下一塊」指標集中放在一張表，本質仍是 linked allocation 的變形。<br>\n<b>(E) 對</b>：配置時只需要拿串列開頭的那一塊，平常不會從頭走到尾，所以走訪整條串列慢並不是大問題。</p>"
+    },
+    {
+      "id": "os-0088",
+      "topics": [
+        "security"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(5pts)（複選）Regarding security, select correct description(s).</p>",
+      "choices": [
+        "(A) Recursively and continuously calling <b>fork()</b> is a denial of service (DoS) attack.",
+        "(B) A message authentication code (MAC) is computed by F(M, K), where F is a MAC-computation algorithm, M is a message, and K is a shared secret key. The message authentication code is able to verify the authenticity of a message sender.",
+        "(C) The message authentication code above is able to verify that a message has not been modified.",
+        "(D) The message authentication code above is able to protect against replay attacks.",
+        "(E) A buffer overflow may cause a code-injection attack."
+      ],
+      "answer": "(A)(B)(C)(E)",
+      "explanation": "<p><b>(A) 對</b>：fork bomb（不斷遞迴 fork）會耗盡 process table 與 CPU，讓正常使用者無法使用系統，屬於 DoS（阻斷服務）攻擊。<br>\n<b>(B) 對</b>：只有握有共享金鑰 K 的人算得出正確的 MAC，所以收到正確的 MAC 就能確認訊息來自持有 K 的那一方（不過無法向第三方證明是誰，這是它和數位簽章的差別）。<br>\n<b>(C) 對</b>：訊息被改動後重算的 MAC 就對不上，可以檢查完整性。<br>\n<b>(D) 錯</b>：攻擊者把一則合法的「訊息＋MAC」原封不動再送一次，MAC 照樣驗證通過。防 replay attack（重送攻擊）要另外加 nonce、序號或時間戳。<br>\n<b>(E) 對</b>：buffer overflow（緩衝區溢位）可以蓋掉 return address，跳去執行攻擊者塞進來的程式碼，這就是 code injection（程式碼注入）。</p>"
+    },
+    {
+      "id": "os-0089",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(10pts)（複選）Consider two-level paging without virtual memory. Assume</p>\n<ul><li>A system uses a W-bit logical address space.</li><li>The page size is 2<sup>X</sup> bytes.</li><li>The size of an entry in the outer page table is 2<sup>Y</sup> bytes.</li><li>The size of an entry in the inner page table is 2<sup>Z</sup> bytes.</li><li>We also assume that the size of each entry in each page table is long enough to store all information needed.</li></ul>\n<p>Given the following (W, X, Y, Z), which can fit the outer page table into one page?</p>",
+      "choices": [
+        "(A) (W, X , Y, Z) = (16, 8, 6, 6).",
+        "(B) (W, X , Y, Z) = (16, 12, 16, 8).",
+        "(C) (W, X , Y, Z) = (32, 16, 8, 4).",
+        "(D) (W, X , Y, Z) = (32, 24, 6, 10).",
+        "(E) (W, X , Y, Z) = (64, 32, 20, 20)."
+      ],
+      "answer": "(C)(D)（(D) 待確認）",
+      "explanation": "<p>兩層分頁時，每張 inner page table 剛好放一頁：一頁 2<sup>X</sup> bytes ÷ entry 2<sup>Z</sup> bytes = 2<sup>X−Z</sup> 個 entry，所以 inner 索引用 X − Z bits；offset 用 X bits；剩下的 W − X − (X − Z) bits 給 outer。outer table 大小 = 2<sup>(W − 2X + Z) + Y</sup> bytes，要 ≤ 2<sup>X</sup>，也就是 W − 2X + Z + Y ≤ X。</p>\n<div class=\"table-scroll\"><table><tr><th>選項</th><th>inner bits X−Z</th><th>outer bits</th><th>outer 大小</th><th>一頁</th><th>放得下？</th></tr>\n<tr><td>(A)</td><td>2</td><td>16−8−2 = 6</td><td>2<sup>6+6</sup> = 2<sup>12</sup></td><td>2<sup>8</sup></td><td>否</td></tr>\n<tr><td>(B)</td><td>4</td><td>0</td><td>2<sup>0+16</sup> = 2<sup>16</sup></td><td>2<sup>12</sup></td><td>否（一個 entry 就比一頁大）</td></tr>\n<tr><td>(C)</td><td>12</td><td>32−16−12 = 4</td><td>2<sup>4+8</sup> = 2<sup>12</sup></td><td>2<sup>16</sup></td><td>是</td></tr>\n<tr><td>(D)</td><td>14</td><td>32−24−14 &lt; 0</td><td>只需 1 個 entry = 2<sup>6</sup></td><td>2<sup>24</sup></td><td>是</td></tr>\n<tr><td>(E)</td><td>12</td><td>64−32−12 = 20</td><td>2<sup>20+20</sup> = 2<sup>40</sup></td><td>2<sup>32</sup></td><td>否</td></tr></table></div>\n<p>(D) 比較特別：一張 inner table 就能涵蓋全部 2<sup>8</sup> 個頁，outer 其實只要 1 個 entry（2<sup>6</sup> = 64 bytes），當然放得進一頁；若出題者認為這種退化情況不算，(D) 可能被判為錯，待確認。</p>"
+    },
+    {
+      "id": "os-0090",
+      "topics": [
+        "page-replacement"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(10pts)（複選）Given 3 pages (P1, P2, P3) and 2 frames, the page reference has the following features:</p>\n<ul><li>The frames are initially empty.</li><li>There will be 4 page references.</li><li>The first page reference is P1.</li><li>At the time of a page reference, a page replacement algorithm only knows the probability of the page of the next page reference, and it does NOT know the exact page of the next page reference.</li><li>After a page reference of P1, the next page reference is P2 with 0.8 probability or P3 with 0.2 probability.</li><li>After a page reference of P2, the next page reference is P3 with 0.4 probability or P1 with 0.6 probability.</li><li>After a page reference of P3, the next page reference is P1 with 0.9 probability or P2 with 0.1 probability.</li><li>An optimal page replacement algorithm minimizes the expected number of page faults for the total 4 page references.</li></ul>\n<p>Regarding the expected number of page faults of the optimal page replacement algorithm, select correct description(s).</p>",
+      "choices": [
+        "(A) E [ Number of page faults for the 2nd page reference ] = 1.",
+        "(B) 0.275 ≤ E [ Number of page faults for the 3rd page reference ] ≤ 0.325.",
+        "(C) 0.300 ≤ E [ Number of page faults for the 3rd page reference ] ≤ 0.350.",
+        "(D) 0.275 ≤ E [ Number of page faults for the 4th page reference ] ≤ 0.325.",
+        "(E) 0.300 ≤ E [ Number of page faults for the 4th page reference ] ≤ 0.350."
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<p><b>第 2 次</b>：frame 裡只有 P1，下一個一定是 P2 或 P3（不會是 P1），一定 fault：E = <b>1</b>，(A) 對。</p>\n<p><b>第 3 次</b>：此時 frame 裝著 {P1, 第 2 次的頁}，兩個 frame 剛好滿，還沒需要置換。下一個頁不在 frame 的情況只有「剛好是第三個頁」：<br>\n第 2 次是 P2（機率 0.8）→ {P1, P2}，第 3 次是 P3 的機率 0.4；第 2 次是 P3（0.2）→ {P1, P3}，第 3 次是 P2 的機率 0.1。<br>\nE = 0.8 × 0.4 + 0.2 × 0.1 = 0.32 + 0.02 = <b>0.34</b>，落在 [0.300, 0.350]，(C) 對、(B) 錯（0.34 &gt; 0.325）。</p>\n<p><b>第 4 次</b>：第 3 次 fault 時要決定踢誰，最佳策略是踢掉「下一次最不可能被用到的頁」：<br>\n• 路徑 P1→P2→P3（0.32）：frame {P1, P2} 要放 P3，接下來 P3→P1 機率 0.9、→P2 0.1，保留 P1 踢 P2，第 4 次 fault 機率 0.1 → 0.032。<br>\n• 路徑 P1→P3→P2（0.02）：frame {P1, P3} 放 P2，接下來 P2→P1 0.6、→P3 0.4，保留 P1，fault 機率 0.4 → 0.008。<br>\n• 沒有 fault 的路徑：P1→P2→P1（0.48）：frame {P1, P2}，下一個 P2 機率 0.8（hit）、P3 0.2（fault）→ 0.096；P1→P3→P1（0.18）：frame {P1, P3}，下一個 P2 0.8 → fault 0.144。<br>\nE = 0.032 + 0.008 + 0.096 + 0.144 = <b>0.28</b>，落在 [0.275, 0.325]，(D) 對、(E) 錯。</p>\n<p>用動態規劃窮舉所有置換選擇確認：總期望 fault = 1 + 1 + 0.34 + 0.28 = 2.62，且最佳策略在每一步的選擇唯一。答案 (A)(C)(D)。</p>"
+    },
+    {
+      "id": "os-0091",
+      "topics": [
+        "realtime-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(10pts)（複選）Given 2 periodic processes in the following table:</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Period (msec)</th><th>Deadline (msec)</th><th>Processing (Burst) Time (msec)</th><th>Softness</th></tr>\n<tr><td>P1</td><td>T1</td><td>D1</td><td>C1</td><td>S1</td></tr><tr><td>P2</td><td>T2</td><td>D2</td><td>C2</td><td>S2</td></tr></table></div>\n<p>The softness is a positive integer, meaning that 1 deadline needs to be met for any Si consecutive instances of Pi. For example:</p>\n<ul><li>If Si = 1, then each instance needs to meet its deadline.</li><li>If Si = 2, then 1 deadline needs to be met for any 2 consecutive instances. (If an instance misses its deadline, then the next instance must meet its deadline.)</li></ul>\n<p>Note that, if Si &gt; 1, then Pi does not need all instances to be processed. The real-time scheduling problem has the following features:</p>\n<ul><li>For each i, Ci ≤ Di ≤ Ti.</li><li>The time of context switching and interrupt handling can be ignored.</li><li>The scheduling is preemptive.</li><li>The scheduling is based on dynamic priority assignment.</li><li>A scheduling algorithm is optimal in that if a problem cannot be scheduled by the scheduling algorithm, then it cannot be scheduled by any other scheduling algorithm.</li></ul>\n<p>Select correct description(s).</p>",
+      "choices": [
+        "(A) If S1 = S2 = 1 and (C1 / T1) + (C2 / T2) &gt; 1, then the problem must be non-schedulable.",
+        "(B) If S1 = S2 = 1 and (C1 / T1) + (C2 / T2) ≤ 1, then the problem must be schedulable.",
+        "(C) If S1 = 1 and S2 = 2 and (C1 / T1) + (C2 / T2) &gt; 1, then the problem must be non-schedulable.",
+        "(D) If S1 = 1 and S2 = 2 and (C1 / T1) + (C2 / T2 / 2) ≤ 1, then the problem must be schedulable.",
+        "(E) If S1 = 1 and S2 = 2 and (C1 / T1) + (C2 / T2 / 2) ≤ 1, then an optimal scheduling algorithm must interleavingly (…, meet, miss, meet, miss, meet, miss, meet, …) meet and miss the deadlines of S2."
+      ],
+      "answer": "(A)",
+      "explanation": "<p><b>(A) 對</b>：每個 instance 都要完成時，CPU 使用率 C1/T1 + C2/T2 是必須付出的工作量比例，超過 1 代表 CPU 根本做不完，任何演算法都排不出來。</p>\n<p><b>(B) 錯</b>：使用率 ≤ 1 是 EDF（Earliest Deadline First）在 <b>D = T</b> 時的充要條件；這題允許 D &lt; T，deadline 比週期短時可能做不完。反例：T1 = T2 = 10、D1 = D2 = 1、C1 = C2 = 1，使用率只有 0.2，但兩者同時在時間 0 釋放、都要在時間 1 前做完，總共要 2 單位，必有一個錯過。</p>\n<p><b>(C) 錯</b>：S2 = 2 時 P2 可以每兩個 instance 只做一個，實際需要的使用率可以降到 C1/T1 + C2/(2T2)，原本的總和大於 1 不代表排不出來。</p>\n<p><b>(D) 錯</b>：同 (B) 的道理，D &lt; T 時光看使用率不能保證可排。沿用上面的反例並令 S2 = 2：兩個行程週期相同、每次同時釋放且 deadline 都是 1，每個週期只能做完其中一個；P1 每次都必須完成，所以 P2 每次都錯過，連續兩次錯過就違反 S2 = 2，但條件 0.1 + 0.05 ≤ 1 成立。</p>\n<p><b>(E) 錯</b>：條件寬鬆時（例如使用率很低）P2 的每個 instance 都能準時完成，不必刻意輪流錯過；「must」太絕對。</p>"
+    },
+    {
+      "id": "os-0092",
+      "topics": [
+        "bankers-algorithm"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(10pts)（複選）A state is \"safe\" if the system can allocate resources to each thread in some order and still avoid a deadlock. A system is in a safe state only if there exists a \"safe sequence\" of threads. Given 7 threads (T0, T1, T2, T3, T4, T5, T6) and 3 resource types (R0, R1, R2), the follow tables show the current state of the system:</p>\n<ul><li>Available: the number of currently-available resources of each type.</li><li>Max: the maximum demand of each thread.</li><li>Allocation: the number of resources of each type currently allocated to each thread.</li></ul>\n<p>Available：R0 = 3, R1 = 0, R2 = 6</p>\n<div class=\"table-scroll\"><table><tr><th rowspan=\"2\"></th><th colspan=\"3\">Max</th><th colspan=\"3\">Allocation</th></tr>\n<tr><th>R0</th><th>R1</th><th>R2</th><th>R0</th><th>R1</th><th>R2</th></tr>\n<tr><td>T0</td><td>0</td><td>3</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>\n<tr><td>T1</td><td>3</td><td>6</td><td>5</td><td>1</td><td>2</td><td>2</td></tr>\n<tr><td>T2</td><td>2</td><td>1</td><td>5</td><td>1</td><td>1</td><td>0</td></tr>\n<tr><td>T3</td><td>5</td><td>6</td><td>1</td><td>1</td><td>2</td><td>0</td></tr>\n<tr><td>T4</td><td>6</td><td>1</td><td>0</td><td>2</td><td>1</td><td>0</td></tr>\n<tr><td>T5</td><td>4</td><td>1</td><td>3</td><td>1</td><td>1</td><td>1</td></tr>\n<tr><td>T6</td><td>0</td><td>6</td><td>8</td><td>0</td><td>0</td><td>0</td></tr></table></div>\n<p>How many safe sequences of threads are there? Note that there are 7! = 5,040 possible sequences. Assume that the answer is 1000W + 100X + 10Y + Z, where W, X, Y, Z are integers and 0 ≤ W, X, Y, Z ≤ 9. Select correct description(s).</p>",
+      "choices": [
+        "(A) W + X + Y + Z = 9.",
+        "(B) W - 2X - 3Y + 4Z = 15.",
+        "(C) WX + YZ = 32.",
+        "(D) (W + Y + 1) / (X + Z + 1) = 0.5.",
+        "(E) W<sup>2</sup> + X<sup>2</sup> + Y<sup>2</sup> + Z<sup>2</sup> = 20."
+      ],
+      "answer": "(E)",
+      "explanation": "<p>先算 Need = Max − Allocation：T0 (0,2,0)、T1 (2,4,3)、T2 (1,0,5)、T3 (4,4,1)、T4 (4,0,0)、T5 (3,0,2)、T6 (0,6,8)。</p>\n<p><b>前半段</b>：Available 的 R1 = 0，一開始只有 Need 中 R1 為 0 且其他夠的 T2、T5 能先跑。<br>\n• T4 需要 R0 = 4，要先完成 T2 或 T5（各還 1 個 R0）才夠。<br>\n• T0 需要 R1 = 2，要先完成 T2、T4、T5 中的兩個（每個各還 1 個 R1）。<br>\n合法的前四個順序有：2405、2450、2504、2540、5204、5240、5402、5420，共 <b>8</b> 種。T1、T3、T6 在這之前都做不到（R1 不夠）。</p>\n<p><b>後半段</b>：T0、T2、T4、T5 完成後 Available = (7, 4, 7)。T1 (2,4,3) 可以，完成後 (8,6,9)；T3 (4,4,1) 可以，完成後 (8,6,7)；T6 (0,6,8) 一開始 R1、R2 都不夠，必須等 T1 完成（R2 才會到 9）。所以後三個的順序只能是 1-3-6、1-6-3、3-1-6，共 <b>3</b> 種。</p>\n<p>安全序列總數 = 8 × 3 = <b>24</b>，用程式窮舉 5,040 種排列也確認是 24。所以 W = 0、X = 0、Y = 2、Z = 4。</p>\n<p>代入：(A) 6 ≠ 9；(B) 0 − 0 − 6 + 16 = 10 ≠ 15；(C) 0 + 8 = 8 ≠ 32；(D) 3/5 = 0.6 ≠ 0.5；(E) 0 + 0 + 4 + 16 = <b>20</b>，正確。答案 (E)。</p>"
+    },
+    {
+      "id": "os-0093",
+      "topics": [
+        "threads",
+        "page-replacement",
+        "cpu-scheduling",
+        "deadlock-characterization",
+        "file-system-interface",
+        "realtime-scheduling",
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>Part II: Operating System (50 points)<br>NOTE that in the questions, it is intended to provide redundant or miss certain assumptions to disguise you. Please describe your own assumptions if necessary to answer the questions. Answers not in the order of question number might NOT be scored. You can answer in English or Chinese.</p>\n<p>(20 points) For each of the following statements, answer <b>Yes</b> if it is TRUE or <b>brief why it is wrong.</b></p>\n<p>A. (2 points) The less threading, the less performance.<br>\nB. (2 points) The less frames, the more page fault rates.<br>\nC. (2 points) The smaller time quantum for scheduling, the longer average turnaround time.<br>\nD. (2 points) Firmware can be executed faster in ROM than in RAM.<br>\nE. (2 points) Working set model has to be supported by MMU.<br>\nF. (2 points) A safe state will not go to a deadlocked state.<br>\nG. (2 points) Context switch is usually supported in hardware instruction for performance.<br>\nH. (2 points) Section Semantics: Once the file is closed, the changes are visible only to new sessions.<br>\nI. (2 points) A real-time scheduler schedules tasks according to their real-time priorities.<br>\nJ. (2 points) The two-phase locking protocol guarantees serializability and prevents deadlock.</p>",
+      "answer": "A 錯；B 錯（Belady's anomaly）；C 錯；D 錯；E 錯；F 錯；G 錯；H Yes；I 錯；J 錯（不保證無 deadlock）（E、F、I 依假設而定，待確認）",
+      "explanation": "<p>題目明說會故意少給假設，作答時要寫出自己的假設。以下是參考答案：</p>\n<p><b>A 錯</b>：thread 少不一定效能低。thread 數超過核心數或 I/O 等待量時，多出來的 thread 只會增加 context switch 與同步競爭的負擔；單核心上的 CPU-bound 工作，多開 thread 也不會變快。<br>\n<b>B 錯</b>：一般趨勢是 frame 少 fault 多，但不是必然。FIFO 置換有 <b>Belady's anomaly</b>（畢雷迪異常）：例如參考串 1,2,3,4,1,2,5,1,2,3,4,5 在 3 個 frame 時 9 次 fault、4 個 frame 時反而 10 次。<br>\n<b>C 錯</b>：time quantum 與平均 turnaround time 沒有單調關係。quantum 變小會增加 context switch，但也可能讓短工作更早做完而縮短平均 turnaround；quantum 大到超過所有 burst 時 RR 就退化成 FCFS，也不一定比較好。<br>\n<b>D 錯</b>：ROM（含 flash）通常比 RAM 慢，所以很多系統開機時會把 firmware 複製（shadow）到 RAM 再執行。<br>\n<b>E 錯</b>：working set 模型是一種軟體策略，可以用硬體提供的 reference bit 加上定時中斷來近似；需要的是 reference bit 之類的基本支援，而不是 MMU 必須「實作 working set」（假設不同時判定可能不同，待確認）。<br>\n<b>F 錯</b>：safe state 代表「存在」一種配置順序可以避開 deadlock，但如果系統不照 banker's algorithm 檢查、隨便答應請求，仍可能走進 unsafe 進而 deadlock；只有搭配 avoidance 演算法才保證不會（待確認出題者的假設）。<br>\n<b>G 錯</b>：context switch 通常由 OS 軟體完成（存、載暫存器與 PCB）。x86 雖然有硬體的 task switch，但因為會存一大堆用不到的狀態、反而比較慢，主流 OS 都不用。<br>\n<b>H Yes</b>（題目的 Section 應為 Session）：session semantics 規定檔案關閉後，修改只對之後才開啟的 session 可見，已開啟的人看不到。<br>\n<b>I 錯</b>：real-time 排程的目標是滿足時限，常依 deadline 或週期決定優先權（例如 EDF 是動態優先權、RM 依週期），不是單純看使用者給的「real-time priority」（看假設，待確認）。<br>\n<b>J 錯</b>：two-phase locking（兩階段鎖定）保證 conflict serializability，但<b>不能</b>避免 deadlock：兩個交易各鎖住一個資料、再互相等待對方的鎖，照樣 deadlock。</p>"
+    },
+    {
+      "id": "os-0094",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>(5 points) When a mouse device is moved, a monitor reflects by redrawing the mouse icon in windows manager. What does the mouse driver (not ISR) do in this event? How is the driver called? How does the windows manager know to start redrawing?</p>",
+      "answer": "driver 把 ISR 收到的原始資料解析成移動事件放入輸入事件佇列並喚醒等待者；由 ISR 排程的 deferred work（bottom half）或 read 系統呼叫進入；window manager 阻塞在讀取輸入裝置（read／select／poll）上，被喚醒後讀到事件就重畫（參考答案，待確認）",
+      "explanation": "<p>這題是開放題，重點是把 interrupt 處理的上半部／下半部，以及 user space 怎麼等事件講清楚：</p>\n<p><b>1. driver 做什麼</b>：ISR（top half）只做最急的事：回應中斷、把硬體送來的原始封包（例如 X、Y 位移與按鍵狀態）抓下來。driver 的其餘部分（bottom half）把原始封包解析成標準的輸入事件（相對位移 dx、dy、按鍵），必要時做加速度、座標換算，放進該裝置的事件佇列（buffer），然後喚醒在這個裝置上等待的行程。</p>\n<p><b>2. driver 怎麼被呼叫</b>：(a) ISR 排程 deferred work（softirq／tasklet／work queue）讓 kernel 稍後執行 driver 的處理函式；(b) user space 對裝置檔（如 /dev/input/…）呼叫 read() 時，經 system call → VFS → driver 的 read 函式把佇列裡的事件複製出去。</p>\n<p><b>3. window manager 怎麼知道要重畫</b>：window manager（或 display server）平常阻塞在讀取輸入裝置的 read()／select()／poll() 上；driver 放入事件並喚醒它後，它讀到移動事件，算出新的游標位置，再請繪圖子系統在新位置畫出游標（很多硬體有 hardware cursor，只要更新游標座標暫存器）。</p>"
+    },
+    {
+      "id": "os-0095",
+      "topics": [
+        "os-structures"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>(10 points) Intrusive linked lists are a variation of linked lists, where the links are embedded in the item structure that's being linked as follows. It is used in Linux kernel for better performance than traditional linked lists. Why? Hint: Consider memory related advantages.</p>\n<pre class=\"code\">typedef struct list {\n  struct list *next;\n} list;\n\ntypedef struct item {\n  int val;    // data\n  list links;\n} item;</pre>",
+      "answer": "少一次配置與一層間接存取、link 和資料在同一塊（同一條 cache line）所以區域性較好、不需另外配置節點而能放進固定大小的 slab、同一物件可嵌多個 link 同時掛在多條串列、刪除時已有物件指標可直接操作",
+      "explanation": "<p>傳統串列的節點是另外配置的 <code>struct node { void *data; struct node *next; }</code>，資料和節點分開；intrusive list 把 link 直接放在物件裡。記憶體上的好處：</p>\n<p><b>1. 少一次配置</b>：插入時不必再 malloc／kmalloc 一個節點，也不用管節點的釋放；kernel 裡配置記憶體可能失敗或不能睡眠，少一次配置就少一個失敗點，也減少碎片。<br>\n<b>2. 少一層間接存取、cache 區域性好</b>：走訪串列時拿到 link 就等於拿到物件（用 <code>container_of</code>，依 links 在 struct 中的位移減回物件開頭，純粹是常數位移的運算），不必再透過 data 指標跳到另一塊記憶體；link 和 val 通常在同一條 cache line，少一次 cache miss。<br>\n<b>3. 省空間</b>：每個元素省下一個 data 指標與一個獨立節點的配置標頭。<br>\n<b>4. 一個物件可以同時在多條串列</b>：在 struct 裡放多個 list 成員即可（例如同一個 task 同時掛在 run queue 與某個等待佇列），不需要為每條串列各配置節點。<br>\n<b>5. O(1) 刪除</b>：已有物件指標時，用雙向的 list_head 可以直接把自己從串列拿掉，不用先搜尋找到對應節點。</p>\n<p>這也是 Linux 的 <code>struct list_head</code> 搭配 <code>list_entry</code>（即 <code>container_of</code>）的設計。</p>"
+    },
+    {
+      "id": "os-0096",
+      "topics": [
+        "cpu-scheduling",
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>(15 points) How is a Round Robin scheduler implemented so that each task is preempted accurately every 1 millisecond and resume after indefinitely? (5 points) In the same RR scheduling, please write (pseudo) codes for a daemon (looping) task T with comments as succinct as possible so that T runs for 1 second, then blocked for another 1 second. (10 points) Hint: Asynchronous I/O might be needed.</p>",
+      "answer": "用可程式化計時器每 1 ms 產生 timer interrupt，ISR 呼叫排程器把目前 task 的 context 存入 PCB、放回 ready queue 尾端並切到下一個；T 用非同步計時（例如設 1 秒後到期的 timer／alarm）標記「跑滿 1 秒」，再對一個 1 秒後才完成的事件阻塞（參考寫法見詳解）",
+      "explanation": "<p><b>前半（RR 實作）</b>：設定硬體 programmable interval timer（或 local APIC timer）每 1 ms 發一次中斷。timer ISR 呼叫排程器：把目前 task 的暫存器、PC 等 context 存進它的 PCB，把它放到 ready queue 的尾端，從 ready queue 頭拿下一個 task，載入它的 context 後返回 user mode。被搶占的 task 只是回到 ready queue，下次輪到時從被中斷的地方繼續，所以可以「無限期地」被搶占又恢復。要準確，關鍵是由硬體 timer 驅動，而不是靠 task 自己讓出 CPU。</p>\n<p><b>後半（daemon task T）</b>：在 RR 下，T 每 1 ms 就會被搶占，所以「跑 1 秒」不能用自己算的 CPU 時間或迴圈次數估，要用牆上時間；而要知道 1 秒到了，又不能一直卡在等待上，所以用非同步的計時通知：</p>\n<pre class=\"code\">volatile int expired;                  /* 由非同步通知設定 */\nvoid on_timer(int sig) { expired = 1; }\n\ntask T() {\n    signal(SIGALRM, on_timer);\n    for (;;) {\n        expired = 0;\n        alarm(1);                       /* 非同步：1 秒後通知，不會阻塞 */\n        while (!expired)\n            do_work();                  /* 跑滿 1 秒（期間照樣被 RR 搶占） */\n        sleep(1);                       /* 阻塞 1 秒：離開 ready queue，不佔 CPU */\n    }\n}</pre>\n<p>說明：alarm 是非同步的，設好之後 T 立刻回去工作；1 秒到時 signal handler 設旗標，T 跳出工作迴圈，再呼叫 sleep 進入 blocked 狀態，排程器在這 1 秒內不會選它。也可以改成對一個 timerfd／非同步 I/O 完成事件做阻塞式等待，效果一樣。（開放題，評分標準未公布，待確認。）</p>"
     }
   ]
 }

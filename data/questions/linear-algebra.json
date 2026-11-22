@@ -259,6 +259,1609 @@
       "source": {
         "kind": "original"
       }
+    },
+    {
+      "id": "la-0017",
+      "topics": [
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Find the curve y = C(−2)<sup>x</sup> + D(−1)<sup>x+1</sup>, which gives the least squares fit to points (x,y) = (0,0), (1,4), (2,6).",
+      "answer": "C = 17/7、D = 5，y = (17/7)(−2)<sup>x</sup> + 5(−1)<sup>x+1</sup>",
+      "explanation": "<p>未知數是 C、D，每個資料點給一條方程式：</p><ul><li>x = 0：C·1 + D·(−1) = 0</li><li>x = 1：C·(−2) + D·1 = 4</li><li>x = 2：C·4 + D·(−1) = 6</li></ul><p>A = [[1, −1], [−2, 1], [4, −1]]，b = (0, 4, 6)。3 條方程式 2 個未知數通常無解，改解 <b>Normal Equation（正規方程式）</b> A<sup>T</sup>A x̂ = A<sup>T</sup>b：</p><pre class=\"formula\">A^T A = [[21, −7], [−7, 3]]，A^T b = (16, −2)\n21C − 7D = 16\n−7C + 3D = −2</pre><p>由第二式 D = (7C − 2)/3，代入第一式：14C = 34，C = 17/7，D = 5（程式驗算一致）。</p><p>注意 (−1)<sup>x+1</sup> 在 x = 0 時是 −1，不是 1，這是最容易算錯的地方。</p>"
+    },
+    {
+      "id": "la-0018",
+      "topics": [
+        "gram-schmidt",
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "5-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Given A = [[1, 1, 1], [1, 1, 0], [−1, 0, 1], [0, 0, 1]]. Find the Gram-Schmidt QR decomposition of A, then use that decomposition to solve the least squares problem.<br>Ax = (1, 2, 3, 4)<sup>T</sup>",
+      "answer": "Q 的三行 q<sub>1</sub> = (1,1,−1,0)/√3、q<sub>2</sub> = (1,1,2,0)/√6、q<sub>3</sub> = (1,−1,0,2)/√6；R = [[√3, 2/√3, 0], [0, √6/3, √6/2], [0, 0, √6/2]]；x̂ = (−2/3, 1, 7/3)",
+      "explanation": "<p><b>Gram-Schmidt（格拉姆-施密特正交化）</b>，a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub> 是 A 的三行：</p><ol><li>‖a<sub>1</sub>‖ = √3，q<sub>1</sub> = (1, 1, −1, 0)/√3。</li><li>a<sub>2</sub>·q<sub>1</sub> = 2/√3；v<sub>2</sub> = a<sub>2</sub> − (2/3)(1,1,−1,0) = (1/3, 1/3, 2/3, 0)，‖v<sub>2</sub>‖ = √6/3，q<sub>2</sub> = (1, 1, 2, 0)/√6。</li><li>a<sub>3</sub>·q<sub>1</sub> = 0；a<sub>3</sub>·q<sub>2</sub> = 3/√6 = √6/2；v<sub>3</sub> = a<sub>3</sub> − (1/2)(1,1,2,0) = (1/2, −1/2, 0, 1)，‖v<sub>3</sub>‖ = √6/2，q<sub>3</sub> = (1, −1, 0, 2)/√6。</li></ol><p>R 的元素就是上面算過的內積與長度：R = [[√3, 2/√3, 0], [0, √6/3, √6/2], [0, 0, √6/2]]。</p><p>最小平方解：A = QR 代入正規方程式化簡成 R x̂ = Q<sup>T</sup>b。Q<sup>T</sup>b = (0, 3√6/2, 7√6/6)。由下往上回代：</p><ul><li>(√6/2) x<sub>3</sub> = 7√6/6 → x<sub>3</sub> = 7/3</li><li>(√6/3) x<sub>2</sub> + (√6/2)(7/3) = 3√6/2 → x<sub>2</sub> = 1</li><li>√3 x<sub>1</sub> + (2/√3)(1) = 0 → x<sub>1</sub> = −2/3</li></ul><p>x̂ = (−2/3, 1, 7/3)，和直接解 A<sup>T</sup>A x̂ = A<sup>T</sup>b 的結果一致（已用程式驗算）。用 QR 的好處是不必算 A<sup>T</sup>A，數值上更穩定。</p>"
+    },
+    {
+      "id": "la-0019",
+      "topics": [
+        "svd"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "5-(b)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Given A = [[10, 5], [−11, 2], [−2, 14]]. Find the pseudoinverse of A.",
+      "answer": "A<sup>+</sup> = A<sup>T</sup>/225 = (1/225)[[10, −11, −2], [5, 2, 14]]",
+      "explanation": "<p>A 的兩行線性獨立（full column rank），所以 <b>Pseudoinverse（虛反矩陣）</b> A<sup>+</sup> = (A<sup>T</sup>A)<sup>−1</sup>A<sup>T</sup>。</p><pre class=\"formula\">A^T A = [[100+121+4, 50−22−28], [·, 25+4+196]] = [[225, 0], [0, 225]]</pre><p>A<sup>T</sup>A = 225I，代表 A 的兩行互相正交、長度都是 15（兩個奇異值都是 15）。所以</p><pre class=\"formula\">A+ = (1/225) A^T = (1/225)[[10, −11, −2], [5, 2, 14]]\n   = [[2/45, −11/225, −2/225], [1/45, 2/225, 14/225]]</pre><p>可以驗證 A<sup>+</sup>A = I<sub>2</sub>。用 SVD 也會得到同樣結果，但這題先算 A<sup>T</sup>A 發現是對角矩陣，最省力（已用程式驗算）。</p>"
+    },
+    {
+      "id": "la-0020",
+      "topics": [
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Two eigenvectors of this circulant matrix C are (1, i, i<sup>2</sup>, i<sup>3</sup>)<sup>T</sup> and (1, i<sup>2</sup>, i<sup>4</sup>, i<sup>6</sup>)<sup>T</sup>. What are the eigenvalues λ<sub>0</sub> and λ<sub>1</sub>?<pre>[c0 c1 c2 c3] [1 ]      [1 ]        [c0 c1 c2 c3] [1 ]      [1 ]\n[c3 c0 c1 c2] [i ]  = λ0 [i ]   and  [c3 c0 c1 c2] [i²]  = λ1 [i²]\n[c2 c3 c0 c1] [i²]      [i²]        [c2 c3 c0 c1] [i⁴]      [i⁴]\n[c1 c2 c3 c0] [i³]      [i³]        [c1 c2 c3 c0] [i⁶]      [i⁶]</pre>",
+      "answer": "λ<sub>0</sub> = c<sub>0</sub> + i c<sub>1</sub> − c<sub>2</sub> − i c<sub>3</sub>；λ<sub>1</sub> = c<sub>0</sub> − c<sub>1</sub> + c<sub>2</sub> − c<sub>3</sub>",
+      "explanation": "<p>特徵向量第一個分量是 1，所以 λ 就等於「矩陣第一列 · 特徵向量」。</p><ul><li>λ<sub>0</sub> = c<sub>0</sub> + c<sub>1</sub>i + c<sub>2</sub>i<sup>2</sup> + c<sub>3</sub>i<sup>3</sup> = c<sub>0</sub> + i c<sub>1</sub> − c<sub>2</sub> − i c<sub>3</sub></li><li>λ<sub>1</sub> = c<sub>0</sub> + c<sub>1</sub>i<sup>2</sup> + c<sub>2</sub>i<sup>4</sup> + c<sub>3</sub>i<sup>6</sup> = c<sub>0</sub> − c<sub>1</sub> + c<sub>2</sub> − c<sub>3</sub></li></ul><p>檢查第二列也成立：c<sub>3</sub> + c<sub>0</sub>i + c<sub>1</sub>i<sup>2</sup> + c<sub>2</sub>i<sup>3</sup> = i(c<sub>0</sub> + c<sub>1</sub>i + c<sub>2</sub>i<sup>2</sup> + c<sub>3</sub>i<sup>3</sup>)（因為 c<sub>3</sub> = i·c<sub>3</sub>i<sup>3</sup>），正好是 λ<sub>0</sub> 乘上第二個分量 i。這就是 circulant matrix（循環矩陣）的特性：特徵向量是 4 次單位根 i 的冪次（離散傅立葉向量），特徵值就是第一列和它的內積。</p>"
+    },
+    {
+      "id": "la-0021",
+      "topics": [
+        "symmetric-matrices"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "Let A be a Hermitian matrix with eigenvalues λ<sub>1</sub> ≥ λ<sub>2</sub> ≥ ⋯ ≥ λ<sub>n</sub> and orthonormal eigenvectors u<sub>1</sub>, …, u<sub>n</sub>. For any nonzero vector x in ℝ<sup>n</sup>, the <i>Rayleigh quotient</i> ρ(x) is defined by<pre>ρ(x) = ⟨Ax, x⟩ / ⟨x, x⟩ = x<sup>H</sup>Ax / x<sup>H</sup>x</pre>(a) If x = c<sub>1</sub>u<sub>1</sub> + ⋯ + c<sub>n</sub>u<sub>n</sub>, show that<pre>ρ(x) = ( |c<sub>1</sub>|²λ<sub>1</sub> + |c<sub>2</sub>|²λ<sub>2</sub> + ⋯ + |c<sub>n</sub>|²λ<sub>n</sub> ) / ‖c‖²</pre>(b) Show that λ<sub>n</sub> ≤ ρ(x) ≤ λ<sub>1</sub>.<br>(c) Show that max<sub>x≠0</sub> ρ(x) = λ<sub>1</sub> and min<sub>x≠0</sub> ρ(x) = λ<sub>n</sub>.",
+      "answer": "(a) 用正交規範性展開；(b) 把每個 λ<sub>i</sub> 換成 λ<sub>1</sub> 或 λ<sub>n</sub> 放大縮小；(c) 取 x = u<sub>1</sub>、u<sub>n</sub> 可達到上下界。",
+      "explanation": "<p><b>(a)</b> Ax = Σ c<sub>i</sub>λ<sub>i</sub>u<sub>i</sub>。Hermitian 矩陣的特徵值都是實數，而 u<sub>i</sub> 兩兩正交且長度 1（u<sub>i</sub><sup>H</sup>u<sub>j</sub> = 1 當 i = j，否則 0），所以</p><pre class=\"formula\">x^H A x = Σ_i Σ_j conj(c_i) c_j λ_j u_i^H u_j = Σ |c_i|² λ_i\nx^H x   = Σ |c_i|² = ‖c‖²</pre><p>相除就得到所要的式子。</p><p><b>(b)</b> 因為 λ<sub>n</sub> ≤ λ<sub>i</sub> ≤ λ<sub>1</sub>，且 |c<sub>i</sub>|² ≥ 0：</p><pre class=\"formula\">λ_n Σ|c_i|² ≤ Σ|c_i|² λ_i ≤ λ_1 Σ|c_i|²</pre><p>兩邊同除 ‖c‖² &gt; 0（x ≠ 0 所以 c ≠ 0），得 λ<sub>n</sub> ≤ ρ(x) ≤ λ<sub>1</sub>。可以把 ρ(x) 看成 λ<sub>i</sub> 的加權平均，權重 |c<sub>i</sub>|²/‖c‖² 加起來是 1，平均值一定落在最小和最大之間。</p><p><b>(c)</b> (b) 給了上下界，只要說明界可以達到：取 x = u<sub>1</sub>（c = e<sub>1</sub>）得 ρ = λ<sub>1</sub>；取 x = u<sub>n</sub> 得 ρ = λ<sub>n</sub>。所以最大值是 λ<sub>1</sub>、最小值是 λ<sub>n</sub>。只寫 (b) 的不等式而沒說「可以達到」是常見的扣分點。</p>"
+    },
+    {
+      "id": "la-0022",
+      "topics": [
+        "inner-product-projection"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "Let<pre>‖A‖<sub>F</sub> = (⟨A, A⟩)<sup>1/2</sup> = ( Σ<sub>i=1..m</sub> Σ<sub>j=1..n</sub> a<sub>ij</sub>² )<sup>1/2</sup>   for A ∈ ℝ<sup>m×n</sup>.</pre>The <i>trace</i> of an n × n matrix C, denoted tr(C), is the sum of its diagonal entries; that is,<pre>tr(C) = c<sub>11</sub> + c<sub>22</sub> + ⋯ + c<sub>nn</sub></pre>If A and B are m × n matrices, show that<br>(a) ‖A‖<sub>F</sub>² = tr(A<sup>T</sup>A)<br>(b) ‖A + B‖<sub>F</sub>² = ‖A‖<sub>F</sub>² + 2tr(A<sup>T</sup>B) + ‖B‖<sub>F</sub>²",
+      "answer": "(a) (A<sup>T</sup>A)<sub>jj</sub> = Σ<sub>i</sub> a<sub>ij</sub>²，加總所有 j 即得；(b) 用 (a) 展開 tr((A+B)<sup>T</sup>(A+B))，並用 tr(B<sup>T</sup>A) = tr(A<sup>T</sup>B)。",
+      "explanation": "<p><b>(a)</b> A<sup>T</sup>A 是 n × n，它的第 j 個對角元素是 A 的第 j 行和自己的內積：</p><pre class=\"formula\">(A^T A)_jj = Σ_i a_ij · a_ij = Σ_i a_ij²</pre><p>把 j = 1..n 全部加起來，tr(A<sup>T</sup>A) = Σ<sub>j</sub> Σ<sub>i</sub> a<sub>ij</sub>² = ‖A‖<sub>F</sub>²。</p><p><b>(b)</b> 由 (a)：</p><pre class=\"formula\">‖A+B‖_F² = tr((A+B)^T (A+B))\n          = tr(A^T A) + tr(A^T B) + tr(B^T A) + tr(B^T B)</pre><p>trace 是線性的，而且 tr(M<sup>T</sup>) = tr(M)，所以 tr(B<sup>T</sup>A) = tr((A<sup>T</sup>B)<sup>T</sup>) = tr(A<sup>T</sup>B)。合併得 ‖A‖<sub>F</sub>² + 2tr(A<sup>T</sup>B) + ‖B‖<sub>F</sub>²。</p><p>這就是向量 ‖a + b‖² = ‖a‖² + 2a·b + ‖b‖² 的矩陣版本，tr(A<sup>T</sup>B) 扮演內積 ⟨A, B⟩ 的角色。</p>"
+    },
+    {
+      "id": "la-0023",
+      "topics": [
+        "positive-definite",
+        "linear-differential-equations"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "Let A be a symmetric n × n matrix. Show that e<sup>A</sup> is symmetric and positive definite.",
+      "answer": "A = QDQ<sup>T</sup> ⇒ e<sup>A</sup> = Qe<sup>D</sup>Q<sup>T</sup>，特徵值 e<sup>λ<sub>i</sub></sup> &gt; 0 且對稱，所以正定。",
+      "explanation": "<p>A 對稱，由 <b>Spectral Theorem（譜定理）</b> 可以寫成 A = QDQ<sup>T</sup>，Q 是正交矩陣、D = diag(λ<sub>1</sub>, …, λ<sub>n</sub>)，λ<sub>i</sub> 都是實數。</p><p>因為 A<sup>k</sup> = QD<sup>k</sup>Q<sup>T</sup>，代進定義：</p><pre class=\"formula\">e^A = Σ_k A^k / k! = Q ( Σ_k D^k / k! ) Q^T = Q diag(e^λ1, …, e^λn) Q^T</pre><ul><li><b>對稱</b>：(e<sup>A</sup>)<sup>T</sup> = Q(e<sup>D</sup>)<sup>T</sup>Q<sup>T</sup> = Qe<sup>D</sup>Q<sup>T</sup> = e<sup>A</sup>（對角矩陣轉置不變）。也可以直接看：每一項 (A<sup>k</sup>)<sup>T</sup> = (A<sup>T</sup>)<sup>k</sup> = A<sup>k</sup>。</li><li><b>正定</b>：e<sup>A</sup> 的特徵值是 e<sup>λ<sub>i</sub></sup>，不論 λ<sub>i</sub> 正負，e<sup>λ<sub>i</sub></sup> &gt; 0。對稱且所有特徵值為正 ⇒ 正定。具體地，對 x ≠ 0，令 y = Q<sup>T</sup>x ≠ 0，x<sup>T</sup>e<sup>A</sup>x = Σ e<sup>λ<sub>i</sub></sup> y<sub>i</sub>² &gt; 0。</li></ul><p>注意 A 本身不必正定（例如 A = −I），e<sup>A</sup> 仍然正定，因為指數函數永遠是正的。</p>"
+    },
+    {
+      "id": "la-0024",
+      "topics": [
+        "positive-definite"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "Let A be a singular n × n matrix. Show that A<sup>T</sup>A is positive semidefinite, but not positive definite.",
+      "answer": "x<sup>T</sup>A<sup>T</sup>Ax = ‖Ax‖² ≥ 0 ⇒ 半正定；A 奇異 ⇒ 存在 x ≠ 0 使 Ax = 0 ⇒ x<sup>T</sup>A<sup>T</sup>Ax = 0，不是正定。",
+      "explanation": "<ul><li><b>對稱</b>：(A<sup>T</sup>A)<sup>T</sup> = A<sup>T</sup>A。</li><li><b>Positive Semidefinite（半正定）</b>：對任意 x，x<sup>T</sup>(A<sup>T</sup>A)x = (Ax)<sup>T</sup>(Ax) = ‖Ax‖² ≥ 0。</li><li><b>不是正定</b>：A 奇異 ⇒ Ax = 0 有非零解 x<sub>0</sub>（零空間不只 {0}）。這時 x<sub>0</sub><sup>T</sup>A<sup>T</sup>Ax<sub>0</sub> = ‖Ax<sub>0</sub>‖² = 0，但正定要求所有非零向量都 &gt; 0，矛盾。</li></ul><p>換個角度：det(A<sup>T</sup>A) = det(A)² = 0，所以 0 是 A<sup>T</sup>A 的特徵值，而正定矩陣的特徵值必須全為正。</p>"
+    },
+    {
+      "id": "la-0025",
+      "topics": [
+        "change-of-basis"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "Determine the coordinate vector of <b>w</b> = (8, −4, −12) with respect to the basis {(1, 1, 1), (1, 5, -3), (2, 2, 1)}.",
+      "answer": "[w] = (−53, −3, 32)",
+      "explanation": "<p>設 w = c<sub>1</sub>(1,1,1) + c<sub>2</sub>(1,5,−3) + c<sub>3</sub>(2,2,1)：</p><pre class=\"formula\">c1 +  c2 + 2c3 =   8\nc1 + 5c2 + 2c3 =  −4\nc1 − 3c2 +  c3 = −12</pre><ul><li>第二式減第一式：4c<sub>2</sub> = −12 → c<sub>2</sub> = −3。</li><li>第一式減第三式：4c<sub>2</sub> + c<sub>3</sub> = 20 → c<sub>3</sub> = 32。</li><li>代回第一式：c<sub>1</sub> = 8 + 3 − 64 = −53。</li></ul><p>驗算：−53(1,1,1) − 3(1,5,−3) + 32(2,2,1) = (8, −4, −12)，程式也確認。座標的順序要跟基底的順序一致。</p>"
+    },
+    {
+      "id": "la-0026",
+      "topics": [
+        "inner-product-projection"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "Let {<b>u</b><sub>1</sub>, <b>u</b><sub>2</sub>, <b>u</b><sub>3</sub>} be an orthonormal basis for an inner product space <i>V</i>. If <b>x</b> = c<sub>1</sub><b>u</b><sub>1</sub> + c<sub>2</sub><b>u</b><sub>2</sub> + c<sub>3</sub><b>u</b><sub>3</sub> is a vector with the properties ‖<b>x</b>‖ = 5, ⟨<b>u</b><sub>1</sub>, <b>x</b>⟩ = 4, and <b>x</b> ⊥ <b>u</b><sub>2</sub>, then what are the possible values of c<sub>1</sub>, c<sub>2</sub>, c<sub>3</sub>?",
+      "answer": "c<sub>1</sub> = 4，c<sub>2</sub> = 0，c<sub>3</sub> = ±3",
+      "explanation": "<p>在 orthonormal basis（正交規範基底）下，座標就是內積：c<sub>i</sub> = ⟨u<sub>i</sub>, x⟩，而且 ‖x‖² = c<sub>1</sub>² + c<sub>2</sub>² + c<sub>3</sub>²（Parseval 等式）。</p><ul><li>c<sub>1</sub> = ⟨u<sub>1</sub>, x⟩ = 4。</li><li>x ⊥ u<sub>2</sub> ⇒ c<sub>2</sub> = ⟨u<sub>2</sub>, x⟩ = 0。</li><li>25 = 16 + 0 + c<sub>3</sub>² ⇒ c<sub>3</sub>² = 9 ⇒ c<sub>3</sub> = ±3。</li></ul><p>c<sub>3</sub> 有正負兩種可能，只寫 3 會少一半。</p>"
+    },
+    {
+      "id": "la-0027",
+      "topics": [
+        "rank-nullity"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "Let <i>A</i> be a 5 by 7 matrix with rank 4.<br>(a) What is the dimension of the solution space of <i>A</i><b>x</b> = <b>0</b>?<br>(b) Is <i>A</i><b>x</b> = <b>b</b> consistent for all vectors <b>b</b> in <i>R</i><sup>5</sup>? Explain.",
+      "answer": "(a) 3；(b) 不是，column space 只有 4 維，不等於 R<sup>5</sup>。",
+      "explanation": "<p><b>(a)</b> <b>Rank-Nullity Theorem（秩-零度定理）</b>：rank + nullity = 行數 n = 7，所以 nullity = 7 − 4 = 3，也就是 Ax = 0 的解空間是 3 維（有 3 個自由變數）。</p><p><b>(b)</b> Ax = b 有解 ⇔ b 在 column space（行空間）裡。Col(A) 的維度 = rank = 4 &lt; 5，所以 Col(A) 是 R<sup>5</sup> 的真子空間，一定有 b 不在裡面，Ax = b 不是對所有 b 都有解。要對所有 b ∈ R<sup>5</sup> 都有解，需要 rank = 5（列數）。</p>"
+    },
+    {
+      "id": "la-0028",
+      "topics": [
+        "determinant-properties",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "Given that the characteristic polynomial of a matrix <i>A</i> is p(λ) = (λ + 1)(λ − 2)<sup>2</sup>(λ + 3)<sup>2</sup>, find det(<i>A</i><sup>−1</sup>).",
+      "answer": "det(A<sup>−1</sup>) = −1/36",
+      "explanation": "<p>由特徵多項式，A 是 5 × 5，特徵值（含重數）為 −1, 2, 2, −3, −3。</p><p>行列式 = 特徵值乘積：det(A) = (−1)·2·2·(−3)·(−3) = −36。0 不是特徵值，所以 A 可逆。</p><p>det(A<sup>−1</sup>) = 1/det(A) = −1/36。</p><p>也可以說 A<sup>−1</sup> 的特徵值是 −1, 1/2, 1/2, −1/3, −1/3，乘積一樣是 −1/36。注意重數要算進去，只乘相異特徵值 (−1)(2)(−3) = 6 是常見錯誤。</p>"
+    },
+    {
+      "id": "la-0029",
+      "topics": [
+        "diagonalization",
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "True or False<br>(a) If <i>A</i> is an <i>n</i> × <i>n</i> matrix whose eigenvalues are all nonzero, then <i>A</i> is nonsingular.<br>(b) If <i>A</i> is a 5 × 5 matrix of rank 1 and λ = 0 is an eigenvalue of multiplicity 4, then <i>A</i> is diagonalizable.<br>(c) If <i>A</i> and <i>B</i> are row equivalent matrices, then their determinants are equal.<br>(d) If <i>A</i> is an invertible <i>n</i> × <i>n</i> matrix, then <i>rank</i>(<i>A</i><sup>T</sup>) = 0",
+      "answer": "(a) True　(b) True　(c) False　(d) False",
+      "explanation": "<ul><li><b>(a) True</b>：det(A) = 特徵值乘積，全都非零則 det(A) ≠ 0，A 可逆（nonsingular）。</li><li><b>(b) True</b>：λ = 0 的 geometric multiplicity（幾何重數）= dim Null(A) = 5 − rank = 4，等於代數重數 4。剩下 1 個特徵值的代數重數是 1，它不是 0（否則 0 的重數會是 5），單根的幾何重數必為 1。每個特徵值的兩種重數都相等，所以可對角化。</li><li><b>(c) False</b>：列運算會改變行列式，例如把一列乘 2，行列式也變 2 倍；A = I 和 B = 2I 列等價，但 det 分別是 1 和 2<sup>n</sup>。列等價只保證「是否為 0」一致。</li><li><b>(d) False</b>：A 可逆則 rank(A) = n，而 rank(A<sup>T</sup>) = rank(A) = n，不是 0。</li></ul>"
+    },
+    {
+      "id": "la-0030",
+      "topics": [
+        "subspaces",
+        "basis-dimension"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "Let a vector <b>x</b> = (x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>, x<sub>4</sub>) ∈ ℝ<sup>4</sup>. It has 24 rearrangements like (x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>, x<sub>4</sub>) and (x<sub>4</sub>, x<sub>3</sub>, x<sub>1</sub>, x<sub>2</sub>). Those 24 vectors span a subspace <i>S</i>. Find specific vectors <b>x</b> so that the dimension of <i>S</i> is three.",
+      "answer": "x 非零且 x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub> + x<sub>4</sub> = 0，例如 x = (1, −1, 0, 0)",
+      "explanation": "<p>分三種情況看 S 的維度：</p><ul><li>x = c(1,1,1,1)（c ≠ 0）：所有重排都一樣，dim S = 1。</li><li>分量和為 0：每個重排的分量和也是 0，所以 S 落在平面 {y : y<sub>1</sub> + y<sub>2</sub> + y<sub>3</sub> + y<sub>4</sub> = 0} 裡，這是 3 維子空間，dim S ≤ 3。</li><li>其他情況（和不為 0、分量不全相等）：dim S = 4。</li></ul><p>以 x = (1, −1, 0, 0) 為例：重排可得到 (1,−1,0,0)、(0,1,−1,0)、(0,0,1,−1)，這三個向量線性獨立，所以 dim S ≥ 3，配合上界得 dim S = 3。程式把 24 個重排排成矩陣求秩，(1,−1,0,0)、(1,2,3,−6) 都得到 3，(1,2,3,4) 得到 4。</p><p>一般結論：只要 x ≠ 0 且分量和為 0（此時分量不可能全相等），dim S 就是 3。</p>"
+    },
+    {
+      "id": "la-0031",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "Let G<sub>2</sub>, G<sub>3</sub> and G<sub>4</sub> be the determinants of the matrices in the following form:<pre>     |0 1|        |0 1 1|        |0 1 1 1|\nG2 = |1 0| , G3 = |1 0 1| , G4 = |1 0 1 1|\n                  |1 1 0|        |1 1 0 1|\n                                 |1 1 1 0|</pre>Calculate the value of G<sub>n</sub>.",
+      "answer": "G<sub>n</sub> = (−1)<sup>n−1</sup>(n − 1)",
+      "explanation": "<p>這個矩陣是 J − I（J 是全 1 矩陣）。J 的秩是 1，特徵值為 n（一個，特徵向量 (1,…,1)）和 0（n − 1 個）。所以 J − I 的特徵值是 n − 1（一個）和 −1（n − 1 個）。</p><pre class=\"formula\">G_n = (n−1) · (−1)^(n−1)</pre><p>驗算：G<sub>2</sub> = −1、G<sub>3</sub> = 2、G<sub>4</sub> = −3，程式算到 n = 7 都吻合。</p><p>另一種做法是列運算：把所有列加到第一列，第一列變成全是 n − 1，提出來後再用第一列消去其他列，得到上三角矩陣，對角線是 1, −1, …, −1。</p>"
+    },
+    {
+      "id": "la-0032",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "similarity"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "Let <i>A</i> and <i>B</i> as two matrices. If <i>B</i> is invertible, prove that <i>AB</i> has the same eigenvalues as <i>BA</i>.",
+      "answer": "BA = B(AB)B<sup>−1</sup>，AB 與 BA 相似，所以特徵值相同。",
+      "explanation": "<p>B 可逆，所以</p><pre class=\"formula\">B(AB)B^(−1) = BA (BB^(−1)) = BA</pre><p>也就是 BA 和 AB <b>Similar（相似）</b>。相似矩陣的特徵多項式相同：</p><pre class=\"formula\">det(λI − BA) = det(B(λI − AB)B^(−1)) = det(B)·det(λI − AB)·det(B)^(−1) = det(λI − AB)</pre><p>特徵多項式相同，特徵值（含重數）就相同。</p><p>也可以直接用特徵向量：若 ABx = λx（x ≠ 0），令 y = Bx，則 BAy = BA(Bx) = B(ABx) = λBx = λy，且 B 可逆保證 y ≠ 0，所以 λ 也是 BA 的特徵值；反方向同理用 x = B<sup>−1</sup>y。</p>"
+    },
+    {
+      "id": "la-0033",
+      "topics": [
+        "matrix-algebra"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "Consider the points P(3, − 1,4) and Q(6,0,2), and R(5,1,1). Find the point S in ℝ<sup>3</sup> whose first component is -1 and such that <span>PQ→</span> is parallel to <span>RS→</span>.",
+      "answer": "S = (−1, −1, 5)",
+      "explanation": "<p>PQ→ = Q − P = (3, 1, −2)。RS→ 平行於 PQ→，表示 RS→ = t(3, 1, −2)，即 S = R + t(3, 1, −2) = (5 + 3t, 1 + t, 1 − 2t)。</p><p>第一個分量是 −1：5 + 3t = −1，t = −2。</p><p>S = (5 − 6, 1 − 2, 1 + 4) = (−1, −1, 5)。檢查：RS→ = (−6, −2, 4) = −2·(3, 1, −2)，確實平行（方向相反也算平行）。</p>"
+    },
+    {
+      "id": "la-0034",
+      "topics": [
+        "positive-definite",
+        "determinant-properties",
+        "orthogonal-subspaces",
+        "rank-nullity",
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "True or False<br>(a) Every positive definite matrix is invertible.<br>(b) The determinant of <i>A</i> − <i>B</i> equals det <i>A</i> − det <i>B</i>.<br>(c) If <b>u</b> is orthogonal to every vector of a subspace <i>W</i>, then <b>u</b> = <b>0</b>.<br>(d) If <i>A</i> is square and <i>A</i><b>x</b> = <b>b</b> is inconsistent for some vector <b>b</b>, then the nullity of <i>A</i> is zero.<br>(e) If there is a basis for ℝ<sup>n</sup> consisting of eigenvectors of an <i>n</i> × <i>n</i> matrix <i>A</i>, then <i>A</i> is diagonalizable.",
+      "answer": "(a) True　(b) False　(c) False　(d) False　(e) True",
+      "explanation": "<ul><li><b>(a) True</b>：正定矩陣的特徵值全為正，det = 特徵值乘積 &gt; 0，所以可逆。</li><li><b>(b) False</b>：行列式不是線性的。反例 A = 2I、B = I（2×2）：det(A − B) = det(I) = 1，但 det A − det B = 4 − 1 = 3。</li><li><b>(c) False</b>：u 可以是 W<sup>⊥</sup> 裡的非零向量。例如 W = span{(1,0)}，u = (0,1) 和 W 中每個向量都正交但 u ≠ 0。只有當 u 本身也在 W 裡時才能推出 u = 0。</li><li><b>(d) False</b>：方陣 Ax = b 對某些 b 無解，代表 A 不是映成，也就不可逆，所以 nullity ≥ 1，不是 0。</li><li><b>(e) True</b>：用這 n 個特徵向量當 P 的行，P 可逆，A = PDP<sup>−1</sup>，這正是可對角化的定義。</li></ul>"
+    },
+    {
+      "id": "la-0035",
+      "topics": [
+        "rank-nullity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "Let <i>A</i> be an <i>m</i> × <i>n</i> matrix with the rank <i>r</i>, which is the relationship between <i>r</i>, <i>m</i>, <i>n</i> if <i>A</i><b>x</b> = <b>b</b> has exactly one solution for some <b>b</b>, no solution for other <b>b</b>?",
+      "choices": [
+        "(A) r = m, r &lt; n",
+        "(B) r &lt; m, always r ≤ n",
+        "(C) r &lt; m, r = n",
+        "(D) r = m = n"
+      ],
+      "answer": "(C)",
+      "explanation": "<ul><li>「有解時恰好一個解」⇔ 沒有自由變數 ⇔ Null(A) = {0} ⇔ r = n。</li><li>「某些 b 無解」⇔ Col(A) 不是整個 R<sup>m</sup> ⇔ r &lt; m。</li></ul><p>所以 r &lt; m 且 r = n，選 (C)（又高又瘦、行獨立的矩陣）。</p><p>對照其他選項：(A) r = m 代表每個 b 都有解，且 r &lt; n 有無限多解；(D) 方陣可逆，每個 b 恰好一解；(B) 沒排除 r &lt; n（無限多解）的情況。</p>"
+    },
+    {
+      "id": "la-0036",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "Consider the matrix following matrix. Which condition must the scalars x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub> satisfy for the matrix to be nonsingular?<pre>    [1  x1  x1²]\nA = [1  x2  x2²]\n    [1  x3  x3²]</pre>",
+      "choices": [
+        "(A) No two of the x<sub>i</sub> values are zero.",
+        "(B) All x<sub>i</sub> values are distinct.",
+        "(C) No x<sub>i</sub> can be zero.",
+        "(D) No x<sub>i</sub> can be a scalar multiple of the other x<sub>j</sub>."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>這是 <b>Vandermonde Matrix（范德蒙矩陣）</b>，行列式為</p><pre class=\"formula\">det(A) = (x2 − x1)(x3 − x1)(x3 − x2)</pre><p>非奇異 ⇔ det ≠ 0 ⇔ 三個 x<sub>i</sub> 兩兩相異，選 (B)。</p><p>直觀理解：若 x<sub>1</sub> = x<sub>2</sub>，前兩列完全相同，行列式必為 0。反過來 x<sub>i</sub> 等於 0 完全沒關係，例如 x = (0, 1, 2) 時 det = 1·2·1 = 2 ≠ 0，所以 (A)(C) 都不對；(D) 的「倍數」也無關，(1, 2, 3) 中 2 是 1 的倍數但矩陣仍可逆。</p>"
+    },
+    {
+      "id": "la-0037",
+      "topics": [
+        "rank-nullity",
+        "linear-transformations",
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "Which one of the following is false?",
+      "choices": [
+        "(A) If <i>A</i> is an <i>m</i> × <i>n</i> matrix, then <i>AA</i><sup>T</sup> and <i>A</i><sup>T</sup><i>A</i> have the same rank.",
+        "(B) If <i>Q</i> is an orthogonal matrix, then <i>Q</i><sup>T</sup> also is an orthogonal matrix.",
+        "(C) If <i>L</i> : <i>V</i> → <i>V</i> is a linear transformation and <i>L</i>(<b>v</b><sub>1</sub>) = <i>L</i>(<b>v</b><sub>2</sub>), then <b>v</b><sub>1</sub> − <b>v</b><sub>2</sub> is in the kernel of <i>L</i>.",
+        "(D) If <i>A</i> and <i>B</i> are row equivalent matrices, then their determinants are equal."
+      ],
+      "answer": "(D)",
+      "explanation": "<ul><li>(A) 對：Null(A<sup>T</sup>A) = Null(A)，所以 rank(A<sup>T</sup>A) = rank(A)；同理 rank(AA<sup>T</sup>) = rank(A<sup>T</sup>) = rank(A)，兩者相等。</li><li>(B) 對：Q<sup>T</sup>Q = I ⇒ Q<sup>T</sup> = Q<sup>−1</sup> ⇒ QQ<sup>T</sup> = I，即 (Q<sup>T</sup>)<sup>T</sup>Q<sup>T</sup> = I，Q<sup>T</sup> 也是正交矩陣。</li><li>(C) 對：L(v<sub>1</sub> − v<sub>2</sub>) = L(v<sub>1</sub>) − L(v<sub>2</sub>) = 0。</li><li>(D) <b>錯</b>：列運算會改變行列式（例如一列乘 2，行列式也乘 2），I 和 2I 列等價但行列式不同。所以選 (D)。</li></ul>"
+    },
+    {
+      "id": "la-0038",
+      "topics": [
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "About the eigenvalues and the corresponding eigenspaces for the following matrix, which is wrong?<pre>[2 1 0 0]\n[3 4 0 0]\n[0 0 2 0]\n[0 0 0 1]</pre>",
+      "choices": [
+        "(A) One of the eigenvalues is 1.",
+        "(B) The eigenspace corresponding to λ = 5 is (0, 0, 1, 0).",
+        "(C) The largest eigenvalue is 5.",
+        "(D) There are multiple identical eigenvalues."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>矩陣是分塊對角：左上 [[2,1],[3,4]]、再加上 2 和 1。</p><ul><li>左上 2×2：trace = 6、det = 8 − 3 = 5，特徵方程式 λ² − 6λ + 5 = 0，λ = 1, 5。</li><li>所以全部特徵值為 1, 5, 2, 1。</li></ul><p>λ = 5 的特徵空間：解 (A − 5I)x = 0，前兩列給 −3x<sub>1</sub> + x<sub>2</sub> = 0，後兩列給 x<sub>3</sub> = x<sub>4</sub> = 0，所以特徵空間是 span{(1, 3, 0, 0)}，不是 (0, 0, 1, 0)。(0, 0, 1, 0) 其實是 λ = 2 的特徵向量。</p><p>(A) 1 是特徵值，對；(C) 最大是 5，對；(D) 1 出現兩次，對。錯的是 (B)。程式驗算特徵值與特徵向量一致。</p>"
+    },
+    {
+      "id": "la-0039",
+      "topics": [
+        "inner-product-projection",
+        "positive-definite"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "True or False<br>(a) If a 3 × 2 matrix <i>Q</i> has orthonormal columns, then ‖<i>Q</i><b>x</b>‖ always equals ‖<b>x</b>‖.<br>(b) Let <i>P</i> = <i>A</i>(<i>A</i><sup>T</sup><i>A</i>)<sup>−1</sup><i>A</i><sup>T</sup>, where <i>A</i> is an <i>m</i> × <i>n</i> matrix of rank <i>n</i>. Then <i>P</i><sup>k</sup> = <i>P</i> for k = 1,2,....<br>(c) If {<b>u</b><sub>1</sub>, <b>u</b><sub>2</sub>, …, <b>u</b><sub>k</sub>} is an orthonormal set of vectors in ℝ<sup>n</sup> and <i>U</i> = (<b>u</b><sub>1</sub>, <b>u</b><sub>2</sub>, …, <b>u</b><sub>k</sub>), then <i>UU</i><sup>T</sup> = <i>I</i><sub>n</sub> (the n × n identity matrix).<br>(d) If <i>A</i> is symmetric and det(<i>A</i>) &gt; 0, then <i>A</i> is positive definite.<br>(e) If <i>A</i> is symmetric positive definite, then the diagonal elements of <i>A</i> must all be positive.",
+      "answer": "(a) True　(b) True　(c) False　(d) False　(e) True",
+      "explanation": "<ul><li><b>(a) True</b>：Q<sup>T</sup>Q = I<sub>2</sub>，所以 ‖Qx‖² = x<sup>T</sup>Q<sup>T</sup>Qx = x<sup>T</sup>x = ‖x‖²。注意不需要 Q 是方陣。</li><li><b>(b) True</b>：P 是投影到 Col(A) 的投影矩陣，P² = A(A<sup>T</sup>A)<sup>−1</sup>(A<sup>T</sup>A)(A<sup>T</sup>A)<sup>−1</sup>A<sup>T</sup> = P，於是 P<sup>k</sup> = P 對所有 k ≥ 1 成立。</li><li><b>(c) False</b>：U<sup>T</sup>U = I<sub>k</sub> 一定成立，但 UU<sup>T</sup> 是投影到 span{u<sub>i</sub>} 的投影矩陣，只有在 k = n 時才等於 I<sub>n</sub>。反例 n = 2、k = 1、u<sub>1</sub> = (1,0)：UU<sup>T</sup> = [[1,0],[0,0]] ≠ I。</li><li><b>(d) False</b>：det = 特徵值乘積 &gt; 0 不代表每個都正。反例 A = diag(−1, −1)，det = 1 &gt; 0，但它是負定。</li><li><b>(e) True</b>：取 x = e<sub>i</sub>，e<sub>i</sub><sup>T</sup>Ae<sub>i</sub> = a<sub>ii</sub> &gt; 0。</li></ul>"
+    },
+    {
+      "id": "la-0040",
+      "topics": [
+        "lu-decomposition"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
+      },
+      "question": "By factoring <b>A</b> into <b>LU</b>, the LU decomposition allows solving <b>Ax</b> = <b>b</b> by first solving <b>Ly</b> = <b>b</b>, followed by <b>Ux</b> = <b>y</b>, each requiring only a single triangular solve. Thus, computing <b>A</b> = <b>LU</b> is crucial in large-scale computer engineering applications.<br>(a) Give the complexity of the classic LU decomposition, shown in Algorithm 1.<pre>Algorithm 1 LU Decomposition Without Pivoting\nRequire: Matrix A ∈ ℝ^(n×n)\nEnsure: Lower triangular matrix L, Upper triangular matrix U such that A = LU\n 1: Initialize L ← I_n, U ← 0_(n×n)\n 2: for k = 1 to n do\n 3:   for j = k to n do                    ▷ Compute k-th row of U\n 4:     U_(k,j) ← A_(k,j) − Σ_(s=1)^(k−1) L_(k,s) · U_(s,j)\n 5:   end for\n 6:   for i = k + 1 to n do                ▷ Compute k-th column of L\n 7:     L_(i,k) ← (1/U_(k,k)) ( A_(i,k) − Σ_(s=1)^(k−1) L_(i,s) · U_(s,k) )\n 8:   end for\n 9: end for\n10: return (L, U)</pre>(b) An improvement of (a) based on the block matrix multiplication is shown in Algorithm 2. Give the complexity of the speed-improved LU decomposition.<pre>Algorithm 2 Speed-Improved Block LU Decomposition\nRequire: Matrix A ∈ ℝ^(n×n), n is a power of 2\nEnsure: Matrices L, U with A = LU\n 1: function SPEEDIMPROVEDBLOCKLU(A)\n 2:   n ← size of A\n 3:   if n = 1 then\n 4:     return ([1], [A11])\n 5:   end if\n 6:   Partition A into blocks: A = [A11 A12; A21 A22]\n 7:   (L11, U11) ← SPEEDIMPROVEDBLOCKLU(A11)\n 8:   U12 ← SISOLVE(L11, A12, lower)\n 9:   L21 ← SISOLVE(U11, A21, upper)\n10:   S ← A22 − SIMULTIPLY(L21, U12)\n11:   (L22, U22) ← SPEEDIMPROVEDBLOCKLU(S)\n12:   Construct: L = [L11 0; L21 L22], U = [U11 U12; 0 U22]\n13:   return (L, U)\n14: end function\n\n 1: function SISOLVE(T, B, type)\n 2:   if n = 1 then\n 3:     return B/T\n 4:   end if\n 5:   Partition T, B into blocks: T = [T11 T12; T21 T22], B = [B1; B2]\n 6:   if type = lower then\n 7:     X1 ← SISOLVE(T11, B1)\n 8:     X2 ← SISOLVE(T22, B2 − T21 X1)\n 9:   else\n10:     X2 ← SISOLVE(T22, B2)\n11:     X1 ← SISOLVE(T11, B1 − T12 X2)\n12:   end if\n13:   return [X1; X2]\n14: end function\n\n 1: function SIMULTIPLY(A, B)\n 2:   if n = 1 then\n 3:     return A · B\n 4:   end if\n 5:   Partition A, B into: A = [A11 A12; A21 A22], B = [B11 B12; B21 B22]\n 6:   M1 ← (A11 + A22)(B11 + B22)\n 7:   M2 ← (A21 + A22)B11\n 8:   M3 ← A11(B12 − B22)\n 9:   M4 ← A22(B21 − B11)\n10:   M5 ← (A11 + A12)B22\n11:   M6 ← (A21 − A11)(B11 + B12)\n12:   M7 ← (A12 − A22)(B21 + B22)\n13:   C11 ← M1 + M4 − M5 + M7\n14:   C12 ← M3 + M5\n15:   C21 ← M2 + M4\n16:   C22 ← M1 − M2 + M3 + M6\n17:   C ← [C11 C12; C21 C22]\n18:   return C\n19: end function</pre>(c) Given A = [[4, 3], [6, 3]], compute the LU decomposition A = LU using the speed-improved LU decomposition method in (b).<br>(Note: List the key intermediate results from Algorithm 2 to receive full credit.)",
+      "answer": "(a) Θ(n<sup>3</sup>)（約 2n<sup>3</sup>/3 次浮點運算）　(b) Θ(n<sup>log<sub>2</sub>7</sup>) ≈ Θ(n<sup>2.81</sup>)（待確認）　(c) L = [[1, 0], [3/2, 1]]，U = [[4, 3], [0, −3/2]]",
+      "explanation": "<p><b>(a)</b> 第 k 輪：算 U 的第 k 列有 n − k + 1 個元素、算 L 的第 k 行有 n − k 個元素，每個元素要做一個長度 k − 1 的內積。總運算量約</p><pre class=\"formula\">Σ_k 2(n − k)(k − 1) ≈ 2 · n³/6 · 2 = (2/3)n³</pre><p>所以是 Θ(n<sup>3</sup>)。</p><p><b>(b)</b> SIMULTIPLY 是 <b>Strassen</b> 演算法：一次乘法拆成 7 個 n/2 大小的乘法加上 Θ(n²) 的加減，M(n) = 7M(n/2) + Θ(n²) = Θ(n<sup>log<sub>2</sub>7</sup>)。三角解 SISOLVE 拆成兩個一半大小的解加一次矩陣乘法，若這個乘法也用 SIMULTIPLY，S(n) = 2S(n/2) + Θ(n<sup>log<sub>2</sub>7</sup>) = Θ(n<sup>log<sub>2</sub>7</sup>)。整個 LU：</p><pre class=\"formula\">T(n) = 2T(n/2) + 2S(n/2) + M(n/2) + Θ(n²)\n     = 2T(n/2) + Θ(n^log2(7))\n⇒ T(n) = Θ(n^log2(7)) ≈ Θ(n^2.81)</pre><p>（用 Master Theorem：a = 2、b = 2，n<sup>log<sub>b</sub>a</sup> = n，而額外成本 n<sup>2.81</sup> 較大，由它主導。）</p><p>（待確認）兩點要注意：SISOLVE 第 8、11 行的 T<sub>21</sub>X<sub>1</sub>、T<sub>12</sub>X<sub>2</sub> 在原題沒有寫明是用 SIMULTIPLY；若用一般乘法，三角解會是 Θ(n<sup>3</sup>)，整體就不會比 (a) 快。另外第 9 行的 L<sub>21</sub> 數學上應該滿足 L<sub>21</sub>U<sub>11</sub> = A<sub>21</sub>（從右邊解），寫法上是同一個三角解副程式；這不影響複雜度與 (c) 的 1×1 計算。</p><p><b>(c)</b> n = 2，每個區塊都是 1×1：</p><ol><li>A<sub>11</sub> = 4 → (L<sub>11</sub>, U<sub>11</sub>) = ([1], [4])。</li><li>U<sub>12</sub> = SISOLVE(L<sub>11</sub>, A<sub>12</sub>) = 3/1 = 3。</li><li>L<sub>21</sub> = SISOLVE(U<sub>11</sub>, A<sub>21</sub>) = 6/4 = 3/2。</li><li>S = A<sub>22</sub> − L<sub>21</sub>U<sub>12</sub> = 3 − (3/2)(3) = −3/2（這就是 Schur complement）。</li><li>(L<sub>22</sub>, U<sub>22</sub>) = ([1], [−3/2])。</li></ol><pre class=\"formula\">L = [[1, 0], [3/2, 1]]，U = [[4, 3], [0, −3/2]]</pre><p>驗算：LU = [[4, 3], [6, 9/2 − 3/2]] = [[4, 3], [6, 3]] = A。</p>"
+    },
+    {
+      "id": "la-0041",
+      "topics": [
+        "positive-definite",
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
+      },
+      "question": "Let A ∈ ℝ<sup>m×n</sup> with m &gt; n, and assume that A is rank-deficient, i.e., rank(A) &lt; n. A<sup>T</sup>A is positive semi-definite.<br>(a) Let λ &gt; 0. Show that the matrix A<sup>T</sup>A + λI is positive definite.<br>(b) Derive the closed-form solution for<pre>x* = arg min<sub>x∈ℝ<sup>n</sup></sub> ‖Ax − b‖<sup>2</sup> + λ‖x‖<sup>2</sup>,  λ &gt; 0.</pre>",
+      "answer": "(a) x<sup>T</sup>(A<sup>T</sup>A + λI)x = ‖Ax‖² + λ‖x‖² &gt; 0（x ≠ 0）；(b) x* = (A<sup>T</sup>A + λI)<sup>−1</sup>A<sup>T</sup>b",
+      "explanation": "<p><b>(a)</b> A<sup>T</sup>A + λI 顯然對稱。對任意 x ≠ 0：</p><pre class=\"formula\">x^T (A^T A + λI) x = ‖Ax‖² + λ‖x‖² ≥ λ‖x‖² &gt; 0</pre><p>第一項 ≥ 0（半正定），第二項因 λ &gt; 0 且 x ≠ 0 而嚴格為正，所以正定。從特徵值看也一樣：A<sup>T</sup>A 的特徵值 μ<sub>i</sub> ≥ 0，加上 λI 後變成 μ<sub>i</sub> + λ &gt; 0。</p><p><b>(b)</b> 這是 <b>Ridge Regression（脊迴歸／Tikhonov 正則化）</b>。展開目標函數：</p><pre class=\"formula\">f(x) = x^T A^T A x − 2 b^T A x + b^T b + λ x^T x</pre><p>對 x 求梯度並令為 0：</p><pre class=\"formula\">∇f = 2A^T A x − 2A^T b + 2λx = 0\n⇒ (A^T A + λI) x = A^T b</pre><p>由 (a)，A<sup>T</sup>A + λI 正定所以可逆，得唯一解</p><pre class=\"formula\">x* = (A^T A + λI)^(−1) A^T b</pre><p>而且 f 的 Hessian 是 2(A<sup>T</sup>A + λI)，正定，所以這個臨界點是全域最小值。</p><p>這題的重點在於：A rank-deficient 時 A<sup>T</sup>A 不可逆，一般最小平方解 (A<sup>T</sup>A)<sup>−1</sup>A<sup>T</sup>b 不存在或不唯一；加上 λ‖x‖² 之後矩陣變成可逆，解就唯一了。</p>"
+    },
+    {
+      "id": "la-0042",
+      "topics": [
+        "diagonalization",
+        "symmetric-matrices",
+        "gram-schmidt",
+        "positive-definite"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": "11-15",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Give the necessary conditions for matrix <b>A</b> can be factorized<br>11. <b>A</b> = <b>PDP</b><sup>-1</sup>.<br>12. <b>A</b> = <b>QR</b>.<br>13. <b>A</b> = <b>PDP</b><sup>T</sup>.<br>14. <b>A</b> = λ<sub>1</sub><b>u</b><sub>1</sub><b>u</b><sub>1</sub><sup>T</sup> + λ<sub>2</sub><b>u</b><sub>2</sub><b>u</b><sub>2</sub><sup>T</sup> + .. + λ<sub>n</sub><b>u</b><sub>n</sub><b>u</b><sub>n</sub><sup>T</sup>.<br>15. <b>A</b> = <b>R</b><sup>T</sup><b>R</b> (Cholesky factorization)",
+      "choices": [
+        "(A) square but non-symmetric,",
+        "(B) square and symmetric,",
+        "(C) linearly-independent columns,",
+        "(D) linearly-independent eigenvectors,",
+        "(E) positive definite"
+      ],
+      "answer": "11：(D)　12：(C)　13：(B)　14：(B)　15：(B)(E)（待確認）",
+      "explanation": "<ul><li><b>11. A = PDP<sup>−1</sup></b>（對角化）：P 的行是 A 的特徵向量且 P 要可逆 ⇒ A 要有 n 個<b>線性獨立的特徵向量</b>，選 (D)。A 不必對稱、也不必不對稱。</li><li><b>12. A = QR</b>：用 Gram-Schmidt 得到 QR（R 可逆的上三角）需要 A 的<b>行線性獨立</b>，選 (C)。</li><li><b>13. A = PDP<sup>T</sup></b>（正交對角化）：A<sup>T</sup> = PD<sup>T</sup>P<sup>T</sup> = A，所以 A 必須<b>對稱</b>，選 (B)。</li><li><b>14. 譜分解</b> A = Σ λ<sub>i</sub>u<sub>i</sub>u<sub>i</sub><sup>T</sup>：每一項 u<sub>i</sub>u<sub>i</sub><sup>T</sup> 都對稱，加總也對稱，和 13 是同一件事，選 (B)。</li><li><b>15. Cholesky</b>：R<sup>T</sup>R 一定對稱，且 x<sup>T</sup>R<sup>T</sup>Rx = ‖Rx‖² &gt; 0（R 可逆），所以 A 必須<b>對稱正定</b>，選 (B)(E)。</li></ul><p>（待確認）嚴格用邏輯看「必要條件」，13~15 中「(D) 特徵向量線性獨立」也一定成立（對稱矩陣必可對角化），15 中 (C) 也成立（正定 ⇒ 可逆 ⇒ 行獨立）。上面給的是每種分解最直接的條件，官方答案是否把這些衍生條件也算進去無法確認。</p>"
+    },
+    {
+      "id": "la-0043",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": "16-20",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "If n×n matrix <b>A</b> is diagonalizable, then（每小題 (A) True. (B) False.）<br>16. 0 is not the eigenvalue of <b>A</b>.<br>17. <b>A</b> has n distinct eigenvalues.<br>18. <b>A</b> is invertible.<br>19. <b>A</b><sup>T</sup> is also diagonalizable.<br>20. The diagonalization is unique.",
+      "answer": "16 (B) False　17 (B) False　18 (B) False　19 (A) True　20 (B) False",
+      "explanation": "<ul><li><b>16 False</b>：零矩陣本身就是對角矩陣（可對角化），特徵值全是 0。可對角化跟可逆是兩回事。</li><li><b>17 False</b>：I<sub>n</sub> 可對角化，但只有一個特徵值 1。「n 個相異特徵值」是可對角化的充分條件，不是必要條件。</li><li><b>18 False</b>：同 16，diag(0, 1) 可對角化但不可逆。</li><li><b>19 True</b>：A = PDP<sup>−1</sup> ⇒ A<sup>T</sup> = (P<sup>−1</sup>)<sup>T</sup>D P<sup>T</sup> = (P<sup>T</sup>)<sup>−1</sup> D P<sup>T</sup>，令 Q = (P<sup>T</sup>)<sup>−1</sup> 即得 A<sup>T</sup> = QDQ<sup>−1</sup>。</li><li><b>20 False</b>：特徵向量可以乘非零常數、D 的對角元素順序可以調換（P 的行跟著調換），所以 P、D 都不唯一。</li></ul>"
+    },
+    {
+      "id": "la-0044",
+      "topics": [
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": "26-30",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "If <b>A</b> is a m×n matrix; <b>Ax</b> = <b>b</b> is an inconsistent system and has a least-square solution <b>x̂</b>.（每小題 (A) True. (B) False.）<br>26. <b>b</b> is exactly not in Col <b>A</b>.<br>27. <b>x̂</b> is not a unique solution.<br>28. If <b>A</b><sup>T</sup><b>A</b> is not invertible, then the system has no solution.<br>29. <b>A</b><b>x̂</b> is not always in Col <b>A</b>.<br>30. <b>b</b> - <b>A</b><b>x̂</b> is always in Nul <b>A</b><sup>T</sup>.",
+      "answer": "26 (A) True　27 (B) False　28 (B) False（待確認）　29 (B) False　30 (A) True",
+      "explanation": "<ul><li><b>26 True</b>：Ax = b 無解 ⇔ b 不在 Col A。</li><li><b>27 False</b>：最小平方解唯一 ⇔ A 的行線性獨立（A<sup>T</sup>A 可逆）。行獨立時 x̂ 是唯一的，所以「x̂ 不唯一」不一定成立。</li><li><b>28 False</b>（待確認）：Normal Equation A<sup>T</sup>Ax̂ = A<sup>T</sup>b <b>永遠有解</b>（A<sup>T</sup>b 一定在 Col(A<sup>T</sup>A) = Col(A<sup>T</sup>) 裡），A<sup>T</sup>A 不可逆只是讓最小平方解有無限多個，不是「沒有解」。不過題目前提已說 Ax = b 不一致，若把「the system」理解成原方程組，這句會變成恆真，題意有歧義，這裡依出題重點（最小平方解是否存在）判為 False。</li><li><b>29 False</b>：Ax̂ 是 A 的行的線性組合，永遠在 Col A 裡（它就是 b 在 Col A 上的投影）。</li><li><b>30 True</b>：誤差 b − Ax̂ 和 Col A 正交，即 A<sup>T</sup>(b − Ax̂) = 0，所以在 Nul A<sup>T</sup>。</li></ul>"
+    },
+    {
+      "id": "la-0045",
+      "topics": [
+        "symmetric-matrices",
+        "positive-definite"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": "31-35",
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "If <b>C</b> is a n×n covariance matrix, then（每小題 (A) True. (B) False.）<br>31. <b>C</b> always have n orthogonal eigenvectors.<br>32. <b>C</b> always have n distinct real eigenvalues.<br>33. <b>C</b> has positive and negative eigenvalues but no zero eigenvalues.<br>34. <b>C</b> can always be decomposed into <b>AA</b><sup>T</sup>, where <b>A</b> is a matrix.<br>35. <b>C</b> is exactly positive definite.",
+      "answer": "31 (A) True　32 (B) False　33 (B) False　34 (A) True　35 (B) False",
+      "explanation": "<p>Covariance matrix（共變異數矩陣）是<b>對稱半正定</b>矩陣：C = E[(x − μ)(x − μ)<sup>T</sup>]，對任意 v，v<sup>T</sup>Cv = Var(v<sup>T</sup>x) ≥ 0。</p><ul><li><b>31 True</b>：對稱矩陣由譜定理一定有 n 個正交的特徵向量。</li><li><b>32 False</b>：特徵值是實數，但可以重複，例如 C = I。</li><li><b>33 False</b>：半正定 ⇒ 特徵值都 ≥ 0，不會有負的；而且可以有 0（某個方向變異數為 0，例如兩個變數完全相關）。</li><li><b>34 True</b>：C = QΛQ<sup>T</sup>，Λ 的對角元素 ≥ 0，取 A = QΛ<sup>1/2</sup> 就有 AA<sup>T</sup> = C。</li><li><b>35 False</b>：只保證半正定，有 0 特徵值時就不是正定。</li></ul>"
+    },
+    {
+      "id": "la-0046",
+      "topics": [
+        "lu-decomposition",
+        "iterative-methods"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 36,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Which of the following statements regarding the cost of methods for solving an n × n linear system <b>Ax</b> = <b>b</b> are true?",
+      "choices": [
+        "A. The cost of computing the LU factorization is generally proportional to n<sup>2</sup>.",
+        "B. The cost of backward substitution on a dense upper triangular matrix is generally proportional to n<sup>2</sup>.",
+        "C. If a matrix <b>A</b> has no more than 3 non-zero entries per row, the cost of each iteration of the Jacobi method is proportional to n.",
+        "D. If a matrix <b>A</b> has no more than 3 non-zero entries per row, the cost of each iteration of the Jacobi method is proportional to n<sup>3</sup>.",
+        "E. None."
+      ],
+      "answer": "B、C",
+      "explanation": "<ul><li>A 錯：LU 分解約 2n³/3 次運算，和 n³ 成正比。</li><li>B 對：回代時第 i 個未知數要用到後面 n − i 個已知值，總共 1 + 2 + … + n ≈ n²/2 次乘法，和 n² 成正比。</li><li>C 對、D 錯：Jacobi 每次迭代算 x<sub>i</sub><sup>(k+1)</sup> = (b<sub>i</sub> − Σ<sub>j≠i</sub> a<sub>ij</sub>x<sub>j</sub><sup>(k)</sup>)/a<sub>ii</sub>，成本正比於非零元素個數。每列最多 3 個非零元素 ⇒ 每次迭代約 3n 次運算，和 n 成正比。</li><li>E 錯，因為 B、C 是對的。</li></ul><p>這題的重點是：稀疏矩陣用迭代法，每一步只要 O(非零元素數)，比 Θ(n³) 的直接法省很多。</p>"
+    },
+    {
+      "id": "la-0047",
+      "topics": [
+        "iterative-methods",
+        "pivoting-condition"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 37,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Which of the following methods can be used for solving the system <b>Ax</b> = <b>b</b>, where <b>A</b> is a symmetric, diagonally dominant, square n × n matrix?",
+      "choices": [
+        "A. LU factorization with full pivoting.",
+        "B. System of normal equations.",
+        "C. Gauss-Seidel method.",
+        "D. Jacobi method.",
+        "E. None."
+      ],
+      "answer": "A、B、C、D（待確認）",
+      "explanation": "<p>以 <b>strictly diagonally dominant（嚴格對角優勢）</b>來理解：|a<sub>ii</sub>| &gt; Σ<sub>j≠i</sub>|a<sub>ij</sub>|。這種矩陣一定可逆。</p><ul><li>A 可以：A 可逆，LU（不論有沒有 pivoting）都能解；對角優勢矩陣甚至不需要 pivoting 也穩定。</li><li>B 可以：A 可逆 ⇒ A<sup>T</sup>A 可逆，A<sup>T</sup>Ax = A<sup>T</sup>b 的解就是原方程的解（只是條件數變成平方，數值上較差）。</li><li>C、D 可以：嚴格對角優勢保證 Jacobi 與 Gauss-Seidel 都收斂。</li></ul><p>（待確認）若題目的「diagonally dominant」只是弱對角優勢（≥），矩陣可能奇異、迭代法也不保證收斂，答案會不同；官方答案未公布。</p>"
+    },
+    {
+      "id": "la-0048",
+      "topics": [
+        "basis-dimension",
+        "linear-independence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 38,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Which set of vectors is a basis for <b>R</b><sup>3</sup>",
+      "choices": [
+        "A. {[1,2,3], [-1, 0, 1], [4, 9, 7]}",
+        "B. {[1, 4, 7], [2, 5, 8], [3, 6, 9]}",
+        "C. {[1, 0, -1], [2, 1, -1], [-2, 1, 4]}",
+        "D. {[4, 0, 0], [0, 0, 5], [0, 3, 0]}",
+        "E. All"
+      ],
+      "answer": "A、C、D",
+      "explanation": "<p>R<sup>3</sup> 中 3 個向量是基底 ⇔ 以它們為行的行列式 ≠ 0。</p><ul><li>A：det = −14 ≠ 0，是基底。</li><li>B：det = 0。第二個向量減第一個 = (1,1,1)，第三個減第二個也 = (1,1,1)，所以 [3,6,9] = 2[2,5,8] − [1,4,7]，線性相依，不是基底。</li><li>C：det = 1 ≠ 0，是基底。</li><li>D：三個向量分別落在三條座標軸上（4e<sub>1</sub>、5e<sub>3</sub>、3e<sub>2</sub>），det = −60 ≠ 0，是基底（順序不影響是不是基底）。</li><li>E 錯，因為 B 不是。</li></ul><p>行列式值都用程式驗算。</p>"
+    },
+    {
+      "id": "la-0049",
+      "topics": [
+        "subspaces",
+        "rank-nullity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 39,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Which vectors form the basis of null(<b>A</b>)?<pre>     [ 1   1  3   1   6]\nA =  [ 2  −1  0   1  −1]\n     [−3   2  1  −2   1]\n     [ 4   1  6   1   3]</pre>",
+      "choices": [
+        "A. [-3, 2, 1, -1, 1]",
+        "B. [-1, -2, 1, 0, 0]",
+        "C. [1, -3, 0, -4, 1]",
+        "D. [2, -1, 0, 1, -1]",
+        "E. None"
+      ],
+      "answer": "B、C",
+      "explanation": "<p>先算 rank：列化簡後 rank(A) = 3，由秩-零度定理，nullity = 5 − 3 = 2，所以零空間的基底要 2 個線性獨立的向量。</p><p>逐一代入 Av：</p><ul><li>A：Av = (7, −10, 17, −2) ≠ 0，不在零空間。</li><li>B：Av = 0。例如第一列 −1 − 2 + 3 + 0 + 0 = 0。</li><li>C：Av = 0。例如第一列 1 − 3 + 0 − 4 + 6 = 0。</li><li>D：Av = (−4, 7, −11, 5) ≠ 0。</li></ul><p>B、C 都在零空間且彼此不成比例（線性獨立），個數又剛好等於 nullity = 2，所以 {B, C} 構成 null(A) 的基底。程式求零空間得到的正是 (−1, −2, 1, 0, 0) 與 (1, −3, 0, −4, 1)。</p>"
+    },
+    {
+      "id": "la-0050",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 40,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）A python function Fun is designed to perform a certain matrix operation:<pre class=\"code\">def FunSub(m,i,j):\n    return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]\n\ndef Fun(m):\n    if len(m) == 2:\n        return m[0][0]*m[1][1]-m[0][1]*m[1][0]\n\n    x = 0\n    for c in range(len(m)):\n        x += ((-1)**c)*m[0][c]*Fun(FunSub(m,0,c))\n    return x</pre>What inputs make Fun output 0?",
+      "choices": [
+        "A. [[7, 9, 9], [3, 2, 2], [5, 3, 3]]",
+        "B. [[1, 2, 3, 6], [2, 3, 6, 7], [8, 14, 2, 1], [3, 6, 9, 12]]",
+        "C. [[1, 2, 3, 6], [2, 3, 6, 7], [8, 14, 2, 1], [3, 6, 9, 18]]",
+        "D. [[1, 2, 3], [3, 2, 1], [2, 3, 1]] [[1, 0, 1], [2, 9, 2], [3, 3, 3]]",
+        "E. All"
+      ],
+      "answer": "A、C、D",
+      "explanation": "<p>先看懂程式：FunSub(m, i, j) 刪掉第 i 列第 j 行，得到子矩陣；Fun 沿第一列做 <b>Cofactor Expansion（餘因子展開）</b>，2×2 時直接 ad − bc。所以 Fun(m) = det(m)。題目就是問哪些矩陣行列式為 0。</p><ul><li>A：第二行和第三行完全相同（9,2,3），det = 0。</li><li>B：det = −132 ≠ 0。</li><li>C：第四列 (3,6,9,18) = 3 × 第一列 (1,2,3,6)，兩列成比例，det = 0。</li><li>D：輸入是兩個矩陣的乘積，det(PQ) = det(P)·det(Q)。第二個矩陣第一行和第三行都是 (1,2,3)，det = 0，所以乘積的行列式也是 0。</li><li>E 錯，因為 B 不為 0。</li></ul><p>B 和 C 只差最後一個元素 12 vs 18：C 恰好是第一列的 3 倍，B 不是，這就是出題的陷阱。四個行列式都用程式驗算過。</p>"
+    },
+    {
+      "id": "la-0051",
+      "topics": [
+        "basis-dimension",
+        "subspaces"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": "6-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "Suppose U and V are distinct six-dimensional subspaces of a vector space W and dim W = 8. Find dim(U ∩ V).",
+      "answer": "4 或 5",
+      "explanation": "<p>用維度公式：dim(U + V) = dim U + dim V − dim(U ∩ V) = 12 − dim(U ∩ V)。</p><p>U + V 是 W 的子空間，所以 dim(U + V) ≤ 8；又 U ≠ V 且兩者維度都是 6，代表 U + V 一定比 U 大（如果 U + V = U，就有 V ⊆ U，維度相同會推出 U = V，矛盾），所以 dim(U + V) ≥ 7。</p><p>dim(U + V) ∈ {7, 8} → dim(U ∩ V) = 12 − 7 = <b>5</b> 或 12 − 8 = <b>4</b>。兩種都可能發生：</p><ul><li>U = span{e<sub>1</sub>, …, e<sub>6</sub>}，V = span{e<sub>1</sub>, …, e<sub>5</sub>, e<sub>7</sub>}：交集 5 維。</li><li>U = span{e<sub>1</sub>, …, e<sub>6</sub>}，V = span{e<sub>1</sub>, …, e<sub>4</sub>, e<sub>7</sub>, e<sub>8</sub>}：交集 4 維。</li></ul><p>常見錯誤：只寫 4（以為 U + V 一定填滿 W）。題目只說 distinct，沒有保證 U + V = W。</p>"
+    },
+    {
+      "id": "la-0052",
+      "topics": [
+        "rank-nullity",
+        "linear-transformations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": "6-(b)",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "Let V be a vector space of all symmetric 2 × 2 matrices. Define a linear transformation T: V → P<sub>2</sub>(R) by<br>T([[a, b], [b, c]]) = (a − b) + (b − c)x + (c − a)x².<br>Find rank(T).",
+      "answer": "rank(T) = 2",
+      "explanation": "<p>V 的基底取 {[[1,0],[0,0]], [[0,1],[1,0]], [[0,0],[0,1]]}，dim V = 3。</p><p>先找 kernel：T = 0 ⇔ a − b = 0、b − c = 0、c − a = 0 ⇔ a = b = c。所以 ker T = span{[[1,1],[1,1]]}，nullity = 1。</p><p>由 <span class=\"term\">Rank-nullity theorem<small>（秩–零度定理）</small></span>：rank(T) = dim V − nullity = 3 − 1 = <b>2</b>。</p><p>另一個角度：輸出的三個係數加起來 (a−b)+(b−c)+(c−a) = 0，所以像空間落在 P<sub>2</sub> 中「係數和為 0」的 2 維平面裡，不可能是 3。用矩陣 [[1,−1,0],[0,1,−1],[−1,0,1]] 算秩也是 2（程式驗算）。</p><p>常見錯誤：看到目標空間 P<sub>2</sub>(R) 是 3 維就以為 rank = 3。</p>"
+    },
+    {
+      "id": "la-0053",
+      "topics": [
+        "cayley-hamilton",
+        "matrix-inverse"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "Suppose m(t) = t<sup>r</sup> + a<sub>r−1</sub>t<sup>r−1</sup> + ⋯ + a<sub>1</sub>t + a<sub>0</sub> is the minimal polynomial of a nonsingular n × n matrix A. Find A<sup>−1</sup>.",
+      "answer": "A<sup>−1</sup> = −(1/a<sub>0</sub>)(A<sup>r−1</sup> + a<sub>r−1</sub>A<sup>r−2</sup> + ⋯ + a<sub>2</sub>A + a<sub>1</sub>I)",
+      "explanation": "<p><span class=\"term\">Minimal polynomial<small>（最小多項式）</small></span>滿足 m(A) = 0：</p><pre class=\"formula\">A^r + a_{r-1}A^{r-1} + ... + a_1 A + a_0 I = 0</pre><p><b>先說明 a<sub>0</sub> ≠ 0</b>：m 的根恰好是 A 的特徵值，A 可逆代表 0 不是特徵值，所以 m(0) = a<sub>0</sub> ≠ 0。</p><p>把 a<sub>0</sub>I 移到右邊，左邊提出 A：</p><pre class=\"formula\">A (A^{r-1} + a_{r-1}A^{r-2} + ... + a_1 I) = -a_0 I</pre><p>兩邊除以 −a<sub>0</sub>，就得到 A·[−(1/a<sub>0</sub>)(A<sup>r−1</sup> + a<sub>r−1</sub>A<sup>r−2</sup> + ⋯ + a<sub>1</sub>I)] = I，括號裡就是 A<sup>−1</sup>。</p><p>常見錯誤：忘記說明 a<sub>0</sub> ≠ 0；或把最後一項寫成 a<sub>0</sub>I（其實最後一項是 a<sub>1</sub>I，a<sub>0</sub> 已經被拿去當分母）。</p>"
+    },
+    {
+      "id": "la-0054",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "Solve for t if det([[3−t, 2, 0, 0, 0], [1, 4−t, 0, 0, 0], [0, 0, 3−t, 1, 0], [0, 0, 1, 3−t, 0], [0, 0, 0, 0, 4−t]]) = 0.<br>（矩陣依列（row）由上到下列出。）",
+      "answer": "t = 2, 4, 5",
+      "explanation": "<p>矩陣是 <span class=\"term\">Block diagonal<small>（區塊對角）</small></span>，行列式 = 各區塊行列式相乘：</p><ul><li>[[3−t, 2], [1, 4−t]]：(3−t)(4−t) − 2 = t² − 7t + 10 = (t − 2)(t − 5)。</li><li>[[3−t, 1], [1, 3−t]]：(3−t)² − 1 = (t − 2)(t − 4)。</li><li>[4−t]：4 − t。</li></ul><p>整體 det = −(t − 2)²(t − 4)²(t − 5)，所以 t = <b>2, 4, 5</b>（其中 2 和 4 各是二重根）。這些 t 其實就是原矩陣（把 −t 拿掉）的特徵值。</p><p>程式驗算 factor 結果為 −(t−5)(t−4)²(t−2)²。</p>"
+    },
+    {
+      "id": "la-0055",
+      "topics": [
+        "matrix-inverse",
+        "subspaces",
+        "matrix-algebra",
+        "similarity",
+        "rank-nullity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "（複選，必須選出所有正確敘述才給分）Which of the following statements are true?",
+      "choices": [
+        "(a) Let A and B be n × n matrices. Assume that A is invertible and B³ = 0. If AB=BA, then A+B is also invertible.",
+        "(b) Let S be the set of all sequences in R<sup>∞</sup> which have exactly N non-zero elements where N is a known constant. S is a subspace of R<sup>∞</sup>.",
+        "(c) Any square matrix A can be represented as a sum of a symmetric matrix and a skew-symmetric matrix.",
+        "(d) If A and B are similar, they have the same eigenvectors.",
+        "(e) If A, B ∈ R<sup>m×n</sup>, rank (A − B) ≤ rank(A)−rank(B)."
+      ],
+      "answer": "(a)(c)",
+      "explanation": "<p><b>(a) 對</b>。A + B = A(I + A<sup>−1</sup>B)。因為 AB = BA，A<sup>−1</sup> 也和 B 交換，所以 (A<sup>−1</sup>B)³ = A<sup>−3</sup>B³ = 0，N = A<sup>−1</sup>B 是 <span class=\"term\">Nilpotent<small>（冪零）</small></span>矩陣。(I + N)(I − N + N²) = I + N³ = I，所以 I + N 可逆，A + B 是兩個可逆矩陣相乘，也可逆。</p><p><b>(b) 錯</b>。零序列有 0 個非零項，不在 S 裡（N ≥ 1 時）；而且兩個各有 N 個非零項的序列相加，可能互相抵消或錯開而不再剛好 N 個，加法不封閉。</p><p><b>(c) 對</b>。A = (A + A<sup>T</sup>)/2 + (A − A<sup>T</sup>)/2，前者對稱、後者反對稱。</p><p><b>(d) 錯</b>。相似矩陣特徵值相同，但特徵向量一般不同：若 B = P<sup>−1</sup>AP 且 Av = λv，則 B 的特徵向量是 P<sup>−1</sup>v。例如 A = diag(1, 2) 與 B = [[1, 1], [0, 2]] 相似，但 B 對 λ = 2 的特徵向量是 (1, 1)，不是 (0, 1)。</p><p><b>(e) 錯</b>。正確的不等式方向是 rank(A − B) ≥ rank(A) − rank(B)。反例：A = 0、B = I，左邊 rank(−I) = n，右邊 0 − n = −n。</p>"
+    },
+    {
+      "id": "la-0056",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "linear-transformations",
+        "diagonalization",
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "（複選，必須選出所有正確敘述才給分）Which of the following statements are true?",
+      "choices": [
+        "(a) Let D: V → V be defined by D(f) = df/dt, where V is the space of functions with basis {sin t, cos t}. The eigenvalues of D are ±1.",
+        "(b) F is linear if F: R³ → R² is defined by F(x, y, z) = (x + 1, y + z).",
+        "(c) Assume that A ∈ M<sub>n×n</sub>(F) has two distinct eigenvalues, λ<sub>1</sub> and λ<sub>2</sub>. If dim(E<sub>λ<sub>1</sub></sub>) = n − 1, A is diagonalizable.",
+        "(d) Let A, B and C be three n × n matrices such that for k = 1, 2, ⋯, n: c<sub>ik</sub> = a<sub>ik</sub> + b<sub>ik</sub>, for some i; a<sub>jk</sub> = b<sub>jk</sub> = c<sub>jk</sub>, for j ≠ i. Then we have det C = det A + det B.",
+        "(e) Let T be a diagonalizable linear operator on a finite-dimensional vector space, and let m be any positive integer. T and T<sup>m</sup> are simultaneously diagonalizable."
+      ],
+      "answer": "(c)(d)(e)",
+      "explanation": "<p><b>(a) 錯</b>。D(sin t) = cos t、D(cos t) = −sin t，在基底 {sin t, cos t} 下矩陣是 [[0, −1], [1, 0]]，特徵多項式 λ² + 1，特徵值是 ±i，不是 ±1（在實數上甚至沒有特徵值）。</p><p><b>(b) 錯</b>。F(0, 0, 0) = (1, 0) ≠ 0，線性轉換一定把零向量送到零向量。</p><p><b>(c) 對</b>。λ<sub>2</sub> 是特徵值，所以 dim E<sub>λ<sub>2</sub></sub> ≥ 1；兩個特徵空間維度和 ≥ (n − 1) + 1 = n，有 n 個線性獨立特徵向量，可對角化。</p><p><b>(d) 對</b>。A、B、C 只有第 i 列不同，且 C 的第 i 列 = A 的第 i 列 + B 的第 i 列。行列式對每一列是線性的（multilinear），所以 det C = det A + det B。注意這不是 det(A + B) = det A + det B（那一般不成立）。</p><p><b>(e) 對</b>。T = PDP<sup>−1</sup>，則 T<sup>m</sup> = PD<sup>m</sup>P<sup>−1</sup>，同一組基底（P 的行向量）同時把 T 和 T<sup>m</sup> 對角化。</p>"
+    },
+    {
+      "id": "la-0057",
+      "topics": [
+        "similarity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "If A is similar to B, how many of the following statements are true?<ul><li>A<sup>−1</sup> is similar to B<sup>−1</sup>.</li><li>A and B have the same eigenvalues.</li><li>A and B represent the same transformation with respect to different bases.</li><li>The nullity of A is the same as the nullity of B.</li></ul>",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(E)",
+      "explanation": "<p>設 B = P<sup>−1</sup>AP。</p><ul><li>第 1 句：A 可逆 ⇔ B 可逆（det 相同）。可逆時 B<sup>−1</sup> = P<sup>−1</sup>A<sup>−1</sup>P，所以 A<sup>−1</sup> 與 B<sup>−1</sup> 相似。對（這句默認反矩陣存在）。</li><li>第 2 句：det(B − λI) = det(P<sup>−1</sup>(A − λI)P) = det(A − λI)，特徵多項式相同，特徵值相同。對。</li><li>第 3 句：這就是 <span class=\"term\">Similarity<small>（相似）</small></span>的幾何意義：P 是換基底矩陣，A 和 B 是同一個線性轉換在兩組基底下的矩陣。對。</li><li>第 4 句：rank(B) = rank(P<sup>−1</sup>AP) = rank(A)（乘可逆矩陣不改變秩），nullity = n − rank 也相同。對。</li></ul><p>4 句全對，選 <b>(E)</b>。</p>"
+    },
+    {
+      "id": "la-0058",
+      "topics": [
+        "gram-schmidt",
+        "inner-product-projection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "How many of the following statements are true?<ul><li>The inverse of an orthogonal matrix is orthogonal.</li><li>The product of two orthogonal matrices is an orthogonal matrix.</li><li>Every matrix with orthonormal columns is invertible.</li><li>If A, B ∈ R<sup>n×n</sup>, and A + iB is a unitary matrix, then A<sup>T</sup>B is symmetric.</li></ul>",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(D)",
+      "explanation": "<ul><li>第 1 句對：Q<sup>−1</sup> = Q<sup>T</sup>，而 (Q<sup>T</sup>)<sup>T</sup>Q<sup>T</sup> = QQ<sup>T</sup> = I，所以 Q<sup>−1</sup> 也正交。</li><li>第 2 句對：(Q<sub>1</sub>Q<sub>2</sub>)<sup>T</sup>(Q<sub>1</sub>Q<sub>2</sub>) = Q<sub>2</sub><sup>T</sup>Q<sub>1</sub><sup>T</sup>Q<sub>1</sub>Q<sub>2</sub> = I。</li><li>第 3 句錯：有 orthonormal columns 的矩陣不一定是方陣，例如 3×1 的 (1, 0, 0)<sup>T</sup>，根本沒有反矩陣。只有方陣時才可逆。</li><li>第 4 句對：U = A + iB unitary，U<sup>*</sup>U = (A<sup>T</sup> − iB<sup>T</sup>)(A + iB) = (A<sup>T</sup>A + B<sup>T</sup>B) + i(A<sup>T</sup>B − B<sup>T</sup>A) = I。虛部必須為 0：A<sup>T</sup>B = B<sup>T</sup>A = (A<sup>T</sup>B)<sup>T</sup>，所以 A<sup>T</sup>B 對稱。</li></ul><p>共 3 句對，選 <b>(D)</b>。</p>"
+    },
+    {
+      "id": "la-0059",
+      "topics": [
+        "cayley-hamilton",
+        "matrix-inverse"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "Assume that A ∈ R<sup>n×n</sup> and A² + 4A + 6I<sub>n</sub> = O. If (A + 3I<sub>n</sub>)<sup>−1</sup> = aA + bI<sub>n</sub>. What is the value of 2a + b?",
+      "choices": [
+        "(A) −2",
+        "(B) −1",
+        "(C) 0",
+        "(D) 1",
+        "(E) 2"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>想辦法湊出 (A + 3I)(某個東西) = 常數 × I。把 A² + 4A 拆成 (A + 3I)(A + I) − 3I：</p><pre class=\"formula\">(A + 3I)(A + I) = A^2 + 4A + 3I = (A^2 + 4A + 6I) - 3I = -3I</pre><p>所以 (A + 3I)<sup>−1</sup> = −(A + I)/3 = −(1/3)A − (1/3)I，a = b = −1/3。</p><p>2a + b = −2/3 − 1/3 = <b>−1</b>，選 (B)。程式用 x² + 4x + 6 的 companion matrix 代入驗證 (A + 3I)<sup>−1</sup> = −(A + I)/3 成立。</p><p>也可以用多項式除法：x² + 4x + 6 = (x + 3)(x + 1) + 3，同樣得到 (A + 3I)(A + I) = −3I。</p>"
+    },
+    {
+      "id": "la-0060",
+      "topics": [
+        "change-of-basis",
+        "basis-dimension"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "Given a basis S = {(t − 1)³, (t − 1)², (t − 1), 1} of a vector space P<sub>3</sub>(t) of polynomials of degree ≤ 3. If the coordinate of x = 5t³ − 4t² + 3t − 2 with respect to S is (a, b, c, d), then a + b + c + d = ?",
+      "choices": [
+        "(A) 26",
+        "(B) 27",
+        "(C) 28",
+        "(D) 29",
+        "(E) 30"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>令 s = t − 1，即 t = s + 1，把 x 改寫成 s 的多項式：</p><pre class=\"formula\">5(s+1)^3 = 5s^3 + 15s^2 + 15s + 5\n-4(s+1)^2 = -4s^2 - 8s - 4\n3(s+1) = 3s + 3\n-2\n合計 = 5s^3 + 11s^2 + 10s + 2</pre><p>座標 (a, b, c, d) = (5, 11, 10, 2)，和 = <b>28</b>，選 (C)。</p><p>捷徑：a + b + c + d 就是把 s = 1（t = 2）代進去：5·8 − 4·4 + 3·2 − 2 = 28。另一種想法是 Taylor 展開：a = x‴(1)/6、b = x″(1)/2、c = x′(1)、d = x(1)。程式展開驗證係數為 [5, 11, 10, 2]。</p>"
+    },
+    {
+      "id": "la-0061",
+      "topics": [
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "Given A = [[9, −1, 5, 7], [8, 3, 2, −4], [0, 0, 3, 6], [0, 0, −1, 8]]（依列列出）. The largest eigenvalue is",
+      "choices": [
+        "(A) 6",
+        "(B) 7",
+        "(C) 8",
+        "(D) 9",
+        "(E) 10"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>A 是 <span class=\"term\">Block upper triangular<small>（區塊上三角）</small></span>：左下 2×2 是 0，所以特徵值 = 兩個對角區塊的特徵值合起來（右上區塊不影響）。</p><ul><li>[[9, −1], [8, 3]]：λ² − 12λ + (27 + 8) = λ² − 12λ + 35 = (λ − 5)(λ − 7)，λ = 5, 7。</li><li>[[3, 6], [−1, 8]]：λ² − 11λ + (24 + 6) = λ² − 11λ + 30 = (λ − 5)(λ − 6)，λ = 5, 6。</li></ul><p>特徵值 5, 5, 6, 7，最大是 <b>7</b>，選 (B)。程式算出 {5: 2, 6: 1, 7: 1}。</p><p>常見錯誤：直接看對角線 9, 3, 3, 8 選 9。只有（整個）三角矩陣才能直接讀對角線。</p>"
+    },
+    {
+      "id": "la-0062",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "Given A = [[2, 1], [3, 4]]. Assume that B³ = A and B has real eigenvalues. What is the matrix B?（矩陣依列列出，∛5 表示 5 的立方根）",
+      "choices": [
+        "(A) (1/2)[[1 + 4∛5, −1 + ∛5], [3 + ∛5, 1 − 2∛5]]",
+        "(B) (1/3)[[2 + ∛5, 3 − ∛5], [−1 + 3∛5, 1 + 2∛5]]",
+        "(C) (1/4)[[3 + ∛5, −1 + ∛5], [−3 + 3∛5, 1 + 3∛5]]",
+        "(D) (1/4)[[1 + 5∛5, 1 − ∛5], [3 − 3∛5, 3 − ∛5]]",
+        "(E) (1/2)[[1 + 5∛5, 3 − ∛5], [−3 + ∛5, 1 − 3∛5]]"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>先把 A 對角化：特徵多項式 λ² − 6λ + 5 = (λ − 1)(λ − 5)。</p><ul><li>λ = 1：(A − I)v = 0 → v<sub>1</sub> = (1, −1)。</li><li>λ = 5：(A − 5I)v = 0 → v<sub>2</sub> = (1, 3)。</li></ul><p>P = [[1, 1], [−1, 3]]、P<sup>−1</sup> = (1/4)[[3, −1], [1, 1]]。實數立方根唯一，取 B = P·diag(1, ∛5)·P<sup>−1</sup>：</p><pre class=\"formula\">B = (1/4) [[3 + ∛5, -1 + ∛5], [-3 + 3∛5, 1 + 3∛5]]</pre><p>選 <b>(C)</b>。程式驗證 B³ − A = 0。</p><p>快速排除法：B 和 A 可交換、且 B 的跡 = 1 + ∛5，只有 (C) 的跡 (3 + ∛5 + 1 + 3∛5)/4 = 1 + ∛5 符合。</p>"
+    },
+    {
+      "id": "la-0063",
+      "topics": [
+        "subspaces",
+        "basis-dimension",
+        "rank-nullity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "Let U = span{(1, 3, −2, 2, 3), (1, 4, −3, 4, 2), (2, 3, −1, −2, 9), (2, 4, −2, 0, 8)} and W = span{(1, 3, 0, 2, 1), (1, 5, −6, 6, 3), (2, 5, 3, 2, 1), (2, 7, −3, 6, 3)} be two subspaces of R<sup>5</sup>. The dimension of U ∩ W is",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>用 dim(U ∩ W) = dim U + dim W − dim(U + W)，三個維度都靠列化簡求秩。</p><ul><li>U 的 4 個向量排成矩陣列化簡，秩 = 2（可驗證 u<sub>3</sub> = 5u<sub>1</sub> − 3u<sub>2</sub>、u<sub>4</sub> = 4u<sub>1</sub> − 2u<sub>2</sub>），dim U = 2。</li><li>W 同樣列化簡，秩 = 2，dim W = 2。</li><li>8 個向量一起列化簡，秩 = 3，dim(U + W) = 3。</li></ul><p>dim(U ∩ W) = 2 + 2 − 3 = <b>1</b>，選 (B)。程式（sympy rank）驗證三個秩分別為 2、2、3。</p><p>常見錯誤：看到各 4 個向量就以為 dim U = dim W = 4，得到負數或 3。一定要先化簡求真正的維度。</p>"
+    },
+    {
+      "id": "la-0064",
+      "topics": [
+        "markov-chains",
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "（第 6～11 題可能有多個答案，全部選對才給分）Given A = [[3/5, 2/5], [2/5, 3/5]] and x = [2, 0]<sup>T</sup>. If lim<sub>n→∞</sub> A<sup>n</sup>x = [a, b]<sup>T</sup>, what is 2a + b?",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>A 對稱、每行加起來是 1，是 <span class=\"term\">Markov matrix<small>（馬可夫矩陣）</small></span>。特徵值：λ = 1（特徵向量 (1, 1)）和 λ = 3/5 − 2/5 = 1/5（特徵向量 (1, −1)）。</p><p>把 x 拆開：(2, 0) = 1·(1, 1) + 1·(1, −1)。所以 A<sup>n</sup>x = (1, 1) + (1/5)<sup>n</sup>(1, −1)，n → ∞ 時 (1/5)<sup>n</sup> → 0，極限是 (1, 1)。</p><p>a = b = 1，2a + b = <b>3</b>，選 (D)。程式算 A<sup>200</sup>x ≈ (1.0000, 1.0000)。</p><p>直覺：Markov 過程總量守恆（2 + 0 = 2），對稱的轉移最後會平分成 1 和 1。</p>"
+    },
+    {
+      "id": "la-0065",
+      "topics": [
+        "matrix-representation",
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "（第 6～11 題可能有多個答案，全部選對才給分）Given a linear transformation T: P<sub>2</sub>(R) → P<sub>2</sub>(R) defined by T(f(x)) = f″(x) + 2f′(x) − f(x), where P<sub>2</sub>(R) represents the real-valued 2<sup>nd</sup>-order polynomials. Assume M is the matrix representation of T with respect to the ordered basis. Please find the determinant of (M<sup>−1</sup> + 2I), where I is the identity matrix with the same dimension as M.",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>題目沒寫是哪組有序基底，取標準基底 {1, x, x²}（行列式和基底無關，因為換基底只是相似變換）。</p><ul><li>T(1) = −1</li><li>T(x) = 2 − x</li><li>T(x²) = 2 + 4x − x²</li></ul><p>M = [[−1, 2, 2], [0, −1, 4], [0, 0, −1]]，上三角、對角線全是 −1，所以 M 的特徵值都是 −1，M<sup>−1</sup> 的特徵值都是 1/(−1) = −1，M<sup>−1</sup> + 2I 的特徵值都是 −1 + 2 = 1。</p><p>det(M<sup>−1</sup> + 2I) = 1 × 1 × 1 = <b>1</b>，選 (B)。程式直接算出 1。</p>"
+    },
+    {
+      "id": "la-0066",
+      "topics": [
+        "matrix-algebra",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "（第 6～11 題可能有多個答案，全部選對才給分）Assume that A, B, and C are n × n matrices.",
+      "choices": [
+        "(A) trace((A+B)C) = trace(AC) + trace(BC)",
+        "(B) trace(AB) = trace(A)trace(B)",
+        "(C) trace(AB) = trace(BA)",
+        "(D) Given a 2 × 2 matrix, [[a, b + c], [b − c, −a]] with trace zero has real eigenvalues if a² + b² ≥ c².",
+        "(E) Suppose a 2 × 2 matrix other than the identity matrix satisfies A³ = I. Then we have trace(A) = 1."
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<p><b>(A) 對</b>：(A + B)C = AC + BC，trace 是線性的。</p><p><b>(B) 錯</b>：反例 A = B = I<sub>2</sub>，trace(AB) = 2，trace(A)trace(B) = 4。</p><p><b>(C) 對</b>：trace(AB) = Σ<sub>i</sub>Σ<sub>j</sub> a<sub>ij</sub>b<sub>ji</sub> = trace(BA)。</p><p><b>(D) 對</b>：特徵多項式 λ² − [−a² − (b + c)(b − c)] = λ² − (a² + b² − c²)，λ = ±√(a² + b² − c²)，a² + b² ≥ c² 時是實數（程式算 charpoly 確認）。</p><p><b>(E) 錯</b>：A³ = I 代表最小多項式整除 x³ − 1 = (x − 1)(x² + x + 1)，根相異所以 A 可對角化，特徵值是 1、ω、ω̄ 之中。若 A 是實矩陣且 A ≠ I，特徵值只能是 {ω, ω̄}，trace = ω + ω̄ = −1，不是 1。例如旋轉 120° 的矩陣 trace = 2cos120° = −1。</p>"
+    },
+    {
+      "id": "la-0067",
+      "topics": [
+        "symmetric-matrices",
+        "basis-dimension"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "（第 6～11 題可能有多個答案，全部選對才給分）Let S, D, and Q ∈ M<sub>n</sub>(R) represent a symmetric matrix, a diagonal matrix and an orthogonal matrix. Assume that their degree of freedom are d<sub>S</sub>, d<sub>D</sub> and d<sub>Q</sub>, respectively. Find the value of d<sub>S</sub> − d<sub>D</sub> − d<sub>Q</sub>.",
+      "choices": [
+        "(A) 0",
+        "(B) 1",
+        "(C) 2",
+        "(D) 3",
+        "(E) 4"
+      ],
+      "answer": "(A)",
+      "explanation": "<ul><li>對稱矩陣：上三角（含對角線）可自由選，d<sub>S</sub> = n(n + 1)/2。</li><li>對角矩陣：d<sub>D</sub> = n。</li><li>正交矩陣：n² 個元素要滿足 Q<sup>T</sup>Q = I，這是對稱的方程組，共 n(n + 1)/2 條獨立限制，所以 d<sub>Q</sub> = n² − n(n + 1)/2 = n(n − 1)/2（例如 n = 2 時只有旋轉角 1 個自由度）。</li></ul><p>d<sub>S</sub> − d<sub>D</sub> − d<sub>Q</sub> = n(n + 1)/2 − n − n(n − 1)/2 = n − n = <b>0</b>，選 (A)。</p><p>這其實就是 <span class=\"term\">Spectral theorem<small>（譜定理）</small></span> S = QDQ<sup>T</sup> 的自由度平衡：對稱矩陣的自由度剛好 = 特徵值（D）+ 特徵向量方向（Q）。</p>"
+    },
+    {
+      "id": "la-0068",
+      "topics": [
+        "symmetric-matrices",
+        "positive-definite",
+        "diagonalization",
+        "rank-nullity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "（第 6～11 題可能有多個答案，全部選對才給分）Let A ∈ M<sub>n×n</sub>, which of the following statements are true?",
+      "choices": [
+        "(A) The nullspace of A is the same as the nullspace of A<sup>T</sup>A.",
+        "(B) If A is orthogonal, A + (1/2)I is invertible.",
+        "(C) If A has fewer than n distinct eigenvalues, then A is not diagonalizable.",
+        "(D) If A = A<sup>T</sup>, then its eigenvalues are real and eigenvectors are orthogonal.",
+        "(E) If A is positive definite, we can always find a nonsingular U such that A = U²."
+      ],
+      "answer": "(A)(B)(E)（(D) 依解讀可能也算對，待確認）",
+      "explanation": "<p><b>(A) 對</b>：Ax = 0 ⇒ A<sup>T</sup>Ax = 0；反過來 A<sup>T</sup>Ax = 0 ⇒ x<sup>T</sup>A<sup>T</sup>Ax = ‖Ax‖² = 0 ⇒ Ax = 0（題目預設實矩陣）。</p><p><b>(B) 對</b>：正交矩陣保長度，特徵值的絕對值都是 1，所以 −1/2 不是特徵值，A + (1/2)I 的行列式不為 0。</p><p><b>(C) 錯</b>：反例 I<sub>n</sub> 只有 1 個相異特徵值，但本身就是對角矩陣。</p><p><b>(D) 有爭議（待確認）</b>：實對稱矩陣特徵值都是實數；「不同特徵值的特徵向量互相正交」也對，但同一個特徵空間裡的特徵向量不一定正交（例如 A = I，(1, 0) 和 (1, 1) 都是特徵向量卻不正交），只能說「可以選出」一組正交的特徵向量。嚴格解讀是錯，若出題者的意思是「可以找到正交特徵向量」則算對。</p><p><b>(E) 對</b>：A = QΛQ<sup>T</sup>，Λ 對角線全正，取 U = QΛ<sup>1/2</sup>Q<sup>T</sup>（正定的平方根），U² = A 且 U 可逆。</p>"
+    },
+    {
+      "id": "la-0069",
+      "topics": [
+        "symmetric-matrices",
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "（第 6～11 題可能有多個答案，全部選對才給分）Let T be a self-adjoint operator on a finite-dimensional inner product space V with distinct eigenvalues λ<sub>1</sub>, λ<sub>2</sub>, …, λ<sub>k</sub>. Let E<sub>i</sub> be the eigenspace of T corresponding to λ<sub>i</sub>, and let T<sub>i</sub> be the orthogonal projection of V on E<sub>i</sub>, 1 ≤ i ≤ k.",
+      "choices": [
+        "(A) Σ<sub>i=1</sub><sup>k</sup> λ<sub>i</sub>T<sub>i</sub> = T",
+        "(B) V = E<sub>1</sub> ⊕ E<sub>2</sub> ⊕ … ⊕ E<sub>k</sub>",
+        "(C) Given any polynomial g, g(T) = g(λ<sub>1</sub>)T<sub>1</sub> + g(λ<sub>2</sub>)T<sub>2</sub> + ⋯ + g(λ<sub>k</sub>)T<sub>k</sub>.",
+        "(D) λ<sub>1</sub>, λ<sub>2</sub>, …, λ<sub>k</sub> are all real numbers.",
+        "(E) If T(x) = Ax, where x ∈ ℂ<sup>n</sup>, then A is diagonalizable."
+      ],
+      "answer": "(A)(B)(C)(D)(E)",
+      "explanation": "<p>這題整個在考 <span class=\"term\">Spectral theorem<small>（譜定理）</small></span>的 spectral decomposition。</p><ul><li><b>(D) 對</b>：Tv = λv、v ≠ 0 時，λ⟨v, v⟩ = ⟨Tv, v⟩ = ⟨v, Tv⟩ = λ̄⟨v, v⟩，所以 λ = λ̄ 是實數。</li><li><b>(B) 對</b>：self-adjoint 算子有由特徵向量組成的正交規範基底，所以 V 是各特徵空間的（正交）直和。</li><li><b>(A) 對</b>：任何 v = Σ T<sub>i</sub>v（由 (B)），Tv = Σ λ<sub>i</sub>T<sub>i</sub>v。</li><li><b>(C) 對</b>：T<sub>i</sub>T<sub>j</sub> = 0（i ≠ j）、T<sub>i</sub>² = T<sub>i</sub>，所以 T<sup>m</sup> = Σ λ<sub>i</sub><sup>m</sup>T<sub>i</sub>，再線性組合就得到 g(T) = Σ g(λ<sub>i</sub>)T<sub>i</sub>。</li><li><b>(E) 對</b>：T 是 self-adjoint，有一組特徵向量基底，所以 A（T 在標準基底下的矩陣）相似於對角矩陣。</li></ul><p>五個全選。</p>"
+    },
+    {
+      "id": "la-0070",
+      "topics": [
+        "orthogonal-subspaces",
+        "matrix-inverse",
+        "linear-independence",
+        "rank-nullity",
+        "gaussian-elimination"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "True or false: NO need to justify your answer. No credit for unanswered questions. Incorrect answers will deduct the credit until zero point is earned in this section.（每小題 correct: 1; incorrect: −1; unanswered: 0）<br>(a) For any square real matrix A, A<sup>T</sup> + A is always symmetric.<br>(b) For a square real matrix A, if Ax = 0 has a non-zero solution, then A is invertible.<br>(c) {(0, 0, 0)} is the orthogonal complement of R³ in R³.<br>(d) Let A be a m × n real matrix, where m &lt; n, with full row rank. Ax = b has either 0 or 1 solution.<br>(e) Let v be a vector in S and u be a vector such that &lt;u, v&gt; = 0, then u ∈ S<sup>⊥</sup>.<br>(f) Let A be a symmetric matrix. C(A<sup>T</sup>) and N(A<sup>T</sup>) are orthogonal complement.<br>(g) Let u<sub>1</sub>, …, u<sub>n</sub> be linearly dependent. Then u<sub>1</sub>, …, u<sub>n−1</sub> are linearly dependent.<br>(h) Let U be a subspace of a vector space V. Then (U<sup>⊥</sup>)<sup>⊥</sup> = U.<br>(i) The null space of A is equal to the column space of A<sup>T</sup>A.<br>(j) Let A and B be n × n real matrices. Then, rank(AB) ≤ min(rank(A), rank(B))",
+      "answer": "(a) T (b) F (c) T (d) F (e) F (f) T (g) F (h) T（有限維；待確認） (i) F (j) T",
+      "explanation": "<ul><li><b>(a) T</b>：(A<sup>T</sup> + A)<sup>T</sup> = A + A<sup>T</sup>。</li><li><b>(b) F</b>：Ax = 0 有非零解代表 N(A) ≠ {0}，A 不可逆，剛好相反。</li><li><b>(c) T</b>：和 R³ 每個向量都正交的向量 x 必須滿足 x·x = 0，只有零向量。</li><li><b>(d) F</b>：m &lt; n 且 full row rank（rank = m），C(A) = R<sup>m</sup>，所以每個 b 都有解；又有 n − m ≥ 1 個自由變數，解有無限多個。</li><li><b>(e) F</b>：u 只和 S 中「某一個」向量 v 正交，S<sup>⊥</sup> 要求和 S 中「所有」向量正交。</li><li><b>(f) T</b>：一般而言 C(A<sup>T</sup>)（列空間）的正交補是 N(A)；A 對稱時 N(A<sup>T</sup>) = N(A)，所以 C(A<sup>T</sup>) 與 N(A<sup>T</sup>) 互為正交補。</li><li><b>(g) F</b>：反例 u<sub>1</sub> = (1, 0)、u<sub>2</sub> = (0, 0)。整組相依，但拿掉 u<sub>2</sub> 後只剩 u<sub>1</sub>，是獨立的。（反方向才成立：子集相依 ⇒ 整組相依。）</li><li><b>(h) T</b>：在有限維內積空間中 (U<sup>⊥</sup>)<sup>⊥</sup> = U（因為 U ⊆ (U<sup>⊥</sup>)<sup>⊥</sup> 且維度相同）。（待確認）題目沒寫有限維；無限維空間中 (U<sup>⊥</sup>)<sup>⊥</sup> 是 U 的閉包，不一定等於 U，考研情境一般預設有限維，所以答 T。</li><li><b>(i) F</b>：正確的是 N(A) = N(A<sup>T</sup>A)，以及 C(A<sup>T</sup>A) = C(A<sup>T</sup>)。N(A) 反而是 C(A<sup>T</sup>) 的正交補。</li><li><b>(j) T</b>：C(AB) ⊆ C(A) 得 rank(AB) ≤ rank(A)；列空間 R(AB) ⊆ R(B) 得 rank(AB) ≤ rank(B)。</li></ul>"
+    },
+    {
+      "id": "la-0071",
+      "topics": [
+        "orthogonal-subspaces"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "9-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "（correct: 3; incorrect: −1; unanswered: 0）Let W be a subspace of R<sup>n</sup> and W<sup>⊥</sup> denotes its orthogonal complement. If W<sub>1</sub> is a subspace of R<sup>n</sup> such that x ∈ W<sub>1</sub>, then x<sup>T</sup>u = 0 for all u ∈ W<sup>⊥</sup>. Justify whether the following statements are true or false.<br>(i) dim(W<sub>1</sub><sup>⊥</sup>) ≤ dim(W<sup>⊥</sup>)<br>(ii) dim(W<sub>1</sub><sup>⊥</sup>) ≤ dim(W)<br>(iii) dim(W<sub>1</sub><sup>⊥</sup>) ≥ dim(W)<br>(iv) dim(W<sub>1</sub><sup>⊥</sup>) ≥ dim(W<sup>⊥</sup>)",
+      "answer": "(i) F (ii) F (iii) F (iv) T",
+      "explanation": "<p>條件「W<sub>1</sub> 的每個 x 都和 W<sup>⊥</sup> 正交」代表 W<sub>1</sub> ⊆ (W<sup>⊥</sup>)<sup>⊥</sup> = W。</p><p>所以 dim W<sub>1</sub> ≤ dim W，取正交補後大小關係反過來：dim W<sub>1</sub><sup>⊥</sup> = n − dim W<sub>1</sub> ≥ n − dim W = dim W<sup>⊥</sup>。</p><ul><li><b>(iv) T</b>：就是上面推出的結論。</li><li><b>(i) F</b>：方向反了；例如 W<sub>1</sub> = {0}、W = R<sup>n</sup>，左邊 n、右邊 0。</li><li><b>(ii) F</b>：W<sub>1</sub><sup>⊥</sup> 和 W 沒有必然大小關係。反例 n = 3、W 為 1 維直線、W<sub>1</sub> = {0}：dim W<sub>1</sub><sup>⊥</sup> = 3 &gt; 1。</li><li><b>(iii) F</b>：反例 n = 3、W = W<sub>1</sub> = R³：dim W<sub>1</sub><sup>⊥</sup> = 0 &lt; 3。</li></ul>"
+    },
+    {
+      "id": "la-0072",
+      "topics": [
+        "least-squares",
+        "rank-nullity"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "9-(b)",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "（correct: 3; incorrect: −1; unanswered: 0）Let A be a 7×5 matrix with rank(A) = 5. Justify whether the following statements are true or false.<br>(i) There exists at least one b ∈ R<sup>7</sup> such that Ax = b has infinite number of least square solutions.<br>(ii) For any b ∈ R<sup>7</sup>, Ax = b has infinite number of solution.<br>(iii) There exists at least one b ∈ R<sup>7</sup> such that Ax = b has a unique least square solution.<br>(iv) For any b ∈ R<sup>7</sup>, Ax = b has a unique solution.",
+      "answer": "(i) F (ii) F (iii) T (iv) F",
+      "explanation": "<p>rank(A) = 5 = 行數，代表 A 的 5 個行向量線性獨立，N(A) = {0}，A<sup>T</sup>A（5×5）可逆。</p><ul><li><b>(i) F</b>：<span class=\"term\">Normal equation<small>（正規方程式）</small></span> A<sup>T</sup>Ax = A<sup>T</sup>b 的係數矩陣可逆，任何 b 的最小平方解都唯一。</li><li><b>(ii) F</b>：C(A) 只是 R<sup>7</sup> 中的 5 維子空間，b 不在 C(A) 時無解；在 C(A) 時解也唯一（N(A) = {0}）。</li><li><b>(iii) T</b>：事實上每個 b 都有唯一的最小平方解 x̂ = (A<sup>T</sup>A)<sup>−1</sup>A<sup>T</sup>b，當然存在。</li><li><b>(iv) F</b>：b ∉ C(A) 時根本沒有（精確）解。</li></ul>"
+    },
+    {
+      "id": "la-0073",
+      "topics": [
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "9-(c)",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "（correct: 3; incorrect: −1; unanswered: 0）Let B̂ = [(i), (ii)]<sup>T</sup> ∈ R² be the least-squares solution that minimize ‖Y − XB‖² where X = [[2, 0], [−1, 1], [0, 2]]（依列列出）and Y = [−1, 0, 1]<sup>T</sup>. Find the value for (i) and (ii).",
+      "answer": "(i) = −1/3，(ii) = 1/3",
+      "explanation": "<p>解正規方程式 X<sup>T</sup>X B̂ = X<sup>T</sup>Y：</p><ul><li>X<sup>T</sup>X = [[4 + 1 + 0, 0 − 1 + 0], [−1, 0 + 1 + 4]] = [[5, −1], [−1, 5]]</li><li>X<sup>T</sup>Y = [2·(−1) + (−1)·0 + 0·1, 0·(−1) + 1·0 + 2·1] = [−2, 2]</li></ul><p>5b<sub>1</sub> − b<sub>2</sub> = −2、−b<sub>1</sub> + 5b<sub>2</sub> = 2。兩式相加：4(b<sub>1</sub> + b<sub>2</sub>) = 0 → b<sub>2</sub> = −b<sub>1</sub>，代回 6b<sub>1</sub> = −2 → b<sub>1</sub> = −1/3、b<sub>2</sub> = 1/3。</p><p>答案 (i) = <b>−1/3</b>、(ii) = <b>1/3</b>，程式算 (X<sup>T</sup>X)<sup>−1</sup>X<sup>T</sup>Y 相同。</p>"
+    },
+    {
+      "id": "la-0074",
+      "topics": [
+        "inner-product-projection",
+        "orthogonal-subspaces"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "9-(e)",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "（correct: 3; incorrect: −1; unanswered: 0）Let [(i), (ii), (iii)]<sup>T</sup> be the closest point to y in the subspace W spanned by u<sub>1</sub> and u<sub>2</sub>, where y = [12, −1, 2]<sup>T</sup>, u<sub>1</sub> = [−1, 0, 1]<sup>T</sup>, u<sub>2</sub> = [2, 1, 2]<sup>T</sup>. Find the value for (i), (ii), and (iii).",
+      "answer": "(i) = 11，(ii) = 3，(iii) = 1",
+      "explanation": "<p>最近點就是 y 在 W 上的正交投影。先檢查 u<sub>1</sub>·u<sub>2</sub> = −2 + 0 + 2 = 0，兩者正交，可以分別投影再相加：</p><ul><li>(y·u<sub>1</sub>)/(u<sub>1</sub>·u<sub>1</sub>) = (−12 + 0 + 2)/2 = −5 → −5u<sub>1</sub> = (5, 0, −5)</li><li>(y·u<sub>2</sub>)/(u<sub>2</sub>·u<sub>2</sub>) = (24 − 1 + 4)/9 = 3 → 3u<sub>2</sub> = (6, 3, 6)</li></ul><p>相加得 ŷ = (<b>11, 3, 1</b>)。檢查 y − ŷ = (1, −4, 1)，和 u<sub>1</sub>、u<sub>2</sub> 的內積都是 0，確實正交於 W。程式用 W(W<sup>T</sup>W)<sup>−1</sup>W<sup>T</sup>y 算出相同結果。</p><p>常見錯誤：u<sub>1</sub>、u<sub>2</sub> 不正交時不能分開投影再相加，這題剛好正交才能這樣做。</p>"
+    },
+    {
+      "id": "la-0075",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "10-a",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Determine.<br>(i) True (T) or false (F): If A is an invertible matrix, then det(A<sup>−1</sup>) = [det(A)]<sup>−1</sup>.<br>(ii) True (T) or false (F): If M is an n×n matrix and can be written in the form M = [[A, B], [O, C]], where A, B, C, O are square matrices, and O is all zero matrix. Then det(M) = det(A) · det(C).<br>(iii) Find the determinant of the following matrix:<br>[[2, 0, −1, 1, 3], [0, −1, 0, −2, 0], [2, 1, 4, 0, 3], [2, −1, −1, −3, 3], [0, 2, 0, 3, 1]]（依列列出）.",
+      "answer": "(i) T (ii) T (iii) 20",
+      "explanation": "<p><b>(i) T</b>：det(A)det(A<sup>−1</sup>) = det(AA<sup>−1</sup>) = det(I) = 1。</p><p><b>(ii) T</b>：區塊上三角矩陣的行列式等於對角區塊行列式相乘（A、C 為方陣即可）。</p><p><b>(iii)</b>：用列運算化簡。R3 − R1、R4 − R1：</p><pre class=\"formula\">[2  0 -1  1  3]\n[0 -1  0 -2  0]\n[0  1  5 -1  0]\n[0 -1  0 -4  0]\n[0  2  0  3  1]</pre><p>沿第 1 行展開得 2 × det 4×4 [[−1, 0, −2, 0], [1, 5, −1, 0], [−1, 0, −4, 0], [2, 0, 3, 1]]。第 4 行只有右下角是 1，沿第 4 行展開得 1 × det [[−1, 0, −2], [1, 5, −1], [−1, 0, −4]]；再沿第 2 行展開得 5 × det [[−1, −2], [−1, −4]] = 5 × (4 − 2) = 10。</p><p>總共 2 × 10 = <b>20</b>，程式驗算 det = 20。</p>"
+    },
+    {
+      "id": "la-0076",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "linear-independence"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "10-c",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Prove <b>generally</b> that eigenvectors of an n×n matrix corresponding to distinct eigenvalues are linearly independent. Notice that the number of distinct eigenvalues k is not necessarily equal to n (i.e. a general case with k ≤ n). (Please leave it blank if you don't know the correct answer, or you will get at most minus 5 points for the wrong answer. 不會寫請留白，答錯最多倒扣 5 分，扣至本題組 0 分為止。)",
+      "answer": "對 k 做數學歸納法（或反證取最短相依關係），利用 (A − λ<sub>k</sub>I) 消去最後一項。",
+      "explanation": "<p>設 λ<sub>1</sub>, …, λ<sub>k</sub> 是 A 的相異特徵值，v<sub>i</sub> ≠ 0 且 Av<sub>i</sub> = λ<sub>i</sub>v<sub>i</sub>。證明 {v<sub>1</sub>, …, v<sub>k</sub>} 線性獨立。</p><p><b>對 k 歸納</b>。k = 1：v<sub>1</sub> ≠ 0，自己就線性獨立。</p><p>假設 k − 1 個時成立。設</p><pre class=\"formula\">c1 v1 + c2 v2 + ... + ck vk = 0      (1)</pre><p>兩邊左乘 A：c<sub>1</sub>λ<sub>1</sub>v<sub>1</sub> + ⋯ + c<sub>k</sub>λ<sub>k</sub>v<sub>k</sub> = 0 (2)。(1) 乘 λ<sub>k</sub> 再和 (2) 相減：</p><pre class=\"formula\">c1(λ1 - λk)v1 + ... + c_{k-1}(λ_{k-1} - λk)v_{k-1} = 0</pre><p>由歸納假設 v<sub>1</sub>, …, v<sub>k−1</sub> 獨立，所以 c<sub>i</sub>(λ<sub>i</sub> − λ<sub>k</sub>) = 0；特徵值相異，λ<sub>i</sub> − λ<sub>k</sub> ≠ 0，得 c<sub>1</sub> = ⋯ = c<sub>k−1</sub> = 0。代回 (1)：c<sub>k</sub>v<sub>k</sub> = 0，v<sub>k</sub> ≠ 0 所以 c<sub>k</sub> = 0。全部係數為 0，得證。</p><p>這個證明從頭到尾沒用到 k = n，所以 k ≤ n 的一般情況都成立（題目要求的 generally）。</p><p>常見錯誤：只證 k = 2 就說「同理可得」，或直接假設 A 可對角化（那是要證的結論的應用，不是前提）。</p>"
+    },
+    {
+      "id": "la-0077",
+      "topics": [
+        "inner-product-projection",
+        "orthogonal-subspaces"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "6-a",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Project the vector b onto the nullspace of A, where b = [−3, −2, 1, 2, 1]<sup>T</sup> and A = [[1, 2, 1, 0, 0], [2, 5, 1, 1, 0], [3, 7, 2, 2, −2], [4, 9, 3, −1, 4]]（依列列出）.",
+      "answer": "proj<sub>N(A)</sub>b = [−2, 0, 2, 2, 1]<sup>T</sup>",
+      "explanation": "<p><b>1. 求 N(A)</b>：列化簡後 rank(A) = 3，有 5 − 3 = 2 個自由變數，基底可取</p><pre class=\"formula\">n1 = (-3, 1, 1, 0, 0),   n2 = (4, -2, 0, 2, 1)</pre><p>（代回檢查 An<sub>1</sub> = An<sub>2</sub> = 0。）</p><p><b>2. 投影</b>：n<sub>1</sub>、n<sub>2</sub> 不正交（n<sub>1</sub>·n<sub>2</sub> = −14），要用 p = N(N<sup>T</sup>N)<sup>−1</sup>N<sup>T</sup>b，N = [n<sub>1</sub> n<sub>2</sub>]：</p><ul><li>N<sup>T</sup>N = [[11, −14], [−14, 25]]，N<sup>T</sup>b = [9 − 2 + 1, −12 + 4 + 4 + 1] = [8, −3]</li><li>解 [[11, −14], [−14, 25]]c = [8, −3]：det = 275 − 196 = 79，用 Cramer 法則：c<sub>1</sub> = (25·8 − (−14)(−3))/79 = 158/79 = 2，c<sub>2</sub> = (11·(−3) − (−14)·8)/79 = 79/79 = 1</li></ul><p>p = 2n<sub>1</sub> + 1·n<sub>2</sub> = (−6 + 4, 2 − 2, 2, 2, 1) = <b>(−2, 0, 2, 2, 1)</b>。</p><p><b>檢查</b>：Ap = 0（p 在零空間裡）；b − p = (−1, −2, −1, 0, 0) 和 n<sub>1</sub>、n<sub>2</sub> 內積都是 0（誤差落在列空間）。程式驗算一致。</p><p>另一種做法：b − p 是 b 在列空間 C(A<sup>T</sup>) 上的投影；這題 b − p = (−1, −2, −1, 0, 0) 剛好是 A 第 1 列的 −1 倍。</p>"
+    },
+    {
+      "id": "la-0078",
+      "topics": [
+        "gram-schmidt",
+        "orthogonal-subspaces"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "6-b",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Orthogonal Bases.<br>(i) Apply the Gram-Schmidt process (<b>Requirement: you must process following the column order</b>, i.e. first column first, then second column, etc. <b>or you will get zero point</b>) to obtain orthonormal vectors from the columns of A = [[1, 4, −2, 2], [2, 1, 3, 2], [−1, 0, −2, 0], [0, 1, −1, 8]]（依列列出）.<br>(ii) As we known, the orthonormal vectors obtained from (i) cannot span R⁴. We can add some additional orthonormal vectors to those obtained from (i) and the new set of orthonormal vectors will span R⁴, and what are the additional orthonormal vectors?",
+      "answer": "(i) q<sub>1</sub> = (1, 2, −1, 0)/√6，q<sub>2</sub> = (3, −1, 1, 1)/(2√3)，第 3 行化為 0 向量（捨去），q<sub>3</sub> = (−2, 1, 0, 7)/(3√6)。(ii) q<sub>4</sub> = ±(1, −5, −9, 1)/(6√3)",
+      "explanation": "<p>記 A 的行為 a<sub>1</sub> = (1, 2, −1, 0)、a<sub>2</sub> = (4, 1, 0, 1)、a<sub>3</sub> = (−2, 3, −2, −1)、a<sub>4</sub> = (2, 2, 0, 8)。</p><p><b>第 1 行</b>：‖a<sub>1</sub>‖ = √6，q<sub>1</sub> = (1, 2, −1, 0)/√6。</p><p><b>第 2 行</b>：a<sub>2</sub>·q<sub>1</sub> = (4 + 2)/√6 = 6/√6，v<sub>2</sub> = a<sub>2</sub> − (6/6)a<sub>1</sub> = (3, −1, 1, 1)，‖v<sub>2</sub>‖ = √12 = 2√3，q<sub>2</sub> = (3, −1, 1, 1)/(2√3)。</p><p><b>第 3 行</b>：a<sub>3</sub>·a<sub>1</sub> = −2 + 6 + 2 = 6 → 係數 6/6 = 1；a<sub>3</sub>·v<sub>2</sub> = −6 − 3 − 2 − 1 = −12 → 係數 −12/12 = −1。v<sub>3</sub> = a<sub>3</sub> − a<sub>1</sub> + v<sub>2</sub> = (0, 0, 0, 0)。a<sub>3</sub> 落在前兩行的生成空間裡（線性相依），不產生新向量，這也是題目說「cannot span R⁴」的原因（rank(A) = 3）。</p><p><b>第 4 行</b>：a<sub>4</sub>·a<sub>1</sub> = 2 + 4 = 6 → 係數 1；a<sub>4</sub>·v<sub>2</sub> = 6 − 2 + 0 + 8 = 12 → 係數 1。v<sub>4</sub> = a<sub>4</sub> − a<sub>1</sub> − v<sub>2</sub> = (−2, 1, 0, 7)，‖v<sub>4</sub>‖ = √54 = 3√6，q<sub>3</sub> = (−2, 1, 0, 7)/(3√6)。</p><p><b>(ii)</b> 補一個和 q<sub>1</sub>、q<sub>2</sub>、q<sub>3</sub> 都正交的單位向量，即求 x 滿足 x·(1, 2, −1, 0) = x·(3, −1, 1, 1) = x·(−2, 1, 0, 7) = 0，解得 x ∝ (1, −5, −9, 1)，長度 √108 = 6√3，所以 q<sub>4</sub> = ±(1, −5, −9, 1)/(6√3)。</p><p>程式照行順序跑 Gram-Schmidt 得到相同的 q<sub>1</sub>、q<sub>2</sub>、q<sub>3</sub>，第 3 行的殘差恰為零向量；正交補空間也算出 (1, −5, −9, 1) 方向。</p>"
+    },
+    {
+      "id": "la-0079",
+      "topics": [
+        "rank-nullity",
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "6-c",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Let A be an m by n matrix. Show that nullspace N(A<sup>T</sup>A) = N(A). (Please leave it blank if you don't know the correct answer, or you will get at most minus 5 points for the wrong answer. 不會寫請留白，答錯最多倒扣 5 分，扣至本題組 0 分為止。)",
+      "answer": "兩邊互相包含：Ax = 0 ⇒ A<sup>T</sup>Ax = 0；A<sup>T</sup>Ax = 0 ⇒ ‖Ax‖² = x<sup>T</sup>A<sup>T</sup>Ax = 0 ⇒ Ax = 0。",
+      "explanation": "<p>證明集合相等，要兩個方向都證（A 為實矩陣）。</p><p><b>N(A) ⊆ N(A<sup>T</sup>A)</b>：若 Ax = 0，則 A<sup>T</sup>Ax = A<sup>T</sup>0 = 0。</p><p><b>N(A<sup>T</sup>A) ⊆ N(A)</b>：若 A<sup>T</sup>Ax = 0，兩邊左乘 x<sup>T</sup>：</p><pre class=\"formula\">0 = x^T A^T A x = (Ax)^T (Ax) = ||Ax||^2</pre><p>向量長度平方為 0 只有零向量，所以 Ax = 0。</p><p>兩個方向都成立，N(A<sup>T</sup>A) = N(A)。</p><p>推論：rank(A<sup>T</sup>A) = n − dim N(A<sup>T</sup>A) = n − dim N(A) = rank(A)，所以 A 的行獨立時 A<sup>T</sup>A 可逆，最小平方解唯一。</p><p>常見錯誤：第二個方向寫「A<sup>T</sup>Ax = 0，兩邊乘 (A<sup>T</sup>)<sup>−1</sup>」——A<sup>T</sup> 一般不是方陣、不可逆，這步不成立。複數矩陣時要改用 A<sup>*</sup>A 才對。</p>"
+    },
+    {
+      "id": "la-0080",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "a. Let B = [[1, −1, 0, 2], [0, 0, 3, 3], [2, 1, 0, 0], [1, 1, 2, 2]]（依列列出）. Compute det(B).<br>b. Let Q be an orthogonal matrix. Show that det(Q) is either 1 or −1.（不會寫請留白，答錯最多倒扣 2 分，扣至本題組 0 分為止。）",
+      "answer": "a. det(B) = −6　b. det(Q)² = det(Q<sup>T</sup>Q) = det(I) = 1，所以 det(Q) = ±1。",
+      "explanation": "<p><b>a.</b> 先做行運算：C4 − C3（第 4 行減第 3 行），行列式不變：</p><pre class=\"formula\">[1 -1  0  2]\n[0  0  3  0]\n[2  1  0  0]\n[1  1  2  0]</pre><p>第 2 列只剩 (2, 3) 位置的 3，沿第 2 列展開，符號 (−1)<sup>2+3</sup> = −1：det = −3 · det [[1, −1, 2], [2, 1, 0], [1, 1, 0]]。</p><p>3×3 沿第 3 行展開：只有右上角 2，符號 (−1)<sup>1+3</sup> = +1，得 2 · det [[2, 1], [1, 1]] = 2 · (2 − 1) = 2。</p><p>det(B) = −3 · 2 = <b>−6</b>，程式驗算一致。</p><p><b>b.</b> Q 正交代表 Q<sup>T</sup>Q = I。兩邊取行列式：det(Q<sup>T</sup>)det(Q) = det(I) = 1，又 det(Q<sup>T</sup>) = det(Q)，所以 det(Q)² = 1，det(Q) = 1 或 −1。（幾何上 +1 是旋轉、−1 含有鏡射。）</p>"
+    },
+    {
+      "id": "la-0081",
+      "topics": [
+        "diagonalization",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Let A = [[4, −1], [6, −1]], B = [[1, 1, 1], [0, 1, 0], [0, 0.5, 1.5]], and C = [[4, −4.5], [2, −2]]（依列列出）.<br>a. Check the diagonalizability of each of the above matrices. If it is diagonalizable, please diagonalize it; otherwise, clearly explain why it is not.<br>b. Find A<sup>8</sup> and A<sup>∞</sup>.<br>c. Find det(B + 6I<sub>3</sub>) using eigenvalues.",
+      "answer": "a. A = PDP<sup>−1</sup>，P = [[1, 1], [3, 2]]，D = diag(1, 2)；B = PDP<sup>−1</sup>，P = [[1, 0, 2], [0, −1, 0], [0, 1, 1]]，D = diag(1, 1, 3/2)；C 不可對角化（λ = 1 二重根但特徵空間只有 1 維）。b. A<sup>8</sup> = [[766, −255], [1530, −509]]，A<sup>∞</sup> 不收斂（發散）。c. det(B + 6I) = 7 · 7 · 7.5 = 367.5",
+      "explanation": "<p><b>A</b>：trace = 3、det = −4 + 6 = 2，λ² − 3λ + 2 = 0 → λ = 1, 2，兩個相異特徵值必可對角化。λ = 1：(A − I)v = 0 → [[3, −1], [6, −2]]，v = (1, 3)；λ = 2：[[2, −1], [6, −3]]，v = (1, 2)。P = [[1, 1], [3, 2]]、D = diag(1, 2)。</p><p><b>B</b>：按第 1 行展開，特徵多項式 (1 − λ)·[(1 − λ)(1.5 − λ) − 0] = (1 − λ)²(1.5 − λ)，λ = 1（二重）、1.5。</p><ul><li>λ = 1：B − I = [[0, 1, 1], [0, 0, 0], [0, 0.5, 0.5]]，rank 1，零空間 2 維：(1, 0, 0)、(0, −1, 1)。</li><li>λ = 1.5：B − 1.5I = [[−0.5, 1, 1], [0, −0.5, 0], [0, 0.5, 0]] → v = (2, 0, 1)。</li></ul><p>特徵向量共 3 個獨立，可對角化：P = [[1, 0, 2], [0, −1, 0], [0, 1, 1]]、D = diag(1, 1, 1.5)。</p><p><b>C</b>：trace = 2、det = −8 + 9 = 1，(λ − 1)² = 0，λ = 1 二重根。C − I = [[3, −4.5], [2, −3]] ≠ 0，rank 1，特徵空間只有 1 維（v = (3, 2)），幾何重數 1 &lt; 代數重數 2，<b>不可對角化</b>。</p><p><b>b.</b> A<sup>8</sup> = PD<sup>8</sup>P<sup>−1</sup>，P<sup>−1</sup> = (1/(2 − 3))[[2, −1], [−3, 1]] = [[−2, 1], [3, −1]]：</p><pre class=\"formula\">A^8 = [[1,1],[3,2]] · diag(1, 256) · [[-2,1],[3,-1]]\n    = [[-2 + 768, 1 - 256], [-6 + 1536, 3 - 512]]\n    = [[766, -255], [1530, -509]]</pre><p>A<sup>n</sup> = P·diag(1, 2<sup>n</sup>)·P<sup>−1</sup>，因為有特徵值 2 &gt; 1，2<sup>n</sup> → ∞，所以 A<sup>∞</sup> <b>不存在（元素發散）</b>。只有所有特徵值 |λ| &lt; 1（或等於 1 且可對角化）時極限才存在。</p><p><b>c.</b> B + 6I 的特徵值 = B 的特徵值 + 6 = 7, 7, 7.5，行列式是特徵值相乘：7 × 7 × 7.5 = <b>367.5</b>（= 735/2）。程式驗算三個矩陣的特徵向量、A<sup>8</sup> 與 det(B + 6I) 都一致。</p>"
+    },
+    {
+      "id": "la-0082",
+      "topics": [
+        "svd",
+        "orthogonal-subspaces"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Let A = [[6, 2, 2], [−2, 6, 2]]（依列列出）, and consider the singular value decomposition (SVD) A = UΣV<sup>T</sup>.<br>a. Find U, Σ, and V.<br>b. Find orthonormal bases for C(A<sup>T</sup>), N(A), C(A), and N(A<sup>T</sup>), respectively, from the results obtained from SVD.",
+      "answer": "a. U = (1/√2)[[1, 1], [1, −1]]，Σ = [[4√3, 0, 0], [0, 2√10, 0]]，V = [v<sub>1</sub> v<sub>2</sub> v<sub>3</sub>]，v<sub>1</sub> = (1, 2, 1)/√6，v<sub>2</sub> = (2, −1, 0)/√5，v<sub>3</sub> = (1, 2, −5)/√30。b. C(A<sup>T</sup>)：{v<sub>1</sub>, v<sub>2</sub>}；N(A)：{v<sub>3</sub>}；C(A)：{u<sub>1</sub>, u<sub>2</sub>}；N(A<sup>T</sup>) = {0}（基底為空集合）。",
+      "explanation": "<p><b>a.</b> A 是 2×3，先算比較小的 AA<sup>T</sup> = [[44, 4], [4, 44]]，特徵值 48（向量 (1, 1)）、40（向量 (1, −1)）。</p><p><span class=\"term\">Singular value<small>（奇異值）</small></span> σ<sub>1</sub> = √48 = 4√3、σ<sub>2</sub> = √40 = 2√10。u<sub>1</sub> = (1, 1)/√2、u<sub>2</sub> = (1, −1)/√2。</p><p>由 v<sub>i</sub> = A<sup>T</sup>u<sub>i</sub>/σ<sub>i</sub>：</p><ul><li>A<sup>T</sup>(1, 1)/√2 = (4, 8, 4)/√2，除以 4√3 → v<sub>1</sub> = (1, 2, 1)/√6</li><li>A<sup>T</sup>(1, −1)/√2 = (8, −4, 0)/√2，除以 2√10 → v<sub>2</sub> = (2, −1, 0)/√5</li></ul><p>v<sub>3</sub> 取 N(A) 的單位向量：解 Ax = 0 得 x ∝ (1, 2, −5)，v<sub>3</sub> = (1, 2, −5)/√30（也可用 A<sup>T</sup>A 的特徵值 0 求得）。</p><p>U = (1/√2)[[1, 1], [1, −1]]、Σ = [[4√3, 0, 0], [0, 2√10, 0]]（2×3）、V = [v<sub>1</sub> v<sub>2</sub> v<sub>3</sub>]。程式驗算 A<sup>T</sup>A 的特徵值為 48、40、0，特徵向量方向一致。</p><p><b>b.</b> SVD 直接給出四個基本子空間的正交基底（rank r = 2）：</p><ul><li>C(A<sup>T</sup>)（列空間）：V 的前 r 行 {v<sub>1</sub>, v<sub>2</sub>}</li><li>N(A)：V 的後 n − r 行 {v<sub>3</sub>}</li><li>C(A)（行空間）：U 的前 r 行 {u<sub>1</sub>, u<sub>2</sub>}，就是整個 R²</li><li>N(A<sup>T</sup>)：U 的後 m − r = 0 行，只有零向量，基底是空集合</li></ul><p>常見錯誤：u<sub>i</sub> 和 v<sub>i</sub> 各自獨立求特徵向量時正負號沒配對好，導致 UΣV<sup>T</sup> ≠ A。用 v<sub>i</sub> = A<sup>T</sup>u<sub>i</sub>/σ<sub>i</sub> 算就不會出錯。</p>"
+    },
+    {
+      "id": "la-0083",
+      "topics": [
+        "quadratic-forms",
+        "positive-definite"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "1-1",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "（第 1 題：Answer problems 1-1, 1-2, 1-3, and 1-4 independently.）Determine if the quadratic function f(x, y, z) = −x² − 5y² − 4z² − 2xy − 2yz − 2x − 4z − 5 has a maximum f<sub>max</sub> at (x, y, z) = (x*, y*, z*). If so, find:<br>(a) f<sub>max</sub>.<br>(b) (x*, y*, z*).",
+      "answer": "有最大值。(a) f<sub>max</sub> = −12/5　(b) (x*, y*, z*) = (−7/5, 2/5, −3/5)",
+      "explanation": "<p><b>判斷有沒有最大值</b>：二次部分寫成 −v<sup>T</sup>Mv，v = (x, y, z)：</p><pre class=\"formula\">M = [[1, 1, 0],\n     [1, 5, 1],\n     [0, 1, 4]]</pre><p>leading principal minors：1 &gt; 0、1·5 − 1 = 4 &gt; 0、det M = 1·(20 − 1) − 1·(4 − 0) = 15 &gt; 0，所以 M 是 <span class=\"term\">Positive definite<small>（正定）</small></span>，−M 負定，f 是開口向下的二次函數，有唯一最大值。</p><p><b>求臨界點</b>：令梯度為 0：</p><pre class=\"formula\">∂f/∂x = -2x - 2y - 2 = 0      =&gt;  x + y = -1\n∂f/∂y = -10y - 2x - 2z = 0    =&gt;  x + 5y + z = 0\n∂f/∂z = -8z - 2y - 4 = 0      =&gt;  y + 4z = -2</pre><p>由第 1 式 x = −1 − y、第 3 式 z = (−2 − y)/4，代入第 2 式：−1 − y + 5y + (−2 − y)/4 = 0 → 乘 4：−4 + 16y − 2 − y = 0 → y = 2/5。得 x = −7/5、z = −3/5。</p><p><b>(b)</b> (x*, y*, z*) = (−7/5, 2/5, −3/5)。</p><p><b>(a)</b> 二次函數 f = −v<sup>T</sup>Mv + c<sup>T</sup>v − 5 在臨界點的值 = (1/2)c<sup>T</sup>v* − 5，c = (−2, 0, −4)：(1/2)(14/5 + 12/5) − 5 = 13/5 − 5 = <b>−12/5</b>。程式直接代入也得 −12/5，Hessian（= −2M）特徵值全為負。</p>"
+    },
+    {
+      "id": "la-0084",
+      "topics": [
+        "gram-schmidt",
+        "inner-product-projection"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "1-2",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Prove that Q is an orthogonal matrix if ‖Qx‖ = ‖x‖ for all x ∈ R<sup>n</sup>.",
+      "answer": "令 M = Q<sup>T</sup>Q − I（對稱），條件給出 x<sup>T</sup>Mx = 0 對所有 x；取 x = e<sub>i</sub> 與 e<sub>i</sub> + e<sub>j</sub> 得 M = 0，即 Q<sup>T</sup>Q = I。",
+      "explanation": "<p>（Q 為 n × n 實矩陣。）條件 ‖Qx‖² = ‖x‖² 寫成 x<sup>T</sup>Q<sup>T</sup>Qx = x<sup>T</sup>x，也就是令 M = Q<sup>T</sup>Q − I，對所有 x 有</p><pre class=\"formula\">x^T M x = 0,    且 M^T = M</pre><ul><li>取 x = e<sub>i</sub>：m<sub>ii</sub> = 0。</li><li>取 x = e<sub>i</sub> + e<sub>j</sub>（i ≠ j）：m<sub>ii</sub> + m<sub>jj</sub> + m<sub>ij</sub> + m<sub>ji</sub> = 2m<sub>ij</sub> = 0（用到對稱），所以 m<sub>ij</sub> = 0。</li></ul><p>M 的每個元素都是 0，Q<sup>T</sup>Q = I，Q 是 <span class=\"term\">Orthogonal matrix<small>（正交矩陣）</small></span>。</p><p>另一種寫法用 <span class=\"term\">Polarization identity<small>（極化恆等式）</small></span>：⟨Qx, Qy⟩ = (‖Q(x + y)‖² − ‖Q(x − y)‖²)/4 = (‖x + y‖² − ‖x − y‖²)/4 = ⟨x, y⟩，取 x = e<sub>i</sub>、y = e<sub>j</sub> 就得到 Q 的行互相正交且長度 1。</p><p>常見漏洞：只由 x<sup>T</sup>Mx = 0 就直接說 M = 0，沒用到 M 對稱。非對稱矩陣（例如 [[0, 1], [−1, 0]]）也會讓 x<sup>T</sup>Mx 恆為 0，所以「M 對稱」這一步一定要寫。</p>"
+    },
+    {
+      "id": "la-0085",
+      "topics": [
+        "inner-product-projection",
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "1-3",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Let c = (1, 8, 9, 6)<sup>T</sup>. Find the vector w ∈ span{(1, 1, 1, 1)<sup>T</sup>} such that ‖w − c‖ is minimized.",
+      "answer": "w = (6, 6, 6, 6)<sup>T</sup>",
+      "explanation": "<p>離 c 最近的點就是 c 在這條直線上的正交投影，令 u = (1, 1, 1, 1)：</p><pre class=\"formula\">w = (c·u / u·u) u = ((1 + 8 + 9 + 6)/4) u = 6u</pre><p>w = (<b>6, 6, 6, 6</b>)。檢查 c − w = (−5, 2, 3, 0)，和 u 的內積 −5 + 2 + 3 + 0 = 0，確實正交。</p><p>意義：用一個常數去逼近一組資料，最小平方的最佳常數就是平均數（24/4 = 6）。</p>"
+    },
+    {
+      "id": "la-0086",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "matrix-inverse"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "1-4",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "A square matrix satisfies −S = S<sup>T</sup>. Show that S − I is nonsingular.",
+      "answer": "若 (S − I)x = 0，則 x<sup>T</sup>x = x<sup>T</sup>Sx = 0（S 反對稱），故 x = 0，S − I 可逆。",
+      "explanation": "<p>S<sup>T</sup> = −S 是 <span class=\"term\">Skew-symmetric matrix<small>（反對稱矩陣）</small></span>（實矩陣）。</p><p><b>關鍵性質</b>：對任何實向量 x，x<sup>T</sup>Sx 是一個純量，等於自己的轉置：x<sup>T</sup>Sx = (x<sup>T</sup>Sx)<sup>T</sup> = x<sup>T</sup>S<sup>T</sup>x = −x<sup>T</sup>Sx，所以 x<sup>T</sup>Sx = 0。</p><p><b>證明</b>：設 (S − I)x = 0，即 Sx = x。左乘 x<sup>T</sup>：x<sup>T</sup>Sx = x<sup>T</sup>x。左邊是 0，所以 ‖x‖² = 0，x = 0。</p><p>N(S − I) = {0}，S − I 是方陣，所以 nonsingular（可逆）。</p><p>另一個角度：實反對稱矩陣的特徵值只可能是 0 或純虛數，1 不是特徵值，所以 det(S − I) ≠ 0。（同理 S − λI 對任何非零實數 λ 都可逆。）</p>"
+    },
+    {
+      "id": "la-0087",
+      "topics": [
+        "gram-schmidt",
+        "least-squares"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "2-1",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Given A = [[1, 0, 1], [0, 1, 1], [1, 2, 0], [0, 1, 0]]（依列列出）and b = [1, 1, 1, 1]<sup>T</sup>.<br>If the Gram-Schmidt process is applied to determine an orthonormal basis for R(A) = {b ∈ R<sup>m</sup> | b = A<sub>mn</sub>x} and QR factorization of A, then, after the first one orthonormal vector q<sub>1</sub> and r<sub>11</sub> are computed, we have<br>Q = [q<sub>1</sub> q<sub>2</sub> q<sub>2</sub>] = [[0.5√2, _, _], [0, _, _], [0.5√2, _, _], [0, _, _]] and R = [[r<sub>11</sub>, r<sub>12</sub>, r<sub>13</sub>], [0, r<sub>22</sub>, r<sub>23</sub>], [0, 0, r<sub>33</sub>]] = [[√2, _, _], [0, _, _], [0, _, _]].<br>(a) Finish above process and determine q<sub>2</sub> and q<sub>3</sub>, and fill in the columns of Q.<br>(b) Finish above process and determine R.<br>(c) Use the QR factorization to find the least squares solution of Ax = b.",
+      "answer": "(a) q<sub>2</sub> = (−1, 1, 1, 1)/2，q<sub>3</sub> = (1, 2, −1, 0)/√6　(b) R = [[√2, √2, √2/2], [0, 2, 0], [0, 0, √6/2]]　(c) x̂ = (1/6, 1/2, 2/3)",
+      "explanation": "<p>（原卷 Q 寫成 [q<sub>1</sub> q<sub>2</sub> q<sub>2</sub>]，第三個應為 q<sub>3</sub>。）行向量 a<sub>1</sub> = (1, 0, 1, 0)、a<sub>2</sub> = (0, 1, 2, 1)、a<sub>3</sub> = (1, 1, 0, 0)，已知 q<sub>1</sub> = (1, 0, 1, 0)/√2、r<sub>11</sub> = √2。</p><p><b>第 2 行</b>：r<sub>12</sub> = q<sub>1</sub>·a<sub>2</sub> = 2/√2 = √2。v<sub>2</sub> = a<sub>2</sub> − √2q<sub>1</sub> = (0, 1, 2, 1) − (1, 0, 1, 0) = (−1, 1, 1, 1)，r<sub>22</sub> = ‖v<sub>2</sub>‖ = 2，q<sub>2</sub> = (−1, 1, 1, 1)/2。</p><p><b>第 3 行</b>：r<sub>13</sub> = q<sub>1</sub>·a<sub>3</sub> = 1/√2 = √2/2；r<sub>23</sub> = q<sub>2</sub>·a<sub>3</sub> = (−1 + 1)/2 = 0。v<sub>3</sub> = a<sub>3</sub> − (√2/2)q<sub>1</sub> = (1, 1, 0, 0) − (1/2, 0, 1/2, 0) = (1/2, 1, −1/2, 0)，r<sub>33</sub> = √(1/4 + 1 + 1/4) = √6/2，q<sub>3</sub> = (1, 2, −1, 0)/√6。</p><p><b>(a)</b> Q = [[√2/2, −1/2, 1/√6], [0, 1/2, 2/√6], [√2/2, 1/2, −1/√6], [0, 1/2, 0]]。</p><p><b>(b)</b> R = [[√2, √2, √2/2], [0, 2, 0], [0, 0, √6/2]]。</p><p><b>(c)</b> 最小平方解滿足 Rx̂ = Q<sup>T</sup>b：Q<sup>T</sup>b = (2/√2, 2/2, 2/√6) = (√2, 1, 2/√6)。從下往上回代：</p><ul><li>(√6/2)x<sub>3</sub> = 2/√6 → x<sub>3</sub> = 4/6 = 2/3</li><li>2x<sub>2</sub> = 1 → x<sub>2</sub> = 1/2</li><li>√2x<sub>1</sub> + √2·(1/2) + (√2/2)(2/3) = √2 → x<sub>1</sub> = 1 − 1/2 − 1/3 = 1/6</li></ul><p>x̂ = (<b>1/6, 1/2, 2/3</b>)。程式用 sympy 的 QR 分解與正規方程式 (A<sup>T</sup>A)<sup>−1</sup>A<sup>T</sup>b 兩種方法都得到相同結果。</p>"
+    },
+    {
+      "id": "la-0088",
+      "topics": [
+        "diagonalization",
+        "linear-differential-equations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "2-2",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Let C = [[3, −1, −2], [2, 0, −2], [2, −1, −1]]（依列列出）is an 3x3 matrix.<br>(a) Please find the value of lim<sub>n→∞</sub> C<sup>n</sup>.<br>(b) Please compute the value of e<sup>C</sup>.",
+      "answer": "(a) C² = C，所以 lim C<sup>n</sup> = C　(b) e<sup>C</sup> = I + (e − 1)C = [[3e − 2, 1 − e, 2 − 2e], [2e − 2, 1, 2 − 2e], [2e − 2, 1 − e, 2 − e]]",
+      "explanation": "<p><b>先找特徵值</b>：trace = 3 + 0 − 1 = 2；每一列加起來 3 − 1 − 2 = 0、2 + 0 − 2 = 0、2 − 1 − 1 = 0，所以 C(1, 1, 1)<sup>T</sup> = 0，λ = 0 是特徵值。λ = 1：C − I = [[2, −1, −2], [2, −1, −2], [2, −1, −2]]，rank 1，特徵空間 2 維（(1, 2, 0)、(1, 0, 1)）。特徵值 0, 1, 1，和為 2 = trace，吻合；可對角化。</p><p>特徵值只有 0 和 1 且可對角化，代表 C 是 <span class=\"term\">Idempotent matrix<small>（冪等矩陣）</small></span>：C = PDP<sup>−1</sup>、D = diag(0, 1, 1)、D² = D，所以 C² = C（可以直接乘乘看驗證）。</p><p><b>(a)</b> C<sup>n</sup> = C 對所有 n ≥ 1，極限就是 <b>C</b> 本身。</p><p><b>(b)</b> e<sup>C</sup> = I + C + C²/2! + C³/3! + ⋯ = I + C(1 + 1/2! + 1/3! + ⋯) = I + (e − 1)C：</p><pre class=\"formula\">e^C = [[3e-2, 1-e, 2-2e],\n       [2e-2,  1,  2-2e],\n       [2e-2, 1-e,  2-e]]</pre><p>程式驗算 C² = C，且 sympy 的 C.exp() 給出相同矩陣。也可用 e<sup>C</sup> = P·diag(e<sup>0</sup>, e, e)·P<sup>−1</sup> 算，結果一樣。</p>"
     }
   ]
 }

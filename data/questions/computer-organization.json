@@ -217,6 +217,2143 @@
       ],
       "answer": "(B)",
       "explanation": "<p>lw 在週期 1 IF，MEM 是第 4 個階段，在<b>週期 4</b>。沒有 stall 時第 k 條指令在週期 k 做 IF，所以週期 4 做 IF 的是<b>第 4 條</b>。兩者同一個週期都要用唯一的記憶體，是「硬體資源不夠」造成的 <b>structural hazard</b>，選 (B)。</p><p>這和資料有沒有相依無關，所以不是 data hazard；也和分支無關，不是 control hazard。常見錯誤是以為 MEM 在第 4 個週期就是「後面第 4 條」，於是選第 5 條；其實 lw 自己是第 1 條，後面第 3 條才是第 4 條。解法是分開指令記憶體和資料記憶體（分開的 I-cache、D-cache），或讓第 4 條的 IF 延後一個週期。</p>"
+    },
+    {
+      "id": "co-0014",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）Given (1) an instruction has 32 bits, and (2) a cache memory with 64 blocks, 16 bytes/block, and 4-way set associative. Which of the following statements are true?",
+      "choices": [
+        "(a) Byte address 1200 maps to the set number 11",
+        "(b) The index field requires 4 bits",
+        "(c) The offset field is 12 bits",
+        "(d) The tag field is 16 bits",
+        "(e) None of the above"
+      ],
+      "answer": "(a)(b)",
+      "explanation": "<p>把位址當成 32 bits 來切：每個 block 16 bytes，所以 offset = log₂16 = 4 bits；64 個 block、4-way，代表 set 數 = 64 / 4 = 16 組，index = log₂16 = 4 bits；剩下 tag = 32 − 4 − 4 = 24 bits。</p><ul><li>(a) 對：block address = 1200 / 16 = 75（取整數），set = 75 mod 16 = 11。</li><li>(b) 對：16 個 set 需要 4 bits。</li><li>(c) 錯：offset 只有 4 bits，12 bits 是把 1200 的位元數之類搞混了。</li><li>(d) 錯：tag 是 24 bits。常見錯誤是忘了 4-way 要先除以 4，把 index 算成 6 bits。</li></ul>"
+    },
+    {
+      "id": "co-0015",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true for memory hierarchy?",
+      "choices": [
+        "(a) Spatial locality refers to the situation that an item tends to be referenced soon once it is referenced.",
+        "(b) When increasing the size of a cache block, the miss penalty decreases",
+        "(c) Increasing cache associativity decreases the utilization of a cache",
+        "(d) A valid bit indicates whether the data in a block is valid or not",
+        "(e) A cache block is the basic unit for the cache storage"
+      ],
+      "answer": "(d)(e)",
+      "explanation": "<ul><li>(a) 錯：「剛被用過的東西很快會再被用」是 <b>temporal locality（時間區域性）</b>；spatial locality（空間區域性）是「用到某位址後，附近的位址也很快會被用」。</li><li>(b) 錯：block 越大，一次 miss 要搬的資料越多，miss penalty 變大。</li><li>(c) 錯：associativity 提高，一個 block 可放的位置變多，conflict miss 減少，cache 空間反而用得更充分。</li><li>(d) 對：valid bit 表示這一格裡的資料是否有效（開機時全部是 0）。</li><li>(e) 對：cache 以 block（line）為單位存放與搬移。</li></ul>"
+    },
+    {
+      "id": "co-0016",
+      "topics": [
+        "data-hazards",
+        "control-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true regarding the pipeline hazards of a 5-stage MIPS CPU?",
+      "choices": [
+        "(a) The data forwarding technique passes data to the previous instructions that need the data",
+        "(b) The structural hazard happens when a required resource is busy",
+        "(c) Rearranging the instructions may solve some of the data hazards",
+        "(d) If we put the register comparator and the target address calculator at the ID stage, then 2 stalls are needed for a branch hazard",
+        "(e) If we put the register comparator and the target address calculator at the ID stage, and a comparison register is a destination of immediately preceding load instruction, then 1 stall is needed"
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<ul><li>(a) 錯：forwarding 是把結果傳給<b>後面</b>（之後才進來）需要它的指令，不是前面的指令。</li><li>(b) 對：structural hazard 就是硬體資源同時被兩條指令要用。</li><li>(c) 對：instruction scheduling（重排指令）可以把 load 後面的相依指令隔開，消掉 load-use stall。</li><li>(d) 錯：比較器和目標位址都移到 ID，分支在 ID 結束就知道結果，只要 1 個 stall（或 1 個 delay slot）。</li><li>(e) 錯：分支在 ID 就要比較，而前一條 load 要到 MEM 結束才有資料，所以要 stall <b>2</b> 個 cycle；若前一條是 ALU 指令才是 1 個。</li></ul>"
+    },
+    {
+      "id": "co-0017",
+      "topics": [
+        "single-cycle-datapath",
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）Given the execution time of the 5 stages of a CPU: IF 200 ps, ID 100 ps, EXE 200 ps, MEM 200 ps, WB 100 ps, which of the following statements are true?",
+      "choices": [
+        "(a) The ideal cycle time of a single cycle CPU is 800 ps",
+        "(b) The ideal execution time of “sw” for a single cycle CPU is 800 ps",
+        "(c) The ideal cycle time of a multiple cycle CPU is 200 ps",
+        "(d) The ideal execution time of “lw” for a multiple cycle CPU is 800 ps",
+        "(e) None of the above"
+      ],
+      "answer": "(a)(b)(c)",
+      "explanation": "<ul><li>(a) 對：single cycle 的 clock 要容納最慢的指令（lw 走完五個階段）：200+100+200+200+100 = 800 ps。</li><li>(b) 對：single cycle 每條指令都花一個完整 cycle，sw 雖然用不到 WB，仍然是 800 ps。常見錯誤是算成 700 ps。</li><li>(c) 對：multi-cycle 的 cycle time 取最慢的階段 = 200 ps。</li><li>(d) 錯：lw 要 5 個 cycle，5 × 200 = 1000 ps，反而比 single cycle 的 800 ps 慢，這也說明 multi-cycle 的好處在於「短指令少走幾步」。</li></ul>"
+    },
+    {
+      "id": "co-0018",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）Given a 16-bit computer with the I-type instruction in the following format, which of the following statements are true?<div class=\"table-scroll\"><table><tr><td>op: 5 bits</td><td>rs: 3 bits</td><td>rt: 3 bits</td><td>immediate: 5 bits</td></tr></table></div>",
+      "choices": [
+        "(a) The computer supports at most 16 operations",
+        "(b) The computer has 8 registers",
+        "(c) The range of the number in the immediate field (in 2’s complement) is from −2<sup>5</sup> to 2<sup>5</sup> − 1",
+        "(d) Each register is 8-bits long",
+        "(e) None of the above"
+      ],
+      "answer": "(b)",
+      "explanation": "<ul><li>(a) 錯：op 有 5 bits，最多 2⁵ = 32 種 opcode。</li><li>(b) 對：rs、rt 各 3 bits，可指定 2³ = 8 個暫存器。</li><li>(c) 錯：5-bit 2's complement 範圍是 −2⁴ ~ 2⁴ − 1，也就是 −16 ~ 15；題目寫成 −2⁵ ~ 2⁵ − 1 多了一個 bit。</li><li>(d) 錯：這是 16-bit 電腦，暫存器寬度和欄位長度無關，暫存器應該是 16 bits。3 bits 只決定暫存器「個數」。</li></ul>"
+    },
+    {
+      "id": "co-0019",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true for dynamic branch prediction?",
+      "choices": [
+        "(a) Branch history table or branch prediction buffer can be implemented as a memory indexed by the lower bits of the program counter address.",
+        "(b) Branch prediction buffer must have tag and address check.",
+        "(c) A 2-bit dynamic branch predictor must miss twice before the prediction is changed.",
+        "(d) Mis-prediction can be caused by getting the branch history of wrong branch when indexing the branch history table.",
+        "(e) Correlating branch predictors assume that the behaviour of a branch would not be affected by the behaviours of other branches."
+      ],
+      "answer": "(a)(c)(d)",
+      "explanation": "<ul><li>(a) 對：<b>Branch prediction buffer（分支預測緩衝區）</b>就是一塊用 PC 低位元當索引的小記憶體。</li><li>(b) 錯：一般的 BHT 沒有 tag，也不檢查位址；正因為沒有 tag，才會發生 (d)。</li><li>(c) 對：2-bit saturating counter 從「強烈 taken」要連錯兩次才會改成預測 not taken。</li><li>(d) 對：兩個分支的 PC 低位元相同時會用到同一格（aliasing），拿到別的分支的歷史而猜錯。</li><li>(e) 錯：correlating predictor 正是假設一個分支的行為和<b>其他分支</b>最近的行為有關，才把 global history 一起拿來索引。</li></ul>"
+    },
+    {
+      "id": "co-0020",
+      "topics": [
+        "mips-instruction-formats",
+        "addressing-modes"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）For RISC (Reduced Instruction Set Computer), which of the following statements are true?",
+      "choices": [
+        "(a) For any given level of general performance, a RISC chip will typically have far more transistors dedicated to the core logic compared with CISC (complex instruction set computer).",
+        "(b) RISC allows designers to increase the size of the register set.",
+        "(c) RISC usually uses uniform instruction format with with the opcode in the same bit positions in every instruction, which demands less decoding complexity.",
+        "(d) RISC is not suitable for pipeline design and would decrease internal parallelism.",
+        "(e) RISC usually supports more addressing modes than CISC."
+      ],
+      "answer": "(b)(c)",
+      "explanation": "<ul><li>(a) 錯：同樣的效能下，RISC 核心邏輯用的電晶體比 CISC <b>少</b>，省下來的面積才拿去做更多暫存器，也就是 (b)。</li><li>(b) 對。</li><li>(c) 對：固定長度、opcode 固定在同一位置（MIPS 都在最高 6 bits），解碼簡單。</li><li>(d) 錯：RISC 指令格式整齊、每條指令工作量相近，正是最適合 pipeline 的設計。</li><li>(e) 錯：RISC 的 addressing mode 少（MIPS 只有 5 種），CISC（如 x86）才多。</li></ul>"
+    },
+    {
+      "id": "co-0021",
+      "topics": [
+        "amdahls-law",
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）Assume that the frequency of Floating Point (FP) operations is 25% for a computer, and the average CPI (Clock Cycles Per Instruction) of FP operations is 4. The average CPI of other instructions is 1.5. By performing some enhancement on the hardware, we can reduce the average CPI of all FP operations to 2. All other factors are not changed after enhancement. Which of the followings are true?",
+      "choices": [
+        "(a) The speedup for the FP operations is 2",
+        "(b) The total speedup can be computed by Amdahl’s Law using the following equation: speedup = 1 / ((1 − 0.25) + 0.25/2) = 1.1428",
+        "(c) The total speedup is 1.307",
+        "(d) The CPI after enhancement is 1.859",
+        "(e) The CPI before enhancement is 2.125"
+      ],
+      "answer": "(a)(c)(e)",
+      "explanation": "<ul><li>改良前 CPI = 0.25 × 4 + 0.75 × 1.5 = 1 + 1.125 = 2.125，(e) 對。</li><li>改良後 CPI = 0.25 × 2 + 0.75 × 1.5 = 0.5 + 1.125 = 1.625，(d) 錯。</li><li>指令數與 clock 不變，總加速 = 2.125 / 1.625 ≈ 1.3077，(c) 對。</li><li>FP 指令本身的 CPI 從 4 降到 2，FP 部分加速 2 倍，(a) 對。</li><li>(b) 錯：Amdahl's Law 的比例要用「<b>執行時間</b>」佔比，不是「指令數」佔比。FP 佔的時間比例是 1 / 2.125 ≈ 47%，不是 25%；用 47% 代入：1 / (0.53 + 0.47/2) ≈ 1.307，和 (c) 一致。這是本題最常見的陷阱。</li></ul>"
+    },
+    {
+      "id": "co-0022",
+      "topics": [
+        "instruction-level-parallelism"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）About instruction level parallelism, which of the followings are true?",
+      "choices": [
+        "(a) To perform loop unrolling, loop iterations must be independent with no loop-carried dependence.",
+        "(b) True dependencies can be resloved by register renaming.",
+        "(c) Anti-dependence occurs when instruction j writes a register or memory location that instruction i read from, and instruction i is executed first.",
+        "(d) Loop unrolling can reduce control stalls.",
+        "(e) Issuing multiple instructions per cycle can not reduce ideal CPI."
+      ],
+      "answer": "(c)(d)（(a) 待確認）",
+      "explanation": "<ul><li>(a) 判為錯（待確認）：loop unrolling 本身只是把迴圈本體複製幾份，有 loop-carried dependence 也能展開，只是展開後可以重排的空間變少；「必須沒有 loop-carried dependence」說得太絕對。也有人認為要能把不同 iteration 的指令交錯排程，前提就是 iteration 互相獨立，所以這個選項有爭議。</li><li>(b) 錯：register renaming 只能消除 <b>name dependence</b>（anti、output dependence）；true dependence（RAW）是真的要等資料，換名字沒用。</li><li>(c) 對：i 先讀、j 後寫同一個位置就是 anti-dependence（WAR）。</li><li>(d) 對：展開後分支次數變少，分支造成的 stall 和迴圈 overhead 也跟著變少。</li><li>(e) 錯：multiple issue 一個 cycle 可以完成多條指令，理想 CPI 可以小於 1（例如 4-issue 理想 CPI = 0.25）。</li></ul>"
+    },
+    {
+      "id": "co-0023",
+      "topics": [
+        "virtual-memory",
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_hardware.pdf"
+      },
+      "question": "（多選題）About memory hierarchy, which of the followings are true?",
+      "choices": [
+        "(a) For virtual memory, usually write-through strategy is used to update the lower level storage.",
+        "(b) Implementing higher associativity in cache can reduce conflict miss.",
+        "(c) For virtual memory, usually fully associative placement strategy is used.",
+        "(d) If the page size is larger, the size of the page table is also larger.",
+        "(e) If write-back strategy is used, it is possible that read misses would produce writes."
+      ],
+      "answer": "(b)(c)(e)",
+      "explanation": "<ul><li>(a) 錯：寫到磁碟太慢，virtual memory 一律用 write-back（搭配 dirty bit）。</li><li>(b) 對：conflict miss 就是好幾個 block 搶同一個位置，associativity 越高越少。</li><li>(c) 對：page fault 代價極高，所以讓 page 可以放進任何 frame（fully associative），再用 page table 查位置。</li><li>(d) 錯：虛擬位址空間固定時，page 越大，page 數越少，page table 反而越小。</li><li>(e) 對：read miss 要替換的 block 如果是 dirty，必須先寫回下一層，所以讀取的 miss 也會造成寫入。</li></ul>"
+    },
+    {
+      "id": "co-0024",
+      "topics": [
+        "amdahls-law"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "We define the speedup of a system by the execution time before improvement divides the execution time after improvement. Suppose a module accounts for 40% computation time of the entire system. We enhance the module to be 10 times faster. What is the overall speedup after the enhancement (approximate to two decimal places)?",
+      "choices": [
+        "(a) 1.40",
+        "(b) 2.17",
+        "(c) 1.56",
+        "(d) 1.10",
+        "(e) None of the above"
+      ],
+      "answer": "(c)",
+      "explanation": "<p>用 <b>Amdahl's Law（阿姆達定律）</b>：改良後時間 = 沒改的 60% + 改良的 40% / 10 = 0.6 + 0.04 = 0.64。</p><p>speedup = 1 / 0.64 = 1.5625 ≈ 1.56。模組快了 10 倍，整體卻只快 1.56 倍，因為佔 60% 的部分完全沒變；就算模組無限快，上限也只有 1 / 0.6 ≈ 1.67。</p>"
+    },
+    {
+      "id": "co-0025",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "For a 16K-byte two-way set associative cache whose block size is 4 bytes, if the length of the address is 32 bits, how many bits are used for tag?",
+      "choices": [
+        "(a) 15",
+        "(b) 16",
+        "(c) 17",
+        "(d) 18",
+        "(e) 19"
+      ],
+      "answer": "(e)",
+      "explanation": "<ul><li>block 數 = 16 KB / 4 B = 4096 = 2¹² 個。</li><li>2-way，所以 set 數 = 4096 / 2 = 2048 = 2¹¹，index 11 bits。</li><li>block 4 bytes，offset 2 bits。</li><li>tag = 32 − 11 − 2 = 19 bits。</li></ul><p>選 (d) 18 的人通常是忘了除以 2-way，把 index 算成 12 bits。</p>"
+    },
+    {
+      "id": "co-0026",
+      "topics": [
+        "pipelining",
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "Assume that an un-pipelined machine has 8ns clock cycles. The machine uses four cycles for ALU operations, five cycles for branches, and five cycles for memory operations. The relative frequencies of these operations are 30%, 30%, and 40%, respectively. Suppose that pipelining the machines adds 1ns of overhead to the clock cycle time. Assume that the ideal CPI is one after pipelining. Ignore any other impact. What is the speedup in the instruction execution rate gained from pipelining the machine?",
+      "choices": [
+        "(a) 4.07",
+        "(b) 4.18",
+        "(c) 4.29",
+        "(d) 4.33",
+        "(e) 4.51"
+      ],
+      "answer": "(b)",
+      "explanation": "<ul><li>未 pipeline：平均 CPI = 0.3 × 4 + 0.3 × 5 + 0.4 × 5 = 4.7，每條指令平均 4.7 × 8 = 37.6 ns。</li><li>pipeline 後：CPI = 1，clock 變成 8 + 1 = 9 ns，每條指令平均 9 ns。</li><li>speedup = 37.6 / 9 ≈ 4.18。</li></ul><p>常見錯誤是忘了加 1 ns overhead（得到 4.7），或把 CPI 直接當 5（得到 4.44）。</p>"
+    },
+    {
+      "id": "co-0027",
+      "topics": [
+        "ieee-754"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）The IEEE 754 standard specifies a binary16 as sign bit (1 bit), exponent (5 bits), and significand (10 bits). The exponent bias is 15. We define a new format by increasing the exponent to 8 bits and decreasing significand to 7 bits. We set the exponent bias in the new format as 127. Which of the following statements are true?",
+      "choices": [
+        "(a) The new format has a larger dynamic range.",
+        "(b) The new format has a lower precision.",
+        "(c) Based on IEEE 754, a 16-digit binary number 0100 0010 0000 0000 represents the decimal number 3.",
+        "(d) Based on the new format, a 16-digit binary number 0100 0010 0000 0000 represents the decimal number 32.",
+        "(e) None of the above."
+      ],
+      "answer": "(a)(b)(c)(d)",
+      "explanation": "<ul><li>(a) 對：exponent 從 5 bits 變 8 bits，最大值從約 6.55 × 10⁴ 變成約 3.39 × 10³⁸，範圍大很多。</li><li>(b) 對：significand 從 10 bits 減到 7 bits，有效位數變少，精確度降低。</li><li>(c) 對：binary16 切成 0 | 10000 | 1000000000，exponent = 16 − 15 = 1，significand = 1.1₂ = 1.5，值 = 1.5 × 2¹ = 3。</li><li>(d) 對：新格式切成 0 | 10000100 | 0000000，exponent = 132 − 127 = 5，significand = 1.0，值 = 2⁵ = 32。</li></ul><p>同一串 16 bits 換個切法，值就完全不同，所以切欄位前一定要先確認格式。這個新格式其實就是 bfloat16。</p>"
+    },
+    {
+      "id": "co-0028",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true regarding inclusive cache?",
+      "choices": [
+        "(a) The top-level cache is a subset of the bottom-level cache.",
+        "(b) If a block A is presented in both L1 and L2 cache where L2 is inclusive of L1, evicting the block A from L1 will cause L2 to evict block A.",
+        "(c) Inclusive cache utilizes the available cache space more efficiently.",
+        "(d) Inclusive cache ensures data consistency in the bottom-level cache.",
+        "(e) None of the above."
+      ],
+      "answer": "(a)（(d) 待確認）",
+      "explanation": "<ul><li>(a) 對：inclusive 的定義就是上層（L1）的內容一定也在下層（L2）。</li><li>(b) 錯：方向反了。L1 踢掉 A，L2 留著沒關係；是 L2 踢掉 A 時，必須連 L1 的 A 一起作廢（back-invalidation），才能維持包含關係。</li><li>(c) 錯：同一份資料在 L1、L2 各存一份，有效容量是 L2 的大小；exclusive cache 才是兩層不重複、空間用得較有效率。</li><li>(d) 判為錯（待確認）：inclusive 保證的是「L2 一定有這個 block」，讓 coherence 只要查 L2 就好；但 L1 若是 write-back，L2 那份可能是舊的，並不保證下層資料一致。這個選項的用語模糊，有爭議。</li></ul>"
+    },
+    {
+      "id": "co-0029",
+      "topics": [
+        "cache-performance",
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true regarding Instruction cache (I-cache) and Data cache (D-cache) in L1 cache?",
+      "choices": [
+        "(a) Compared with the original I-cached miss rate, the L1 cache miss rate will increase when I-cache and D-cache are merged.",
+        "(b) The L1 cache miss rate will decrease when I-cache and D-cache are merged, compared with the original D-cache miss rate.",
+        "(c) We can use different path to access instruction and data at the same time.",
+        "(d) Using separated I-cache and D-cache instead of a unified cache can reduce structural hazard.",
+        "(e) None of the above."
+      ],
+      "answer": "(a)(b)(c)(d)",
+      "explanation": "<ul><li>(a)(b) 對：指令存取的 locality 很好，I-cache miss rate 通常極低（不到 1%）；D-cache 較高（可達 10% 左右）。合成一個 unified cache 後，整體 miss rate 落在兩者之間：比原本的 I-cache 高、比原本的 D-cache 低。</li><li>(c) 對：分開的 I-cache、D-cache 各有自己的存取路徑，同一個 cycle 可以同時抓指令（IF）和讀寫資料（MEM）。</li><li>(d) 對：正因為 (c)，IF 和 MEM 不必搶同一個 cache，消除了這個 structural hazard。</li></ul><p>注意 unified cache 的 miss rate 有時比分開的「平均」還低，但它會帶來 structural hazard，所以 L1 幾乎都是分開的。</p>"
+    },
+    {
+      "id": "co-0030",
+      "topics": [
+        "instruction-level-parallelism",
+        "single-cycle-datapath",
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are NOT true for instruction set design and CPU implementation?",
+      "choices": [
+        "(a) The advantages of dynamic scheduling include memory latency hiding and resolving real dependence which is unknown at compile time.",
+        "(b) For single-cycle implementation of CPU, the clock cycle is determined by the longest possible path.",
+        "(c) Compared to Memory-Memory architecture or Register-Memory architecture, Register-Register architecture has the advantage of having larger variation in Clock Cycle Per Instruction (CPI).",
+        "(d) Reduced Instruction Set Computer (RISC) has become mainstream products.",
+        "(e) Single-cycle implementation of CPU is more suitable for pipeline implementation compared with multi-cycle implementation."
+      ],
+      "answer": "(c)（(e) 待確認）",
+      "explanation": "<p>這題要選「錯的」：</p><ul><li>(a) 正確：<b>dynamic scheduling（動態排程）</b>可以在 cache miss 時先做後面不相關的指令（隱藏記憶體延遲），也能處理編譯時無法判斷的相依（例如兩個指標是否指向同一位址）。</li><li>(b) 正確：single cycle 的 clock 由最長路徑（通常是 lw）決定。</li><li>(c) <b>錯誤</b>：register-register（load-store）架構的優點是指令格式固定、每條指令花的 cycle 數<b>相近</b>，CPI 變化小，才好做 pipeline。「CPI 變化大」是 memory-memory 架構的缺點。</li><li>(d) 正確：ARM、RISC-V 等 RISC 架構是手機與嵌入式的主流，x86 內部也把指令拆成 RISC 式的 micro-op。</li><li>(e) 判為正確（待確認）：pipeline 的 datapath 通常是從 single-cycle datapath 切出來的，single cycle 每個功能單元各自獨立（指令、資料記憶體分開，PC+4 有自己的加法器），切成階段後不會互搶；multi-cycle 為了省硬體而共用 ALU 和記憶體，直接 pipeline 會有 structural hazard。不過也有人認為 multi-cycle 已經切好階段，更接近 pipeline，這個選項有爭議。</li></ul>"
+    },
+    {
+      "id": "co-0031",
+      "topics": [
+        "data-hazards",
+        "instruction-level-parallelism"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true for pipeline hazards?",
+      "choices": [
+        "(a) Compliers can schedule the instructions to avoid some pipeline hazards.",
+        "(b) Using separated instruction cache and data cache instead of a unified cache could mainly reduce structural hazard.",
+        "(c) Write after read (WAR) hazards can be resolved by register renaming.",
+        "(d) Read after write (RAW) hazards can be resolved by register renaming.",
+        "(e) None of the above."
+      ],
+      "answer": "(a)(b)(c)",
+      "explanation": "<ul><li>(a) 對：編譯器可以重排指令，例如把無關的指令塞到 load 和使用它的指令之間。</li><li>(b) 對：IF 和 MEM 同時要存取記憶體是典型的 structural hazard，分開 I/D cache 就是為了解決它。</li><li>(c) 對：WAR 是 name dependence（只是剛好用同一個暫存器名字），換一個暫存器名字就消失。</li><li>(d) 錯：RAW 是 true dependence，後面的指令真的需要前面的結果，換名字沒有用，只能靠 forwarding 或 stall。</li></ul>"
+    },
+    {
+      "id": "co-0032",
+      "topics": [
+        "cache-performance",
+        "mips-instruction-formats",
+        "pipelining"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 111,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_111_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true?",
+      "choices": [
+        "(a) Increasing associativity of a cache would usually reduce the miss rate and the hit time.",
+        "(b) The branch offset field in the MIPS instruction is specified as a multiple of 4, i.e. a branch offset of 1 means 4 bytes. This enables a much larger range of branch offsets than if the offset were specified in bytes.",
+        "(c) We can always increase the hit rate by increasing the size of a cache.",
+        "(d) Pipeline registers between stages are necessary when performing pipelining.",
+        "(e) MIPS instructions are 32 bits."
+      ],
+      "answer": "(b)(d)(e)",
+      "explanation": "<ul><li>(a) 錯：associativity 提高確實降低 miss rate，但要多比較幾個 tag、多一層 mux，hit time 會<b>增加</b>。</li><li>(b) 對：MIPS 指令都對齊 4 bytes，offset 以「字」為單位，16-bit 欄位可跳 ±2¹⁵ 個指令（±128 KB），比以 byte 為單位大 4 倍。</li><li>(c) 錯：「always」太絕對；cache 變大通常會降低 miss rate，但也會增加 hit time，而且 compulsory miss 不會因為變大而消失。</li><li>(d) 對：每個階段的結果要存在 pipeline register（IF/ID、ID/EX…）裡，下一個 cycle 才能交給下一階段，同時讓前一階段處理新指令。</li><li>(e) 對：MIPS 指令固定 32 bits。</li></ul>"
+    },
+    {
+      "id": "co-0033",
+      "topics": [
+        "cpu-performance",
+        "amdahls-law"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true regarding performance evaluation?",
+      "choices": [
+        "(A) Throughput refers to the time a system takes to process a request after receiving it.",
+        "(B) If a CPU’s clock rate is an integer, its cycles per instruction (CPI) must also be an integer.",
+        "(C) If a component accounts for 30% of the total execution and we shrink the execution time of this component to half, the total execution time becomes 85% of the original execution time.",
+        "(D) In a multi-threading environment, CPU time could be higher than the elapsed time.",
+        "(E) None of the above."
+      ],
+      "answer": "(C)(D)",
+      "explanation": "<ul><li>(A) 錯：那是 <b>response time（回應時間）</b>；throughput（產出率）是單位時間完成多少工作。</li><li>(B) 錯：CPI 是很多指令的平均值，和 clock rate 是不是整數無關，例如 CPI = 1.6 很常見。</li><li>(C) 對：0.7 + 0.3 / 2 = 0.85，也就是 85%。</li><li>(D) 對：CPU time 是所有 thread 在各個核心上用掉的時間加總，4 個 thread 同時在 4 核上跑 1 秒，elapsed time 是 1 秒，CPU time 卻是 4 秒。</li></ul>"
+    },
+    {
+      "id": "co-0034",
+      "topics": [
+        "mips-instruction-formats",
+        "addressing-modes"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which statements are true about the MIPS (32-bit) assembly language?",
+      "choices": [
+        "(A) The I-type instructions are composed of the OP code (6 bits), RS (5 bits), RT (5 bits), and constant field (16 bits). Therefore, an I-type instruction can take at most two registers.",
+        "(B) The instruction JUMP comprises the OP code (6 bits) and the address field (26 bits). Therefore, a JUMP instruction can jump to 2<sup>26+2</sup> bytes before or after the address specified by the stack pointer (SP) register.",
+        "(C) The JR (jump register) instruction causes the PC to jump to the content of a register. Therefore, JR is a J-type instruction.",
+        "(D) The logic of “logical-shift-left” and “arithmetic-shift-left” operations are different. Therefore, MIPS needs to provide instructions for each of them.",
+        "(E) None of the above."
+      ],
+      "answer": "(A)",
+      "explanation": "<ul><li>(A) 對：I-type 只有 rs、rt 兩個暫存器欄位。</li><li>(B) 錯：jump 用 <b>pseudo-direct addressing（虛擬直接定址）</b>：26 bits 左移 2 位，再接上 PC+4 的最高 4 bits，跳到同一個 256 MB 區塊內的任何位置；跟 SP 無關，也不是「前後」跳。</li><li>(C) 錯：jr 的目標在暫存器裡，它是 R-type（opcode 0、funct 8）。</li><li>(D) 錯：左移時兩者都是右邊補 0，結果完全相同，所以 MIPS 只有 sll，沒有 sla；右移才需要分 srl（補 0）和 sra（補符號位元）。</li></ul>"
+    },
+    {
+      "id": "co-0035",
+      "topics": [
+        "pipelining",
+        "single-cycle-datapath"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which statements are true about single-cycle, multi-cycle, and pipeline CPUs?",
+      "choices": [
+        "(A) The pipeline structure reduces the response time for each instruction.",
+        "(B) You are given a program with 10 instructions. If you can perfectly pipeline each instruction into 5 stages with no bubbles (and each stage takes 1 ns), it takes 14 ns to complete the 10 instructions.",
+        "(C) A multi-cycle CPU is better than a single-cycle CPU because a multi-cycle CPU tends to have a lower value of CPI (cycles per instruction).",
+        "(D) With more pipeline stages, the performance is less likely to be influenced by hazards.",
+        "(E) None of the above"
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(A) 錯：pipeline 提升的是 throughput，單一指令的 latency 不會變短（加上 pipeline register 的延遲甚至變長）。</li><li>(B) 對：第 1 條指令要 5 ns 填滿 pipeline，之後每 1 ns 完成一條：5 + (10 − 1) = 14 ns。</li><li>(C) 錯：multi-cycle 每條指令要 3～5 個 cycle，CPI 比 single cycle（CPI = 1）<b>高</b>；它的好處是 cycle 比較短，而且簡單指令不用等最長的路徑。</li><li>(D) 錯：stage 越多，branch 越晚決定、相依指令要等越多 cycle，受 hazard 影響<b>越大</b>。</li></ul>"
+    },
+    {
+      "id": "co-0036",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true about RISC and CISC?",
+      "choices": [
+        "(A) The execution time of a RISC instruction is usually faster than a CISC instruction",
+        "(B) CISC usually has a more uniform instruction format than RISC.",
+        "(C) RISC is an outdated technology.",
+        "(D) RISC uses a simpler instruction set than CISC.",
+        "(E) None of the above."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<ul><li>(A) 對：RISC 每條指令只做簡單的事，單條指令的執行時間通常較短（但完成同一個程式需要的指令較多）。</li><li>(B) 錯：說反了，RISC 是固定長度、格式整齊；CISC（如 x86）長度 1～15 bytes 不等。</li><li>(C) 錯：ARM、RISC-V 都是 RISC，手機、嵌入式、甚至筆電和伺服器都在用。</li><li>(D) 對：這就是 RISC 的定義。</li></ul>"
+    },
+    {
+      "id": "co-0037",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true about RAM and ROM?",
+      "choices": [
+        "(A) RAM can be randomly read and written.",
+        "(B) ROM can be read and written.",
+        "(C) RAM cannot be persistent storage because of its volatility.",
+        "(D) ROM can persistently preserve program.",
+        "(E) All of the above"
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<ul><li>(A) 對：<b>RAM（Random Access Memory，隨機存取記憶體）</b>任何位址都能直接讀寫，存取時間和位置無關。</li><li>(B) 錯：<b>ROM（Read-Only Memory，唯讀記憶體）</b>在一般運作時只能讀；EEPROM、flash 雖然可以重寫，但要特殊程序，不是一般的寫入。</li><li>(C) 對：SRAM、DRAM 斷電資料就消失（volatile），不能當永久儲存。</li><li>(D) 對：ROM 斷電不會遺失，常用來放開機程式（BIOS / bootloader）。</li></ul><p>(B) 錯，所以 (E) 也不成立。</p>"
+    },
+    {
+      "id": "co-0038",
+      "topics": [
+        "cache-performance",
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true about cache design?",
+      "choices": [
+        "(A) In an inclusive cache design, the top-level cache (e.g., L1 cache) is the subset of the bottom-level cache (e.g., L2 cache).",
+        "(B) Because the first-level cache needs a short hit time, the size of the first-level cache is big.",
+        "(C) Reducing the miss penalty can decrease average memory access time when the top-level cache’s hit time is smaller than the bottom-level cache’s hit time.",
+        "(D) Generally, the full-associative cache design has lower cache hit rate than the direct-mapped cache design.",
+        "(E) None of the above."
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<ul><li>(A) 對：inclusive 就是 L1 的內容一定也在 L2。</li><li>(B) 錯：容量越大，存取越慢；L1 要 hit time 短，所以做得<b>小</b>。</li><li>(C) 對：AMAT = hit time + miss rate × miss penalty，只要 miss rate 大於 0，miss penalty 變小 AMAT 就下降。</li><li>(D) 錯：fully associative 沒有 conflict miss，hit rate 通常比 direct-mapped <b>高</b>。</li></ul>"
+    },
+    {
+      "id": "co-0039",
+      "topics": [
+        "cache-performance",
+        "cache-coherence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statement are true about cache miss types?",
+      "choices": [
+        "(A) Compulsory misses can be avoided by a prefetching mechanism.",
+        "(B) Conflict miss occurs the first time a location is used.",
+        "(C) Capacity miss occurs when other external processors update data.",
+        "(D) Direct-mapped cache has more conflict misses than n-way associative caches (where n &gt; 1).",
+        "(E) All of the above"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>3C 分類：<b>compulsory miss</b>（第一次用到）、<b>capacity miss</b>（cache 裝不下）、<b>conflict miss</b>（擠在同一個 set）；多處理器還有第 4 種 coherence miss。</p><ul><li>(A) 對：prefetch 在需要之前就先把 block 抓進來，可以避開第一次存取的 miss（加大 block 也有幫助）。</li><li>(B) 錯：第一次使用造成的是 compulsory miss。</li><li>(C) 錯：被其他處理器更新而作廢造成的是 coherence miss。</li><li>(D) 對：direct-mapped 每個 block 只有一個位置可以放，最容易互相踢掉。</li></ul>"
+    },
+    {
+      "id": "co-0040",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）Suppose that a cache memory’s (L1) access time is “<i>C</i> ns” and a main memory’s (L2) access time is “<i>M</i> ns”. In this architecture, 60% of the memory accesses are read and remaining all are writing requests. If the hit ratio of read operation can achieves “<i>H</i>” and that of writing operation is 1, what is the average memory access time (AMAT) when a write-through protocol is adopted on the cache?",
+      "choices": [
+        "(A) M (0.6H + 1) + 0.6HC",
+        "(B) 0.6 (H + C + M)",
+        "(C) 0.6H (C + M) + M",
+        "(D) 0.6H + 0.6(C + M)",
+        "(E) None of the above"
+      ],
+      "answer": "(E)（待確認）",
+      "explanation": "<p>write-through 的每一次寫入都要寫到主記憶體，所以寫入時間是 M；讀取 hit 花 C，miss 時要到主記憶體拿，花 M（若把先查 cache 的時間也算進去，就是 C + M）。</p><ul><li>miss 花 M：AMAT = 0.6[HC + (1 − H)M] + 0.4M = 0.6HC + M − 0.6HM = M(1 − 0.6H) + 0.6HC。</li><li>miss 花 C + M：AMAT = 0.6[HC + (1 − H)(C + M)] + 0.4M = 0.6C + M − 0.6HM。</li></ul><p>兩種常見算法都不在選項中，所以選 (E)。注意 (A) 和 (C) 展開後完全相同（都是 0.6HC + 0.6HM + M），跟第一種算法只差 0.6HM 前面的正負號，看起來像是出題時把 (1 − 0.6H) 寫成 (0.6H + 1)。（待確認）官方答案未公布，若命題者原意是 (A)(C)，那是題目印錯。</p><p>直覺檢查：H 變大（read hit 變多）AMAT 應該<b>變小</b>，但 (A)(C) 的 M 係數隨 H 增加，方向不對，這也是判斷它們有誤的理由。</p>"
+    },
+    {
+      "id": "co-0041",
+      "topics": [
+        "amdahls-law"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 112,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_112_hardware.pdf"
+      },
+      "question": "（多選題）If the floating-point (FP) instructions of an application on a specific processor <i>C1</i> consumes 60% of the total execution time. Moreover, in the same application, 25% of the floating-point time is taken to do square root calculations. A new processor <i>C2</i> is developed. This new processor could either enhance the performance of FP instructions by a factor of 1.5 or alternatively increase the performance of the square root operation by a factor of 8. Which of the following statements are true?",
+      "choices": [
+        "(A) Enhancing the performance of FP instruction by a factor 1.5 is <b>worse</b> than increasing the performance of the square root operation by a factor of 8.",
+        "(B) Enhancing the performance of FP instruction by a factor 1.5 is <b>better</b> than increasing the performance of the square root operation by a factor of 8.",
+        "(C) The speed-up of the FP instruction enhancement is 1.25.",
+        "(D) The speed-up of the square root operation enhancement is 1.15.",
+        "(E) None of the above."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>FP 加速 1.5 倍：受影響比例 60%，speedup = 1 / (0.4 + 0.6 / 1.5) = 1 / 0.8 = 1.25。</li><li>開根號加速 8 倍：開根號佔總時間 0.6 × 0.25 = 15%，speedup = 1 / (0.85 + 0.15 / 8) = 1 / 0.86875 ≈ 1.15。</li></ul><p>1.25 &gt; 1.15，所以改良 FP 比較好，(B)(C)(D) 對。這題的重點是 Amdahl's Law：加速倍數 8 看起來很大，但只影響 15% 的時間，不如把 60% 的部分小幅改進。常見錯誤是把 25% 直接當成佔總時間的比例。</p>"
+    },
+    {
+      "id": "co-0042",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（複選題）Consider a system where the cache memory (L1) has an access time of \"C ns,\" and the main memory (L2) has an access time of \"M ns.\" In this architecture, 80% of the memory accesses are read, and the remaining 20% are write requests. If the hit ratio for read operations is \"H,\" and the hit ratio for write operations is 1, what is the average memory access time (AMAT) when a write-through protocol is implemented in the cache?",
+      "choices": [
+        "(A) M (0.8H + 1) + 0.2(C + M)",
+        "(B) 0.8 (H + C + M) + 0.2(C + M)",
+        "(C) 0.8H (C + M) + 0.2M",
+        "(D) 0.8H + 0.2(C + M)",
+        "(E) None of the above"
+      ],
+      "answer": "(E)（待確認）",
+      "explanation": "<p>write-through：每次寫入都要寫到主記憶體。讀取 hit 花 C；miss 要到主記憶體拿。</p><ul><li>讀 miss 花 M、寫花 M：AMAT = 0.8[HC + (1 − H)M] + 0.2M = 0.8HC + M − 0.8HM。</li><li>讀 miss 花 C + M、寫花 C + M（先寫 cache 再寫主記憶體）：AMAT = 0.8[HC + (1 − H)(C + M)] + 0.2(C + M) = C + M − 0.8HM。</li></ul><p>兩種常見模型都對不上任何選項，所以選 (E)。快速檢查：read hit ratio H 變大，AMAT 應該變小，可是 (A) 中 M 的係數 (0.8H + 1) 隨 H 變大，(B)(C)(D) 甚至把 H 這個「比例」直接當成時間加進去，單位都不對。</p><p>（待確認）這題和 112 年第 9 題是同一個模板，選項看起來把 (1 − 0.8H) 寫成了 (0.8H + 1)；官方答案未公布，若命題者原意是 (A)，則是題目印錯。</p>"
+    },
+    {
+      "id": "co-0043",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）What factors influence the effectiveness of a cache memory in a memory hierarchy? (Select all that apply)",
+      "choices": [
+        "(A) Cache size",
+        "(B) Associativity",
+        "(C) Cache line size",
+        "(D) Clock frequency of the CPU",
+        "(E) All of the above"
+      ],
+      "answer": "(A)(B)(C)（待確認）",
+      "explanation": "<ul><li>(A) cache size：越大越少 capacity miss。</li><li>(B) associativity：越高越少 conflict miss。</li><li>(C) line（block）size：影響 spatial locality 的利用程度和 miss penalty。</li><li>(D) 判為不選（待確認）：CPU 時脈不改變 cache 的 hit rate，cache 本身「有效不有效」由 (A)(B)(C) 這些設計參數決定。不過時脈越快，同樣的 miss penalty 換算成 cycle 數越多，miss 對效能的衝擊越大，所以也有人認為 (D) 有影響、選 (E)。</li></ul>"
+    },
+    {
+      "id": "co-0044",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）Which statements accurately describe the characteristics of non-volatile storage in the memory hierarchy? (Select all that apply)",
+      "choices": [
+        "(A) Non-volatile storage retains data even when power is lost",
+        "(B) It is primarily used for temporary data storage",
+        "(C) Examples include hard drives and SSDs",
+        "(D) Non-volatile storage has faster access times compared to cache memory",
+        "(E) All of the above"
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<ul><li>(A) 對：non-volatile 的定義就是斷電資料不會消失。</li><li>(B) 錯：暫存資料用的是 volatile 的 DRAM、SRAM；non-volatile 用來長期保存。</li><li>(C) 對：硬碟、SSD、flash 都是。</li><li>(D) 錯：它在記憶體階層的最底層，存取時間是 μs～ms 等級，比 ns 等級的 cache 慢好幾個數量級。</li></ul>"
+    },
+    {
+      "id": "co-0045",
+      "topics": [
+        "virtual-memory"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）What tasks are performed by the Memory Management Unit (MMU) in the memory hierarchy? (Select all that apply)",
+      "choices": [
+        "(A) Manage data stored in cache",
+        "(B) Translate virtual addresses to physical addresses",
+        "(C) Control the flow of instructions to the CPU",
+        "(D) Organize data in the main memory",
+        "(E) All of the above"
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(B) 對：<b>MMU（記憶體管理單元）</b>的主要工作就是在執行時把虛擬位址轉成實體位址（內含 TLB），並檢查存取權限。</li><li>(A) 錯：cache 的存放與替換由 cache controller 負責。</li><li>(C) 錯：指令流由 control unit、PC、分支邏輯控制。</li><li>(D) 錯：主記憶體中資料放哪裡（哪個 page 放哪個 frame）是 OS 決定的，MMU 只依 page table 做轉換。</li></ul>"
+    },
+    {
+      "id": "co-0046",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）In a cache memory system, what are the characteristics of direct-mapped, set-associative, and fully-associative caches? (Select all that apply)",
+      "choices": [
+        "(A) Direct-mapped caches have one set.",
+        "(B) Set-associative caches allow a block of memory to be placed in any cache line within a specific set.",
+        "(C) Fully-associative caches provide a unique cache line for every block of memory.",
+        "(D) Direct-mapped caches have lower hit rates compared to set-associative and fully-associative caches.",
+        "(E) All of the above"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯：只有一個 set 的是 fully associative；direct-mapped 是每個 set 只有一條 line，set 數等於 line 數。</li><li>(B) 對：n-way set associative 先用 index 決定 set，再放進該 set 的任一條 line。</li><li>(C) 錯：「每個 block 有唯一固定的 line」是 direct-mapped；fully associative 是可以放在<b>任何</b> line。</li><li>(D) 對：同樣容量下，direct-mapped 的 conflict miss 最多，hit rate 通常最低。</li></ul>"
+    },
+    {
+      "id": "co-0047",
+      "topics": [
+        "pipelining",
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）In the context of pipelining in a CPU, which of the following statements are true?",
+      "choices": [
+        "(A) Increases CPU throughput by executing multiple instructions simultaneously.",
+        "(B) Eliminates all control hazards.",
+        "(C) Data hazards can occur due to instruction overlap.",
+        "(D) Can be implemented without any impact on the clock cycle.",
+        "(E) Pipeline depth is inversely proportional to instruction latency."
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<ul><li>(A) 對：多條指令在不同階段重疊執行，提高 throughput。</li><li>(B) 錯：pipeline 正是 control hazard 的來源，不會消除它。</li><li>(C) 對：後面的指令在前面的結果寫回之前就要讀，才有 data hazard。</li><li>(D) 錯：clock 要配合最慢的階段，還要加上 pipeline register 的延遲。</li><li>(E) 錯：pipeline 越深，每條指令要經過的階段和 register 越多，單條指令的 latency 不會反比下降，反而略增；變短的是 cycle time。</li></ul>"
+    },
+    {
+      "id": "co-0048",
+      "topics": [
+        "virtual-memory"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）In the context of virtual memory, which of the following statements are accurate?",
+      "choices": [
+        "(A) Virtual memory allows physical memory to be treated as a cache for the disk.",
+        "(B) TLB (Translation Lookaside Buffer) is used to reduce page table access time.",
+        "(C) Page Faults occur when data requested by a program is not in physical memory.",
+        "(D) Demand paging can lead to a situation known as thrashing.",
+        "(E) Virtual memory supports efficient process isolation and memory protection."
+      ],
+      "answer": "(A)(B)(C)(D)(E)",
+      "explanation": "<ul><li>(A) 對：主記憶體放的是磁碟上程式的一部分，概念上就是磁碟的 cache。</li><li>(B) 對：TLB 快取最近用過的 page table entry，省掉一次讀 page table。</li><li>(C) 對：要的 page 不在實體記憶體中就產生 page fault。</li><li>(D) 對：分給 process 的 frame 不足以容納它的 working set 時，demand paging 會不斷換頁，形成 thrashing。</li><li>(E) 對：每個 process 有自己的位址空間，page table 還帶有權限位元，能隔離與保護。</li></ul>"
+    },
+    {
+      "id": "co-0049",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）In the context of memory hierarchy, what are the characteristics of cache memory?",
+      "choices": [
+        "(A) Cache memory has a lower latency than main memory.",
+        "(B) Typically uses SRAM (Static RAM) technology.",
+        "(C) Larger in size compared to main memory.",
+        "(D) Implements temporal and spatial locality principles.",
+        "(E) Contains a subset of the data stored in main memory."
+      ],
+      "answer": "(A)(B)(D)(E)",
+      "explanation": "<ul><li>(A) 對：cache 約幾 ns 以內，主記憶體約數十 ns。</li><li>(B) 對：cache 用 SRAM，主記憶體用 DRAM。</li><li>(C) 錯：cache 是 KB～MB 等級，主記憶體是 GB 等級，小得多。</li><li>(D) 對：保留最近用過的資料（temporal）、一次搬整個 block（spatial），就是利用這兩種 locality。</li><li>(E) 對：cache 裡的資料是主記憶體的一部分複本。</li></ul>"
+    },
+    {
+      "id": "co-0050",
+      "topics": [
+        "mips-instruction-formats",
+        "control-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）What features are associated with the MIPS instruction set architecture?",
+      "choices": [
+        "(A) A large set of complex instructions",
+        "(B) Support of register-to-register operation format",
+        "(C) Use of a single accumulator for arithmetic operations",
+        "(D) Delayed branch technique",
+        "(E) Fixed-size instruction encoding"
+      ],
+      "answer": "(B)(D)(E)",
+      "explanation": "<ul><li>(A) 錯：MIPS 是 RISC，指令少而簡單。</li><li>(B) 對：算術指令的運算元都在暫存器（load-store 架構）。</li><li>(C) 錯：MIPS 有 32 個通用暫存器，不是 accumulator 架構。</li><li>(D) 對：MIPS 的分支有一個 <b>branch delay slot（分支延遲槽）</b>，分支後面那條指令一定會執行。</li><li>(E) 對：所有指令都是 32 bits。</li></ul>"
+    },
+    {
+      "id": "co-0051",
+      "topics": [
+        "flynn-taxonomy"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 113,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_113_hardware.pdf"
+      },
+      "question": "（多選題）What are characteristics of SIMD (Single Instruction, Multiple Data) parallelism?",
+      "choices": [
+        "(A) Executes different instructions on multiple data points.",
+        "(B) Well-suited for tasks with regular data patterns.",
+        "(C) Commonly used in vector processors.",
+        "(D) Typically involves multiple processors working on the same task.",
+        "(E) Typically implemented in graphics processing units (GPUs)."
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<ul><li>(A) 錯：SIMD 是「同一條指令」作用在多筆資料上；不同指令、多筆資料是 MIMD。</li><li>(B) 對：陣列、矩陣、影像這類規則資料最適合。</li><li>(C) 對：vector processor 就是 SIMD 的典型。</li><li>(D) 錯：多個處理器各自執行程式合作是 MIMD（多核心、叢集）。</li><li>(E) 對：GPU 的 SIMT 架構讓一群 thread 同時執行同一條指令，本質上是 SIMD。</li></ul>"
+    },
+    {
+      "id": "co-0052",
+      "topics": [
+        "virtual-memory"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Virtual memory is a fundamental concept in modern operating systems that provides an abstraction of the physical memory available in a computer system. Which of the following are true about virtual memory systems?",
+      "choices": [
+        "(A) Virtual memory eliminates the need for physical memory.",
+        "(B) Virtual memory swap uses a portion of secondary storage as if it were main memory.",
+        "(C) Page tables are used to map virtual addresses to physical addresses.",
+        "(D) Virtual memory improves the system's security and isolation.",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯：程式最後還是要在實體記憶體中執行，virtual memory 只是讓它「看起來」比實際大。</li><li>(B) 對：swap space 拿磁碟的一塊當主記憶體的延伸。</li><li>(C) 對：page table 記錄每個虛擬 page 對應到哪個實體 frame。</li><li>(D) 對：每個 process 有獨立的位址空間，碰不到別人的記憶體，page table 還能設讀寫權限。</li></ul>"
+    },
+    {
+      "id": "co-0053",
+      "topics": [
+        "error-correction"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements regarding ECC (Error-Correcting Code) memory are accurate?",
+      "choices": [
+        "(A) ECC memory modules have an extra memory chip compared to non-ECC modules, which stores the parity bits used for error detection and correction.",
+        "(B) DRAM-based memory systems usually employ advanced ECC mechanisms, like LDPC or BCH codes, capable of detecting and correcting multiple-bit errors to ensure data integrity and reliability.",
+        "(C) The performance overhead introduced by ECC memory is negligible in modern systems due to advancements in memory controllers.",
+        "(D) ECC memory relies on redundancy in data encoding to perform error detection and correction.",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(C)(D)（(C) 待確認）",
+      "explanation": "<ul><li>(A) 對：一般 ECC DIMM 每 64 bits 資料多 8 bits 檢查碼（72 bits 寬），多出來的就是那顆額外的晶片。</li><li>(B) 錯：DRAM 通常用 Hamming 碼為基礎的 <b>SEC-DED（單一錯誤更正、雙錯誤偵測）</b>；LDPC、BCH 這類能修多個 bit 的強碼主要用在 NAND flash / SSD。</li><li>(C) 判為對（待確認）：現代記憶體控制器做 ECC 編解碼只多一點點延遲，效能損失通常只有百分之幾，一般視為可忽略；但「negligible」是程度用語，有爭議。</li><li>(D) 對：ECC 的原理就是加入冗餘位元，讓錯誤可以被偵測甚至定位修正。</li></ul>"
+    },
+    {
+      "id": "co-0054",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）A system employs various techniques to maximize memory bandwidth and minimize latency, including memory banks, interleaving, and multiple memory channels. Given this context, which of the following statements accurately describe the interaction and impact of memory banks and related memory parallelism techniques on overall system performance?",
+      "choices": [
+        "(A) Memory banks allow for simultaneous access to different memory locations, increasing memory bandwidth.",
+        "(B) More memory banks always result in higher performance, regardless of access patterns.",
+        "(C) Interleaving distributes consecutive addresses across banks to maximize parallel access during sequential reads/writes.",
+        "(D) Memory parallelism techniques, such as using multiple memory channels, are independent of the concept of memory banks.",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<ul><li>(A) 對：不同 bank 可以同時（或重疊）進行存取，提高頻寬。</li><li>(B) 錯：「always」太絕對；若存取一直落在同一個 bank（bank conflict），bank 再多也沒用。</li><li>(C) 對：<b>interleaving（交錯）</b>把連續位址輪流放到不同 bank，循序讀寫時各 bank 輪流工作，延遲互相重疊。</li><li>(D) 錯：channel、rank、bank 是一層一層的平行結構，彼此相關、一起決定記憶體的平行度，並非互相獨立。</li></ul>"
+    },
+    {
+      "id": "co-0055",
+      "topics": [
+        "virtual-memory"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are true?",
+      "choices": [
+        "(A) The number of bits in a virtual address determines the maximum addressable memory space.",
+        "(B) Usually, a single-level page table is more memory-efficient than a multi-level page table.",
+        "(C) For a system with a 32-bit virtual address and 8 KB page size, the page table must store 2<sup>20</sup> entries in a single-level page table.",
+        "(D) Multi-level page tables increase address translation time compared to single-level page tables.",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<ul><li>(A) 對：n-bit 虛擬位址最多定址 2ⁿ bytes。</li><li>(B) 錯：說反了。single-level 必須整張放在記憶體；multi-level 沒用到的區域可以不配置下一層的表，通常更省空間。</li><li>(C) 錯：8 KB = 2¹³，offset 13 bits，page number = 32 − 13 = 19 bits，所以是 2¹⁹ 個 entry；2²⁰ 是 4 KB page 的答案。</li><li>(D) 對：TLB miss 時要一層一層查，k 層就多 k 次記憶體存取。</li></ul>"
+    },
+    {
+      "id": "co-0056",
+      "topics": [
+        "cache-performance",
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）In modern computer architecture, the increasing gap between CPU processing speeds and the rate at which data can be accessed from main memory has created a significant bottleneck. This bottleneck impacts overall system performance and has led to the development of various techniques to mitigate its effects. Considering the challenges posed by this bottleneck, which of the following statements are correct?",
+      "choices": [
+        "(A) The memory wall is solved by simply increasing the amount of RAM in a system.",
+        "(B) The memory wall refers to the increasing disparity between CPU processing speed and memory access speed.",
+        "(C) In-memory computing is only applicable to small datasets that can fit entirely within the CPU cache.",
+        "(D) Both in-memory computing and near-data processing aim to reduce the impact of the memory wall by minimizing data movement.",
+        "(E) None of the above"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li>(A) 錯：memory wall 是「速度」差距，RAM 加大只增加容量，存取延遲並沒有變快。</li><li>(B) 對：這就是 memory wall 的定義。</li><li>(C) 錯：in-memory computing 是在記憶體裡（或旁邊）直接運算，正是為了處理放不進 cache 的大資料。</li><li>(D) 對：兩者都是讓運算靠近資料，減少在 CPU 與記憶體之間搬資料的量。</li></ul>"
+    },
+    {
+      "id": "co-0057",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）What is the primary purpose of forwarding (bypassing) in a pipelined processor?",
+      "choices": [
+        "(A) To reduce the clock cycle time.",
+        "(B) To eliminate structural hazards.",
+        "(C) To reduce data hazard stalls.",
+        "(D) To predict branch outcomes more accurately.",
+        "(E) None of the above."
+      ],
+      "answer": "(C)",
+      "explanation": "<p><b>Forwarding（轉送）</b>把 ALU 或記憶體剛算出的結果直接從 pipeline register 送給下一條需要它的指令，不必等寫回暫存器，減少 data hazard 造成的 stall。它不影響 clock cycle（反而多了 mux）、和 structural hazard、branch prediction 都無關。注意 load-use 仍要 stall 1 個 cycle，所以是「減少」而不是完全消除。</p>"
+    },
+    {
+      "id": "co-0058",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following is a characteristic of a structural hazard?",
+      "choices": [
+        "(A) It occurs when an instruction depends on the result of a previous instruction.",
+        "(B) It arises when the pipeline needs to fetch the wrong instruction.",
+        "(C) It occurs when multiple instructions require the same hardware resource at the same time.",
+        "(D) It occurs when an instruction modifies the PC.",
+        "(E) None of the above"
+      ],
+      "answer": "(C)",
+      "explanation": "<ul><li>(A) 是 data hazard。</li><li>(B)(D) 是 control hazard（分支改變 PC，可能抓錯指令）。</li><li>(C) 才是 <b>structural hazard（結構危障）</b>：硬體資源不夠，例如只有一個記憶體時 IF 和 MEM 同時要用。</li></ul>"
+    },
+    {
+      "id": "co-0059",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following are common techniques for resolving data hazards in pipelined processors?",
+      "choices": [
+        "(A) Forwarding (bypassing)",
+        "(B) Stalling (inserting bubbles)",
+        "(C) Branch prediction",
+        "(D) Code scheduling",
+        "(E) None of the above"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) forwarding：直接把結果送過去。</li><li>(B) stall：等資料準備好，例如 load-use 一定要插一個 bubble。</li><li>(D) code scheduling：編譯器把無關的指令排進相依指令之間。</li><li>(C) 錯：branch prediction 處理的是 control hazard。</li></ul>"
+    },
+    {
+      "id": "co-0060",
+      "topics": [
+        "ieee-754",
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）Why is it important to consider associativity in parallel programming when working with floating-point arithmetic?",
+      "choices": [
+        "(A) Because integer arithmetic is not associative.",
+        "(B) Because the order of floating-point operations can affect the results.",
+        "(C) To optimize the execution on multiple cores.",
+        "(D) To reduce the amount of data to be exchanged between threads.",
+        "(E) None of the above"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>浮點數加法<b>沒有結合律</b>，因為每一步都會捨入。例如 (−1.5 × 10³⁸ + 1.5 × 10³⁸) + 1.0 = 1.0，但 −1.5 × 10³⁸ + (1.5 × 10³⁸ + 1.0) = 0，因為 1.0 加到 1.5 × 10³⁸ 上會被捨掉。</p><p>平行程式把加總分給多個 thread 時，相加的順序和循序版本不同，結果就可能不同，所以要特別注意。(A) 錯：整數加法（不溢位時、或在 2's complement 環繞下）是有結合律的；(C)(D) 不是「為什麼要考慮結合律」的原因。</p>"
+    },
+    {
+      "id": "co-0061",
+      "topics": [
+        "ieee-754"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_hardware.pdf"
+      },
+      "question": "（多選題）What is the purpose of adding a bias to the exponent in a floating-point representation?",
+      "choices": [
+        "(A) To increase the range of representable numbers.",
+        "(B) To simplify the arithmetic operations.",
+        "(C) To reduce the amount of storage space needed for exponents.",
+        "(D) To allow easy comparison of floating-point numbers as if they were integers.",
+        "(E) None of the above"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>exponent 加上 bias（單精度 127）後變成無號數：最小的 exponent 是 000…0、最大是 111…1。再配合「sign 在最前、exponent 在 fraction 前面」的排列，兩個正的浮點數可以直接當成整數比大小，排序很方便。</p><ul><li>(A) 錯：範圍由 exponent 的 bit 數決定，bias 不改變範圍大小。</li><li>(B) 錯：做乘法時兩個 exponent 相加還得再減一次 bias，反而多一步。</li><li>(C) 錯：bit 數不變。</li></ul>"
+    },
+    {
+      "id": "co-0062",
+      "topics": [
+        "mips-instruction-formats",
+        "addressing-modes",
+        "procedure-calls"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements are TRUE regarding computer architecture?",
+      "choices": [
+        "(A) A typical MIPS arithmetic instruction can directly operate on operands located in memory.",
+        "(B) Fixed instruction length simplifies the instruction decoding logic.",
+        "(C) A RISC architecture typically has fewer general-purpose registers compared to a CISC architecture, such as x86.",
+        "(D) Using fewer addressing modes generally simplifies the datapath control logic.",
+        "(E) A RISC architecture’s procedure calls usually require a stack in memory to store the return address and saved registers if the register file is insufficient."
+      ],
+      "answer": "(B)(D)(E)",
+      "explanation": "<ul><li>(A) 錯：MIPS 是 load-store 架構，算術指令只能用暫存器，記憶體資料要先 lw 進來。</li><li>(B) 對：長度固定、欄位位置固定，解碼簡單。</li><li>(C) 錯：說反了，RISC 通常暫存器較多（MIPS 32 個），傳統 x86 只有 8 個通用暫存器。</li><li>(D) 對：addressing mode 少，datapath 需要的路徑和控制訊號就少。</li><li>(E) 對：MIPS 用 $ra 存返回位址、用暫存器傳參數；巢狀呼叫或暫存器不夠時，要把 $ra 和 saved registers 存到 stack。</li></ul>"
+    },
+    {
+      "id": "co-0063",
+      "topics": [
+        "single-cycle-datapath",
+        "control-unit"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following comparisons between single-cycle and multi-cycle implementations are TRUE?",
+      "choices": [
+        "(A) The clock cycle time in a single-cycle implementation is determined by the longest possible path in the logic.",
+        "(B) A multi-cycle implementation allows functional units (like the ALU) to be reused within a single instruction execution.",
+        "(C) Single-cycle implementations generally have a higher CPI than multi-cycle implementations.",
+        "(D) The control unit of a single-cycle implementation is typically purely combinational, whereas a multi-cycle implementation requires a sequential state machine.",
+        "(E) Floating-point operations are more efficiently handled in a multi-cycle datapath than a single-cycle datapath due to varying latency."
+      ],
+      "answer": "(A)(B)(D)(E)",
+      "explanation": "<ul><li>(A) 對：single cycle 的 clock 要容納最長的路徑。</li><li>(B) 對：multi-cycle 不同 cycle 可以重複使用同一個 ALU（例如算 PC+4、算位址、做運算），也可以只用一個記憶體。</li><li>(C) 錯：single cycle 的 CPI = 1，multi-cycle 每條要 3～5 個 cycle，CPI 較高。</li><li>(D) 對：single cycle 的控制訊號只由 opcode 決定，是組合電路；multi-cycle 要記住現在在第幾步，需要 FSM。</li><li>(E) 對：浮點運算延遲很長、各種運算長短差很多；single cycle 必須把 clock 拉長到最慢的浮點運算，multi-cycle 可以讓它多花幾個 cycle，其他指令不受拖累。</li></ul>"
+    },
+    {
+      "id": "co-0064",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Consider the code sequence:<pre class=\"code\">add x1, x2, x3\nsub x4, x1, x5</pre>In a 5-stage MIPS pipeline with full forwarding logic, which of the following are TRUE?",
+      "choices": [
+        "(A) A bubble (stall) is required between the add and sub instructions.",
+        "(B) The result of the add instruction is forwarded from the EX/MEM pipeline register to the ALU input for the sub instruction.",
+        "(C) If forwarding were not implemented, the pipeline would need to stall for 2 cycles to avoid the hazard (assuming register write in the first half, read in the second half).",
+        "(D) Forwarding eliminates all data hazards, including those caused by Load-Use dependencies.",
+        "(E) The hazard detected here is a RAW (Read After Write) hazard."
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<p>cycle 編號：add 是 IF1 ID2 EX3 MEM4 WB5；sub 是 IF2 ID3 EX4。</p><ul><li>(A) 錯：sub 在第 4 cycle 的 EX 需要 x1，而 add 在第 3 cycle 的 EX 結束時就算出來，存在 EX/MEM 裡，直接 forward 即可，不必 stall。</li><li>(B) 對：相鄰兩條指令，就是從 EX/MEM forward 到 ALU 輸入。</li><li>(C) 對：沒有 forwarding 時，sub 要等 add 在第 5 cycle 寫回；暫存器前半寫、後半讀，sub 的 ID 最早可以在第 5 cycle，原本在第 3 cycle，所以要 stall 2 個 cycle。</li><li>(D) 錯：load-use 時，資料要到 MEM 結束才有，下一條的 EX 已經開始，就算 forwarding 仍要 stall 1 個 cycle。</li><li>(E) 對：sub 要讀 add 寫的 x1，是 read after write。</li></ul>"
+    },
+    {
+      "id": "co-0065",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements about branch prediction are TRUE?",
+      "choices": [
+        "(A) Static branch prediction assumes a branch is always taken or always not taken based on the instruction type or direction.",
+        "(B) A 1-bit dynamic branch predictor will always mispredict a loop exit branch if the loop executes many times.",
+        "(C) A 2-bit saturating counter predictor changes its prediction immediately after a single misprediction.",
+        "(D) Branch Target Buffers store the target address of branches to allow fetching from the target in the IF stage.",
+        "(E) Delayed branching is a hardware technique where the compiler fills the slot after a branch with an independent instruction."
+      ],
+      "answer": "(A)(B)(D)（(E) 待確認）",
+      "explanation": "<ul><li>(A) 對：static prediction 在執行前就固定，例如永遠猜 not taken，或「往回跳猜 taken、往前跳猜 not taken」。</li><li>(B) 對：迴圈跑很多次時，1-bit 預測器一直記著 taken，最後離開迴圈那一次必定猜錯（下次再進迴圈的第一次也會猜錯）。</li><li>(C) 錯：2-bit counter 要連錯兩次才改變預測，這正是它比 1-bit 好的地方。</li><li>(D) 對：<b>BTB（branch target buffer）</b>在 IF 階段就用 PC 查到目標位址，猜 taken 時下一個 cycle 就能從目標抓指令。</li><li>(E) 判為錯（待確認）：delayed branch 是 ISA 規定「分支後一條一定執行」，由<b>編譯器</b>負責把獨立指令排進 delay slot，本質上是軟體排程技巧，稱為「hardware technique」不精確；但它也確實需要硬體配合，這個選項有爭議。</li></ul>"
+    },
+    {
+      "id": "co-0066",
+      "topics": [
+        "exceptions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Regarding exceptions in a pipelined processor:",
+      "choices": [
+        "(A) \"Precise exceptions\" imply that the processor state can be recovered exactly as it was before the faulting instruction executed.",
+        "(B) When an exception occurs, the pipeline must flush instructions that occurred after the faulting instruction.",
+        "(C) Handling exceptions is easier in a pipelined processor than in a single-cycle processor.",
+        "(D) The EPC (Exception Program Counter) stores the address of the instruction that caused the exception.",
+        "(E) External interrupts (like I/O requests) are synchronous events tied to the CPU clock."
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) 對：<b>precise exception（精確例外）</b>保證出錯指令之前的都做完、它和之後的都沒改到狀態，處理完可以從那條指令重新開始。</li><li>(B) 對：後面已進入 pipeline 的指令要 flush 掉，避免它們改到狀態。</li><li>(C) 錯：pipeline 同時有好幾條指令在不同階段，可能同時出現多個例外，處理更複雜。</li><li>(D) 對：EPC 記錄出問題的指令位址，讓 OS 處理完可以回到那裡（MIPS 硬體存的是 PC+4，再減 4 得到原指令）。</li><li>(E) 錯：外部中斷和正在執行的指令無關，隨時可能發生，是 asynchronous 事件。</li></ul>"
+    },
+    {
+      "id": "co-0067",
+      "topics": [
+        "virtual-memory",
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Regarding Virtual Memory and Translation Lookaside Buffers (TLBs) in a modern hierarchical memory system, which statements are correct?",
+      "choices": [
+        "(A) A TLB miss implies a Page Fault must strictly occur.",
+        "(B) Huge Pages (e.g., 2MB or 1GB pages) generally reduce TLB miss rates by increasing TLB reach.",
+        "(C) In a virtualized cloud environment using Extended Page Tables (EPT) or Nested Paging, a TLB miss requires a two-dimensional page walk, increasing latency compared to native execution.",
+        "(D) Virtually Indexed, Physically Tagged (VIPT) L1 caches allow the cache lookup to proceed in parallel with the TLB translation.",
+        "(E) None of the above."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<ul><li>(A) 錯：TLB miss 只代表 TLB 沒有這筆對應，去查 page table 多半能找到（page 在記憶體中），不一定 page fault。</li><li>(B) 對：<b>TLB reach</b> = entry 數 × page size；同樣 64 個 entry，4 KB page 只涵蓋 256 KB，2 MB page 可涵蓋 128 MB。</li><li>(C) 對：guest 的每一層 page table 位址本身也是 guest physical address，還要再經 host 的 page table 轉換；4 層 × 4 層的情況最多約 24 次記憶體存取，比原生的 4 次多很多。</li><li>(D) 對：VIPT 用虛擬位址中 page offset 的部分當 index，和 TLB 同時進行，最後再比對實體 tag。</li></ul>"
+    },
+    {
+      "id": "co-0068",
+      "topics": [
+        "cache-performance",
+        "cache-coherence",
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Consider a Multi-Level Cache (MLC) hierarchy (L1, L2, L3). Which design choices regarding inclusion and writing policies are correct?",
+      "choices": [
+        "(A) Inclusive Caches (e.g., L3 includes all L1/L2 contents) simplify cache coherence because the snoop filter only needs to check the L3 tags to know if a line exists in the core.",
+        "(B) Exclusive Caches (e.g., L3 contains only victims evicted from L2) maximize the total effective cache capacity of the hierarchy.",
+        "(C) A Virtually Indexed, Physically Tagged (VIPT) L1 cache allows the TLB lookup and the cache set index decoding to proceed in parallel, reducing the critical path latency.",
+        "(D) Write-Allocate is typically paired with Write-Through caches to ensure the line is brought into the cache on a write miss.",
+        "(E) In a Non-Uniform Cache Architecture (NUCA) L3, the latency to access a specific L3 bank depends on the physical distance between the requesting core and that bank on the die."
+      ],
+      "answer": "(A)(B)(C)(E)",
+      "explanation": "<ul><li>(A) 對：L3 沒有的 line，上層一定也沒有，snoop 只要查 L3 就能過濾。</li><li>(B) 對：exclusive 各層不重複存放，總有效容量 = 各層相加。</li><li>(C) 對：用 page offset 內的 bit 當 index，查 TLB 和選 set 同時進行。</li><li>(D) 錯：常見搭配是 <b>write-back + write-allocate</b>、<b>write-through + no-write-allocate</b>。write-through 每次寫都要寫到下層，write miss 時把 block 搬進來意義不大。</li><li>(E) 對：NUCA 的 L3 分成很多 bank 分布在晶片上，離 core 越遠延遲越大。</li></ul>"
+    },
+    {
+      "id": "co-0069",
+      "topics": [
+        "multiprocessors",
+        "flynn-taxonomy"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）In Modern GPU Architectures (SIMT - Single Instruction, Multiple Threads), how are memory divergence and control divergence handled?",
+      "choices": [
+        "(A) If threads within a single Warp take different paths of an <code>if-else</code> branch, the hardware serializes the execution, executing both paths for all threads but masking off writes for inactive threads.",
+        "(B) Memory Coalescing occurs when threads in a Warp access contiguous memory addresses, allowing the GPU memory controller to combine them into a single high-bandwidth transaction.",
+        "(C) GPUs rely on massive L3 caches (hundreds of MBs) rather than thread-level parallelism to hide memory latency.",
+        "(D) A Shared Memory (or Scratchpad) bank conflict occurs when multiple threads in a Warp try to access different addresses that map to the same physical memory bank in the same cycle.",
+        "(E) Unlike CPUs, GPUs strictly avoid context switching and run a single kernel to completion before starting another."
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) 對：一個 warp 共用一個 PC，分支分歧時先跑 if 那邊（else 的 thread 被 mask 掉），再跑 else 那邊，效率因此下降，這叫 <b>control divergence</b>。</li><li>(B) 對：warp 裡 32 個 thread 存取連續位址時，可以合併成少數幾個記憶體交易。</li><li>(C) 錯：GPU 靠的是大量 thread 輪流執行（一個 warp 等記憶體就換另一個）來隱藏延遲，cache 相對很小。</li><li>(D) 對：shared memory 分成多個 bank，同一 cycle 多個 thread 存取同一 bank 的不同位址就要排隊。</li><li>(E) 錯：GPU 可以同時跑多個 kernel，也支援 preemption 和 context switch。</li></ul>"
+    },
+    {
+      "id": "co-0070",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Which of the following statements correctly describe the principles of Locality of Reference?",
+      "choices": [
+        "(A) Temporal Locality implies that if a memory location is referenced, it is likely to be referenced again soon (e.g., variables in a loop).",
+        "(B) Spatial Locality implies that if a memory location is referenced, nearby addresses are likely to be referenced soon (e.g., traversing an array).",
+        "(C) Caches rely on Spatial Locality by loading data in \"Blocks\" or \"Lines\" rather than single bytes.",
+        "(D) Temporal Locality is primarily exploited by the Prefetcher, not the Cache.",
+        "(E) Instruction caches generally exhibit high Spatial Locality because programs usually execute instructions sequentially."
+      ],
+      "answer": "(A)(B)(C)(E)",
+      "explanation": "<ul><li>(A)(B) 是兩種 locality 的標準定義。</li><li>(C) 對：一次搬一整個 block，鄰近的資料就順便進來了。</li><li>(D) 錯：temporal locality 主要靠 cache「保留最近用過的資料」來利用；prefetcher 是預先抓「接下來會用到的附近資料」，比較偏向 spatial（或依存取模式預測）。</li><li>(E) 對：指令大多循序執行，I-cache 的 spatial locality 很高，miss rate 也通常很低。</li></ul>"
+    },
+    {
+      "id": "co-0071",
+      "topics": [
+        "multiprocessors",
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（作業系統與計算機組織）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_hardware.pdf"
+      },
+      "question": "（多選題）Modern GPUs often use GDDR (Graphics Double Data Rate) or HBM. How does the memory subsystem of a GPU differ from a CPU's DDR subsystem regarding latency and parallelism?",
+      "choices": [
+        "(A) CPU memory controllers are optimized for Low Latency to ensure quick response times for serial tasks and OS interrupts.",
+        "(B) GPU memory controllers are optimized for Throughput and are designed to tolerate high latency by switching between thousands of active threads (latency hiding).",
+        "(C) Memory Coalescing: GPU hardware attempts to combine memory accesses from adjacent threads into a single transaction to maximize bus utilization, a feature less critical in standard CPU scalar execution.",
+        "(D) CPUs typically use massive L1/L2/L3 caches to reduce the effective memory latency, whereas GPUs devote more die area to ALUs and use smaller caches relative to their compute throughput.",
+        "(E) GDDR memory is pin-compatible with standard DDR memory, meaning you can plug GDDR6 chips directly into a standard PC motherboard DDR4 slot."
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<ul><li>(A) 對：CPU 跑的是少量、對延遲敏感的循序工作。</li><li>(B) 對：GPU 追求頻寬，用大量 thread 輪替來隱藏延遲。</li><li>(C) 對：coalescing 是 GPU 的重點；CPU 的 scalar 程式一次只發一個存取，比較不需要。</li><li>(D) 對：CPU 晶片很大比例是 cache；GPU 把面積給 ALU，cache 相對算力小很多。</li><li>(E) 錯：GDDR 是焊在顯示卡上的晶片，介面、電氣規格、腳位都和 DDR DIMM 不同，不能插在主機板的 DDR4 插槽上。</li></ul>"
+    },
+    {
+      "id": "co-0072",
+      "topics": [
+        "cache-coherence",
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(20 pts) Consider a SMP processor (Symmetric Multiprocessor) adopting the Write-Invalidate <i>Snooping Cache Coherence</i> protocol. Each processor has a 4KiB direct-mapped, physically-addressed L1 cache with 16-byte cache lines. Three integer arrays A, B and C are placed contiguously in the memory in the order of A, B and C. The starting address of array A is 0x0000A000 (assuming 32-bit memory address). Processor P0 and P1 execute the following code segment (the L1 cache is empty initially):</p>\n<pre class=\"code\">Int  A[300], B[300], C[300]\nfor (i=4*Pn; i&lt; 4*(Pn+1);i++)   /* Pn is the processor id: 0, 1 */\n     C[i] = A[i]+B[i];</pre>\n<p>(a) (5 pts) What is the size (bits) of the tag array?<br>\n(b) (5 pts) Could increasing the cache associativity reduce cache misses running the above codes?<br>\n(c) (5 pts) How many coherence misses could occur in the worst case(c1)? How many of them are false-sharing misses(c2)?<br>\n(d) (5 pts) if the cache line size becomes 32 bytes (the cache size is still 4KiB), how many coherence misses could occur in the worst case (d1)? How many of them are false-sharing misses(d2)?</p>",
+      "answer": "(a) 256 × 20 = 5120 bits；(b) 不能；(c) c1 = 0、c2 = 0；(d) d1 = 6、d2 = 6",
+      "explanation": "<p><b>(a)</b> 4KiB / 16B = 256 條 line，index 要 8 bits；offset 是 16B → 4 bits；tag = 32 − 8 − 4 = 20 bits。tag array 共 256 × 20 = <b>5120 bits</b>（題目只問 tag，不含 valid bit；若連 valid 一起算是 256 × 21 = 5376 bits）。</p>\n<p><b>(b)</b> 先算位址：int 4 bytes，每個陣列 1200 bytes，所以 A 在 0xA000、B 在 0xA4B0、C 在 0xA960。P0 用到 i = 0～3，P1 用到 i = 4～7，每個處理器每個陣列剛好碰 16 bytes。16B line 下 P0 用到的 index 是 0、75、150，P1 是 1、76、151，六條 line 的 index 全都不同，沒有 conflict miss，只剩每條 line 第一次存取的 compulsory miss（強制失誤）。associativity 只能減少 conflict miss，所以<b>不能</b>減少 miss。</p>\n<p><b>(c)</b> 16B line 時，A[0..3]、A[4..7] 剛好落在不同 line（0xA000 與 0xA010），B、C 也一樣（B 起點 0x4B0 = 1200 是 16 的倍數，C 起點 2400 也是），兩顆處理器完全沒有共用任何 line，所以 coherence miss <b>c1 = 0</b>，false sharing <b>c2 = 0</b>。</p>\n<p><b>(d)</b> 32B line 時：A[0..7] 在同一條 line（0xA000～0xA01F），但兩邊都只讀，讀共享不會互相 invalidate；B 的起點 1200 不是 32 的倍數，B[0..3] 落在 0xA4A0 那條、B[4..7] 落在 0xA4C0 那條，各自分開；C 起點 2400 是 32 的倍數，C[0..7] 全在 0xA960 這一條，兩顆處理器都要<b>寫</b>它。最差情況是兩邊交錯寫：P0 寫 C[0]（cold miss）、P1 寫 C[4]（cold miss，同時 invalidate P0）、P0 寫 C[1]（coherence miss）……每顆各寫 4 次，扣掉各自第一次的 cold miss，剩 3 + 3 = <b>d1 = 6</b> 次 coherence miss。兩邊寫的其實是不同的 word，資料本身沒有真的共享，所以 6 次全是 false sharing（偽共享），<b>d2 = 6</b>。這幾個數字已用小程式模擬位址與交錯寫入確認過。</p>\n<p>常見錯誤：以為 A 那條 line 也會造成 coherence miss，其實只讀不寫，共享狀態可以一直維持。</p>"
+    },
+    {
+      "id": "co-0073",
+      "topics": [
+        "data-hazards",
+        "pipelining",
+        "control-unit"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(25 pts) Consider a 5-stage (IF, ID, EX, MEM, WB) RISC-V pipelined processor (Figure 1) composed of logic blocks with the following latency (any unspecified block latency is treated as 0):</p>\n<p>（原題附各元件延遲表與含 Forwarding Unit、Hazard Detection Unit 的五級管線資料路徑圖 Figure 1；子題 (a) 需要依該圖逐段計算延遲，本題庫只收不依賴該圖的 (b)～(d)。）</p>\n<p>Given the following code segment:</p>\n<pre class=\"code\">#1 lw    x10, 100(x5)\n#2 add   x2, x10, x2\n#3 add   x2, x2, x4\n#4 sub   x6, x2, x6</pre>\n<p>(b) (5 pts) When the first instruction (lw) is in the MEM stage, which instructions are executing in the ID (b1) and EX (b2) stage? (請填寫 instruction number，不要寫 instruction)<br>\n(c) (5 pts) When the sub instruction (#4) is in the EX state, what value should be set for the control signal ForwardA (c1) and ForwardB (c2), respectively?<br>\n(d) (5 pts) What are the control signal values for RegWrite (d1), MemtoReg(d2), MemRead(d3), and MemWrite (d4) for the sub instruction?</p>",
+      "answer": "(b) b1 = #2，b2 = 無（stall 插入的 bubble／nop）；(c) ForwardA = 10，ForwardB = 00；(d) RegWrite = 1，MemtoReg = 0，MemRead = 0，MemWrite = 0",
+      "explanation": "<p><b>(b)</b> #2 要用 lw 載入的 x10，這是 load-use hazard（載入使用危障），forwarding 也救不了，Hazard Detection Unit 會讓 #2 在 ID 多停一個 cycle、往 EX 塞一個 bubble。時間表：lw 在 cycle 1～4 依序是 IF、ID、EX、MEM；#2 在 cycle 3 進 ID 被擋住，cycle 4 還在 ID。所以 lw 在 MEM 時，<b>ID 是 #2</b>，<b>EX 是 bubble</b>（沒有真正的指令）。</p>\n<p><b>(c)</b> #4 sub 的 rs1 = x2，最近一次寫 x2 的是 #3，#4 在 EX 時 #3 剛好在 MEM（EX/MEM 暫存器裡），所以 ForwardA = <b>10</b>（從 EX/MEM 轉送）。注意 #2 也寫 x2，但比較舊，forwarding 會優先取最新的 #3。rs2 = x6，前面沒有人寫 x6，ForwardB = <b>00</b>（直接用暫存器檔讀出的值）。</p>\n<p><b>(d)</b> sub 是 R-type：要寫回 rd → RegWrite = 1；寫回的值來自 ALU 不是記憶體 → MemtoReg = 0；不讀也不寫記憶體 → MemRead = 0、MemWrite = 0。</p>"
+    },
+    {
+      "id": "co-0074",
+      "topics": [
+        "cpu-performance",
+        "cache-performance",
+        "instruction-level-parallelism",
+        "flynn-taxonomy"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_hardware.pdf"
+      },
+      "question": "<p>(5 pts) Which one(s) of the following statements are correct? (全對才給分)（複選）</p>",
+      "choices": [
+        "(1) A processor with higher MIPS (Million Instruction per Second) has higher performance than a processor with lower MIPS.",
+        "(2) The LRU (Least Recently Used) cache replacement policy has been proved to be the optimal one.",
+        "(3) Vector instructions could be beneficial to applications with good data-level parallelism.",
+        "(4) A SMT (Simultaneous Multithreading) processor can increase CPU utilization by allowing instructions from several independent threads to execute each cycle."
+      ],
+      "answer": "(3)(4)",
+      "explanation": "<p><b>(1) 錯</b>：MIPS 只看每秒執行幾條指令，沒考慮指令集不同、每條指令做的事不同，也沒考慮同一程式在不同機器上的指令數。真正的效能要看執行時間 = 指令數 × CPI × clock cycle time。</p>\n<p><b>(2) 錯</b>：被證明最佳的是 OPT（Belady 的最佳置換：踢掉未來最久才會用到的），它需要預知未來；LRU 只是用過去近似未來。</p>\n<p><b>(3) 對</b>：Vector instruction（向量指令）一條指令對整批資料做同樣運算，正好適合 data-level parallelism（資料層級平行）高的應用。</p>\n<p><b>(4) 對</b>：SMT（同時多執行緒）在同一個 cycle 從多個 thread 發出指令，填滿單一 thread 用不完的功能單元，提高使用率。</p>"
+    },
+    {
+      "id": "co-0075",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts) Compilers could affect program execution efficiency. We have two compiler options, C1 and C2. Given a program A, compiler C1 results in a dynamic instruction count of 1.0x 10<sup>9</sup> and has an execution time of 1.1 second, while compiler C2 results in a dynamic instruction count of 1.2 x 10<sup>9</sup> and an execution time of 1.5 second. Assume the processor has a clock cycle time of 1ns. What is the average CPI for that program compiled with C1 and C2, respectively?</p>",
+      "choices": [
+        "(A) C1= 1.3 ; C2=1.35",
+        "(B) C1= 1.2 ; C2=1.30",
+        "(C) C1= 1.1 ; C2=1.25",
+        "(D) C1= 1.0 ; C2=1.20",
+        "(E) None of the above"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>執行時間 = 指令數 × CPI × cycle time，所以 CPI = 時間 ÷ (指令數 × cycle time)。</p><p>C1：1.1 s ÷ (1.0 × 10<sup>9</sup> × 1 ns) = 1.1 s ÷ 1.0 s = <b>1.1</b>；C2：1.5 s ÷ (1.2 × 10<sup>9</sup> × 1 ns) = 1.5 ÷ 1.2 = <b>1.25</b>。C2 指令多 20%、每條指令平均又多花 0.15 個 cycle，兩者相乘讓它慢了 1.5/1.1 ≈ 1.36 倍。答案 (C)。</p>"
+    },
+    {
+      "id": "co-0076",
+      "topics": [
+        "data-hazards",
+        "pipelining"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts) Consider the fragment of RISC-V assembly codes below:</p>\n<pre class=\"code\">#1   sd  x29, 12(x16)\n#2   ld  x29, 8(x16)\n#3   sub x17, x29, x14\n#4   add x15, x17, x14\n#5   sub x15, x30, x14</pre>\n<p>Assume that we have a standard 5-stage pipeline (IF, ID, EX, MEM, WB) without data forwarding, and a register can be written and read back in the same cycle without introducing a hazard. Which CPU cycles do instruction #3 and instruction #4 complete assuming a perfect cache?</p>",
+      "choices": [
+        "(A) 7 ; 9",
+        "(B) 8 ; 9",
+        "(C) 8 ; 10",
+        "(D) 9 ; 11",
+        "(E) 9 ; 12"
+      ],
+      "answer": "(E)",
+      "explanation": "<p>沒有 forwarding，後面的指令必須等前一條在 WB 寫回的那個 cycle 才能在 ID 讀到新值（題目說同一個 cycle 寫完再讀沒問題）。</p>\n<div class=\"table-scroll\"><table><tr><th>指令</th><th>IF</th><th>ID</th><th>EX</th><th>MEM</th><th>WB</th></tr>\n<tr><td>#1 sd</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>\n<tr><td>#2 ld x29</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>\n<tr><td>#3 sub（用 x29）</td><td>3</td><td>6（卡在 ID 4、5）</td><td>7</td><td>8</td><td>9</td></tr>\n<tr><td>#4 add（用 x17）</td><td>6</td><td>9（等 #3 的 WB）</td><td>10</td><td>11</td><td>12</td></tr></table></div>\n<p>#3 要等 #2 在 cycle 6 寫回 x29，所以 ID 在 cycle 6，<b>cycle 9</b> 完成；#4 要等 #3 在 cycle 9 寫回 x17，ID 在 cycle 9，<b>cycle 12</b> 完成。答案 (E)。注意 #1 sd 只讀 x29、不寫，不會和 #2 造成 RAW 危障。</p>"
+    },
+    {
+      "id": "co-0077",
+      "topics": [
+        "procedure-calls",
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts) Below is the RISC-V assembly program generated for the body of function f: \"<i>int f(int a, int b, int c)</i>\". The program follows RISC-V's convention and uses registers x10-x18 to pass parameters and return values in function calls.</p>\n<pre class=\"code\">addi  x2, x2, -16\nsd    x1, 0(x2)\nslli  x5, x12, 5\nsd    x5, 8(x2)\njal   x1, m\nld    x11, 8(x2)\nlui   x12, 0x11232\naddi  x12, 0x334\nld    x1, 0(x2)\naddi  x2, x2, 16\njal   x0, g</pre>\n<p>Which of the following is the respective C code? Note that the addi instruction in RISC-V is sign-extended for immediate values.</p>",
+      "choices": [
+        "(A) return g(m(a, b*5), 0x11232334)",
+        "(B) return g(m(a, b), c*32, 0x33411232)",
+        "(C) return g(m(a, b), 0x11232334, c*32)",
+        "(D) return g(m(a, c), b*32, 0x11232334)",
+        "(E) return g(m(a, b), c*32, 0x11232334)"
+      ],
+      "answer": "(E)",
+      "explanation": "<p>參數依序放在 x10、x11、x12，所以 a = x10、b = x11、c = x12，回傳值放 x10。</p>\n<p>1. 開 16 bytes 的 stack frame，存回傳位址 x1。<br>2. slli x5, x12, 5 → x5 = c × 2<sup>5</sup> = <b>c*32</b>，先存到 stack，因為呼叫 m 之後暫存器可能被改掉。<br>3. jal x1, m：此時 x10 = a、x11 = b 都沒動過，所以是 <b>m(a, b)</b>，結果放在 x10。<br>4. ld x11 ← c*32，成為 g 的第二個參數。<br>5. lui x12, 0x11232 → x12 = 0x11232000；再加 0x334（最高位是 0，符號延伸後仍是正的，不用像 0x800 以上那樣先把 lui 的值加 1）→ <b>0x11232334</b>，是第三個參數。<br>6. 還原 x1、收回 stack，最後 jal x0, g 是 tail call（尾呼叫）：直接跳去 g，g 回傳時就直接回到 f 的呼叫者，所以等同 return g(...)。</p>\n<p>合起來是 return g(m(a, b), c*32, 0x11232334)，答案 (E)。(B) 把 lui／addi 的高低位顛倒；(C) 把第二、三個參數順序弄反。</p>"
+    },
+    {
+      "id": "co-0078",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts) Consider the RISC-V code below were executed concurrently on two cores.</p>\n<pre class=\"code\">[x2] = 1\n[x3] = 1\n________\nld    x1, 0(x2)\naddi  x1, x1, 1\nsd    x1, 0(x2)\nld    x4, 0(x3)\nadd   x4, x1, x4\nsd    x4, 0(x3)</pre>\n<p>Memory is shared by the two cores. Before the executing the code, assuming registers x2 and x3 of each of the cores contain different values (x2<sub>core0</sub> != x3<sub>core0</sub> and x2<sub>core1</sub> != x3<sub>core1</sub>). The same register x2 and x3 of the two cores respectively contain the same value (x2<sub>core0</sub> = x2<sub>core1</sub> and x3<sub>core0</sub> = x3<sub>core1</sub>). The memory location [x2] and [x3] each contains the integer value 1 before executing the code. Assuming no instruction reordering is possible. What are all the possible values of [x2] and [x3] after code execution has completed?</p>",
+      "choices": [
+        "(A) [x2] = 2, [x3] = 3 or 4 or 5",
+        "(B) [x2] = 2 or 3, [x3] = 3 or 4 or 5 or 6",
+        "(C) [x2] = 2 or 3, [x3] = 3 or 4 or 5 or 6 or 7",
+        "(D) [x2] = 1 or 2 or 3, [x3] = 2 or 3 or 4 or 5",
+        "(E) [x2] = 3, [x3] = 4 or 5 or 6 or 7"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>每個核心做的事：x1 = [x2] + 1 寫回 [x2]，再 [x3] = [x3] + x1。兩個核心的讀－改－寫沒有任何鎖保護，會發生 race condition（競爭情況）。</p>\n<p><b>[x2]</b>：兩邊都讀到 1 → 都寫 2，最後是 <b>2</b>（一次更新遺失）；一邊寫完另一邊才讀 → 2 再 +1 = <b>3</b>。不可能是 1（至少有人寫了 2）。</p>\n<p><b>[x3]</b>：兩個核心的 x1 只可能是 (2, 2) 或 (2, 3)。<br>\nx1 = (2, 3) 且 [x3] 的更新沒有互相蓋掉：1 + 2 + 3 = 6；有一邊的更新被蓋掉：1 + 2 = 3 或 1 + 3 = 4。<br>\nx1 = (2, 2)：不蓋掉是 1 + 2 + 2 = 5，蓋掉是 3。<br>\n所以 [x3] ∈ {3, 4, 5, 6}，不可能出現 7（那需要兩個 x1 都是 3，但先讀的一定讀到 1）。</p>\n<p>用程式窮舉兩個 6 條指令序列全部 924 種交錯，得到的 ([x2], [x3]) 組合為 (2,3)、(2,5)、(3,3)、(3,4)、(3,6)，和 (B) 的範圍相符。答案 (B)。</p>"
+    },
+    {
+      "id": "co-0079",
+      "topics": [
+        "virtual-memory",
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts)（複選）Assume a virtual memory system with an 4KiB page size. The cache capacity is 16KiB, and the block size is 8-word (1 word = 4 bytes). Which cache architecture could be implemented as a virtually-indexed, physically tagged cache:</p>",
+      "choices": [
+        "(A) Direct-mapped cache",
+        "(B) 2-way associative cache",
+        "(C) 4-way associative cache",
+        "(D) 8-way associative cache",
+        "(E) 16-way associative cache"
+      ],
+      "answer": "(C)(D)(E)",
+      "explanation": "<p>VIPT（virtually-indexed, physically-tagged，虛擬索引實體標籤）要在查 TLB 的同時就用虛擬位址找 set，又不能有 alias（別名）問題，條件是 index + block offset 全部落在 page offset 之內，也就是<b>每一路（way）的大小 ≤ page size = 4KiB</b>，這樣 index 位元在虛擬與實體位址中完全一樣。</p>\n<p>每一路大小 = 16KiB ÷ 路數：直接對映 16KiB、2-way 8KiB 都超過 4KiB，不行；4-way 剛好 4KiB、8-way 2KiB、16-way 1KiB 都可以。block 是 32 bytes 只影響 offset 位數，不影響這個結論。答案 (C)(D)(E)。</p>"
+    },
+    {
+      "id": "co-0080",
+      "topics": [
+        "cpu-performance",
+        "amdahls-law"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts)（複選）Assume the CPI for INT instructions, FP instructions, L/S instructions, and branch instructions for a given processor P is 1, 2, 4, and 2, respectively. Consider a program F that includes 12 x 10<sup>6</sup> INT instructions, 15 x 10<sup>6</sup> FP instructions, 50 x 10<sup>6</sup> L/S instructions, and 13 x 10<sup>6</sup> branch instructions. Assume the program executes on a machine with a single processor P that has a 3.2 GHz clock rate. Which of the following are correct?</p>",
+      "choices": [
+        "(A) If one can optimize the program F by removing 80% of the INT instructions, the execution time of F can be reduced by more than 3%.",
+        "(B) It is possible to make program F run 2 times faster by reducing the CPI of the FP instructions.",
+        "(C) One can optimize program F to run more than 2 times faster by reducing the CPI of the L/S instructions to 1.2.",
+        "(D) Suppose a new type of INT instruction called INT1 is added to the instruction set of processor P to replace the existing INT instructions. On average, through the use of the new INT instruction, we can reduce the number of INT instructions needed to execute a program by 50%, while increasing the clock cycle time by only 10%. If we replace the INT instructions in program F with the INT1 instructions, program F will run faster on processor P.",
+        "(E) If 30 x 10<sup>6</sup> system call instructions (each has CPI of 10) are added to the program F, F will run more than 2 times slower after the addition."
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<p>先算總 cycle 數（單位 10<sup>6</sup>）：INT 12×1 = 12、FP 15×2 = 30、L/S 50×4 = 200、branch 13×2 = 26，共 <b>268</b>。L/S 佔了 200/268 ≈ 75%，是最大的瓶頸。</p>\n<p><b>(A) 對</b>：拿掉 80% INT 省 12×0.8 = 9.6，9.6/268 ≈ <b>3.58%</b> &gt; 3%。<br>\n<b>(B) 錯</b>：就算 FP 的 CPI 降到 0，也只剩 238，加速 268/238 ≈ 1.13 倍，這就是 Amdahl's law（阿姆達爾定律）的上限，到不了 2 倍。<br>\n<b>(C) 對</b>：L/S 變 50×1.2 = 60，總數 128，加速 268/128 ≈ <b>2.09</b> 倍 &gt; 2。<br>\n<b>(D) 錯</b>：INT 變 6，總數 262，但 cycle time 變 1.1 倍：262×1.1 = 288.2 &gt; 268，反而慢了約 7.5%。省下的 6 個單位抵不過全部指令都變慢 10%。<br>\n<b>(E) 對</b>：多 30×10 = 300，總數 568，568/268 ≈ <b>2.12</b> 倍的時間，超過 2 倍。</p>\n<p>答案 (A)(C)(E)。時脈 3.2 GHz 對所有選項都是共同因子，不影響比較（原本執行時間 268×10<sup>6</sup> / 3.2×10<sup>9</sup> ≈ 83.75 ms）。</p>"
+    },
+    {
+      "id": "co-0081",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_hardware.pdf"
+      },
+      "question": "<p>(5 pts)（複選）Which of the following are true about RISC-V instructions about the registers in the register file and instruction size?</p>",
+      "choices": [
+        "(A) If the registers were halved, I-type instructions could have 2 more immediate bits.",
+        "(B) If the registers were halved, there must be less I-type instructions.",
+        "(C) If the registers were halved, shift amounts would change to 0-63.",
+        "(D) Increasing the size of each bit field to support more registers potentially makes each instruction longer.",
+        "(E) Increasing the number of registers must increase the code size of a RISC-V assembly program."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p><b>(A) 對</b>：32 個暫存器減半成 16 個，每個暫存器欄位從 5 bits 變 4 bits。I-type 有 rs1 和 rd 兩個暫存器欄位，共省下 2 bits，可以挪給 immediate。<br>\n<b>(B) 錯</b>：I-type 指令有幾種是由 opcode／funct3 決定，和暫存器數量無關。<br>\n<b>(C) 錯</b>：shift amount 的範圍取決於資料寬度（RV64 是 0～63、RV32 是 0～31），不是暫存器個數。<br>\n<b>(D) 對</b>：暫存器變多、欄位變寬，在其他欄位不縮的前提下指令就得變長。<br>\n<b>(E) 錯</b>：暫存器變多可以減少 spill（溢出到記憶體）的 load／store，程式反而可能變小；「must」太絕對。</p>"
+    },
+    {
+      "id": "co-0082",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(2pts) As shown below, the function \"compute_distance\" runs through a list of 2D points and computes the distance between each pair of them. Note that each point is represented by single precision float-point numbers. Please answer the following questions.</p>\n<pre class=\"code\">void compute_distance(float x[], float y[], int N, float distance[]) {\n    for (int i = 0; i &lt; N; i++) {\n        for (int j = 0; j &lt; N; j++) {\n            float x_dist = x[i]- x[j];\n            float y_dist = y[i] - y[j];\n            distance[j + i * N] = sqrt(x_dist*x_dist + y_dist*y_dist);\n        }\n    }\n}</pre>\n<p>Let us observe the data access pattern first. For each iteration in the inner loop, the function loads 4 floating-point numbers and store 1 floating-point number. Assume N=1024, and the processor cache is too small to hold all the data points. The cache is configured with a write-back/write-allocate policy, with 32-bytes blocks. What would be the average cache miss rate?</p>",
+      "choices": [
+        "(A) Less than 1%.",
+        "(B) Between 1% and 5%.",
+        "(C) Between 5% and 10%.",
+        "(D) Between 10% and 20%.",
+        "(E) More than 20%."
+      ],
+      "answer": "(C)",
+      "explanation": "<p>每次內層迴圈有 5 次存取：讀 x[i]、y[i]、x[j]、y[j]，寫 distance[j + i*N]。</p>\n<p>x[i]、y[i] 在整個內層迴圈都不變，一直 hit。x[j]、y[j]、distance 都是連續往後走（spatial locality，空間區域性）：一個 32-byte block 放得下 8 個 float，所以每 8 次迭代各 miss 一次。cache 放不下所有點，下一輪 i 重新掃 x[j]、y[j] 時又會 miss；distance 每格只寫一次，寫入採 write-allocate，第一次寫到新 block 也算 miss。</p>\n<p>每 8 次迭代：存取 8 × 5 = 40 次，miss 3 次（x[j]、y[j]、distance 各一次），miss rate = 3/40 = <b>7.5%</b>，落在 5%～10%。答案 (C)。</p>"
+    },
+    {
+      "id": "co-0083",
+      "topics": [
+        "cpu-performance",
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(2pts) Suppose the compute_distance function above is executed on an Intel Core i7 960 processor. The roofline model for the processor is shown as the figure below. The processor has 4 cores, and the capacity of Level 1 data cache on each core is 32KB. Assume N=1024. Based on the roofline model, how long does it take to finish the function when the processor cache is too small to store all the data points?</p>\n<pre class=\"code\">void compute_distance(float x[], float y[], int N, float distance[]) {\n    for (int i = 0; i &lt; N; i++) {\n        for (int j = 0; j &lt; N; j++) {\n            float x_dist = x[i]- x[j];\n            float y_dist = y[i] - y[j];\n            distance[j + i * N] = sqrt(x_dist*x_dist + y_dist*y_dist);\n        }\n    }\n}</pre>\n<p>（roofline 圖：Core i7 960 (Nehalem)，縱軸 GFLOPs/s（4～1024，對數刻度），橫軸 Arithmetic intensity（1/8～32，對數刻度）；斜線為 Stream = 16.4 GB/s，水平屋頂為 102.4 GF/s Single Precision 與 51.2 GF/s Double Precision。）</p>",
+      "choices": [
+        "(A) Less than 1,000 seconds.",
+        "(B) Between 1,000 and 10,000 seconds.",
+        "(C) Between 10,000 and 100,000 seconds.",
+        "(D) Between 100,000 and 1,000,000 seconds.",
+        "(E) More than 1,000,000 seconds."
+      ],
+      "answer": "(A)",
+      "explanation": "<p>總共 N<sup>2</sup> = 1024<sup>2</sup> ≈ 1.05 × 10<sup>6</sup> 次內層迭代，每次大約 6 個浮點運算（2 減、2 乘、1 加、1 開根號），合計約 6.3 × 10<sup>6</sup> FLOPs。</p>\n<p>cache 放不下時，每次迭代要和記憶體搬十幾到二十 bytes，arithmetic intensity（運算強度）大約只有 0.3 FLOP/byte，落在 roofline 的斜線區（memory-bound，受記憶體頻寬限制）。可達效能 ≈ 16.4 GB/s × 0.3 ≈ 5 GFLOP/s。</p>\n<p>時間 ≈ 6.3 × 10<sup>6</sup> ÷ 5 × 10<sup>9</sup> ≈ 1.3 × 10<sup>−3</sup> 秒，大約 1 毫秒。就算 intensity 的算法不同、差個幾倍，也遠遠小於 1,000 秒。答案 (A)。這題是在考單位感：選項以「千秒」為單位，看到數量級就能判斷。</p>"
+    },
+    {
+      "id": "co-0084",
+      "topics": [
+        "cpu-performance",
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(2pts)（承 Q4：compute_distance 在 Core i7 960 上執行，cache 放不下所有資料點）Following the previous question, if we wish to improve the performance, which of the following method is most effective?</p>",
+      "choices": [
+        "(A) Increase the associativity of the cache.",
+        "(B) Increase the memory bandwidth.",
+        "(C) Enable data prefetch.",
+        "(D) Make the processor pipeline deeper",
+        "(E) Enable multithreading."
+      ],
+      "answer": "(B)",
+      "explanation": "<p>上一題的 arithmetic intensity 約 0.3，落在 roofline 的斜線區，效能上限 = 記憶體頻寬 × intensity，離 102.4 GF/s 的運算屋頂還差很遠，瓶頸是<b>記憶體頻寬</b>。把頻寬加大，斜線往上移，效能直接跟著成比例提升，答案 (B)。</p>\n<p>其他選項：(A) 存取是連續掃描，miss 幾乎都是 compulsory／capacity，不是 conflict，提高 associativity 沒用；(C) prefetch 可以隱藏延遲，但搬的總位元組不變，仍然受頻寬限制；(D) 管線加深是提高運算能力，但現在不是卡在運算；(E) 多執行緒同樣只是多搶頻寬，總頻寬不變。</p>"
+    },
+    {
+      "id": "co-0085",
+      "topics": [
+        "multiprocessors",
+        "cache-coherence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(6pts) Consider two hardware threads, Proc0 and Proc1, that interact with a shared memory that maps addresses to values. Both memory locations, A and B, have an initial value of 0. x0 and x1 are CPU registers. Each of the hardware threads has a store buffer. The hardware threads support out-of-order execution. Assume the following code in two cases runs on Proc0 and Proc1 concurrently. Which of the following is true about the final state of x0 and x1 after the code finishes executing?</p>\n<div class=\"table-scroll\"><table><tr><th colspan=\"2\">Case 0</th><th colspan=\"2\">Case 1</th><th colspan=\"2\">Case 2</th></tr>\n<tr><th>Proc0</th><th>Proc1</th><th>Proc0</th><th>Proc1</th><th>Proc0</th><th>Proc1</th></tr>\n<tr><td>store #1, [A];</td><td>store #1, [B];</td><td>load x0, [A];</td><td>load x1, [B];</td><td>store #1, [A];</td><td>load x0, [B];</td></tr>\n<tr><td>load x0, [B];</td><td>load x1, [A];</td><td>store #1, [B];</td><td>store #1, [A];</td><td>store #1, [B];</td><td>load x1, [A];</td></tr></table></div>",
+      "choices": [
+        "(A) In case 0, x0 on Proc0 and x1 on Proc1 can be either both 0 or 1.",
+        "(B) In case 0, suppose the threads support total store order (TSO); x0 on Proc0 and x1 on Proc1 can never be both 0.",
+        "(C) In case 1, suppose the threads support TSO; x0 on Proc0 and x1 on Proc1 can be both 1.",
+        "(D) In case 2, suppose the threads support TSO; x0 and x1on Proc1 can be 1 and 0, respectively."
+      ],
+      "answer": "(A)",
+      "explanation": "<p>TSO（Total Store Order，全序儲存）唯一允許的重排是：store 先放進自己的 store buffer，後面對<b>不同位址</b>的 load 可以先執行（store→load 重排）；load→load、load→store、store→store 都保持順序。</p>\n<p><b>Case 0</b>（store 後接 load）：兩邊的 store 都還待在各自的 store buffer 時就去 load，兩邊都讀到 0；也可能兩邊都先寫進記憶體再讀，兩邊都讀到 1。所以 (A) 對；(B) 錯，TSO 正是允許「兩個都是 0」的模型（要靠 fence 才能禁止）。</p>\n<p><b>Case 1</b>（load 後接 store）：要兩個都讀到 1，必須各自的 store 跑到自己的 load 前面，也就是 load→store 重排，TSO 不允許 → (C) 錯。</p>\n<p><b>Case 2</b>（message passing）：Proc1 讀到 B = 1 代表 Proc0 的第二個 store 已可見，TSO 保持 store→store 順序，A = 1 一定更早可見；Proc1 的兩個 load 也不能重排，所以不可能 x0 = 1、x1 = 0 → (D) 錯。</p>"
+    },
+    {
+      "id": "co-0086",
+      "topics": [
+        "data-hazards",
+        "pipelining"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(5pts) Consider the following instruction sequence. Assume that the instructions are executed on a pipeline datapath with five stages.</p>\n<pre class=\"code\">or x10, x3, x4\nld x5, 8(x10)\nld x4, 0(x2)\nadd x5, x10, x5\nsd x5, 4(x10)</pre>\n<p>Assume that the processor has neither implemented hazard detection nor forwarding. How many NOP instructions should be added to ensure the execution is correct?</p>",
+      "choices": [
+        "(A) 0",
+        "(B) 3",
+        "(C) 5",
+        "(D) 6",
+        "(E) 8"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>沒有 forwarding，消費者必須在生產者 WB 的同一個 cycle（前半寫、後半讀）或之後才能在 ID 讀暫存器，所以兩條相依指令之間要隔 2 條指令。</p>\n<p>1. or 寫 x10 → 緊接著的 ld x5, 8(x10) 讀 x10：中間 0 條，要補 <b>2</b> 個 NOP。<br>\n2. ld x5 → add x5, x10, x5 讀 x5：中間已有 ld x4 一條，再補 <b>1</b> 個。（add 也讀 x10，但距離 or 已經夠遠。）<br>\n3. add 寫 x5 → 緊接著的 sd x5 讀 x5：補 <b>2</b> 個。<br>\nld x4 寫的 x4 後面沒人用，不必處理。合計 2 + 1 + 2 = <b>5</b>，答案 (C)。</p>\n<p>常見錯誤：如果暫存器檔不能「同一 cycle 先寫後讀」，每處要多 1 個，會得到 8（選項 E）；但五級管線的標準設定是暫存器檔前半寫、後半讀。</p>"
+    },
+    {
+      "id": "co-0087",
+      "topics": [
+        "cpu-performance",
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(5pts) Which of the following statement is true?</p>",
+      "choices": [
+        "(A) Introducing support of a new complex instruction will improve performance for all programs.",
+        "(B) Reducing the number of registers in the ISA will decrease the instructions per program for all programs.",
+        "(C) Introducing support for instructions with shorter lengths (e.g., 16-bit instructions in RISC-V) in the ISA will improve all programs' performance.",
+        "(D) Increasing cache associativity will result in an increase in cache hit time for all programs.",
+        "(E) Reducing cache block size will result in a reduction of capacity misses."
+      ],
+      "answer": "(D)",
+      "explanation": "<p><b>(A) 錯</b>：複雜指令可能拉長 clock cycle 或 CPI，用不到它的程式反而變慢。<br>\n<b>(B) 錯</b>：暫存器變少會增加 spill 的 load／store，指令數通常變多。<br>\n<b>(C) 錯</b>：短指令能縮小程式、改善 I-cache，但解碼變複雜，不保證所有程式都變快。<br>\n<b>(D) 對</b>：associativity 提高，每次存取要比對更多 tag，再經過更寬的 mux 選資料，hit time 變長是硬體本身的性質，和跑什麼程式無關。<br>\n<b>(E) 錯</b>：capacity miss 取決於 cache 總容量放不放得下工作集；block 變小反而會降低空間區域性的好處，並不會減少 capacity miss。</p>"
+    },
+    {
+      "id": "co-0088",
+      "topics": [
+        "multiprocessors",
+        "cache-coherence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(8pts)（複選）Which of the following are possible values stored in the memory location A after the following sequence of instructions has been executed, each on a different processor? Assume each processor has its own cache, memory location A initially contains value 0.</p>\n<div class=\"table-scroll\"><table><tr><th>CPU0</th><th>CPU1</th><th>CPU2</th></tr>\n<tr><td>store #4, (A);<br>load reg, (A);<br>add reg, reg, #4;<br>store reg, (A);</td><td>load reg, (A);<br>add reg, reg, #1;<br>store reg, (A);<br>load reg, (A);<br>add reg, reg, reg;<br>store reg, (A);</td><td>store #6, (A);<br>load reg, (A);<br>add reg, reg, reg;<br>store reg, (A);</td></tr></table></div>",
+      "choices": [
+        "(A) 8",
+        "(B) 9",
+        "(C) 10",
+        "(D) 16"
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<p>cache coherence 只保證對同一位址的寫入有一致的順序，不保證三個 CPU 的讀－改－寫不互相插隊，所以要看所有交錯。逐一舉出能得到各值的交錯（每個 CPU 內部順序不變）：</p>\n<p><b>8</b>：CPU1 全部先做完（0 → 1 → 2），CPU2 再做完（6 → 12），最後 CPU0 做完（4 → 8）。<br>\n<b>9</b>：CPU0、CPU2 先做完得到某值後，CPU1 讀到 A = 4 後加 1 寫 5…… 具體一例：CPU0 store 4、load 4、add 得 8；CPU1 load 4、add 得 5；CPU0 store 8；CPU2 全部做完（6 → 12）；CPU1 store 5 → 再 load 5、乘 2 得 10……（此路得 10）。要得 9 的例子：CPU2 store 6、CPU0 store 4、CPU1 load 4 得 5 並 store 5、CPU1 load 5 加倍成 10 尚未寫、CPU0 load 5 加 4 得 9、CPU1 store 10、CPU2 load 10 加倍 20 尚未寫……最後讓 CPU0 的 store 9 排在最後，A = <b>9</b>。<br>\n<b>10</b>：CPU0、CPU2 先做完（任何值），CPU1 讀到 4 後加 1 得 5，最後 load 5 加倍寫 10，而 CPU1 最後才寫。<br>\n<b>16</b>：CPU1 先做完、CPU0 做完得 8（或 CPU0 先 store 4 再 load 4 加 4 得 8 並寫回），最後 CPU2 讀 8 加倍得 16，CPU2 最後寫。</p>\n<p>用程式窮舉三個序列的所有交錯（假設每條指令是原子的、記憶體為循序一致），A 最後可能的值為 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 20, …, 44，8、9、10、16 都在其中。答案 (A)(B)(C)(D)。</p>"
+    },
+    {
+      "id": "co-0089",
+      "topics": [
+        "cache-mapping"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "計算機結構與作業系統(B)",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_hardware.pdf"
+      },
+      "question": "<p>(8pts)（複選）Assume the system has the following properties:</p>\n<ul><li>The memory is byte-addressable, and memory accesses are to 1-byte words.</li><li>Addresses are 13 bits wide.</li><li>The cache is 4-way set associative, with 4-byte block size, and 8 sets.</li></ul>\n<div class=\"table-scroll\"><table>\n<tr><th>Index</th><th>Tag</th><th>V</th><th>Bytes:0-3</th><th>Tag</th><th>V</th><th>Bytes:0-3</th><th>Tag</th><th>V</th><th>Bytes:0-3</th><th>Tag</th><th>V</th><th>Bytes:0-3</th></tr>\n<tr><td>0</td><td>F0</td><td>1</td><td>ED 32 0A A2</td><td>8A</td><td>1</td><td>74 80 1D FC</td><td>14</td><td>1</td><td>EF 09 86 2A</td><td>BC</td><td>0</td><td>25 44 FA 1A</td></tr>\n<tr><td>1</td><td>BC</td><td>0</td><td>03 3E CD 38</td><td>A0</td><td>0</td><td>16 7B ED 5A</td><td>BC</td><td>1</td><td>8E 74 DF 18</td><td>E4</td><td>1</td><td>FB B7 12 02</td></tr>\n<tr><td>2</td><td>BC</td><td>1</td><td>54 9E 1E FA</td><td>B6</td><td>1</td><td>DC FA B2 14</td><td>00</td><td>0</td><td>B6 1F 7B 44</td><td>74</td><td>0</td><td>10 F5 B8 2E</td></tr>\n<tr><td>3</td><td>BE</td><td>0</td><td>2F 7E 3D A8</td><td>C0</td><td>1</td><td>27 95 A4 74</td><td>C4</td><td>0</td><td>07 11 6B D8</td><td>BC</td><td>0</td><td>C7 B7 AF C2</td></tr>\n<tr><td>4</td><td>7E</td><td>1</td><td>74 21 1C 2C</td><td>8A</td><td>1</td><td>22 C2 DC 34</td><td>BC</td><td>1</td><td>BA DD 37 D8</td><td>DC</td><td>0</td><td>E7 A2 39 BA</td></tr>\n<tr><td>5</td><td>98</td><td>0</td><td>A9 76 DB EE</td><td>54</td><td>0</td><td>BC 91 D5 92</td><td>98</td><td>1</td><td>80 BA 9B F6</td><td>BC</td><td>1</td><td>48 16 81 0A</td></tr>\n<tr><td>6</td><td>38</td><td>0</td><td>5D 4D F7 DA</td><td>BC</td><td>1</td><td>69 C2 DB 74</td><td>8A</td><td>1</td><td>A8 CE 7F DA</td><td>38</td><td>1</td><td>FA 93 EB 48</td></tr>\n<tr><td>7</td><td>8A</td><td>1</td><td>04 2A 32 6A</td><td>9E</td><td>0</td><td>B1 86 56 0E</td><td>CC</td><td>1</td><td>96 30 47 F2</td><td>BC</td><td>1</td><td>F8 1D 42 DB</td></tr>\n</table></div>\n<p>Suppose a program running on the machine references a 1-byte word at address addr. Select the true statements.</p>",
+      "choices": [
+        "(A) Read from the addr:0x71A results in a cache hit. The return byte value is 0xDB.",
+        "(B) Read from the addr:0x16E8 results in a cache hit. The return byte value is 0x74.",
+        "(C) Read from the addr: 0x178B results in a cache hit. The return byte value is 0xFA.",
+        "(D) Read from the address 0xA73 results in a cache miss."
+      ],
+      "answer": "(C)(D)",
+      "explanation": "<p>位址 13 bits 切成：block offset 2 bits（4-byte block）、index 3 bits（8 sets）、tag 13 − 5 = 8 bits。</p>\n<div class=\"table-scroll\"><table><tr><th>位址</th><th>二進位（tag | index | offset）</th><th>tag</th><th>set</th><th>offset</th><th>結果</th></tr>\n<tr><td>0x71A</td><td>00111000 | 110 | 10</td><td>0x38</td><td>6</td><td>2</td><td>set 6 第 4 路 tag 38、V=1 → hit，byte 2 = <b>EB</b></td></tr>\n<tr><td>0x16E8</td><td>10110111 | 010 | 00</td><td>0xB7</td><td>2</td><td>0</td><td>set 2 沒有 tag B7 → <b>miss</b></td></tr>\n<tr><td>0x178B</td><td>10111100 | 010 | 11</td><td>0xBC</td><td>2</td><td>3</td><td>set 2 第 1 路 tag BC、V=1 → hit，byte 3 = <b>FA</b></td></tr>\n<tr><td>0xA73</td><td>01010011 | 100 | 11</td><td>0x53</td><td>4</td><td>3</td><td>set 4 沒有 tag 53 → <b>miss</b></td></tr></table></div>\n<p>(A) 雖然 hit，但回傳的是 EB 不是 DB（DB 是 set 6 第 2 路的 byte 2，tag 不同），錯；(B) miss，錯；(C)、(D) 對。另外注意 set 6 第 1 路也是 tag 38，但 V = 0，無效的 block 不能算 hit。</p>"
+    },
+    {
+      "id": "co-0090",
+      "topics": [
+        "power-wall",
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>[5 points]（複選）Power management is important to the design of computer systems. Which of the following statements is/are true?</p>",
+      "choices": [
+        "(A) To achieve the maximum performance, the clock frequency should be increased, but the supply voltage should be reduced at the same time, so that the processor would not be overheated.",
+        "(B) Suppose the active power consumption is 10W when the supply voltage is 1.3V. When the supply voltage is reduced to 1.1V, the active power consumption is changed to 7.2W.",
+        "(C) When the processor is executing a memory-bound program, reducing the clock frequency should not impact the performance significantly, assuming the memory bus frequency remains the same.",
+        "(D) As technology continues to shrink, leakage power will become a dominant factor. Dynamic voltage and frequency scaling (DVFS) is often used to reduce the leakage power.",
+        "(E) The processor caches can be turned off immediately at any time to save the power consumption as much as possible because the data can always be found in the memory."
+      ],
+      "answer": "(B)(C)（(D) 的判定待確認）",
+      "explanation": "<p>動態功耗 P = α × C × V<sup>2</sup> × f。</p>\n<p><b>(A) 錯</b>：電壓降低後電晶體切換變慢，能跑的最高頻率也跟著下降，不能同時「頻率升高、電壓降低」來追求最高效能；要拉高頻率通常反而要加電壓。<br>\n<b>(B) 對</b>：頻率不變時功耗和 V<sup>2</sup> 成正比：10 × (1.1/1.3)<sup>2</sup> = 10 × 0.716 ≈ <b>7.2 W</b>，降 15% 的電壓就省下約 28% 的功耗。<br>\n<b>(C) 對</b>：memory-bound（受記憶體限制）的程式大部分時間在等記憶體，CPU 時脈降低對總時間影響不大，這正是 DVFS 在這類程式上能省電又不太掉效能的原因。<br>\n<b>(D) 錯</b>：前半句對，但 DVFS 主要針對的是動態功耗（V<sup>2</sup>f）；對付漏電（leakage，靜態功耗）的主要手段是 power gating（關掉電源）。降低電壓雖然也會稍微減少漏電，但不是 DVFS 的主要目的（官方答案未公布，此項待確認）。<br>\n<b>(E) 錯</b>：write-back cache 裡可能有 dirty（被改過、還沒寫回）的資料，記憶體裡的是舊版本；直接關掉會遺失資料，必須先把 dirty block 寫回。</p>"
+    },
+    {
+      "id": "co-0091",
+      "topics": [
+        "pipelining",
+        "single-cycle-datapath"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>[5 points]（複選）In this question, we examine how the pipeline affects the clock cycle time of the processor. Assume that individual stages of the datapath have the following latencies:</p>\n<div class=\"table-scroll\"><table><tr><th>IF</th><th>ID</th><th>EX</th><th>MEM</th><th>WB</th></tr><tr><td>500 ps</td><td>700 ps</td><td>300 ps</td><td>600 ps</td><td>400 ps</td></tr></table></div>\n<p>Also, assume that instructions executed by the processor are broken down as the following:</p>\n<div class=\"table-scroll\"><table><tr><td>ALU/Logic</td><td>40%</td></tr><tr><td>Jump/Branch</td><td>15%</td></tr><tr><td>Load</td><td>25%</td></tr><tr><td>re（原卷此格字被截斷，依上下文應為 Store）</td><td>20%</td></tr></table></div>\n<p>Which of the following statements is/are true?</p>",
+      "choices": [
+        "(A) On a non-pipeline datapath, the store instruction needs 2500 ps to complete.",
+        "(B) The total latency for a load instruction is 1.4X higher on a pipelined datapath.",
+        "(C) Assuming there are no stalls or hazards, the utilization of the data memory is below 50%.",
+        "(D) Assuming there are no stalls or hazards, for the given instruction mix, it is possible for a pipelined datapath to provide 3X throughput over a non-pipeline datapath.",
+        "(E) Pipelining does not only improve throughput, but it also helps save the power consumption for embedded processors."
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<p>五個 stage 加起來 500 + 700 + 300 + 600 + 400 = <b>2500 ps</b>，最慢的 stage 是 ID 的 700 ps。</p>\n<p><b>(A) 對</b>：non-pipeline（單週期）datapath 的 clock cycle 必須容納最長的指令，一律是 2500 ps；store 雖然不用 WB，也還是要等完整的一個 cycle。<br>\n<b>(B) 對</b>：pipeline 的 clock 取最慢 stage 700 ps，一條 load 要走 5 個 stage：5 × 700 = 3500 ps，是 2500 的 <b>1.4 倍</b>。單一指令的延遲反而變長，pipeline 改善的是 throughput。<br>\n<b>(C) 對</b>：只有 load 和 store 會用到 data memory，佔 25% + 20% = <b>45%</b>，每個 cycle 只有 45% 的機率在用，低於 50%。<br>\n<b>(D) 對</b>：理想下每個 cycle 完成一條，throughput 比 = 2500 / 700 ≈ <b>3.57 倍</b>，超過 3 倍。<br>\n<b>(E) 錯</b>：pipeline 要多加 pipeline register、forwarding 等硬體，時脈也拉高，功耗通常是增加的，並不會幫忙省電。</p>"
+    },
+    {
+      "id": "co-0092",
+      "topics": [
+        "cache-performance",
+        "virtual-memory",
+        "cache-coherence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>[5 points]（複選）At the age of AI and big data, memory hierarchy has become more and more important. Which of the following statements is/are true?</p>",
+      "choices": [
+        "(A) Programmers can ignore memory hierarchies in writing code because modern compilers can optimize the data accesses to reduce cache misses.",
+        "(B) The three Cs model is often used for understanding the behavior of memory hierarchies. In this model, all cache misses are classified into one of three categories: compulsory misses, capacity misses, and coherence misses.",
+        "(C) In a write-through cache, the modified block is written to the lower level of the hierarchy only when it is replaced.",
+        "(D) To support virtual memory, a cache can be virtually indexed and virtually tagged so that the cache can search for the data before the TLB translates the virtual address into a physical address.",
+        "(E) In a cache-coherent multiprocessor, the protocols to maintain coherence for multiple processors are called cache coherence protocols. With a write invalidate protocol, it invalidates copies in other caches on a write, so it is possible that a shared-memory multithreaded program generates more cache misses when it executes on a multiprocessor."
+      ],
+      "answer": "(D)(E)",
+      "explanation": "<p><b>(A) 錯</b>：編譯器能做的最佳化有限，資料結構的排列、存取順序（例如矩陣用 row-major 還是 column-major 走、要不要做 blocking）仍要靠程式設計師考慮。<br>\n<b>(B) 錯</b>：3C model 的第三個 C 是 <b>conflict miss</b>（衝突失誤），不是 coherence miss；coherence miss 是多處理器時才另外加上的「第四個 C」。<br>\n<b>(C) 錯</b>：「被替換時才寫回下一層」是 <b>write-back</b>；write-through 是每次寫入都同時寫到下一層。<br>\n<b>(D) 對</b>：virtually indexed, virtually tagged（虛擬索引、虛擬標籤）的 cache 完全用虛擬位址查找，不必等 TLB，只是要另外處理 alias（同一實體位址有多個虛擬位址）與 context switch 的問題。<br>\n<b>(E) 對</b>：write invalidate 協定在寫入時會讓其他處理器的副本失效，對方之後再讀就會 miss（coherence miss），所以同樣的程式在多處理器上可能產生比單處理器更多的 miss。</p>"
+    },
+    {
+      "id": "co-0093",
+      "topics": [
+        "ieee-754"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>[5 points]（複選）According to the article, the use of low-precision calculation is critical to the transformer engine. The article mentions FP8, but there are two FP8 formats that are in use today. One is called <i>E4M3</i>, as it contains 4 exponent bits and 3 mantissa bits, and the other is called <i>E5M2</i>, which contains 5 exponent bits and 2 mantissa bits. Which of the following statements is/are true?</p><p>（題目中的 the article 指同卷前面引用的一篇談 MLPerf 加入 GPT-3 訓練基準、比較 Nvidia H100 與 Intel Gaudi2 的新聞，文中提到混合精度與 FP8；本題只需要浮點數格式的知識即可作答。）</p>",
+      "choices": [
+        "(A) The maximum value that can be represented by E4M3 is larger than E5M2.",
+        "(B) The minimum number of E4M3 is smaller than E5M2, in terms of absolute value.",
+        "(C) The maximum value that can be represented with E4M3 is larger than an unsigned 8-bit integer.",
+        "(D) The maximum value that can be represented with E5M2 is larger than an unsigned 16-bit integer.",
+        "(E) The entire transformer network can be calculated with FP8 to save the memory space and accelerate the execution."
+      ],
+      "answer": "(C)（待確認）",
+      "explanation": "<p>兩種格式都是 1 bit 符號，bias = 2<sup>e−1</sup> − 1：E4M3 的 bias = 7，E5M2 的 bias = 15。</p>\n<p><b>E5M2</b> 照 IEEE 754 慣例（指數全 1 保留給 ∞／NaN）：最大值 = 2<sup>30−15</sup> × 1.75 = 2<sup>15</sup> × 1.75 = <b>57344</b>；最小正數（subnormal）= 2<sup>1−15−2</sup> = 2<sup>−16</sup> ≈ 1.5 × 10<sup>−5</sup>。<br>\n<b>E4M3</b> 實務上（H100 等採用的 OCP FP8 規格）不保留 ∞，只把「指數全 1 且尾數全 1」當 NaN，所以最大值 = 2<sup>15−7</sup> × 1.75 = 2<sup>8</sup> × 1.75 = <b>448</b>；最小正數 = 2<sup>1−7−3</sup> = 2<sup>−9</sup> ≈ 0.00195。</p>\n<p><b>(A) 錯</b>：448 &lt; 57344。E5M2 指數位多，範圍大；E4M3 尾數多，精度高。<br>\n<b>(B) 錯</b>：E4M3 最小 2<sup>−9</sup>，比 E5M2 的 2<sup>−16</sup> 大。<br>\n<b>(C) 對</b>：448 &gt; 255（unsigned 8-bit 最大值）。不過若把 E4M3 也當成 IEEE 754 風格（指數全 1 保留），最大值只有 2<sup>7</sup> × 1.875 = 240 &lt; 255，這項就變錯，所以標待確認。<br>\n<b>(D) 錯</b>：57344 &lt; 65535（unsigned 16-bit 最大值）。<br>\n<b>(E) 錯</b>：只有部分層能用 FP8，其他層仍需要 16 或 32 bit 的精度，這正是 mixed precision（混合精度）的意義，整個網路全用 FP8 會損失準確度。</p>"
+    },
+    {
+      "id": "co-0094",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "計算機結構與作業系統",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_hardware.pdf"
+      },
+      "question": "<p>[10 points]（複選）A group of researchers at Massachusetts Institute of Technology developed a LLM called <i>TinyChat</i> to run on weak, power-constrained edge devices (https://hanlab.mit.edu/blog/tinychat). First, they profiled the execution time of TinyChat in the target application scenario to understand the workload. The LLM workload was broken down into two stages, Context stage and Generation Stage, and the profile revealed that the Generation Stage dominated the execution time, as Generation occupies 310ms of the total execution time (340ms). Furthermore, they used arithmetic intensity and roofline model to characterize the workload, and the figure below reported the arithmetic intensity for the two stages.</p>\n<p>（圖的內容：圓餅圖分成 Context (200 tokens) 與 Generation (20 tokens) 兩塊，Generation 佔 310 ms。下方 roofline 圖縱軸為 Peak Throughput (TFLOPS)，0～180；橫軸為 Arithmetic Intensity (FLOPs/Byte)，0～300；斜線上升到約 180 TFLOPS 後變水平。圖上標示：Generation Stage: Arithmetic Intensity = 1, 1TFLOPS (W16A16)；Generation Stage: Arithmetic Intensity = 4, 4TFLOPS (W4A16)，兩點都在斜線最底端；Context stage: Arithmetic Intensity &gt;= 165，落在水平屋頂附近。）</p>\n<p>Suppose we are designing a processor chip and fine-tune the LLM for a similar application, which of the following statements is/are true?</p>",
+      "choices": [
+        "(A) We should include more arithmetic units in the chip design as it will increase the peak throughput and effectively accelerate the LLM.",
+        "(B) Because the performance of the LLM is mostly memory-bound, increasing the memory bandwidth should improve the performance.",
+        "(C) Increasing the clock rate for the processor should improve the power efficiency in terms of throughput per watt.",
+        "(D) Improving the branch predictor should greatly increase the performance because better branch prediction can reduce the control hazards.",
+        "(E) Suppose the original LLM uses FP16 to store the parameters, compressing the model to use FP8 parameters should accelerate the LLM by approximately 2 times."
+      ],
+      "answer": "(B)(E)",
+      "explanation": "<p>先看瓶頸：總時間 340 ms 中 Generation 佔 310 ms（約 91%），而 Generation 的 arithmetic intensity 只有 1（W16A16）或 4（W4A16），落在 roofline 斜線的最底端，離 180 TFLOPS 的運算屋頂非常遠，是典型的 <b>memory-bound</b>（受記憶體頻寬限制）。</p>\n<p><b>(A) 錯</b>：加更多運算單元只是把屋頂往上抬，但 Generation 根本碰不到屋頂，幾乎沒幫助。<br>\n<b>(B) 對</b>：memory-bound 時效能 ≈ 頻寬 × intensity，加大記憶體頻寬就直接提高效能。<br>\n<b>(C) 錯</b>：提高時脈不但幫不了 memory-bound 的部分，功耗還會隨頻率（以及通常要跟著提高的電壓）上升，每瓦效能反而變差。<br>\n<b>(D) 錯</b>：LLM 主要是大量規則的矩陣－向量運算，分支少且好預測，branch predictor 不是瓶頸。<br>\n<b>(E) 對</b>：memory-bound 時時間主要花在搬參數。FP16 → FP8 參數大小減半，同樣的頻寬每秒能搬兩倍的參數，intensity 也變成約 2 倍，效能大約快 2 倍。圖中 W4A16（4-bit 權重）的 intensity 是 W16A16 的 4 倍、throughput 也是 4 倍，就是同一個道理。</p>"
     }
   ]
 }

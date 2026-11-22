@@ -245,6 +245,1529 @@
       "source": {
         "kind": "original"
       }
+    },
+    {
+      "id": "dm-0016",
+      "topics": [
+        "spanning-trees"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "1-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Assume that each vertex has a unique id, how many different spanning trees in the following figure?<br>（原題附圖，以文字描述：中間是一個 4 個頂點的正方形 cycle C<sub>4</sub>；正方形的每個頂點各自連到一個 K<sub>4</sub> 的其中兩個頂點（這兩個頂點在 K<sub>4</sub> 中彼此相鄰），四個角各掛一個 K<sub>4</sub>，全圖共 20 個頂點。）",
+      "answer": "4 × 40<sup>4</sup> = 10,240,000",
+      "explanation": "<p>關鍵是 <b>cut vertex（割點）</b>：正方形的四個角都是割點，把圖切成 5 個 block（區塊）：中間的 C<sub>4</sub>，以及四個「K<sub>4</sub> 加一個角頂點」的區塊。生成樹在每個 block 裡獨立選，所以總數 = 各 block 生成樹數的乘積。</p><ul><li>C<sub>4</sub>：拿掉 4 條邊中的任 1 條，共 4 種。</li><li>K<sub>4</sub> 加角頂點 c（c 連到 K<sub>4</sub> 的相鄰兩點 a、b）：用 Matrix-Tree Theorem（矩陣樹定理）算 Laplacian 去掉一行一列的行列式，得到 40。也可以手算：c 只連 1 條邊時，c 是葉子，2 × 16 = 32（K<sub>4</sub> 有 4<sup>2</sup> = 16 棵生成樹）；c 連 a、b 兩條邊時，邊 ab 不能用，等於數「含 a–c–b 路徑」的情況，相當於把 a、b 縮成一點後 K<sub>4</sub> 剩下的結構的生成樹數 = 8，32 + 8 = 40。</li></ul><p>總數 = 4 × 40<sup>4</sup> = 4 × 2,560,000 = 10,240,000（已用程式對整張 20 點圖跑矩陣樹定理驗算）。常見錯誤是忘了割點可以讓各區塊分開相乘，硬算 20×20 行列式。</p>"
+    },
+    {
+      "id": "dm-0017",
+      "topics": [
+        "cardinality"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "1-(b)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "We can show that the set {(x,y) | x,y are positive integers} is countable by finding a 1-1 mapping from (x,y) to an integer. Given (1,1) -&gt; 1, (1,2)-&gt;2, (1,3)-&gt;4, (1,4)-&gt;7, (2,1)-&gt; 3, (2,2)-&gt;5, (2,3)-&gt;8, (3,1)-&gt;6, (3,2)-&gt;9, (4,1)-&gt;10, please find which (x,y) maps to 465?",
+      "answer": "(30, 1)",
+      "explanation": "<p>觀察：x + y 相同的點排在同一條對角線，依 x + y = 2, 3, 4, … 一條一條數，同一條對角線裡 x 由小到大。對角線 s = x + y 前面已經有 1 + 2 + … + (s − 2) = (s − 2)(s − 1)/2 個點，所以</p><pre class=\"formula\">f(x, y) = (s − 2)(s − 1)/2 + x，s = x + y</pre><p>驗證：f(3,2) = 3·4/2 + 3 = 9，和題目一致。</p><p>找 465：前 k 條對角線共 k(k+1)/2 個點，30·31/2 = 465 剛好用完前 30 條，所以 465 是第 30 條對角線（s = 31）的最後一個點，也就是 x 最大的 (30, 1)。程式逐一驗算也只得到 (30, 1)。</p>"
+    },
+    {
+      "id": "dm-0018",
+      "topics": [
+        "proof-methods"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "2-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Please prove that x<sup>5</sup>-2x<sup>4</sup>+x<sup>3</sup>-2x<sup>2</sup>-7x-1=0 has a solution x which is an integer.",
+      "answer": "x = −1 是整數解（構造性存在證明）",
+      "explanation": "<p>這是 <b>constructive existence proof（構造性存在證明）</b>：直接找出一個整數解。</p><p>若整數 x 是根，代入移項得 x(x<sup>4</sup> − 2x<sup>3</sup> + x<sup>2</sup> − 2x − 7) = 1，所以 x 必須整除常數項 1，候選只有 ±1。</p><ul><li>x = 1：1 − 2 + 1 − 2 − 7 − 1 = −10 ≠ 0。</li><li>x = −1：−1 − 2 − 1 − 2 + 7 − 1 = 0。</li></ul><p>所以 x = −1 是整數解，得證。（因式分解為 (x + 1)(x<sup>4</sup> − 3x<sup>3</sup> + 4x<sup>2</sup> − 6x − 1)，已用程式確認。）</p>"
+    },
+    {
+      "id": "dm-0019",
+      "topics": [
+        "pigeonhole-principle"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "2-(b)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Given a 4x82 grid, each vertex is colored in one of three different colors, please show that we can always find a rectangle with four vertices in the same color.",
+      "answer": "每一行（4 點）必有兩點同色；(兩列位置, 顏色) 只有 C(4,2)×3 = 18 種，82 &gt; 18，鴿籠原理得兩行同型，構成同色矩形。",
+      "explanation": "<p>把格子看成 82 個直行（column），每行 4 個點。</p><ol><li>每行 4 個點只有 3 種顏色，由 <b>Pigeonhole Principle（鴿籠原理）</b>，每行至少有兩點同色。每行挑出一組「同色的兩點」，記下它的型態 = (哪兩列, 什麼顏色)。</li><li>兩列的選法 C(4,2) = 6，顏色 3 種，所以型態最多 6 × 3 = 18 種。</li><li>有 82 行，82 &gt; 18，再用一次鴿籠原理，必有兩行的型態相同：同樣的兩列、同樣的顏色。這四個點就是四角同色的矩形。</li></ol><p>其實只要 19 行就夠了，82 行是大幅超過。常見錯誤是只說「每行有兩點同色」就結束，忘了第二次鴿籠才能保證兩行對得上。</p>"
+    },
+    {
+      "id": "dm-0020",
+      "topics": [
+        "proof-methods"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "3-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Assume N is a positive integer, please show that the statement “if 2<sup>N</sup> -1 is prime, then N is prime” is true using proof by contrapositive.",
+      "answer": "證逆否命題：若 N 不是質數，則 2<sup>N</sup> − 1 不是質數。",
+      "explanation": "<p><b>Contrapositive（逆否命題）</b>：若 N 不是質數，則 2<sup>N</sup> − 1 不是質數。</p><ul><li>N = 1：2<sup>1</sup> − 1 = 1 不是質數，成立。</li><li>N 是合數：N = ab，1 &lt; a, b &lt; N。令 x = 2<sup>a</sup>，則 2<sup>N</sup> − 1 = x<sup>b</sup> − 1 = (x − 1)(x<sup>b−1</sup> + x<sup>b−2</sup> + … + 1) = (2<sup>a</sup> − 1)(2<sup>a(b−1)</sup> + … + 2<sup>a</sup> + 1)。</li><li>因為 1 &lt; a &lt; N，第一個因數 2<sup>a</sup> − 1 滿足 1 &lt; 2<sup>a</sup> − 1 &lt; 2<sup>N</sup> − 1，是真因數，所以 2<sup>N</sup> − 1 是合數。</li></ul><p>逆否命題成立，原命題就成立。注意 N = 1 這個邊界別漏掉，因為「不是質數」包含 1。</p>"
+    },
+    {
+      "id": "dm-0021",
+      "topics": [
+        "mathematical-induction"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "3-(b)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "5*n+7*m=N, where n,m,N are integers and n≥0, m≥0, N≥24. Please show that we can always find n, m to satisfy the equality. For example, (n,m)=(2,2) corresponds to 5*2+7*2=24 and (n,m)=(5,0) corresponds to 5*5+7*0=25.",
+      "answer": "基底 24~28 各給一組，之後用強歸納：N 可表示 ⇒ N + 5 可表示。",
+      "explanation": "<p>用 <b>Strong Induction（強歸納法）</b>。</p><p><b>基底</b>：連續 5 個數都能表示：</p><ul><li>24 = 5·2 + 7·2</li><li>25 = 5·5 + 7·0</li><li>26 = 5·1 + 7·3</li><li>27 = 5·4 + 7·1</li><li>28 = 5·0 + 7·4</li></ul><p><b>歸納步驟</b>：對 N ≥ 29，N − 5 ≥ 24 且 N − 5 &lt; N，由歸納假設 N − 5 = 5n + 7m，則 N = 5(n + 1) + 7m，n + 1 ≥ 0。</p><p>所以所有 N ≥ 24 都能表示。基底要放 5 個（因為每次跳 5），只放 24 一個是常見錯誤。附帶一提 23 就做不到（程式驗算 23 以下不能表示的是 1, 2, 3, 4, 6, 8, 9, 11, 13, 16, 18, 23），所以 24 是最小的門檻。</p>"
+    },
+    {
+      "id": "dm-0022",
+      "topics": [
+        "divide-and-conquer-recurrences"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 110,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "3-(c)",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_110_math.pdf"
+      },
+      "question": "Assume a set G whose elements are real numbers and the size of G is equal to 2<sup>k</sup>, where k is a positive integer. We just want to find the maximum value and the minimum value in this set G and develop an algorithm in the following.<pre class=\"code\">FindMaxMin(G)\n  If G contains only two numbers, then compare these two numbers,\n  set M to be the larger one, and set m to be the smaller one,\n  Else\n    Divide G into two subsets with equal size G1 and G2\n    Apply FindMaxMin(G1) to get M1 and m1\n    Apply FindMaxMin(G2) to get M2 and m2\n    M=max(M1,M2), m=min(m1,m2)\n  Return M,m</pre>We use T(N) to represent the number of comparisons when the set size is equal to N. N=2<sup>k</sup>. Please find T(N) in terms of N.",
+      "answer": "T(N) = 3N/2 − 2",
+      "explanation": "<p>列遞迴式：只剩兩個數時比 1 次；否則遞迴兩半，再用 max、min 各比 1 次：</p><pre class=\"formula\">T(2) = 1\nT(N) = 2T(N/2) + 2</pre><p>展開：T(N) = 2<sup>j</sup>T(N/2<sup>j</sup>) + 2 + 4 + … + 2<sup>j</sup>。取 N/2<sup>j</sup> = 2，即 2<sup>j</sup> = N/2：</p><pre class=\"formula\">T(N) = (N/2)·1 + (2 + 4 + … + N/2) = N/2 + (N − 2) = 3N/2 − 2</pre><p>驗算：T(4) = 4、T(8) = 10、T(16) = 22，都符合 3N/2 − 2。意義：比起分別找 max 和 min 要 2N − 2 次，分治法省下約 N/2 次比較。</p>"
+    },
+    {
+      "id": "dm-0023",
+      "topics": [
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "How many bit string of length 20 contain at most Nineteen 1s? Please expressed as A<sup>B</sup> + C<br>(a) A =______<br>(b) B =______<br>(c) C =______",
+      "answer": "A = 2，B = 20，C = −1（共 2<sup>20</sup> − 1 = 1,048,575 個）",
+      "explanation": "<p>用補集：長度 20 的 bit string 全部有 2<sup>20</sup> 個。「最多 19 個 1」的反面是「恰好 20 個 1」，只有 11…1 這一個。</p><pre class=\"formula\">2^20 − 1 = 1,048,575</pre><p>所以 A = 2、B = 20、C = −1。如果硬去加 C(20,0) + C(20,1) + … + C(20,19) 也會得到同樣答案，但補集一步就完成。</p>"
+    },
+    {
+      "id": "dm-0024",
+      "topics": [
+        "spanning-trees"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "Let (u,v) be a minimum-weight edge in a connected graph G. Show that (u,v) belongs to some minimum spanning tree of G",
+      "answer": "取任一 MST T；若 (u,v) ∉ T，把 (u,v) 加入形成 cycle，拿掉 cycle 上另一條邊 e，得到的 T′ 權重 ≤ T，所以 T′ 也是 MST 且含 (u,v)。",
+      "explanation": "<p>用 <b>exchange argument（交換論證）</b>。</p><ol><li>G 連通，所以存在 <b>Minimum Spanning Tree（最小生成樹）</b> T。若 (u,v) ∈ T 就證完了。</li><li>若 (u,v) ∉ T：T 中 u 到 v 有唯一路徑，加上 (u,v) 會形成恰好一個 cycle。這個 cycle 上一定有另一條邊 e ≠ (u,v)。</li><li>令 T′ = T − e + (u,v)。拿掉 cycle 上的一條邊不會破壞連通，邊數仍是 n − 1，所以 T′ 是生成樹。</li><li>(u,v) 是全圖權重最小的邊，所以 w(u,v) ≤ w(e)，得 w(T′) = w(T) − w(e) + w(u,v) ≤ w(T)。</li><li>T 已經是最小，所以 w(T′) = w(T)，T′ 也是 MST，而且包含 (u,v)。</li></ol><p>注意題目只說「some」MST：權重有相同時，不是每棵 MST 都含 (u,v)，所以不要證成「所有 MST 都含它」。</p>"
+    },
+    {
+      "id": "dm-0025",
+      "topics": [
+        "sets"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "A={5,6,7,8} 、B={u,v} 、C={}<br>consider a = |Power Set(A)|<br>b = |A×B| (× is cross product)<br>c = |Power Set(C)|<br>Please calculate 2<sup>c</sup> + b + a.",
+      "answer": "26",
+      "explanation": "<ul><li>a = |P(A)| = 2<sup>4</sup> = 16（A 有 4 個元素）。</li><li>b = |A × B| = 4 × 2 = 8。</li><li>c = |P(∅)| = 2<sup>0</sup> = 1：空集合的冪集合是 {∅}，裡面有 1 個元素。</li></ul><p>2<sup>c</sup> + b + a = 2 + 8 + 16 = 26。</p><p>陷阱在 c：很多人以為空集合的冪集合也是空的，算成 c = 0，得到 25。</p>"
+    },
+    {
+      "id": "dm-0026",
+      "topics": [
+        "permutations-combinations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 111,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_111_math.pdf"
+      },
+      "question": "(a) How many quadrilateral are determined by the vertices of a regular polygon of n sides? (n ≥ 4)<br>(b) How many if no side of the polygon is to be a side of any quadrilateral? (n ≥ 8)<br>Note: quadrilateral (四邊形)",
+      "answer": "(a) C(n,4)；(b) (n/4)·C(n−5,3) = n(n−5)(n−6)(n−7)/24",
+      "explanation": "<p><b>(a)</b> 正多邊形的頂點都在圓上，任選 4 點依圓周順序連起來恰好得到一個四邊形（凸四邊形），所以是 C(n,4)。</p><p><b>(b)</b> 四邊形的邊不能是多邊形的邊 ⇔ 選出的 4 個頂點兩兩不相鄰（環狀上不相鄰）。</p><ol><li>先固定一個頂點 P 被選：P 的兩個鄰居不能選，剩下 n − 3 個頂點排成一條直線，要從中再選 3 個互不相鄰的點。直線上 m 個點選 k 個不相鄰的方法數是 C(m − k + 1, k)，得 C(n − 3 − 3 + 1, 3) = C(n − 5, 3)。</li><li>每個頂點都可以當 P，共 n·C(n − 5, 3)，但每個四邊形被它的 4 個頂點各算了一次，要除以 4。</li></ol><pre class=\"formula\">(n/4)·C(n−5, 3) = n(n−5)(n−6)(n−7)/24</pre><p>驗算：n = 8 時得 2（只有隔點選的兩個正方形），n = 10 時得 25，和程式窮舉一致。n ≥ 8 正是因為 4 個點兩兩隔開至少要 8 個頂點。</p>"
+    },
+    {
+      "id": "dm-0027",
+      "topics": [
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "Among the 900 three-digit integers (from 100 to 999) those such as 131, 222, 303, 717, 848, and 969, where the integer is the same whether it is read from left to right or from right to left, are called palindromes. Without actually determining all of these three-digit palindromes, we would like to determine their sum. Please calculate the sum of these palindrome ranging from 100 to 999.",
+      "answer": "49500",
+      "explanation": "<p>三位數回文長成 aba = 101a + 10b，a ∈ {1..9}（首位不能是 0），b ∈ {0..9}，共 9 × 10 = 90 個。</p><p>分開加：</p><ul><li>101a 部分：每個 a 搭配 10 個 b，貢獻 101 × 10 × (1 + 2 + … + 9) = 101 × 10 × 45 = 45450。</li><li>10b 部分：每個 b 搭配 9 個 a，貢獻 10 × 9 × (0 + 1 + … + 9) = 10 × 9 × 45 = 4050。</li></ul><p>總和 = 45450 + 4050 = 49500（程式逐一加總驗算一致）。</p><p>另一個快速檢查：回文 aba 和 (10−a)(9−b)(10−a) 兩兩配對相加都是 1100，90 個配成 45 對，45 × 1100 = 49500。</p>"
+    },
+    {
+      "id": "dm-0028",
+      "topics": [
+        "generating-functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "Determine the generating function for the sequence 1, 1, 1, …, 1, 0, 0, 0,…, where the first <i>n</i>+1 terms are 1.",
+      "answer": "G(x) = 1 + x + x<sup>2</sup> + … + x<sup>n</sup> = (1 − x<sup>n+1</sup>)/(1 − x)",
+      "explanation": "<p><b>Generating Function（生成函數）</b>的定義是 G(x) = Σ a<sub>k</sub>x<sup>k</sup>。前 n + 1 項（k = 0..n）是 1，之後都是 0：</p><pre class=\"formula\">G(x) = 1 + x + x² + … + x^n = (1 − x^(n+1)) / (1 − x)</pre><p>後面的封閉形式是等比級數公式（x ≠ 1）。注意是 n + 1 項，指數最高到 x<sup>n</sup>，分子寫成 1 − x<sup>n</sup> 是常見的差一錯誤。</p>"
+    },
+    {
+      "id": "dm-0029",
+      "topics": [
+        "functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "How many bijective functions are there from a finite set <i>A</i> to a finite set <i>B</i> where |<i>A</i>| = |<i>B</i>| = <i>n</i>?",
+      "answer": "n!",
+      "explanation": "<p><b>Bijection（雙射）</b>是一對一且映成。把 A 的元素依序指定像：第 1 個有 n 種選擇，第 2 個不能和前面重複剩 n − 1 種，…，最後一個剩 1 種。</p><pre class=\"formula\">n × (n−1) × … × 1 = n!</pre><p>因為 |A| = |B|，一對一的函數自動也是映成，所以一對一函數的個數 n!/(n−n)! = n! 就是答案。</p>"
+    },
+    {
+      "id": "dm-0030",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "Solve the recurrence relation<br>a<sub>n+2</sub> − 5a<sub>n+1</sub> + 6a<sub>n</sub> = 2, n ≥ 0, a<sub>0</sub> = 3, a<sub>1</sub> = 7.",
+      "answer": "a<sub>n</sub> = 2·3<sup>n</sup> + 1",
+      "explanation": "<ol><li><b>齊次解</b>：特徵方程式 r² − 5r + 6 = 0，r = 2, 3，a<sub>n</sub><sup>(h)</sup> = A·2<sup>n</sup> + B·3<sup>n</sup>。</li><li><b>特解</b>：右邊是常數 2，而 1 不是特徵根，猜 a<sub>n</sub><sup>(p)</sup> = c：c − 5c + 6c = 2c = 2，c = 1。</li><li><b>代初始條件</b>：a<sub>n</sub> = A·2<sup>n</sup> + B·3<sup>n</sup> + 1。<br>a<sub>0</sub>：A + B + 1 = 3 → A + B = 2<br>a<sub>1</sub>：2A + 3B + 1 = 7 → 2A + 3B = 6<br>解得 B = 2、A = 0。</li></ol><p>a<sub>n</sub> = 2·3<sup>n</sup> + 1。驗算：a<sub>2</sub> = 5·7 − 6·3 + 2 = 19 = 2·9 + 1，程式算前 12 項都吻合。常見錯誤是先用齊次解代初始條件、最後才加特解，那樣常數會錯。</p>"
+    },
+    {
+      "id": "dm-0031",
+      "topics": [
+        "congruences"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 112,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_112_math.pdf"
+      },
+      "question": "Let <i>a</i>, <i>b</i> ∈ <b>Z</b> and let 2<i>a</i> + 3<i>b</i> be a multiple of 17. (For example, we could have <i>a</i> = 7, <i>b</i> = 1; and <i>a</i> = 4, <i>b</i> = 3 also works.) Determine that the following statement is true or false: 17 divides 9<i>a</i> + 5<i>b</i>.",
+      "answer": "True",
+      "explanation": "<p>想找整數 k 使 9a + 5b ≡ k(2a + 3b) (mod 17)，也就是 2k ≡ 9、3k ≡ 5 (mod 17)。</p><p>2 的模 17 反元素是 9（2·9 = 18 ≡ 1），所以 k ≡ 9·9 = 81 ≡ 13。檢查第二式：3·13 = 39 = 34 + 5 ≡ 5，成立。</p><p>所以 9a + 5b ≡ 13(2a + 3b) (mod 17)。實際上 13(2a + 3b) = 26a + 39b = (9a + 5b) + 17(a + 2b)，即</p><pre class=\"formula\">9a + 5b = 13(2a + 3b) − 17(a + 2b)</pre><p>右邊兩項都是 17 的倍數，所以 17 | 9a + 5b，敘述為真。用題目例子 a = 7, b = 1：9·7 + 5 = 68 = 4·17。程式也窮舉 −50..49 的範圍確認沒有反例。</p>"
+    },
+    {
+      "id": "dm-0032",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "Solve the recurrence relation a<sub>n+2</sub> − 4a<sub>n+1</sub> + 3a<sub>n</sub> = − 200 for n≥0 and a<sub>0</sub> = 3000 and a<sub>1</sub> = 3300.",
+      "answer": "a<sub>n</sub> = 2900 + 100·3<sup>n</sup> + 100n",
+      "explanation": "<ol><li><b>齊次解</b>：r² − 4r + 3 = 0，r = 1, 3，a<sub>n</sub><sup>(h)</sup> = A + B·3<sup>n</sup>。</li><li><b>特解</b>：右邊是常數，但 1 已經是特徵根，所以要猜 a<sub>n</sub><sup>(p)</sup> = cn（乘上 n）。代入：c(n+2) − 4c(n+1) + 3cn = −2c = −200，c = 100。</li><li><b>初始條件</b>：a<sub>n</sub> = A + B·3<sup>n</sup> + 100n。<br>A + B = 3000；A + 3B + 100 = 3300 → A + 3B = 3200。<br>相減 2B = 200，B = 100，A = 2900。</li></ol><p>a<sub>n</sub> = 2900 + 100·3<sup>n</sup> + 100n。驗算：a<sub>2</sub> = 4·3300 − 3·3000 − 200 = 4000 = 2900 + 900 + 200，程式算前 10 項都吻合。</p><p>最常見的錯誤是特解直接猜常數 c，代入會得到 0 = −200 的矛盾——因為常數已經被齊次解「佔用」了。</p>"
+    },
+    {
+      "id": "dm-0033",
+      "topics": [
+        "generating-functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "Please list the first 5 coefficients of the generating function F(x) = √(1 + x). (請化簡為最簡分數形式)",
+      "answer": "1, 1/2, −1/8, 1/16, −5/128",
+      "explanation": "<p>用 <b>Extended Binomial Theorem（廣義二項式定理）</b>：(1 + x)<sup>1/2</sup> = Σ C(1/2, k) x<sup>k</sup>，其中 C(u, k) = u(u−1)…(u−k+1)/k!。</p><ul><li>k = 0：1</li><li>k = 1：1/2</li><li>k = 2：(1/2)(−1/2)/2! = −1/8</li><li>k = 3：(1/2)(−1/2)(−3/2)/3! = (3/8)/6 = 1/16</li><li>k = 4：(1/2)(−1/2)(−3/2)(−5/2)/4! = (−15/16)/24 = −5/128</li></ul><p>程式做泰勒展開驗算一致。注意正負號交錯：從 k = 2 開始每多一個負因數就換一次號。</p>"
+    },
+    {
+      "id": "dm-0034",
+      "topics": [
+        "generating-functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "If G(x) is the generating function for the sequence {a<sub>k</sub>}, what is the generating function for each of these sequences?<br>(A) 3a<sub>0</sub>, 3a<sub>1</sub>, 3a<sub>2</sub>, 3a<sub>3</sub>, …<br>(B) 0, 0, 0, 0, a<sub>2</sub>, a<sub>3</sub>, …<br>(C) a<sub>1</sub>, 2a<sub>2</sub>, 3a<sub>3</sub>, 4a<sub>4</sub>, …",
+      "answer": "(A) 3G(x)　(B) x<sup>2</sup>(G(x) − a<sub>0</sub> − a<sub>1</sub>x)　(C) G′(x)",
+      "explanation": "<p>G(x) = a<sub>0</sub> + a<sub>1</sub>x + a<sub>2</sub>x² + …</p><ul><li><b>(A)</b> 每項乘 3：3G(x)。</li><li><b>(B)</b> a<sub>2</sub> 出現在 x<sup>4</sup> 的位置。先去掉前兩項：G(x) − a<sub>0</sub> − a<sub>1</sub>x = a<sub>2</sub>x² + a<sub>3</sub>x³ + …，a<sub>2</sub> 在 x² 位置，要再往右移 2 格，乘 x²：x²(G(x) − a<sub>0</sub> − a<sub>1</sub>x) = a<sub>2</sub>x<sup>4</sup> + a<sub>3</sub>x<sup>5</sup> + …。數一數前面有 4 個 0，所以 a<sub>2</sub> 是第 4 項（從 0 開始數），正確。</li><li><b>(C)</b> 第 k 項是 (k+1)a<sub>k+1</sub>，正好是微分：G′(x) = a<sub>1</sub> + 2a<sub>2</sub>x + 3a<sub>3</sub>x² + …。</li></ul><p>(B) 最容易錯在位移量：要確認 a<sub>2</sub> 落在 x<sup>4</sup>，而不是 x<sup>2</sup> 或 x<sup>6</sup>。</p>"
+    },
+    {
+      "id": "dm-0035",
+      "topics": [
+        "finite-state-machines"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_math.pdf"
+      },
+      "question": "Design a finite state machine M = (S, φ, σ, v, ω), where S = {s<sub>1</sub>, s<sub>2</sub>, s<sub>3</sub>, s<sub>4</sub>}, φ = {0,1,2}, σ = {0, 1}. The machine outputs 1 if the input string contains at least three 1s, otherwise it outputs 0. (請填問號應有的內容)<br>（原題附圖，以文字描述：Start 箭頭指向 S<sub>1</sub>；S<sub>1</sub>→S<sub>2</sub> 標 1, 0；S<sub>2</sub>→S<sub>3</sub> 標 ?；S<sub>3</sub>→S<sub>4</sub> 標 ?；S<sub>1</sub> 的自迴圈標 ?；S<sub>2</sub> 的自迴圈標 0, 0 與 2, 0；S<sub>3</sub>、S<sub>4</sub> 的自迴圈都標 ?。標籤格式為「輸入, 輸出」。）",
+      "answer": "S<sub>1</sub> 自迴圈：0,0 與 2,0；S<sub>2</sub>→S<sub>3</sub>：1,0；S<sub>3</sub> 自迴圈：0,0 與 2,0；S<sub>3</sub>→S<sub>4</sub>：1,1；S<sub>4</sub> 自迴圈：0,1、1,1、2,1",
+      "explanation": "<p>這是 <b>Mealy Machine（輸出跟著轉移）</b>，邊上的「x, y」表示讀到 x、輸出 y。狀態的意義是「目前看過幾個 1」：S<sub>1</sub> = 0 個、S<sub>2</sub> = 1 個、S<sub>3</sub> = 2 個、S<sub>4</sub> = 至少 3 個。</p><ul><li>讀到 0 或 2 不影響 1 的個數，所以 S<sub>1</sub>、S<sub>3</sub> 的自迴圈和 S<sub>2</sub> 一樣是 0,0 和 2,0。</li><li>S<sub>2</sub>→S<sub>3</sub>：讀到第二個 1，還沒達到 3 個，輸出 0，標 1,0。</li><li>S<sub>3</sub>→S<sub>4</sub>：讀到第三個 1，從這一刻起字串已包含至少三個 1，輸出 1，標 1,1。</li><li>S<sub>4</sub>：之後不論讀什麼都已滿足條件，自迴圈 0,1、1,1、2,1。</li></ul><p>常見錯誤是 S<sub>3</sub>→S<sub>4</sub> 寫成 1,0：Mealy 機的輸出在轉移當下就產生，讀到第三個 1 的那一步就該輸出 1。</p>"
+    },
+    {
+      "id": "dm-0036",
+      "topics": [
+        "finite-state-machines"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": "1",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "Let M be a Finite State Machine shown below:<br>（原題附圖，以文字描述：狀態 s<sub>0</sub>, s<sub>1</sub>, s<sub>2</sub>, s<sub>3</sub>，Start 指向 s<sub>0</sub>；轉移標籤為「輸入, 輸出」。s<sub>0</sub>→s<sub>1</sub>：1, 0；s<sub>1</sub>→s<sub>2</sub>：1, 0；s<sub>2</sub>→s<sub>3</sub>：1, 0；s<sub>3</sub>→s<sub>0</sub>：1, 1；四個狀態各有自迴圈 0, 0。）<br>I. How many distinct input string x are there such that ||x||=8 and ν(s<sub>0</sub>, x)=s<sub>0</sub>? Please chose one answer:<br>II. How many distinct input string x are there such that ||x||=12 and ν(s<sub>0</sub>, x)=s<sub>0</sub>? Please chose one answer:",
+      "choices": [
+        "I. (a) 72. (b) 73. (c) 74. (d) 75.",
+        "II. (a) 991. (b) 992. (c) 993. (d) 994."
+      ],
+      "answer": "I. (a) 72　II. (b) 992",
+      "explanation": "<p>先看懂機器：讀 0 停在原地，讀 1 往下一個狀態走 s<sub>0</sub>→s<sub>1</sub>→s<sub>2</sub>→s<sub>3</sub>→s<sub>0</sub>。所以停在哪個狀態只取決於「1 的個數 mod 4」。回到 s<sub>0</sub> ⇔ 1 的個數是 4 的倍數。</p><p><b>I.</b> 長度 8，1 的個數可以是 0、4、8：</p><pre class=\"formula\">C(8,0) + C(8,4) + C(8,8) = 1 + 70 + 1 = 72</pre><p><b>II.</b> 長度 12，1 的個數可以是 0、4、8、12：</p><pre class=\"formula\">C(12,0) + C(12,4) + C(12,8) + C(12,12) = 1 + 495 + 495 + 1 = 992</pre><p>程式窮舉所有 2<sup>8</sup>、2<sup>12</sup> 個字串驗算一致。常見漏算是忘了全 0 字串（0 個 1）和全 1 字串也會回到 s<sub>0</sub>。</p>"
+    },
+    {
+      "id": "dm-0037",
+      "topics": [
+        "generating-functions",
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "Find the number of solutions of x<sub>1</sub> + 2x<sub>2</sub> + x<sub>3</sub> = 17, where x<sub>i</sub>’s are nonnegative integers with 2 ≤ x<sub>1</sub> ≤ 5, 3 ≤ x<sub>2</sub> ≤ 6, 4 ≤ x<sub>3</sub> ≤ 7.",
+      "choices": [
+        "(a) 8.",
+        "(b) 9.",
+        "(c) 10.",
+        "(d) 11."
+      ],
+      "answer": "(a) 8",
+      "explanation": "<p>x<sub>2</sub> 的範圍最小，直接對 x<sub>2</sub> 分情況，剩下 x<sub>1</sub> + x<sub>3</sub> = 17 − 2x<sub>2</sub>，且 x<sub>1</sub> ∈ [2,5]、x<sub>3</sub> ∈ [4,7]（所以和的範圍是 6~12）：</p><div class=\"table-scroll\"><table><tr><th>x<sub>2</sub></th><th>x<sub>1</sub> + x<sub>3</sub></th><th>(x<sub>1</sub>, x<sub>3</sub>)</th><th>個數</th></tr><tr><td>3</td><td>11</td><td>(4,7), (5,6)</td><td>2</td></tr><tr><td>4</td><td>9</td><td>(2,7), (3,6), (4,5), (5,4)</td><td>4</td></tr><tr><td>5</td><td>7</td><td>(2,5), (3,4)</td><td>2</td></tr><tr><td>6</td><td>5</td><td>無（最小和是 6）</td><td>0</td></tr></table></div><p>共 2 + 4 + 2 = 8 組，程式窮舉確認。也可以用生成函數 (x²+…+x⁵)(x⁶+x⁸+x¹⁰+x¹²)(x⁴+…+x⁷) 取 x<sup>17</sup> 係數，結果相同。</p>"
+    },
+    {
+      "id": "dm-0038",
+      "topics": [
+        "sets"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 114,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_114_math.pdf"
+      },
+      "question": "Let S = {1, 2, 3, 4, 5, {6, 7}}. Which one is the number of the power set of S?",
+      "choices": [
+        "(a) 128.",
+        "(b) 256.",
+        "(c) 64.",
+        "(d) 32."
+      ],
+      "answer": "(c) 64",
+      "explanation": "<p>S 的元素是 1, 2, 3, 4, 5 和集合 {6, 7}——{6, 7} 整個算<b>一個</b>元素，所以 |S| = 6。</p><p>|P(S)| = 2<sup>6</sup> = 64。</p><p>陷阱是把 6、7 拆開當成 7 個元素，得到 128。</p>"
+    },
+    {
+      "id": "dm-0039",
+      "topics": [
+        "connectivity",
+        "graph-basics"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
+      },
+      "question": "Consider all simple (loop-free), undirected graphs on a set of <b>5 distinct labeled vertices</b> V = {1,2,3,4,5}. Every edge connects two distinct vertices, and multiple edges are not allowed. Assume that <b>no vertex is isolated</b> (i.e., every vertex has degree at least 1).<br>(a) How many such graphs have <b>exactly one connected component</b> (i.e., the graph is <b>connected</b>)?<br>(b) How many such graphs have <b>exactly two connected components</b>?",
+      "answer": "(a) 728　(b) 40",
+      "explanation": "<p>令 c(n) = n 個標號頂點的連通簡單圖個數。已知 c(1) = 1、c(2) = 1、c(3) = 4、c(4) = 38。</p><p><b>(a)</b> 5 個點的所有簡單圖有 2<sup>C(5,2)</sup> = 2<sup>10</sup> = 1024 個。扣掉不連通的：固定頂點 1，看「頂點 1 所在的連通分量」有 k 個點（k = 1..4），其餘 5 − k 個點之間任意連：</p><pre class=\"formula\">不連通數 = Σ_{k=1}^{4} C(4, k−1) · c(k) · 2^C(5−k, 2)\n         = 1·1·64 + 4·1·8 + 6·4·2 + 4·38·1\n         = 64 + 32 + 48 + 152 = 296</pre><p>c(5) = 1024 − 296 = 728。連通圖（n ≥ 2）自然沒有孤立點，所以答案就是 728。</p><p><b>(b)</b> 沒有孤立點 ⇒ 每個連通分量至少 2 個點。5 拆成兩個 ≥ 2 的部分只有 3 + 2。</p><ul><li>選哪 2 個點組成小分量：C(5,2) = 10 種。</li><li>2 點分量要連通：只能有那一條邊，c(2) = 1。</li><li>3 點分量要連通：c(3) = 4（3 種路徑 + 1 個三角形）。</li></ul><p>10 × 1 × 4 = 40。程式窮舉全部 1024 個圖驗算：連通且無孤立點 728 個，恰兩個分量且無孤立點 40 個。</p><p>常見錯誤是 (b) 忘了「無孤立點」而把 4 + 1 的拆法也算進去。</p>"
+    },
+    {
+      "id": "dm-0040",
+      "topics": [
+        "planar-graphs"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
+      },
+      "question": "A network engineer is designing a <b>fault-tolerant routing backbone</b> for a data-center fabric. The backbone consists of <b>20 routers</b>, arranged physically in a <b>4×5 cylindrical grid</b>: There are 4 horizontal layers (“rings”), each containing 5 routers. Horizontally, each layer forms a <b>5-router cycle</b> (i.e., the leftmost and rightmost routers are connected). Vertically, each of the 5 columns also forms a <b>4-router cycle</b> (i.e., the top and bottom switches are connected). Thus, every router has degree 4: two connections within its horizontal ring, and two within its vertical ring. <b>Determine whether</b> this cylindrical multi-ring backbone H <b>can be embedded on a flat PCB without wiring intersections. Justify your answer using only Euler’s formula and girth-based edge bounds.</b> In graph theory, the girth of an undirected graph is the length of the shortest cycle contained in the graph",
+      "answer": "不能。v = 20、e = 40、girth = 4，平面圖需 e ≤ 2(v − 2) = 36，但 40 &gt; 36，故 H 非平面。",
+      "explanation": "<p>能不能畫在平面 PCB 上不交叉 = H 是不是 <b>Planar Graph（平面圖）</b>。</p><ol><li><b>數點和邊</b>：v = 20；每點度數 4，由握手定理 e = 20 × 4 / 2 = 40。</li><li><b>girth</b>：每一直行是 4 點的 cycle，所以有 4-cycle；圖中沒有三角形（同一層的鄰居彼此不相鄰、同一行的鄰居也不相鄰，跨層跨行的鄰居更不相鄰），所以 girth g = 4。</li><li><b>girth 邊數上界</b>：若連通平面圖的 girth 為 g，每個面至少被 g 條邊圍住，每條邊最多屬於 2 個面，得 g·f ≤ 2e。代入 Euler’s Formula（尤拉公式）v − e + f = 2：</li></ol><pre class=\"formula\">f = 2 − v + e ≤ 2e/g\n⇒ e ≤ g(v − 2)/(g − 2) = 4 × 18 / 2 = 36</pre><p>但 H 有 40 條邊 &gt; 36，矛盾，所以 H 不是平面圖，不能在平面 PCB 上無交叉佈線。程式（networkx 平面性檢查）也確認 C<sub>4</sub> × C<sub>5</sub> 非平面。</p><p>注意不能直接用 e ≤ 3v − 6 = 54：40 ≤ 54 無法下結論，一定要用 girth = 4 的較緊上界。</p>"
+    },
+    {
+      "id": "dm-0041",
+      "topics": [
+        "pigeonhole-principle"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
+      },
+      "question": "A self-organizing <b>ad-hoc satellite network</b> consists of multiple satellites placed at arbitrary integer coordinates in 3-dimensional space. Each satellite is modeled as a point A<sub>i</sub> ∈ ℤ<sup>3</sup>. A <b>secure communication link</b> may be established between satellites A<sub>i</sub> and A<sub>j</sub> only if the <b>midpoint</b> of the segment A<sub>i</sub>A<sub>j</sub> also lies on an integer lattice point. Equivalently, all three coordinate-wise averages must be integers:<pre>(x<sub>i</sub> + x<sub>j</sub>)/2, (y<sub>i</sub> + y<sub>j</sub>)/2, (z<sub>i</sub> + z<sub>j</sub>)/2 ∈ ℤ.</pre>The Space Agency wants to guarantee that even without knowing the positions of the satellites beforehand, <b>there must exist at least one secure link.</b><br>(a) Determine the <b>smallest integer</b> N such that: No matter how the N satellites are placed in ℤ<sup>3</sup>, <b>there is always at least one pair</b> whose midpoint is a lattice point (i.e., at least one secure link always exists).<br>(b) Now modify the secure-link condition:<br>A link is allowed if <b>the total coordinate sum of the two satellites is even</b>, i.e.<pre>x<sub>i</sub> + x<sub>j</sub> + y<sub>i</sub> + y<sub>j</sub> + z<sub>i</sub> + z<sub>j</sub> ≡ 0 (mod 2).</pre>Under this new rule, determine the <b>new minimum number of satellites</b> guaranteeing that at least one secure link must exist.",
+      "answer": "(a) N = 9　(b) 3",
+      "explanation": "<p><b>(a)</b> 中點是格子點 ⇔ 兩點每個座標的奇偶性都相同。每個點的「奇偶型態」(x mod 2, y mod 2, z mod 2) 有 2<sup>3</sup> = 8 種。</p><ul><li>9 個點放進 8 種型態，由 <b>Pigeonhole Principle（鴿籠原理）</b>必有兩點型態相同，它們的中點是格子點。</li><li>8 個點不夠：取 8 個型態各不相同的點（例如 {0,1}<sup>3</sup> 的 8 個頂點），任兩點至少一個座標奇偶不同，沒有安全連線。</li></ul><p>所以最小的 N = 9。</p><p><b>(b)</b> 條件變成「兩點座標總和的奇偶性相同」。每個點的型態只剩 x + y + z mod 2 這 2 種。</p><ul><li>3 個點放進 2 種型態，必有兩點同型，總和為偶數。</li><li>2 個點不夠：(0,0,0) 和 (1,0,0)，總和 1 是奇數，不能連。</li></ul><p>所以最少 3 個。兩小題都要同時說明「N 個一定夠」和「N − 1 個可能不夠」，只寫鴿籠那一半不算完整。</p>"
+    },
+    {
+      "id": "dm-0042",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
+      },
+      "question": "Consider the recurrence: E<sub>n</sub> = 4E<sub>n−1</sub> − 4E<sub>n−2</sub> + 2<sup>n</sup> + 3<sup>n</sup>, with initial values, E<sub>0</sub> = 2, E<sub>1</sub> = 10. Estimate the <b>smallest</b> n such that E<sub>n</sub> &gt; 10<sup>9</sup>.",
+      "answer": "n = 17（E<sub>n</sub> = 9·3<sup>n</sup> + (n²/2 − 2n − 7)·2<sup>n</sup>；E<sub>16</sub> ≈ 3.93 × 10<sup>8</sup>、E<sub>17</sub> ≈ 1.18 × 10<sup>9</sup>）",
+      "explanation": "<ol><li><b>齊次解</b>：r² − 4r + 4 = 0，r = 2（重根），E<sub>n</sub><sup>(h)</sup> = (A + Bn)2<sup>n</sup>。</li><li><b>3<sup>n</sup> 的特解</b>：3 不是特徵根，猜 c·3<sup>n</sup>：c·9 = 4c·3 − 4c + 9 ⇒ c(9 − 12 + 4) = 9 ⇒ c = 9，得 9·3<sup>n</sup>。</li><li><b>2<sup>n</sup> 的特解</b>：2 是二重根，要猜 dn²·2<sup>n</sup>。代入後係數比對得 d = 1/2，得 (n²/2)·2<sup>n</sup>。</li><li><b>初始條件</b>：E<sub>0</sub> = A + 9 = 2 ⇒ A = −7；E<sub>1</sub> = 2(A + B) + 27 + 1 = 10 ⇒ A + B = −9 ⇒ B = −2。</li></ol><pre class=\"formula\">E_n = 9·3^n + (n²/2 − 2n − 7)·2^n</pre><p><b>估計</b>：3<sup>n</sup> 項成長最快，9·3<sup>n</sup> &gt; 10<sup>9</sup> ⇒ 3<sup>n</sup> &gt; 1.11 × 10<sup>8</sup> ⇒ n &gt; log<sub>3</sub>(1.11 × 10<sup>8</sup>) ≈ 16.9。2<sup>n</sup> 那一項在 n = 17 時只有約 10<sup>7</sup>，影響很小。實際計算：</p><ul><li>E<sub>16</sub> = 393,253,193 &lt; 10<sup>9</sup></li><li>E<sub>17</sub> = 1,175,827,419 &gt; 10<sup>9</sup></li></ul><p>所以最小的 n 是 17（程式直接迭代遞迴式驗算，封閉式和前幾項 2, 10, 45, 175, 617 都吻合）。易錯點是 2<sup>n</sup> 的特解只乘 n 而不是 n²，因為 2 是<b>二重</b>特徵根。</p>"
+    },
+    {
+      "id": "dm-0043",
+      "topics": [
+        "finite-state-machines"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 115,
+        "dept": "電機資訊學院-資訊聯招（計算機數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncku_115_math.pdf"
+      },
+      "question": "You are designing the firmware logic for a high-security electronic lock. The lock receives a stream of binary signals (0 or 1) from a keypad. You need to <b>draw the state transition diagrams for two different versions of the security protocol. Use Moore Machine model for both versions.</b> Specifically, use circles to represent states with labels S<i>i</i> where <i>i</i> is the index starting from 0, use arrows to represent transitions, use an arrow to point to the start state, and mark the \"Unlock\" state as double circles.<br>(a) The Standard \"Header-Trailer\" Protocol Specification<br>1. Start-up Check: When the system first turns on, it must check for a specific \"Header.\" The very first two signals received must be a 1 followed by another 1.<br>2. Security Violation: If the first two signals are anything other than a pair of 1s, the system detects a hack. It must immediately enter a Permanent Lockout state where it ignores all future input and never unlocks.<br>3. Monitoring: Once the valid header (11) is received, the system waits. It ignores the specific pattern of the signals in the middle.<br>4. Unlocking: The door should unlock if and only if the last two signals received were a 0 followed by another 0.<br>5. Relocking: If the system receives more signals after unlocking that break the \"00\" ending, the door must lock again and go back to monitoring for a new \"00\" ending.<br>(b) The Advanced \"Strict Rhythm\" Protocol Specification<br>We request a security update to the logic designed in (a). Please modify your Finite State Machine to incorporate the following three specific changes. All other behaviors (like the \"11\" start-up check) remain the same.<br>1. Enforce Alternating Data: Instead of ignoring the signals between the header and the unlock command, the system must now strictly enforce an alternating \"0, 1, 0, 1...\" pattern.<br>2. Immediate Lockout on Error: If this alternating rhythm is broken (for example, if two 1s appear consecutively after the header), the system must immediately enter the Permanent Lockout state.<br>3. One-Time Access: The \"Relock\" feature is removed. Once the door unlocks (upon receiving the \"00\" suffix), any further input signals are considered a security violation and must trigger the Permanent Lockout state.",
+      "answer": "(a) 6 個狀態 S0~S5（S4 為 Unlock、S5 為 Lockout）；(b) 7 個狀態 S0~S6（S5 為 Unlock、S6 為 Lockout），轉移表見詳解。",
+      "explanation": "<p><b>Moore Machine（摩爾機）</b>的輸出只跟狀態有關，所以「開鎖」要做成一個狀態（雙圈），其他狀態輸出「鎖住」。</p><p><b>(a)</b> 狀態意義與轉移：</p><div class=\"table-scroll\"><table><tr><th>狀態</th><th>意義</th><th>輸入 0</th><th>輸入 1</th></tr><tr><td>S0（起始）</td><td>還沒收到任何訊號</td><td>S5</td><td>S1</td></tr><tr><td>S1</td><td>收到第一個 1</td><td>S5</td><td>S2</td></tr><tr><td>S2</td><td>header 通過，最後一個訊號不是 0</td><td>S3</td><td>S2</td></tr><tr><td>S3</td><td>最後恰好一個 0</td><td>S4</td><td>S2</td></tr><tr><td>S4（雙圈，Unlock）</td><td>最後兩個是 00</td><td>S4</td><td>S2</td></tr><tr><td>S5</td><td>Permanent Lockout</td><td>S5</td><td>S5</td></tr></table></div><p>重點：S4 讀到 0 仍停在 S4（最後兩個還是 00），讀到 1 打破 00 結尾，回到監控狀態 S2，這就是 Relock。</p><p><b>(b)</b> 這裡把「交替 0, 1, 0, 1…」理解為 header 之後第一個資料訊號必須是 0，之後 0、1 交替，出現連續兩個 0 就視為開鎖指令（待確認：題目沒有明說 header 後第一個訊號能不能是 1，這裡依「0, 1, 0, 1…」從 0 開始解讀）。</p><div class=\"table-scroll\"><table><tr><th>狀態</th><th>意義</th><th>輸入 0</th><th>輸入 1</th></tr><tr><td>S0（起始）</td><td>還沒收到訊號</td><td>S6</td><td>S1</td></tr><tr><td>S1</td><td>收到第一個 1</td><td>S6</td><td>S2</td></tr><tr><td>S2</td><td>header 通過，等第一個 0</td><td>S3</td><td>S6</td></tr><tr><td>S3</td><td>最後一個是 0</td><td>S5</td><td>S4</td></tr><tr><td>S4</td><td>最後一個是 1，下一個必須是 0</td><td>S3</td><td>S6</td></tr><tr><td>S5（雙圈，Unlock）</td><td>收到 00</td><td>S6</td><td>S6</td></tr><tr><td>S6</td><td>Permanent Lockout</td><td>S6</td><td>S6</td></tr></table></div><p>和 (a) 的差別：(1) S2、S4 讀到 1 直接進 Lockout（連續兩個 1 破壞節奏）；(2) Unlock 狀態 S5 不再回到監控，任何輸入都進 Lockout（One-Time Access）。畫圖時記得：Start 箭頭指向 S0、Unlock 狀態畫雙圈、Lockout 狀態兩個輸入都畫自迴圈。</p>"
+    },
+    {
+      "id": "dm-0044",
+      "topics": [
+        "predicate-logic"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Which of the following logic equivalence statements are incorrect?",
+      "choices": [
+        "A. ∀xP(x) ∧ ∀xQ(x) ≡ ∀x(P(x) ∧ Q(x)).",
+        "B. ∀xP(x) ∨ ∀xQ(x) ≡ ∀x(P(x) ∨ Q(x)).",
+        "C. ∃xP(x) ∧ ∃xQ(x) ≡ ∃x(P(x) ∧ Q(x)).",
+        "D. ∃xP(x) ∨ ∃xQ(x) ≡ ∃x(P(x) ∨ Q(x)).",
+        "E. ∀x(P(x) → A) ≡ ∀xP(x) → A. (Assume that x does not occur as a free variable in A and the domain of x is nonempty.)"
+      ],
+      "answer": "B、C、E",
+      "explanation": "<p>記法：<b>∀ 可以分配到 ∧、∃ 可以分配到 ∨</b>，反過來都不行。</p><ul><li>A 正確：「全部 P 且全部 Q」⇔「每一個都 P 且 Q」。</li><li>B <b>錯</b>：右推不到左。反例：論域是整數，P(x) =「x 是偶數」、Q(x) =「x 是奇數」，∀x(P ∨ Q) 為真，但 ∀xP、∀xQ 都假。</li><li>C <b>錯</b>：同樣的 P、Q，∃xP ∧ ∃xQ 為真，但沒有一個數同時是偶數又是奇數。</li><li>D 正確：∃ 對 ∨ 可以分配。</li><li>E <b>錯</b>：P(x) → A ≡ ¬P(x) ∨ A，所以 ∀x(¬P(x) ∨ A) ≡ (∀x¬P(x)) ∨ A ≡ ¬∃xP(x) ∨ A ≡ <b>∃xP(x)</b> → A。量詞從條件句的前件拉出來時 ∀ 會變成 ∃。</li></ul><p>所以不正確的是 B、C、E。E 是最容易漏的陷阱。</p>"
+    },
+    {
+      "id": "dm-0045",
+      "topics": [
+        "cardinality",
+        "functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）小英、江哥、柯 P 和 3Q 哥在聊離散數學，以下哪幾句敘述有誤？",
+      "choices": [
+        "A. 小英對江哥說：從我的黨員到你的黨員間存在有 injective function 的映射，所以我的黨比你的黨大。",
+        "B. 柯 P 對小英說：從我的黨員到你的黨員間存在有 bijective function 的映射，所以我的黨比你的黨大。",
+        "C. 江哥說：從自然數集 N 到我的黨員間存在有 surjective function 的映射，所以我的黨比小英跟柯 P 兩個黨加起來還大。",
+        "D. 3Q 哥對江哥說：從有理數集 Q 到我的黨員間存在有 surjective function 的映射，所以我的黨才是最大的。",
+        "E. 以上皆是。"
+      ],
+      "answer": "A、B、C、D、E（A~D 都有誤，所以「以上皆是」也成立）",
+      "explanation": "<p>用 function 比較集合大小（<b>Cardinality（基數）</b>）的規則：</p><ul><li>存在 injection f : X → Y ⇒ |X| ≤ |Y|。</li><li>存在 bijection ⇒ |X| = |Y|。</li><li>存在 surjection f : X → Y ⇒ |Y| ≤ |X|（Y 不會比 X 大）。</li></ul><p>逐句檢查：</p><ul><li>A 有誤：從小英的黨到江哥的黨有 injection，只能推出小英的黨 ≤ 江哥的黨，方向剛好相反。</li><li>B 有誤：bijection 表示兩黨一樣大，不是比較大。</li><li>C 有誤：N 映成到江哥的黨只說明江哥的黨 ≤ |N|（可數），推不出比任何黨大。</li><li>D 有誤：Q 也是可數的，|Q| = |N|，映成只說明 3Q 哥的黨 ≤ 可數，推不出「最大」。</li></ul><p>A~D 全部有誤，所以 E「以上皆是」也應選。常見錯誤是把 surjection 的方向弄反，以為「從 N 映成過來」代表比 N 還大。</p>"
+    },
+    {
+      "id": "dm-0046",
+      "topics": [
+        "gcd-euclid",
+        "congruences",
+        "modular-arithmetic"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Which of the following statements about integers are incorrect?",
+      "choices": [
+        "A. If gcd(a,b) = 1, then for any non-zero integer n, there is a pair of integers p and q such that pa + qb = n.",
+        "B. The inverse of p module q exists only when gcd(p,q) = 1 and q &gt; 1.",
+        "C. The system { x ≡ a<sub>1</sub>(mod m<sub>1</sub>), x ≡ a<sub>2</sub>(mod m<sub>2</sub>), ⋮, x ≡ a<sub>n</sub>(mod m<sub>n</sub>) } has a unique solution modulo m, where m<sub>i</sub> are primes and m = m<sub>1</sub>m<sub>2</sub>⋯m<sub>n</sub>.",
+        "D. If p is prime, then for every integer a we have a<sup>p−1</sup> ≡ 1(mod p).",
+        "E. In RSA, if Alice wants to send a secret message to Bob, Alice uses Bob’s private key to encrypt the message and then send the ciphertext message to Bob. After Bob receives the ciphertext, Bob can use his public key to decrypt the ciphertext."
+      ],
+      "answer": "C、D、E（C 待確認）",
+      "explanation": "<ul><li>A 正確：由 <b>Bézout’s Identity（貝祖等式）</b>，gcd(a,b) = 1 ⇒ 存在 s、t 使 sa + tb = 1，兩邊乘 n 得 (ns)a + (nt)b = n。</li><li>B 正確：模反元素存在的條件就是 gcd(p, q) = 1（模數 q &gt; 1 才有意義）。</li><li>C <b>有誤</b>（待確認）：<b>Chinese Remainder Theorem（中國餘數定理）</b>要求模數兩兩互質。題目只說 m<sub>i</sub> 是質數，沒說相異；若 m<sub>1</sub> = m<sub>2</sub> = 2、a<sub>1</sub> = 0、a<sub>2</sub> = 1，根本無解。若出題者默認質數相異，則 C 正確，這點有爭議。</li><li>D <b>有誤</b>：<b>Fermat’s Little Theorem（費馬小定理）</b>要求 p ∤ a。反例 a = p：p<sup>p−1</sup> ≡ 0 (mod p)。</li><li>E <b>有誤</b>：加密要用 Bob 的<b>公鑰</b>，Bob 用自己的<b>私鑰</b>解密；題目剛好顛倒。用私鑰加密、公鑰驗證的是數位簽章。</li></ul>"
+    },
+    {
+      "id": "dm-0047",
+      "topics": [
+        "partial-orders"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Figure 1 shows the Hasse diagram of a binary relation R. Which of the following statements are incorrect?<br>（原題附圖 Figure 1，以文字描述 Hasse diagram 的覆蓋關係「x — y」表示 y 在 x 正上方相連：a — d、b — d、b — e、d — i、d — h、e — h、i — j、h — j、h — k、c — f、f — g、g — k、j — l、k — l、k — m。最底層為 a、b、c，最上層為 l、m。）",
+      "choices": [
+        "A. cRh.",
+        "B. mRm.",
+        "C. dRa.",
+        "D. a is a minimal element.",
+        "E. R is a lattice."
+      ],
+      "answer": "A、C、E",
+      "explanation": "<p>Hasse diagram 表示一個 <b>Partial Order（偏序）</b>：xRy ⇔ 從 x 沿著線往上走得到 y（含 x = y）。</p><ul><li>A <b>錯</b>：從 c 往上只能走 c → f → g → k → l、m，碰不到 h，所以 c 和 h 不可比較，cRh 不成立。</li><li>B 對：偏序具自反性，mRm 成立。</li><li>C <b>錯</b>：a 在 d 下面，成立的是 aRd；反對稱性讓 dRa 不成立。</li><li>D 對：a 下面沒有元素，是 minimal element（極小元素）。</li><li>E <b>錯</b>：Lattice（格）要求任兩個元素都有 least upper bound 和 greatest lower bound。a、b、c 三個極小元素中，a 和 c 沒有任何共同下界（例如 a、b 沒有 glb）；l 和 m 也沒有共同上界。所以不是 lattice。</li></ul><p>題目問「incorrect」，答案是 A、C、E。</p>"
+    },
+    {
+      "id": "dm-0048",
+      "topics": [
+        "connectivity",
+        "euler-hamilton",
+        "planar-graphs"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Given the directed graph in Figure 2. Which of the following statements are correct?<br>（原題附圖 Figure 2，以文字描述：頂點 a, b, c, d, e；有向邊為 b→a、a→e、a→d、e→b、e→d、d→b、b→c、d→c，共 8 條。）",
+      "choices": [
+        "A. G is strongly connected.",
+        "B. G is weakly connected.",
+        "C. G has a Euler path.",
+        "D. G has a Hamilton path.",
+        "E. G is a planar graph."
+      ],
+      "answer": "B、D、E",
+      "explanation": "<ul><li>A 錯：c 的出度是 0，從 c 走不到任何點，所以不是 strongly connected（強連通）。</li><li>B 對：忽略方向後整張圖連通，是 weakly connected（弱連通）。</li><li>C 錯：有向圖有 Euler path 需要「最多一個點出度 − 入度 = 1、最多一個點入度 − 出度 = 1、其餘相等」。這裡 a、e 都是出度 2、入度 1（差 +1），c 是入度 2、出度 0（差 −2），不符合。</li><li>D 對：a → e → d → b → c 走過全部 5 點，是 Hamilton path。程式窮舉還找到 b → a → e → d → c 和 e → b → a → d → c。</li><li>E 對：a、b、d、e 之間 6 條邊構成 K<sub>4</sub>，把對角線之一改畫到外面就不交叉；c 只接 b、d，放在外側即可。程式平面性檢查也確認。</li></ul><p>C 的陷阱是只看無向度數：無向時只有 a、e 是奇點會以為有 Euler path，但有向圖要看出入度差。</p>"
+    },
+    {
+      "id": "dm-0049",
+      "topics": [
+        "relation-properties",
+        "partial-orders",
+        "equivalence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Considering relation <b>R</b> defined as : {(x,y) ∈ N×N | x does not have more prime factors than y}, Which of the following statements are true?",
+      "choices": [
+        "A. <b>R</b> is partial ordering.",
+        "B. <b>R</b> is total-ordered.",
+        "C. <b>R</b> is reflexive.",
+        "D. <b>R</b> is an equivalence relation.",
+        "E. Only 1 weakly connected component in a directed graph that represents <b>R</b>."
+      ],
+      "answer": "C、E",
+      "explanation": "<p>令 f(x) = x 的質因數個數，xRy ⇔ f(x) ≤ f(y)。</p><ul><li>C 對：f(x) ≤ f(x)，自反。</li><li>A 錯：不反對稱。2 和 3 都只有一個質因數，2R3 且 3R2，但 2 ≠ 3。偏序需要反對稱。</li><li>B 錯：全序要先是偏序，已經不反對稱。</li><li>D 錯：不對稱。2R6（1 ≤ 2）但 6R2 不成立（2 ≤ 1 不成立）。</li><li>E 對：任兩個數 x、y 一定有 f(x) ≤ f(y) 或 f(y) ≤ f(x)，所以有向圖中任兩點之間都有邊，忽略方向後全部連在一起，只有 1 個 weakly connected component。</li></ul><p>這種關係叫 total preorder（全前序）：自反、遞移、任兩元素可比較，但不反對稱。</p>"
+    },
+    {
+      "id": "dm-0050",
+      "topics": [
+        "cardinality"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）Suppose the set of “valuable” problems is V, where each problem can be considered by human beings, and there is a bijection between V and <b>R</b> (real number). Suppose the set of all A.I. softwares is S, where each software can solve exactly one problem. Each software can be represented as a long binary string (machine code). Which of the following statement are true?",
+      "choices": [
+        "A. There is a bijection between S and <b>R</b>.",
+        "B. A.I. can solve all valuable problems, it just takes a long time to do it.",
+        "C. Without other restrictions, |S| is ∞.",
+        "D. |V|≠|S|, and |V| &gt; |S|.",
+        "E. In terms of solving problems, A.I. may replace human beings someday."
+      ],
+      "answer": "C、D（E 待確認）",
+      "explanation": "<p>關鍵：每個軟體是<b>有限長</b>的二進位字串，所有有限長二進位字串的集合是 <b>Countable（可數）</b>的（依長度排列，每個長度只有有限多個）。</p><ul><li>A 錯：S 可數、R 不可數，兩者之間不可能有 bijection。</li><li>C 對：字串長度沒有上限，所以 S 是無限集合（可數無限 ℵ<sub>0</sub>）。</li><li>D 對：|V| = |R| 不可數，|S| 可數，所以 |V| &gt; |S|。</li><li>B 錯：每個軟體只解一個問題，可數個軟體最多解可數個問題，不可能涵蓋不可數多個有價值的問題，跟花多少時間無關。</li><li>E（待確認）：依題意的模型，AI 解得了的問題只佔 V 的「可數部分」，推不出 AI 能完全取代人類，所以判為錯；不過這句是開放式敘述，官方答案可能不同。</li></ul>"
+    },
+    {
+      "id": "dm-0051",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）The number of ways to buy n dollars of tickets is represented by a<sub>n</sub>, if only 1-dollar and 2-dollar bills can be used. What of the following can be the recurrence relation for our question? (initial condition: a<sub>0</sub> = 1; a<sub>1</sub> = 1;)",
+      "choices": [
+        "A. a<sub>n</sub> = a<sub>n−1</sub> + 1.",
+        "B. a<sub>n</sub> = a<sub>n−2</sub> + 3.",
+        "C. a<sub>n</sub> = 2a<sub>n−2</sub> + 1.",
+        "D. a<sub>n</sub> = a<sub>n−1</sub> + a<sub>n−2</sub>.",
+        "E. none of the above."
+      ],
+      "answer": "D",
+      "explanation": "<p>把付款看成「依序一張一張付」：最後一張是 1 元時，前面付了 n − 1 元，有 a<sub>n−1</sub> 種；最後一張是 2 元時，前面付了 n − 2 元，有 a<sub>n−2</sub> 種。</p><pre class=\"formula\">a_n = a_(n−1) + a_(n−2)，a_0 = 1，a_1 = 1</pre><p>得 1, 1, 2, 3, 5, 8, …（Fibonacci 數列），選 D。</p><p>檢查其他選項：A 給 a<sub>2</sub> = 2、a<sub>3</sub> = 3、a<sub>4</sub> = 4，但實際 a<sub>4</sub> = 5（1111、112、121、211、22）；B 給 a<sub>2</sub> = 4、C 給 a<sub>2</sub> = 3，都和 a<sub>2</sub> = 2（11、2）不符。</p><p>注意這裡的計數把付款順序算成不同（初始條件 a<sub>0</sub> = a<sub>1</sub> = 1 搭配 D 才合理）；如果不計順序，答案會是 ⌊n/2⌋ + 1，沒有選項符合。</p>"
+    },
+    {
+      "id": "dm-0052",
+      "topics": [
+        "closures",
+        "gcd-euclid"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 110,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_110_math.pdf"
+      },
+      "question": "（複選）About algorithm complexity, which of the following claims are true?",
+      "choices": [
+        "A. merge sort is Θ(n log n).",
+        "B. Euclid’s algorithm to find gcd(a,b) is Θ(log max(a, b)).",
+        "C. bubble sort is Θ(n log n).",
+        "D. Roy-Warshall Algorithm to compute transitive closure is Θ(n<sup>2</sup>) (bit operations).",
+        "E. traveling sales problem is a NP-hard problem."
+      ],
+      "answer": "A、B、E",
+      "explanation": "<ul><li>A 對：merge sort 每層合併 Θ(n)，共 log n 層，最好最壞都是 Θ(n log n)。</li><li>B 對（以最壞情況而言）：每兩次除法餘數至少減半，除法次數是 O(log max(a,b))；連續 Fibonacci 數是最壞情況，確實達到對數次，所以最壞情況 Θ(log max(a,b))。</li><li>C 錯：bubble sort 最壞與平均是 Θ(n²)。</li><li>D 錯：<b>Warshall’s Algorithm</b> 有三層迴圈 k、i、j，每次 w<sub>ij</sub> ← w<sub>ij</sub> ∨ (w<sub>ik</sub> ∧ w<sub>kj</sub>) 是 2 個位元運算，共 2n³ 次，Θ(n³)。</li><li>E 對：TSP（決策版本是 NP-complete，最佳化版本）是 NP-hard。</li></ul>"
+    },
+    {
+      "id": "dm-0053",
+      "topics": [
+        "graph-coloring",
+        "graph-basics"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "A graph is bipartite if and only if it has no cycle of ________ length. A bipartite graph can be colored with ________ colors.",
+      "answer": "odd；2",
+      "explanation": "<p>第一格：<span class=\"term\">Bipartite graph<small>（二部圖）</small></span>的判定定理是「沒有奇數長度的 cycle」。直覺：二部圖的邊一定在左右兩邊之間來回跳，從某點出發走回原點，左→右→左……一定走偶數步，所以不可能有奇圈；反過來，沒有奇圈時，在每個連通分量用 BFS 依距離奇偶分成兩邊，就能證明是二部圖。</p><p>第二格：把左邊塗一色、右邊塗另一色，相鄰點一定不同色，所以 <b>2 種顏色</b>就夠（有邊時 chromatic number 恰好是 2；完全沒有邊時 1 色就夠，但題目要的是「可以用 2 色著色」）。</p><p>常見錯誤：寫成「even length」。偶圈是允許的，例如 C<sub>4</sub> 本身就是二部圖。</p>"
+    },
+    {
+      "id": "dm-0054",
+      "topics": [
+        "divide-and-conquer-recurrences"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "If a<sub>n</sub> = 3 a<sub>n/2</sub> + 1 for n ≥ 2 and a<sub>1</sub> = 1. Then log<sub>2</sub> a<sub>n</sub> ≈ ________ × log<sub>2</sub> n.",
+      "answer": "log<sub>2</sub>3（約 1.585）",
+      "explanation": "<p>令 n = 2<sup>k</sup>，b<sub>k</sub> = a<sub>2<sup>k</sup></sub>，遞迴變成 b<sub>k</sub> = 3b<sub>k−1</sub> + 1、b<sub>0</sub> = 1。兩邊加 1/2：b<sub>k</sub> + 1/2 = 3(b<sub>k−1</sub> + 1/2)，所以 b<sub>k</sub> = (3/2)·3<sup>k</sup> − 1/2 = (3<sup>k+1</sup> − 1)/2。</p><p>因為 3<sup>k</sup> = 3<sup>log<sub>2</sub>n</sup> = n<sup>log<sub>2</sub>3</sup>，得到 a<sub>n</sub> = (3n<sup>log<sub>2</sub>3</sup> − 1)/2 ≈ 1.5·n<sup>log<sub>2</sub>3</sup>。取 log<sub>2</sub>：log<sub>2</sub>a<sub>n</sub> ≈ log<sub>2</sub>3 · log<sub>2</sub>n + log<sub>2</sub>1.5，n 很大時常數項可以忽略，所以係數是 <b>log<sub>2</sub>3 ≈ 1.585</b>。</p><p>也可以直接用 Master theorem：a = 3、b = 2，n<sup>log<sub>b</sub>a</sup> = n<sup>1.585</sup> 遠大於 f(n) = 1，所以 a<sub>n</sub> = Θ(n<sup>log<sub>2</sub>3</sup>)。程式驗算：n = 2<sup>20</sup> 時 log<sub>2</sub>a<sub>n</sub>/log<sub>2</sub>n ≈ 1.614，n 越大越接近 1.585（差的就是 log<sub>2</sub>1.5/log<sub>2</sub>n）。</p>"
+    },
+    {
+      "id": "dm-0055",
+      "topics": [
+        "permutations-combinations",
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "There are ________ ways a binomial random walk, starting at the origin, returns to the origin the first time after exactly 2n steps.",
+      "answer": "2·C(2n−2, n−1)/n（= 2 × 第 n−1 個 Catalan 數）",
+      "explanation": "<p>每一步走 +1 或 −1，共 2n 步，要求第 2n 步才第一次回到 0。</p><p>先看「一直在正的那一邊」：第 1 步一定是 +1、最後一步一定是 −1，中間 2n−2 步要從高度 1 走回高度 1，而且不能低於 1。把高度整體減 1，就是「長度 2n−2、從 0 到 0、永遠不低於 0」的路徑，個數是 <span class=\"term\">Catalan number<small>（卡特蘭數）</small></span> C<sub>n−1</sub> = C(2n−2, n−1)/n。</p><p>負的那一邊對稱，同樣 C<sub>n−1</sub> 種，所以總數 = 2C<sub>n−1</sub> = <b>2·C(2n−2, n−1)/n</b>。</p><p>檢查：n = 1 時只有 +− 和 −+ 兩種，公式 2·C(0,0)/1 = 2；n = 3 時公式給 2·C(4,2)/3 = 4。程式暴力列舉 n = 1～6 得到 2, 2, 4, 10, 28, 84，和公式完全一致。</p><p>常見錯誤：只算一邊（忘了乘 2），或直接寫成 C(2n, n)（那是「第 2n 步在原點」的總數，沒有「第一次」的限制）。</p>"
+    },
+    {
+      "id": "dm-0056",
+      "topics": [
+        "binomial-coefficients"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "With 0 ≤ m, n, A = ________ and B = ________ in Σ<sub>k=m</sub><sup>n</sup> C(k, m) = C(A, B).<br>（C(k, m) 表示二項式係數「k 取 m」。）",
+      "answer": "A = n + 1，B = m + 1",
+      "explanation": "<p>這是 <span class=\"term\">Hockey-stick identity<small>（曲棍球棒恆等式）</small></span>：Σ<sub>k=m</sub><sup>n</sup> C(k, m) = C(n+1, m+1)。</p><p>組合證明：從 {1, 2, …, n+1} 選 m+1 個數，依「選到的最大數」分類。如果最大數是 k+1（k 從 m 到 n），剩下 m 個要從 {1, …, k} 裡選，有 C(k, m) 種。全部加起來就是 C(n+1, m+1)。</p><p>代數證明：用 Pascal 公式 C(k+1, m+1) = C(k, m+1) + C(k, m)，所以 C(k, m) = C(k+1, m+1) − C(k, m+1)，相加後中間項全部相消（telescoping），剩 C(n+1, m+1) − C(m, m+1) = C(n+1, m+1)。</p><p>程式驗算 0 ≤ m ≤ n ≤ 7 全部成立。</p>"
+    },
+    {
+      "id": "dm-0057",
+      "topics": [
+        "equivalence-relations"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 110,
+        "dept": "數學",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_110_math.pdf"
+      },
+      "question": "Let (G, ∘) be a finite group with subgroup H. Prove that |H| divides |G|.",
+      "answer": "（Lagrange 定理）用左陪集把 G 分割成大小都等於 |H| 的等價類，所以 |G| = k·|H|。",
+      "explanation": "<p>這是 <span class=\"term\">Lagrange's theorem<small>（拉格朗日定理）</small></span>，關鍵是用等價關係把 G 切成大小相同的塊。</p><p><b>1. 定義關係</b>：對 a, b ∈ G，令 a ~ b 若且唯若 a<sup>−1</sup>∘b ∈ H。</p><ul><li>反身：a<sup>−1</sup>∘a = e ∈ H。</li><li>對稱：若 a<sup>−1</sup>∘b ∈ H，則它的反元素 (a<sup>−1</sup>∘b)<sup>−1</sup> = b<sup>−1</sup>∘a ∈ H（子群對反元素封閉）。</li><li>遞移：若 a<sup>−1</sup>∘b、b<sup>−1</sup>∘c ∈ H，相乘得 a<sup>−1</sup>∘c ∈ H（子群對運算封閉）。</li></ul><p>所以 ~ 是 <span class=\"term\">Equivalence relation<small>（等價關係）</small></span>，它的等價類把 G 分割成互不相交的塊。</p><p><b>2. 等價類就是左陪集</b>：a 的等價類 = {b : a<sup>−1</sup>∘b ∈ H} = {a∘h : h ∈ H} = aH。</p><p><b>3. 每一塊大小都等於 |H|</b>：定義 f: H → aH，f(h) = a∘h。它是滿射（定義就是如此），也是單射：若 a∘h<sub>1</sub> = a∘h<sub>2</sub>，左乘 a<sup>−1</sup> 得 h<sub>1</sub> = h<sub>2</sub>（消去律）。所以 |aH| = |H|。</p><p><b>4. 結論</b>：G 有限，假設被分成 k 個陪集，則 |G| = k·|H|，所以 |H| 整除 |G|。</p><p>常見漏洞：只說「陪集大小相同」卻沒證明陪集互不相交或沒證明 f 是一對一，證明會被扣分。</p>"
+    },
+    {
+      "id": "dm-0058",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "Which solves a<sub>n</sub> = a<sub>n−1</sub> + 6 a<sub>n−2</sub> for a<sub>n</sub> in terms of a<sub>0</sub> = A and a<sub>1</sub> = B:",
+      "choices": [
+        "(A) (1/5)[(−3)<sup>n</sup>(2A − B) + 2<sup>n</sup>(3A + B)]",
+        "(B) (1/5)[(−3)<sup>n</sup>(2A − B) + 2<sup>n</sup>(3A − B)]",
+        "(C) (1/5)[(−2)<sup>n</sup>(3A − B) + 3<sup>n</sup>(2A + B)]",
+        "(D) (1/5)[(−2)<sup>n</sup>(3A + B) + 3<sup>n</sup>(2A + B)]",
+        "(E) (1/5)[(−2)<sup>n</sup>(3A − B) + 3<sup>n</sup>(2A − B)]"
+      ],
+      "answer": "(C)",
+      "explanation": "<p><span class=\"term\">Characteristic equation<small>（特徵方程式）</small></span>：r² = r + 6 → r² − r − 6 = 0 → r = 3 或 r = −2。所以 a<sub>n</sub> = c<sub>1</sub>3<sup>n</sup> + c<sub>2</sub>(−2)<sup>n</sup>。</p><p>代初值：n = 0：c<sub>1</sub> + c<sub>2</sub> = A；n = 1：3c<sub>1</sub> − 2c<sub>2</sub> = B。解得 c<sub>1</sub> = (2A + B)/5、c<sub>2</sub> = (3A − B)/5。</p><p>a<sub>n</sub> = (1/5)[(−2)<sup>n</sup>(3A − B) + 3<sup>n</sup>(2A + B)]，選 <b>(C)</b>。</p><p>快速檢查：n = 0 時 (1/5)[(3A − B) + (2A + B)] = A，n = 1 時 (1/5)[−2(3A − B) + 3(2A + B)] = B，正確。程式代入 n = 0～7 也全部吻合。(A)(B) 用的是 r = 2, −3，那是 a<sub>n</sub> = −a<sub>n−1</sub> + 6a<sub>n−2</sub> 的根，小心正負號。</p>"
+    },
+    {
+      "id": "dm-0059",
+      "topics": [
+        "generating-functions",
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "The generating function in partial fraction decomposition for the recurrence equation a<sub>n</sub> = −a<sub>n−1</sub> + 6 a<sub>n−2</sub> for a<sub>n</sub> in terms of a<sub>0</sub> = A and a<sub>1</sub> = B is:",
+      "choices": [
+        "(A) (1/5)[(2A+B)/(1−3x) + (3A−B)/(1+2x)]",
+        "(B) (1/5)[(2A+B)/(1−3x) + (3A+B)/(1+2x)]",
+        "(C) (1/5)[(2A−B)/(1−3x) + (3A−B)/(1+2x)]",
+        "(D) (1/5)[(3A−B)/(1−2x) + (2A−B)/(1+3x)]",
+        "(E) (1/5)[(3A+B)/(1−2x) + (2A−B)/(1+3x)]"
+      ],
+      "answer": "(E)",
+      "explanation": "<p>令 G(x) = Σ a<sub>n</sub>x<sup>n</sup>。遞迴 a<sub>n</sub> + a<sub>n−1</sub> − 6a<sub>n−2</sub> = 0（n ≥ 2）乘 x<sup>n</sup> 加總：</p><pre class=\"formula\">G(x)(1 + x - 6x^2) = a0 + (a1 + a0)x = A + (A + B)x</pre><p>1 + x − 6x² = (1 − 2x)(1 + 3x)，所以 G(x) = [A + (A + B)x] / [(1 − 2x)(1 + 3x)]。</p><p>部分分式：G = P/(1 − 2x) + Q/(1 + 3x)。展開後 a<sub>n</sub> = P·2<sup>n</sup> + Q·(−3)<sup>n</sup>，代 n = 0、1：P + Q = A、2P − 3Q = B，得 P = (3A + B)/5、Q = (2A − B)/5。</p><p>G(x) = (1/5)[(3A + B)/(1 − 2x) + (2A − B)/(1 + 3x)]，選 <b>(E)</b>。程式把 (E) 做冪級數展開，前 8 項和遞迴算出的 a<sub>n</sub> 完全相同。</p><p>常見錯誤：分母的根要用「特徵根」r 寫成 1 − rx，r = 2 → 1 − 2x、r = −3 → 1 + 3x，不要和 a<sub>n</sub> = a<sub>n−1</sub> + 6a<sub>n−2</sub> 的根（3, −2）搞混。</p>"
+    },
+    {
+      "id": "dm-0060",
+      "topics": [
+        "permutations-combinations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "The number of positive integer solutions of x<sub>1</sub> + x<sub>2</sub> + ⋯ + x<sub>n</sub> = r equals",
+      "choices": [
+        "(A) C(r−1, n−1)",
+        "(B) C(n+r−1, n−1)",
+        "(C) C(r, n)",
+        "(D) r<sup>n</sup>",
+        "(E) (rn)!"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>正整數解：每個 x<sub>i</sub> ≥ 1。令 y<sub>i</sub> = x<sub>i</sub> − 1 ≥ 0，方程變成 y<sub>1</sub> + ⋯ + y<sub>n</sub> = r − n 的非負整數解，用 <span class=\"term\">Stars and bars<small>（星棒法）</small></span>個數是 C((r − n) + n − 1, n − 1) = C(r − 1, n − 1)。</p><p>另一種看法：r 顆星排成一列，中間有 r − 1 個空隙，選 n − 1 個空隙插棒，就切成 n 段、每段至少 1 顆，也是 C(r − 1, n − 1)。選 <b>(A)</b>。</p><p>程式驗算：n = 3、r = 7 時暴力列舉 15 組，C(6, 2) = 15。(B) 是「非負整數解」的公式，常被誤選。</p>"
+    },
+    {
+      "id": "dm-0061",
+      "topics": [
+        "relation-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 111,
+        "dept": "數學(A)",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_111_math.pdf"
+      },
+      "question": "R is a non-symmetric relation on A if there exist x, y ∈ A such that (x, y) ∈ R but (y, x) ∉ R. If |A| = m, how many non-symmetric relations on A are there?",
+      "choices": [
+        "(A) 2<sup>(m²−m)/2</sup>",
+        "(B) 2<sup>m²</sup> − 2<sup>(m²+m)/2</sup>",
+        "(C) 3<sup>(m²−m)/2</sup>",
+        "(D) 2<sup>(m²+m)/2</sup>",
+        "(E) 2<sup>m²−m</sup>"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>非對稱（non-symmetric）就是「不是對稱」，所以用補集：全部關係數 − 對稱關係數。</p><ul><li>A × A 有 m² 個有序對，每個要不要放進 R，共 2<sup>m²</sup> 種關係。</li><li>對稱關係：對角線 (x, x) 的 m 個可以自由決定；非對角的 (m² − m)/2 組 {(x, y), (y, x)} 每組只能「都要」或「都不要」。共 2<sup>m + (m² − m)/2</sup> = 2<sup>(m² + m)/2</sup> 種。</li></ul><p>答案 2<sup>m²</sup> − 2<sup>(m²+m)/2</sup>，選 <b>(B)</b>。m = 2 時程式列舉 16 個關係，非對稱的有 8 個，公式 16 − 8 = 8。</p><p>注意：non-symmetric 和 <span class=\"term\">Antisymmetric<small>（反對稱）</small></span>、asymmetric 是不同概念，(D) 是對稱關係的個數，(C) 是反對稱關係中非對角部分的選法數。</p>"
+    },
+    {
+      "id": "dm-0062",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "Which solves a<sub>n</sub> = −a<sub>n−1</sub> + 6 a<sub>n−2</sub> for a<sub>n</sub> in terms of a<sub>0</sub> = A and a<sub>1</sub> = B:",
+      "choices": [
+        "(A) (1/5)[(−3)<sup>n</sup>(2A − B) + 2<sup>n</sup>(3A + B)]",
+        "(B) (1/5)[(−3)<sup>n</sup>(2A − B) + 2<sup>n</sup>(3A − B)]",
+        "(C) (1/5)[(−2)<sup>n</sup>(3A − B) + 3<sup>n</sup>(2A + B)]",
+        "(D) (1/5)[(−2)<sup>n</sup>(3A + B) + 3<sup>n</sup>(2A + B)]",
+        "(E) (1/5)[(−2)<sup>n</sup>(3A − B) + 3<sup>n</sup>(2A − B)]"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>特徵方程式 r² = −r + 6 → r² + r − 6 = 0 → (r − 2)(r + 3) = 0，r = 2 或 −3。a<sub>n</sub> = c<sub>1</sub>2<sup>n</sup> + c<sub>2</sub>(−3)<sup>n</sup>。</p><p>代初值：c<sub>1</sub> + c<sub>2</sub> = A、2c<sub>1</sub> − 3c<sub>2</sub> = B → c<sub>1</sub> = (3A + B)/5、c<sub>2</sub> = (2A − B)/5。</p><p>a<sub>n</sub> = (1/5)[(−3)<sup>n</sup>(2A − B) + 2<sup>n</sup>(3A + B)]，選 <b>(A)</b>。檢查 n = 1：(1/5)[−3(2A − B) + 2(3A + B)] = (1/5)(5B) = B。程式代 n = 0～7 全部吻合。</p>"
+    },
+    {
+      "id": "dm-0063",
+      "topics": [
+        "generating-functions",
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "The generating function in partial fraction decomposition for the recurrence equation a<sub>n</sub> = a<sub>n−1</sub> + 6 a<sub>n−2</sub> for a<sub>n</sub> in terms of a<sub>0</sub> = A and a<sub>1</sub> = B is:",
+      "choices": [
+        "(A) (1/5)[(2A+B)/(1−3x) + (3A−B)/(1+2x)]",
+        "(B) (1/5)[(2A+B)/(1−3x) + (3A+B)/(1+2x)]",
+        "(C) (1/5)[(2A−B)/(1−3x) + (3A−B)/(1+2x)]",
+        "(D) (1/5)[(3A−B)/(1−2x) + (2A−B)/(1+3x)]",
+        "(E) (1/5)[(3A+B)/(1−2x) + (2A−B)/(1+3x)]"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>G(x)(1 − x − 6x²) = a<sub>0</sub> + (a<sub>1</sub> − a<sub>0</sub>)x = A + (B − A)x，且 1 − x − 6x² = (1 − 3x)(1 + 2x)。</p><p>G = P/(1 − 3x) + Q/(1 + 2x) 對應 a<sub>n</sub> = P·3<sup>n</sup> + Q(−2)<sup>n</sup>；代 n = 0、1：P + Q = A、3P − 2Q = B，得 P = (2A + B)/5、Q = (3A − B)/5。</p><p>G(x) = (1/5)[(2A + B)/(1 − 3x) + (3A − B)/(1 + 2x)]，選 <b>(A)</b>。程式展開前 8 項驗證吻合。這題和 111 年第 3 題只差遞迴式的一個正負號，答案就從 (E) 變成 (A)。</p>"
+    },
+    {
+      "id": "dm-0064",
+      "topics": [
+        "permutations-combinations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "The number of non-negative integer solutions of x<sub>1</sub> + x<sub>2</sub> + ⋯ + x<sub>4</sub> ≤ 7 equals",
+      "choices": [
+        "(A) 210",
+        "(B) 330",
+        "(C) 35",
+        "(D) 7",
+        "(E) 120"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>不等式的技巧：加一個 <span class=\"term\">Slack variable<small>（鬆弛變數）</small></span> x<sub>5</sub> = 7 − (x<sub>1</sub> + ⋯ + x<sub>4</sub>) ≥ 0，變成 x<sub>1</sub> + ⋯ + x<sub>5</sub> = 7 的非負整數解，個數 C(7 + 5 − 1, 5 − 1) = C(11, 4) = <b>330</b>，選 (B)。</p><p>也可以把和 = 0, 1, …, 7 分別算 C(k + 3, 3) 再相加，用 hockey-stick 恆等式得 C(11, 4)。程式暴力列舉也是 330。</p><p>常見錯誤：只算「= 7」的 C(10, 3) = 120（選項 E）。</p>"
+    },
+    {
+      "id": "dm-0065",
+      "topics": [
+        "functions",
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 112,
+        "dept": "數學(A)",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf"
+      },
+      "question": "If |A| = 2<sup>4</sup> and |B| = 2<sup>3</sup>, how many functions from A to B are there?",
+      "choices": [
+        "(A) 2<sup>7</sup>",
+        "(B) 2<sup>12</sup>",
+        "(C) 2<sup>32</sup>",
+        "(D) 2<sup>48</sup>",
+        "(E) 2<sup>3<sup>16</sup></sup>"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>函數 A → B：A 的每個元素各自從 B 的 |B| 個值裡挑一個，乘法原理得 |B|<sup>|A|</sup>。</p><p>|A| = 16、|B| = 8 → 8<sup>16</sup> = (2<sup>3</sup>)<sup>16</sup> = 2<sup>48</sup>，選 <b>(D)</b>。</p><p>常見錯誤：寫成 |A|<sup>|B|</sup> = 16<sup>8</sup> = 2<sup>32</sup>（選項 C），方向反了。記法：「定義域的每個元素做一次選擇」，所以定義域大小在指數。</p>"
+    },
+    {
+      "id": "dm-0066",
+      "topics": [
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Consider the following real number:<br>0.02468101214161820…<br>The 1st digit after the decimal point is 0; the second digit is 2; the 13th digit is 6; etc. What is the 1,000th digit after the decimal point?",
+      "answer": "0",
+      "explanation": "<p>小數部分是把偶數 0, 2, 4, 6, 8, 10, 12, … 依序串起來，關鍵是分段數位數。</p><ul><li>1 位數偶數 0, 2, 4, 6, 8：5 個數 → 5 位（第 1～5 位）。</li><li>2 位數偶數 10～98：共 45 個 → 90 位（第 6～95 位）。</li><li>3 位數偶數 100～998：共 450 個 → 1350 位（第 96～1445 位），第 1000 位落在這段。</li></ul><p>第 1000 位是 3 位數段裡的第 1000 − 95 = 905 位。905 = 3 × 301 + 2，代表前面已經寫完 301 個三位數偶數，第 1000 位是第 302 個三位數偶數的第 2 位數。</p><p>第 302 個三位數偶數 = 100 + 2 × 301 = 702，它的第 2 位是 <b>0</b>。</p><p>程式直接把 0, 2, 4, … 串成字串取第 1000 個字元，也得到 0（同時驗證題目說的第 13 位是 6）。常見錯誤：忘了 0 也算一個 1 位數（題目第 1 位就是 0），結果偏移一位。</p>"
+    },
+    {
+      "id": "dm-0067",
+      "topics": [
+        "sets"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "2-(a)",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Let P = {2, {(2)}, {(2), (2)}, (2), (2, 2), {2, (2), (2), 2}, {(2, 2), (2, 2), ((2), 2)}}. How many elements are there in 2<sup>P</sup> (which is the set of all subsets of P)?",
+      "answer": "64（把 (2) 視為 1-tuple，與 2 不同；待確認）",
+      "explanation": "<p>關鍵：集合裡重複的元素只算一次，而有序組 (tuple) 的順序與重複都有意義。先把 P 的元素逐一化簡：</p><ol><li>2</li><li>{(2)}</li><li>{(2), (2)} = {(2)}，和第 2 個相同，重複</li><li>(2)：只有一個分量的有序組</li><li>(2, 2)</li><li>{2, (2), (2), 2} = {2, (2)}</li><li>{(2, 2), (2, 2), ((2), 2)} = {(2, 2), ((2), 2)}</li></ol><p>若把 (2) 當成和數字 2 不同的 1-tuple，則 (2, 2) ≠ ((2), 2)，P 的相異元素是 2、{(2)}、(2)、(2, 2)、{2, (2)}、{(2, 2), ((2), 2)} 共 6 個，所以 |2<sup>P</sup>| = 2<sup>6</sup> = <b>64</b>。</p><p>（待確認）若把 (2) 的括號只當成一般的數學括號（(2) = 2），則元素化簡成 2、{2}、(2, 2)、{(2, 2)} 共 4 個，答案會變成 2<sup>4</sup> = 16。題目刻意把 (2) 和 2 並列，比較可能是要考生分辨 tuple 與數字，所以採用 64。</p><p>常見錯誤：直接數逗號得到 7 個元素、答 128，忘了 {(2)} 和 {(2), (2)} 是同一個集合。</p>"
+    },
+    {
+      "id": "dm-0068",
+      "topics": [
+        "cardinality",
+        "sets"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "2-(b)(c)",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "(b) What is the definition of an infinite set W?<br>(c) Let N be the set of natural numbers. Assume that we already know N is an infinite set. Let S = {k/2<sup>n</sup> | n = 0, 1, 2, …; k ∈ N}. Note that / in this question is the division of real numbers. For example, 5/2 = 2.5. Prove that S is an infinite set strictly according to your definition of an infinite set.",
+      "answer": "(b) W 是無限集若且唯若 W 不是有限集，也就是對任何 n ∈ N，都不存在 W 與 {1, 2, …, n}（或空集合）之間的雙射。(c) 取 n = 0 得 N ⊆ S；若 S 有限，其子集 N 也有限，矛盾，所以 S 無限。",
+      "explanation": "<p><b>(b) 定義</b>：集合 W 稱為 <span class=\"term\">Finite set<small>（有限集）</small></span>，若 W = ∅ 或存在某個正整數 n 使 W 與 {1, 2, …, n} 之間有一個雙射；不是有限集的集合就是 <span class=\"term\">Infinite set<small>（無限集）</small></span>。（另一種常見定義是 Dedekind 的：W 無限 ⇔ W 和它的某個真子集之間存在雙射。兩種都可以，但 (c) 要「嚴格按照你寫的定義」證明，所以要選一種並一致使用。）</p><p><b>(c) 證明</b>（用「不是有限」的定義）：</p><ol><li>取 n = 0，k/2<sup>0</sup> = k，所以每個 k ∈ N 都在 S 裡，N ⊆ S。</li><li>引理：有限集的子集也是有限集。（若 f: S → {1, …, m} 是雙射，把 f 限制在子集 T 上得到 T 到 {1, …, m} 某個子集的雙射，再依序重新編號成 {1, …, t}，所以 T 有限。）</li><li>假設 S 有限，由引理 N 也有限，和「N 是無限集」矛盾。所以 S 是無限集。</li></ol><p>若用 Dedekind 定義：已知 N 有雙射到真子集 g: N → N'（N' ⊊ N）。定義 h: S → S，對 x ∈ N 令 h(x) = g(x)，其餘 x ∈ S \\ N 令 h(x) = x。h 是單射，且像是 N' ∪ (S \\ N) ⊊ S（缺了 N \\ N' 的元素），所以 S 和真子集之間有雙射，S 無限。</p><p>常見錯誤：只說「S 包含 N，N 無限，所以 S 無限」卻沒說明「有限集的子集有限」這一步，題目特別強調 strictly according to your definition，這步不能省。</p>"
+    },
+    {
+      "id": "dm-0069",
+      "topics": [
+        "gcd-euclid"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Assume n ≥ 2. Let A = {x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub>} be a set of (not necessarily distinct) natural numbers. Let g = gcd(x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub>) and l = lcm(x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub>). Assume n, g, and l are appropriate fixed integers. Let p = x<sub>1</sub> · x<sub>2</sub> · … · x<sub>n</sub>, the product of x<sub>i</sub>'s. What is the largest possible value of p in terms of n, g, and l? What is the smallest possible value of p in terms of n, g, and l?",
+      "answer": "最大值 g·l<sup>n−1</sup>，最小值 g<sup>n−1</sup>·l",
+      "explanation": "<p>對每個質數 q 分開看指數。設 q 在 x<sub>i</sub> 中的指數是 e<sub>i</sub>，在 g、l 中的指數分別是 α = min e<sub>i</sub>、β = max e<sub>i</sub>。p 中 q 的指數是 Σe<sub>i</sub>，而每個 e<sub>i</sub> 都在 [α, β] 之間，且至少一個等於 α、至少一個等於 β。</p><ul><li><b>最大</b>：一個取 α、其餘 n − 1 個都取 β，Σe<sub>i</sub> = α + (n − 1)β。</li><li><b>最小</b>：一個取 β、其餘 n − 1 個都取 α，Σe<sub>i</sub> = (n − 1)α + β。</li></ul><p>每個質數都可以同時達到（取 x<sub>1</sub> = g、x<sub>2</sub> = ⋯ = x<sub>n</sub> = l 就是最大；x<sub>1</sub> = l、其餘 = g 就是最小），所以</p><pre class=\"formula\">max p = g · l^(n-1)\nmin p = g^(n-1) · l</pre><p>檢查 n = 2：最大和最小都是 g·l，符合熟悉的 gcd(a, b)·lcm(a, b) = a·b。</p><p>常見錯誤：以為 p 永遠等於 g·l（只有 n = 2 才對），或把 g、l 的角色寫反。</p>"
+    },
+    {
+      "id": "dm-0070",
+      "topics": [
+        "inclusion-exclusion"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "How many integers between 1000 and 5000 are not divisible by 4, 5, or 6?",
+      "answer": "2132",
+      "explanation": "<p>用 <span class=\"term\">Inclusion-exclusion principle<small>（排容原理）</small></span>。範圍取 1000～5000（端點 1000 和 5000 都能被 4、5 整除，含不含端點答案都一樣）。用 ⌊5000/d⌋ − ⌊999/d⌋ 計算範圍內 d 的倍數個數：</p><ul><li>總數：4001</li><li>|A<sub>4</sub>| = 1250 − 249 = 1001，|A<sub>5</sub>| = 1000 − 199 = 801，|A<sub>6</sub>| = 833 − 166 = 667</li><li>|A<sub>4</sub> ∩ A<sub>5</sub>|（lcm 20）= 250 − 49 = 201，|A<sub>4</sub> ∩ A<sub>6</sub>|（lcm 12）= 416 − 83 = 333，|A<sub>5</sub> ∩ A<sub>6</sub>|（lcm 30）= 166 − 33 = 133</li><li>|A<sub>4</sub> ∩ A<sub>5</sub> ∩ A<sub>6</sub>|（lcm 60）= 83 − 16 = 67</li></ul><p>至少被一個整除：1001 + 801 + 667 − 201 − 333 − 133 + 67 = 1869。</p><p>都不整除：4001 − 1869 = <b>2132</b>。程式直接數 1000～5000 也是 2132。</p><p>常見錯誤：交集用 4 × 6 = 24 而不是 lcm(4, 6) = 12，會算錯。</p>"
+    },
+    {
+      "id": "dm-0071",
+      "topics": [
+        "generating-functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Let a<sub>k</sub> be the number of integer solutions of x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub> = k where x<sub>1</sub> ≥ 2, 1 ≤ x<sub>2</sub> ≤ 5, and 0 ≤ x<sub>3</sub> ≤ 3. Show the generating function for {a<sub>k</sub>}.",
+      "answer": "G(x) = (x² + x³ + x⁴ + ⋯)(x + x² + x³ + x⁴ + x⁵)(1 + x + x² + x³) = x³(1 − x⁵)(1 − x⁴)/(1 − x)³",
+      "explanation": "<p>每個變數各給一個因式，指數是它可以取的值：</p><ul><li>x<sub>1</sub> ≥ 2：x² + x³ + ⋯ = x²/(1 − x)</li><li>1 ≤ x<sub>2</sub> ≤ 5：x + x² + ⋯ + x⁵ = x(1 − x⁵)/(1 − x)</li><li>0 ≤ x<sub>3</sub> ≤ 3：1 + x + x² + x³ = (1 − x⁴)/(1 − x)</li></ul><p>相乘：G(x) = x²/(1 − x) · x(1 − x⁵)/(1 − x) · (1 − x⁴)/(1 − x) = <b>x³(1 − x⁴)(1 − x⁵)/(1 − x)³</b>，a<sub>k</sub> 就是 x<sup>k</sup> 的係數。</p><p>程式驗算：展開得 a<sub>0</sub>…a<sub>10</sub> = 0, 0, 0, 1, 3, 6, 10, 14, 17, 19, 20，k ≥ 10 之後固定是 20（= x<sub>2</sub> 的 5 種 × x<sub>3</sub> 的 4 種，x<sub>1</sub> 由剩下的值決定），和暴力列舉一致。最小 k = 2 + 1 + 0 = 3，所以 G 從 x³ 開始。</p>"
+    },
+    {
+      "id": "dm-0072",
+      "topics": [
+        "equivalence-relations"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Let R<sub>1</sub> and R<sub>2</sub> be equivalence relations on the set S. Prove that R<sub>1</sub> ∩ R<sub>2</sub> is an equivalence relation.",
+      "answer": "R<sub>1</sub> ∩ R<sub>2</sub> 仍滿足反身、對稱、遞移三性質，故為等價關係。",
+      "explanation": "<p>令 R = R<sub>1</sub> ∩ R<sub>2</sub>，逐一檢查三個性質：</p><ul><li><b>Reflexive（反身）</b>：對任何 a ∈ S，(a, a) ∈ R<sub>1</sub> 且 (a, a) ∈ R<sub>2</sub>，所以 (a, a) ∈ R。</li><li><b>Symmetric（對稱）</b>：若 (a, b) ∈ R，則 (a, b) 同時在 R<sub>1</sub>、R<sub>2</sub>；兩者都對稱，所以 (b, a) ∈ R<sub>1</sub> 且 (b, a) ∈ R<sub>2</sub>，即 (b, a) ∈ R。</li><li><b>Transitive（遞移）</b>：若 (a, b), (b, c) ∈ R，則它們都在 R<sub>1</sub>，由 R<sub>1</sub> 遞移得 (a, c) ∈ R<sub>1</sub>；同理 (a, c) ∈ R<sub>2</sub>，所以 (a, c) ∈ R。</li></ul><p>三性質都成立，R<sub>1</sub> ∩ R<sub>2</sub> 是 <span class=\"term\">Equivalence relation<small>（等價關係）</small></span>。</p><p>延伸：聯集 R<sub>1</sub> ∪ R<sub>2</sub> 就不一定是等價關係，因為遞移性可能壞掉（例如在 {1, 2, 3} 上，R<sub>1</sub> 把 1、2 分一組，R<sub>2</sub> 把 2、3 分一組，聯集有 (1, 2)、(2, 3) 卻沒有 (1, 3)），這是常考的對照題。</p>"
+    },
+    {
+      "id": "dm-0073",
+      "topics": [
+        "graph-basics",
+        "planar-graphs",
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Please answer TRUE or FALSE for the following statements and give CONCISE explanations.<br>(a) A simple graph is called regular if every vertex of this graph has the same degree. An n-cube, denoted by Q<sub>n</sub>, is a graph that has vertices representing the 2<sup>n</sup> bit strings of length n. Two vertices are adjacent if and only if the bit strings that they represent differ in exactly one bit position. Q<sub>n</sub> is regular.<br>(b) Let V<sub>n</sub> and E<sub>n</sub> respectively be the number of vertices and edges of Q<sub>n</sub>, the n-cube. Then, E<sub>1</sub> = 1, E<sub>2</sub> = 4, and E<sub>n+1</sub> = 2V<sub>n</sub> + E<sub>n</sub>.<br>(c) The complete bipartite graphs K<sub>2,3</sub> and K<sub>3,3</sub> are planar.<br>(d) There are exactly 2 shortest paths between v<sub>1</sub> and v<sub>2</sub> in the graph represented by the adjacency matrix<pre>      e1 e2 e3 e4 e5 e6 e7\nv1  [ 1  0  0  0  0  0  1 ]\nv2  [ 0  0  0  0  1  1  1 ]\nv3  [ 1  1  0  1  0  1  0 ]\nv4  [ 0  1  1  0  0  0  0 ]\nv5  [ 0  0  1  1  1  0  0 ]</pre>with |e<sub>1</sub>| = 1, |e<sub>2</sub>| = 2, |e<sub>3</sub>| = 1, |e<sub>4</sub>| = 4, |e<sub>5</sub>| = 1, |e<sub>6</sub>| = 4, |e<sub>7</sub>| = 5.<br>(e) In the graph given by the previous question, there exists an Euler path from v<sub>5</sub> to v<sub>1</sub>.",
+      "answer": "(a) TRUE (b) FALSE (c) FALSE (d) FALSE (e) FALSE",
+      "explanation": "<p><b>(a) TRUE</b>：每個長度 n 的位元字串，翻轉其中任一位就得到一個鄰居，恰有 n 個鄰居，所以 Q<sub>n</sub> 是 n-regular。</p><p><b>(b) FALSE</b>：Q<sub>n+1</sub> 是兩份 Q<sub>n</sub>（最高位補 0、補 1）再把對應點連起來，新增 V<sub>n</sub> 條邊，所以 E<sub>n+1</sub> = 2E<sub>n</sub> + V<sub>n</sub>。題目的式子把係數放反了，檢查 n = 1：2V<sub>1</sub> + E<sub>1</sub> = 4 + 1 = 5 ≠ E<sub>2</sub> = 4。</p><p><b>(c) FALSE</b>：K<sub>2,3</sub> 是平面圖，但 K<sub>3,3</sub> 不是（Kuratowski 定理的兩個基本非平面圖之一；也可用二部平面圖 e ≤ 2v − 4：9 &gt; 2·6 − 4 = 8 證明）。</p><p><b>(d) FALSE</b>：這個矩陣其實是 <span class=\"term\">Incidence matrix<small>（關聯矩陣）</small></span>（列是頂點、行是邊），讀出邊：e<sub>1</sub> = v<sub>1</sub>v<sub>3</sub>(1)、e<sub>2</sub> = v<sub>3</sub>v<sub>4</sub>(2)、e<sub>3</sub> = v<sub>4</sub>v<sub>5</sub>(1)、e<sub>4</sub> = v<sub>3</sub>v<sub>5</sub>(4)、e<sub>5</sub> = v<sub>2</sub>v<sub>5</sub>(1)、e<sub>6</sub> = v<sub>2</sub>v<sub>3</sub>(4)、e<sub>7</sub> = v<sub>1</sub>v<sub>2</sub>(5)。v<sub>1</sub> 到 v<sub>2</sub> 的最短距離是 5，而長度 5 的路徑有三條：e<sub>7</sub>；e<sub>1</sub>e<sub>6</sub>（1 + 4）；e<sub>1</sub>e<sub>2</sub>e<sub>3</sub>e<sub>5</sub>（1 + 2 + 1 + 1）。是 3 條不是 2 條（程式列舉所有簡單路徑確認）。</p><p><b>(e) FALSE</b>：度數 deg(v<sub>1</sub>) = 2、deg(v<sub>2</sub>) = 3、deg(v<sub>3</sub>) = 4、deg(v<sub>4</sub>) = 2、deg(v<sub>5</sub>) = 3。奇點恰好是 v<sub>2</sub>、v<sub>5</sub>，所以 Euler path 存在但起終點必須是 v<sub>2</sub> 和 v<sub>5</sub>，不可能從 v<sub>5</sub> 走到 v<sub>1</sub>。</p>"
+    },
+    {
+      "id": "dm-0074",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 110,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "10-b",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_110_math.pdf"
+      },
+      "question": "Given a sequence 7, −6, 20, −24, 64, −96, … comes from G<sub>k+3</sub> = −2G<sub>k+2</sub> + 2G<sub>k+1</sub> + 4G<sub>k</sub> for k ≥ 0, with G<sub>0</sub> = 7, G<sub>1</sub> = −6 and G<sub>2</sub> = 20. Please find the number G<sub>100</sub>.",
+      "answer": "G<sub>100</sub> = 3·2<sup>100</sup> + 2<sup>52</sup>",
+      "explanation": "<p>特徵方程式 r³ = −2r² + 2r + 4 → r³ + 2r² − 2r − 4 = r²(r + 2) − 2(r + 2) = (r + 2)(r² − 2)，根 r = −2, √2, −√2。</p><p>G<sub>n</sub> = a(−2)<sup>n</sup> + b(√2)<sup>n</sup> + c(−√2)<sup>n</sup>，代初值：</p><ul><li>n = 0：a + b + c = 7</li><li>n = 1：−2a + √2(b − c) = −6</li><li>n = 2：4a + 2(b + c) = 20</li></ul><p>由第 1、3 式：4a + 2(7 − a) = 20 → a = 3，b + c = 4；第 2 式：√2(b − c) = 0 → b = c = 2。</p><p>G<sub>n</sub> = 3(−2)<sup>n</sup> + 2(√2)<sup>n</sup> + 2(−√2)<sup>n</sup>。n = 100 是偶數，(±√2)<sup>100</sup> = 2<sup>50</sup>：</p><pre class=\"formula\">G_100 = 3·2^100 + 2·2^50 + 2·2^50 = 3·2^100 + 2^52</pre><p>程式用遞迴直接算到 G<sub>100</sub> = 3802951800684692708089736986624，和 3·2<sup>100</sup> + 2<sup>52</sup> 相等。檢查小項：G<sub>3</sub> = −24 + 2·2√2 − 2·2√2 = −24，符合題目數列。</p>"
+    },
+    {
+      "id": "dm-0075",
+      "topics": [
+        "recurrence-relations",
+        "divide-and-conquer-recurrences"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Consider the game of Hanoi-Tower, where on a board with three erected pegs pile of disks of different sizes are initially stacked at one of the pegs, in a size-ordered manner with the largest disk being at the bottom and on top the smallest.<br>The player is required to relocate the disk pile to any of the rest two pegs, in compliance with the following rules at any time during the play:<br>* moving one disk at a time from one peg to another;<br>* when moving a disk to a peg already piled with disks, the disk must be smaller than any in the pile (which would entail that, during the game, a disk pile at any peg will be size-ordered with smaller ones on top of larger ones);<br>（原卷附圖：三根柱子 peg1、peg2、peg3，所有圓盤疊在 peg1。）<br>a. Suppose that H<sup>3</sup>(n) is the number of moves required to relocate a pile of n disks at a peg to any of the rest two pegs. How would you formulate H<sup>3</sup>(n) in a recursive manner? And H<sup>3</sup>(n) = ?<br>b. The game can be extended to the case of 4-peg as shown below.（原卷附圖：四根柱子 peg1～peg4，所有圓盤疊在 peg1。）Suppose that H<sup>4</sup>(n) denotes the number of moves needed to relocate a pile of n disks at a peg to any of the rest three pegs. How would you formulate H<sup>4</sup>(n) in a recursive manner? And H<sup>4</sup>(n) = ? Is there any connection that you see between H<sup>3</sup>(n) and H<sup>4</sup>(n)?<br>c. Let H<sup>5</sup>(n) be the number of moves for relocating a pile of n disks in 5-peg situation. Are there any connections that you see among H<sup>3</sup>(n), H<sup>4</sup>(n) and H<sup>5</sup>(n)?<br>d. What can you tell about H<sup>m</sup>(n) in the case of an m-peg Hanoi-Tower game? And the connections between H<sup>m<sub>1</sub></sup>(n) and H<sup>m<sub>2</sub></sup>(n)?",
+      "answer": "a. H<sup>3</sup>(n) = 2H<sup>3</sup>(n−1) + 1，H<sup>3</sup>(1) = 1，H<sup>3</sup>(n) = 2<sup>n</sup> − 1。b. H<sup>4</sup>(n) = min<sub>1≤k&lt;n</sub>[2H<sup>4</sup>(k) + H<sup>3</sup>(n−k)]；若 k(k+1)/2 ≤ n &lt; (k+1)(k+2)/2，H<sup>4</sup>(n) = (k − 1)2<sup>k</sup> + 1 + (n − k(k+1)/2)·2<sup>k</sup>。c、d. H<sup>m</sup>(n) = min<sub>k</sub>[2H<sup>m</sup>(k) + H<sup>m−1</sup>(n−k)]（Frame–Stewart；m ≥ 5 的最優性尚未被證明，待確認）。",
+      "explanation": "<p><b>a.</b> 要把 n 個盤子搬走，最大的盤子一定要從原柱直接移到目標柱，而那一刻其他 n − 1 個盤子必須全部疊在第三根柱子上。所以：先把上面 n − 1 個搬到中繼柱（H<sup>3</sup>(n−1) 步）→ 搬最大盤（1 步）→ 再把 n − 1 個搬到目標柱（H<sup>3</sup>(n−1) 步）：</p><pre class=\"formula\">H3(n) = 2·H3(n-1) + 1,  H3(1) = 1\nH3(n) + 1 = 2(H3(n-1) + 1)  =&gt;  H3(n) = 2^n - 1</pre><p><b>b.</b> 四根柱子多了一根空柱可以用，<span class=\"term\">Frame–Stewart algorithm<small>（Frame–Stewart 演算法）</small></span>的做法：</p><ol><li>先用 4 根柱子把上面 k 個小盤搬到某根中繼柱：H<sup>4</sup>(k) 步。</li><li>這 k 個盤子占住一根柱子不能動，剩下 n − k 個大盤只能用 3 根柱子搬到目標柱：H<sup>3</sup>(n−k) = 2<sup>n−k</sup> − 1 步。</li><li>再把 k 個小盤用 4 根柱子搬到目標柱：H<sup>4</sup>(k) 步。</li></ol><pre class=\"formula\">H4(n) = min over 1 ≤ k &lt; n of [ 2·H4(k) + H3(n-k) ],  H4(1) = 1</pre><p>算出來 H<sup>4</sup>(1…12) = 1, 3, 5, 9, 13, 17, 25, 33, 41, 49, 65, 81。觀察相鄰差：2, 2, 4, 4, 4, 8, 8, 8, 8, 16, …，也就是差值 2<sup>j</sup> 恰好出現 j + 1 次。所以若 t<sub>k</sub> = k(k+1)/2 ≤ n &lt; t<sub>k+1</sub>，</p><pre class=\"formula\">H4(n) = (k-1)·2^k + 1 + (n - t_k)·2^k</pre><p>（程式把遞迴式和這個公式比對 n = 1～39 全部一致。）和 H<sup>3</sup> 的關係：H<sup>4</sup> 的遞迴直接用到 H<sup>3</sup>；而且 H<sup>3</sup>(n) 的差值是 2<sup>j</sup> 各出現 1 次，H<sup>4</sup> 是各出現 j + 1 次，成長從 2<sup>n</sup> 降到約 2<sup>√(2n)</sup>。</p><p><b>c.</b> 同樣的想法：H<sup>5</sup>(n) = min<sub>k</sub>[2H<sup>5</sup>(k) + H<sup>4</sup>(n−k)]，H<sup>5</sup>(1…12) = 1, 3, 5, 7, 11, 15, 19, 23, 27, 31, 39, 47，差值 2<sup>j</sup> 出現 C(j + 2, 2) 次（1, 3, 6, … 次）。所以 H<sup>3</sup> → H<sup>4</sup> → H<sup>5</sup> 是一層套一層：每多一根柱子，就用「少一根柱子的最優解」搬大盤。</p><p><b>d.</b> 一般化：</p><pre class=\"formula\">Hm(n) = min over 1 ≤ k &lt; n of [ 2·Hm(k) + H(m-1)(n-k) ]</pre><p>差值 2<sup>j</sup> 出現 C(j + m − 3, m − 3) 次（m = 3 時每個 1 次，就是 2<sup>n</sup> − 1）。程式對 m = 3～6、n ≤ 24 驗證這個規律和遞迴一致。所以 m<sub>1</sub> &lt; m<sub>2</sub> 時 H<sup>m<sub>2</sub></sup>(n) ≤ H<sup>m<sub>1</sub></sup>(n)，柱子越多步數越少，而且 H<sup>m</sup> 是由 H<sup>m−1</sup> 遞迴組出來的。</p><p>（待確認）三柱的 2<sup>n</sup> − 1 已證明最優；四柱的 Frame–Stewart 步數在 2014 年被證明是最優；五柱以上 Frame–Stewart 是否最優目前仍是猜想。考場上寫出遞迴式和規律、並說明這是 Frame–Stewart 的上界即可。</p>"
+    },
+    {
+      "id": "dm-0076",
+      "topics": [
+        "graph-coloring",
+        "graph-basics"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Please indicate if the graph G1 is a bipartite graph (TRUE or FALSE) and justify your answer.<br>（原卷附圖 G1：矩形的四個角各一個頂點（左上 a、右上 b、左下 c、右下 d），邊為 ab、ac、bd、cd；矩形中間有一個頂點 m 位於左下到右上的對角線上，邊為 cm、mb。共 5 個頂點、6 條邊。）",
+      "answer": "TRUE",
+      "explanation": "<p>試著用兩色著色（等價於找二分）：</p><ul><li>c 塗 X → 它的鄰居 a、d、m 塗 Y。</li><li>a 的鄰居 b 塗 X；d 的鄰居 b 也要是 X，一致；m 的鄰居 b 要是 X，一致。</li></ul><p>得到分割 {b, c} 與 {a, d, m}，每條邊 ab、ac、bd、cd、cm、mb 都跨兩邊，所以 G1 是 <span class=\"term\">Bipartite graph<small>（二部圖）</small></span>，<b>TRUE</b>。</p><p>另一個角度：G1 的 cycle 只有 a-b-d-c-a、c-m-b-a-c、c-m-b-d-c，長度都是 4，沒有奇數長的 cycle，符合二部圖判定定理。</p><p>常見陷阱：看到「對角線」就以為會形成三角形，但對角線中間多了一個頂點 m，把 c 到 b 變成長度 2 的路徑，三角形就變成四邊形了。</p>"
+    },
+    {
+      "id": "dm-0077",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Given a graph G2 that contains 7 vertices. The degree of two vertices in G2 is 3. The degree of the remaining vertices is 2. Please show if the G2 contains an Euler path. Construct the G2 if G2 exists an Euler path.",
+      "answer": "若 G2 連通，則恰有 2 個奇點，存在 Euler path（起終點為兩個度數 3 的頂點）。例：頂點 a、b 度數 3，邊 ab、a-c-d-b、a-e-f-g-b。",
+      "explanation": "<p><span class=\"term\">Euler path<small>（尤拉路徑）</small></span>存在的充要條件：圖連通（忽略孤立點），且奇數度頂點恰好 0 個或 2 個。</p><p>G2 有 2 個度數 3（奇數）、5 個度數 2（偶數），奇點恰好 2 個；邊數 = (3·2 + 2·5)/2 = 8。只要 G2 連通，就有 Euler path，而且必須從一個度數 3 的頂點出發、在另一個度數 3 的頂點結束。</p><p>構造一個連通的例子：令度數 3 的頂點為 a、b，其餘 c, d, e, f, g，邊為</p><pre class=\"formula\">a-b,  a-c, c-d, d-b,  a-e, e-f, f-g, g-b      (共 8 條)</pre><p>就是 a、b 之間三條互不相交的路徑（長度 1、3、4），度數 a = b = 3、其餘都是 2。一條 Euler path：a → b → d → c → a → e → f → g → b，8 條邊各走一次。</p><p>注意：題目沒有保證連通。如果 G2 不連通（例如一個含 a、b 的連通塊加上另一個獨立的 cycle），就沒有 Euler path，所以答案要寫出「連通」這個前提。</p>"
+    },
+    {
+      "id": "dm-0078",
+      "topics": [
+        "planar-graphs"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "A planar graph contains 12 faces and 11 vertices. These faces consist of six triangles, four quadrilaterals (a polygon with 4 vertices and 4 edges), and the remaining ones have the same number of sides. How many sides does the last two faces have?",
+      "answer": "各 4 條邊",
+      "explanation": "<p>用 <span class=\"term\">Euler's formula<small>（尤拉公式）</small></span>（連通平面圖）：V − E + F = 2 → 11 − E + 12 = 2 → E = 21。</p><p>每條邊恰好是兩個面的邊界（各算一次），所以所有面的邊數總和 = 2E = 42。</p><p>6 個三角形貢獻 18、4 個四邊形貢獻 16，剩下 2 個面共 42 − 18 − 16 = 8，兩者邊數相同，所以各 <b>4</b> 條邊。</p><p>常見錯誤：把面的邊數總和直接當成 E（少乘 2），會得到負數。</p>"
+    },
+    {
+      "id": "dm-0079",
+      "topics": [
+        "graph-coloring"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 111,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_111_math.pdf"
+      },
+      "question": "Given a graph G3, the first vertex can be colored with any color. The second one can be colored with any color that was not chosen from the first vertex. The adjacent vertices of the G3 are colored differently.<br>a. The chromatic number is the smallest number of colors needed to produce a proper coloring of a graph. What is the chromatic number of G, denoted by χ(G)?<br>b. The chromatic polynomial is a polynomial that represents the number of distinct ways to color the vertices of a graph. What is the chromatic polynomial of G3, P<sub>G</sub>?<br>c. Let P<sub>G</sub>(n) be the number of different ways to color the vertices of G3 using n colors, where n ≥ 0 is an integer. What is minimum number of P<sub>G</sub>(n), where P<sub>G</sub>(n) &gt; 0?<br>（原卷附圖 G3：正方形四個頂點加上兩條對角線，構成 K<sub>4</sub>；另有一個頂點只和正方形右上角的頂點相連。共 5 個頂點、7 條邊。）",
+      "answer": "a. χ = 4　b. P<sub>G</sub>(n) = n(n−1)²(n−2)(n−3)　c. 72",
+      "explanation": "<p>G3 = K<sub>4</sub> 再在其中一個頂點掛一個葉子 w。</p><p><b>a.</b> K<sub>4</sub> 四個點兩兩相鄰，至少要 4 色；4 色也夠（w 只要和它的鄰居不同色）。所以 <span class=\"term\">Chromatic number<small>（著色數）</small></span> χ(G3) = <b>4</b>。</p><p><b>b.</b> 依題目描述的順序著色：K<sub>4</sub> 的四個點依序有 n、n − 1、n − 2、n − 3 種選擇；最後葉子 w 只要避開它唯一的鄰居，有 n − 1 種。</p><pre class=\"formula\">P_G(n) = n(n-1)(n-2)(n-3) · (n-1) = n(n-1)^2(n-2)(n-3)</pre><p><b>c.</b> n = 0, 1, 2, 3 時 P<sub>G</sub>(n) = 0（顏色不夠），第一個正值出現在 n = 4：4 · 3² · 2 · 1 = <b>72</b>；n 增大時 P<sub>G</sub> 遞增（n = 5 是 480），所以最小正值是 72。</p><p>程式暴力數 n = 0～5 的合法著色數：0, 0, 0, 0, 72, 480，和公式一致。</p>"
+    },
+    {
+      "id": "dm-0080",
+      "topics": [
+        "binomial-coefficients"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Which is bigger? 1.01<sup>100</sup> and 2.",
+      "answer": "1.01<sup>100</sup> 比較大（約 2.705）",
+      "explanation": "<p>不能用計算機，所以用 <span class=\"term\">Binomial theorem<small>（二項式定理）</small></span>展開：</p><pre class=\"formula\">(1 + 0.01)^100 = 1 + C(100,1)(0.01) + C(100,2)(0.01)^2 + ...\n               = 1 + 1 + 0.495 + (其餘都是正項)</pre><p>前兩項加起來已經是 2，後面還有 C(100, 2)(0.01)² = 4950 × 0.0001 = 0.495 等正項，所以 1.01<sup>100</sup> &gt; 2.495 &gt; 2。</p><p>這其實就是 Bernoulli 不等式 (1 + x)<sup>n</sup> ≥ 1 + nx 的加強版。程式算出 1.01<sup>100</sup> ≈ 2.7048，也接近 e ≈ 2.718（因為 (1 + 1/n)<sup>n</sup> → e）。</p>"
+    },
+    {
+      "id": "dm-0081",
+      "topics": [
+        "proof-methods"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Assume x is a natural number. Solve x<sup>x</sup> = 2<sup>2048</sup>.",
+      "answer": "x = 256",
+      "explanation": "<p>右邊只有質因數 2，所以 x 也只能有質因數 2，令 x = 2<sup>k</sup>：</p><pre class=\"formula\">x^x = (2^k)^(2^k) = 2^(k · 2^k) = 2^2048  =&gt;  k · 2^k = 2048 = 2^11</pre><p>k · 2<sup>k</sup> = 2<sup>11</sup> 要求 k 也是 2 的冪；試 k = 8：8 × 256 = 2048，成立。k · 2<sup>k</sup> 對 k 嚴格遞增，所以解唯一。</p><p>x = 2<sup>8</sup> = <b>256</b>。驗證：256<sup>256</sup> = (2<sup>8</sup>)<sup>256</sup> = 2<sup>2048</sup>。程式搜尋 k = 1～19 也只有 k = 8 符合。</p><p>為什麼 x 不能有其他質因數：若奇質數 p 整除 x，則 p 整除 x<sup>x</sup> = 2<sup>2048</sup>，矛盾（x = 1 時 1<sup>1</sup> = 1 也不對）。</p>"
+    },
+    {
+      "id": "dm-0082",
+      "topics": [
+        "predicate-logic"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Please translate the following statement in first-order logic. “There are infinite natural numbers.” Please use N to denote the set of natural numbers. The notation x ∈ N means that x is a member of N.",
+      "answer": "∀x (x ∈ N → ∃y (y ∈ N ∧ y &gt; x))",
+      "explanation": "<p>「自然數有無限多個」不能直接寫成量詞（一階邏輯沒有「無限多個」這種量詞），要轉成等價的性質：<b>不存在最大的自然數</b>，也就是任何自然數後面都還有更大的自然數。</p><pre class=\"formula\">∀x (x ∈ N → ∃y (y ∈ N ∧ y &gt; x))</pre><p>讀法：對每個 x，若 x 是自然數，則存在自然數 y 比 x 大。如果自然數只有有限個，取其中最大者當 x 就找不到 y，所以這句話成立 ⇔ N 是無限集。</p><p>也可以寫成 ∀x ∈ N ∃y ∈ N (y = x + 1 ∧ y ≠ x) 之類的形式，重點是量詞順序要是 ∀∃。</p><p>常見錯誤：寫成 ∃y ∀x (y &gt; x)，順序顛倒變成「有一個數比所有自然數都大」，意思完全不同（而且 y 屬於 N 時是假的）。</p>"
+    },
+    {
+      "id": "dm-0083",
+      "topics": [
+        "functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Calculate Σ<sub>k=1</sub><sup>n²</sup> ⌊√k⌋",
+      "answer": "n(n − 1)(4n + 1)/6 + n",
+      "explanation": "<p>按 ⌊√k⌋ 的值分組。⌊√k⌋ = j ⇔ j² ≤ k ≤ (j + 1)² − 1，這組有 (j + 1)² − j² = 2j + 1 個 k。</p><ul><li>j = 1, 2, …, n − 1：每組完整，貢獻 j(2j + 1)。</li><li>j = n：只有 k = n² 一個，貢獻 n。</li></ul><pre class=\"formula\">Σ = Σ_{j=1}^{n-1} (2j^2 + j) + n\n  = 2·(n-1)n(2n-1)/6 + (n-1)n/2 + n\n  = (n-1)n(4n+1)/6 + n</pre><p>檢查 n = 2：k = 1～4，⌊√k⌋ = 1, 1, 1, 2，和 = 5；公式 1·2·9/6 + 2 = 5。程式對 n = 1～7 驗算全部一致（1, 5, 16, 38, 75, 131, 210）。</p><p>常見錯誤：最後一組也當成 2n + 1 個，多算了 k = n² + 1 到 (n + 1)² − 1 這些超出範圍的項。</p>"
+    },
+    {
+      "id": "dm-0084",
+      "topics": [
+        "cardinality"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "Let F be the set of all functions from N to the set {0, a}, where a ≠ 0. Is F countable or uncountable? You need to give an explanation.",
+      "answer": "Uncountable（不可數）",
+      "explanation": "<p>每個 f ∈ F 都可以看成一個無限長的序列 (f(1), f(2), f(3), …)，每一項是 0 或 a，相當於一個無限長的 0/1 字串。</p><p><b>Cantor 對角線論證</b>：假設 F 可數，把它列成 f<sub>1</sub>, f<sub>2</sub>, f<sub>3</sub>, …。構造 g：</p><pre class=\"formula\">g(n) = a   若 f_n(n) = 0\ng(n) = 0   若 f_n(n) = a</pre><p>g 也是 N → {0, a} 的函數，所以 g ∈ F；但對每個 n，g(n) ≠ f<sub>n</sub>(n)，g 和清單裡每一個 f<sub>n</sub> 都至少在第 n 個位置不同，不在清單裡，矛盾。所以 F 是 <span class=\"term\">Uncountable<small>（不可數）</small></span>。</p><p>另一個說法：f ↦ {n : f(n) = a} 是 F 到 N 的冪集合 P(N) 的雙射，而 |P(N)| = 2<sup>ℵ<sub>0</sub></sup> &gt; ℵ<sub>0</sub>（Cantor 定理）。</p><p>題目說 a ≠ 0 只是為了保證 {0, a} 真的有 2 個元素；若只有 1 個元素，F 只有一個函數。</p>"
+    },
+    {
+      "id": "dm-0085",
+      "topics": [
+        "generating-functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "8-1",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "[Function &amp; Relation] Given a generating function G(x) = (x<sup>6</sup> − 1)/(x − 1). Please write down the sequence generated by G(x).",
+      "answer": "1, 1, 1, 1, 1, 1, 0, 0, 0, …",
+      "explanation": "<p>等比級數公式：x<sup>6</sup> − 1 = (x − 1)(x<sup>5</sup> + x<sup>4</sup> + x<sup>3</sup> + x<sup>2</sup> + x + 1)，所以</p><pre class=\"formula\">G(x) = 1 + x + x^2 + x^3 + x^4 + x^5</pre><p>x<sup>k</sup> 的係數就是第 k 項：a<sub>0</sub> = a<sub>1</sub> = ⋯ = a<sub>5</sub> = 1，k ≥ 6 時 a<sub>k</sub> = 0。序列為 <b>1, 1, 1, 1, 1, 1, 0, 0, …</b>（程式做冪級數展開確認）。</p><p>常見錯誤：把 1/(1 − x) 的展開硬套上去，得到「全部是 1」的無限序列；這裡分子有 x<sup>6</sup> − 1，會把第 6 項以後消掉。</p>"
+    },
+    {
+      "id": "dm-0086",
+      "topics": [
+        "equivalence-relations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "8-2",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "[Function &amp; Relation] Given X = {a, b, c, d} and P<sub>1</sub> is the partition of X, P<sub>1</sub> = {a, {b, c, d}}. How many ordered pairs of the equivalence relation in P<sub>1</sub>? Please write down all ordered pairs of the equivalence relation.",
+      "answer": "10 個：(a,a), (b,b), (c,c), (d,d), (b,c), (c,b), (b,d), (d,b), (c,d), (d,c)",
+      "explanation": "<p>（題目寫 P<sub>1</sub> = {a, {b, c, d}}，嚴格來說分割的每一塊都是集合，應寫成 {{a}, {b, c, d}}，意思是把 X 分成 {a} 和 {b, c, d} 兩塊。）</p><p>分割對應的 <span class=\"term\">Equivalence relation<small>（等價關係）</small></span>：x R y ⇔ x、y 在同一塊。每一塊大小 s 會貢獻 s² 個有序對：</p><ul><li>{a}：1² = 1 個：(a, a)</li><li>{b, c, d}：3² = 9 個：(b, b), (b, c), (b, d), (c, b), (c, c), (c, d), (d, b), (d, c), (d, d)</li></ul><p>共 1 + 9 = <b>10</b> 個有序對。</p><p>常見錯誤：忘了反身的 (x, x)，或只寫 (b, c) 不寫 (c, b)（漏掉對稱），會少算。</p>"
+    },
+    {
+      "id": "dm-0087",
+      "topics": [
+        "spanning-trees"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 112,
+        "dept": "資訊聯招（線性代數與離散數學）",
+        "no": "9-2",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_112_math.pdf"
+      },
+      "question": "[Graph &amp; Tree] A (n, m)-dumbbell graph is constructed by the complete graph k<sub>n</sub> on n vertices, and k<sub>m</sub> on m vertices. These two graphs are connected by a single edge. Find the number of spanning tree of a dumbbell graph.<br>（原卷附圖：左邊是 K<sub>3</sub>（三角形），右邊是 K<sub>5</sub>，兩者之間由一條邊相連。）",
+      "answer": "n<sup>n−2</sup> · m<sup>m−2</sup>",
+      "explanation": "<p>中間那條連接邊是 <span class=\"term\">Bridge<small>（橋）</small></span>：拿掉它圖就斷成兩塊，所以每一棵生成樹都<b>必須</b>包含它。</p><p>包含橋之後，剩下的工作是在 K<sub>n</sub> 內部選一棵生成樹、在 K<sub>m</sub> 內部選一棵生成樹，兩邊互相獨立。由 <span class=\"term\">Cayley's formula<small>（Cayley 公式）</small></span>，K<sub>n</sub> 有 n<sup>n−2</sup> 棵生成樹，所以</p><pre class=\"formula\">τ(dumbbell) = n^(n-2) · m^(m-2)</pre><p>圖中的例子 (3, 5)：3<sup>1</sup> × 5<sup>3</sup> = 375。程式用 <span class=\"term\">Matrix-tree theorem<small>（矩陣樹定理）</small></span>（Laplacian 去掉一列一行取行列式）算 (3, 5)、(4, 4)、(2, 3) 分別得 375、256、3，和公式一致。</p><p>常見錯誤：把兩邊的生成樹數相加，或多乘一個「選不選橋」的 2。</p>"
     }
   ]
 }
