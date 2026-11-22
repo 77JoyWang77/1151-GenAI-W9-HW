@@ -3756,6 +3756,347 @@
       ],
       "answer": "(D)",
       "explanation": "<p><span class=\"term\">Hamiltonian cycle<small>（漢米爾頓迴路）</small></span>是每個<b>點</b>恰好經過一次再回到起點的迴路。沒有簡單的充要條件，做法是：有的圖直接找出一條迴路證明「有」，沒有的圖用<b>度數 2 的點</b>來推出矛盾。</p><p><b>關鍵技巧</b>：度數 2 的點在迴路裡沒得選，它的兩條邊<b>一定</b>要用。</p><p><b>(D)</b>：把點叫做 T（最上方）、M（左邊中間）、X（中心）、R（右邊）、Q（右下）、B（左下）。邊有 T–M、T–X、M–X、M–Q、M–B、X–B、X–R、X–Q、R–Q。T 的鄰居只有 M、X；B 的鄰居也只有 M、X，兩者度數都是 2，所以 M–T–X 和 M–B–X 這四條邊都必須用。但這四條邊自己就圍成一個 4 點的小迴路 M–T–X–B–M，M 和 X 的兩條邊都用完了，R、Q 再也接不進來 → <b>沒有 Hamiltonian cycle</b>。</p><p>其他四張圖都找得到（用程式窮舉驗證過）：</p><ul><li>(A) 左 → 上 → 右上 → 右下 → 下 → 中心 → 左。</li><li>(B) 左下 → 左 → 上 → 中間 → 右 → 右下方的點 → 左下。</li><li>(C) 左上 → 上方 → 右 → 下方 → 左下 → 中心 → 左上。</li><li>(E) 頂點 → 左中 → 左下 → 底部中間 → 右下 → 右中 → 頂點。</li></ul><p>常見錯誤：看到 (E) 有 3 個度數 2 的角就以為不行；其實三個角的兩條邊剛好可以串成外圈的大三角形，正是一條 Hamiltonian cycle。</p>"
+    },
+    {
+      "id": "dm-0163",
+      "topics": [
+        "functions",
+        "counting-basics",
+        "modular-arithmetic"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 1,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "Let there be <i>z</i> functions from {“A”, “B”}<sup>3</sup> to {1, 2, 3}. Calculate <i>z</i> mod 7: ________.",
+      "answer": "2",
+      "explanation": "<p>先算定義域大小：{“A”, “B”}<sup>3</sup> 是 <span class=\"term\">Cartesian product<small>（笛卡兒積）</small></span>，元素是長度 3 的 A/B 字串，共 2<sup>3</sup> = 8 個。</p><p>從 8 個元素的集合映到 3 個元素的集合，每個元素各自有 3 種選擇，所以 z = 3<sup>8</sup> = 6561。</p><p>取 mod 7：3<sup>6</sup> ≡ 1 (mod 7)（Fermat 小定理），所以 3<sup>8</sup> ≡ 3<sup>2</sup> = 9 ≡ <b>2</b>。程式驗算 6561 = 7 × 937 + 2。</p><p>常見錯誤：把定義域當成 3 個元素（看到次方 3 就以為是 3 個點），算成 3<sup>3</sup>，或把方向弄反算成 8<sup>3</sup>。</p>"
+    },
+    {
+      "id": "dm-0164",
+      "topics": [
+        "propositional-logic",
+        "boolean-functions"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 2,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "There are ________ satisfying assignments to<br>(¬<i>w</i> ∧ <i>x</i> ∧ ¬<i>y</i> ∧ ¬<i>z</i>) ∨ (¬<i>w</i> ∧ ¬<i>x</i> ∧ <i>y</i>) ∨ (¬<i>w</i> ∧ ¬<i>x</i> ∧ <i>z</i>).",
+      "answer": "4",
+      "explanation": "<p>四個變數共 2<sup>4</sup> = 16 種真值指派，數讓整個 DNF 為真的有幾種。三個項都含 ¬w，所以 w 必須是 F。</p><ul><li>第 1 項 ¬w∧x∧¬y∧¬z：四個變數全固定，1 種。</li><li>第 2 項 ¬w∧¬x∧y：z 自由，2 種。</li><li>第 3 項 ¬w∧¬x∧z：y 自由，2 種。</li></ul><p>第 1 項要 x = T，後兩項要 x = F，所以第 1 項和其他項不重疊；第 2、3 項重疊在 ¬w∧¬x∧y∧z 這 1 種。用 <span class=\"term\">Inclusion–exclusion<small>（排容原理）</small></span>：1 + 2 + 2 − 1 = <b>4</b>。</p><p>也可以直接看：w = F、x = F 時，只要 y ∨ z 為真（4 種中有 3 種）；w = F、x = T 時只有 y = z = F 這 1 種，合計 3 + 1 = 4。程式窮舉 16 種指派驗算也是 4。</p>"
+    },
+    {
+      "id": "dm-0165",
+      "topics": [
+        "modular-arithmetic",
+        "gcd-euclid"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 3,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "Calculate Euler’s phi function (also called totient function) Φ(90): ________.",
+      "answer": "24",
+      "explanation": "<p><span class=\"term\">Euler’s phi function<small>（歐拉函數）</small></span> Φ(n) 是 1～n 中和 n 互質的整數個數。公式：n = ∏p<sub>i</sub><sup>e<sub>i</sub></sup> 時，Φ(n) = n ∏(1 − 1/p<sub>i</sub>)。</p><p>90 = 2 × 3<sup>2</sup> × 5，所以 Φ(90) = 90 × (1/2) × (2/3) × (4/5) = <b>24</b>。意思是 1～90 裡有 24 個數和 90 互質（不被 2、3、5 整除）。</p><p>也可以用乘法性：Φ(2)Φ(9)Φ(5) = 1 × 6 × 4 = 24。常見錯誤是把 Φ(9) 寫成 8（9 不是質數，Φ(9) = 9 − 3 = 6）。</p>"
+    },
+    {
+      "id": "dm-0166",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 4,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "Derive the solution for <i>a<sub>n</sub></i> that satisfies the recurrence equation <i>a<sub>n</sub></i> = −<i>a</i><sub><i>n</i>−1</sub> + 12<i>a</i><sub><i>n</i>−2</sub> with <i>a</i><sub>0</sub> = 3 and <i>a</i><sub>1</sub> = 2: ________.",
+      "answer": "a<sub>n</sub> = 2·3<sup>n</sup> + (−4)<sup>n</sup>",
+      "explanation": "<p>這是二階常係數齊次 <span class=\"term\">Linear recurrence<small>（線性遞迴）</small></span>。特徵方程式 r<sup>2</sup> = −r + 12，即 r<sup>2</sup> + r − 12 = (r − 3)(r + 4) = 0，根是 3 和 −4。</p><p>通解 a<sub>n</sub> = A·3<sup>n</sup> + B·(−4)<sup>n</sup>。代初始條件：A + B = 3、3A − 4B = 2，解得 A = 2、B = 1，所以 <b>a<sub>n</sub> = 2·3<sup>n</sup> + (−4)<sup>n</sup></b>。</p><p>驗算：a<sub>2</sub> = −2 + 36 = 34，公式 2·9 + 16 = 34；程式把前 10 項逐項比對都相同。常見錯誤是把特徵方程式寫成 r<sup>2</sup> − r − 12 = 0（漏了移項變號），得到根 4、−3。</p>"
+    },
+    {
+      "id": "dm-0167",
+      "topics": [
+        "graph-coloring",
+        "euler-hamilton",
+        "graph-basics"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 5,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "For the following graph: (4 points) Its chromatic number is ________ (the smallest number of colors needed to color the nodes). (4 points) The size of the maximum independent set is ________. (1 point) Is it Eulerian ________ (yes/no)? (1 point) Is it Hamiltonian ________ (yes/no)?<figure class=\"fig\"><div class=\"q-fig\" data-spec=\"{&quot;width&quot;: 620, &quot;height&quot;: 440, &quot;nodes&quot;: [{&quot;id&quot;: &quot;v9&quot;, &quot;label&quot;: &quot;9&quot;, &quot;x&quot;: 282, &quot;y&quot;: 40, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v1&quot;, &quot;label&quot;: &quot;1&quot;, &quot;x&quot;: 201, &quot;y&quot;: 165, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v5&quot;, &quot;label&quot;: &quot;5&quot;, &quot;x&quot;: 396, &quot;y&quot;: 134, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v3&quot;, &quot;label&quot;: &quot;3&quot;, &quot;x&quot;: 573, &quot;y&quot;: 144, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v7&quot;, &quot;label&quot;: &quot;7&quot;, &quot;x&quot;: 377, &quot;y&quot;: 190, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v8&quot;, &quot;label&quot;: &quot;8&quot;, &quot;x&quot;: 51, &quot;y&quot;: 269, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v4&quot;, &quot;label&quot;: &quot;4&quot;, &quot;x&quot;: 263, &quot;y&quot;: 282, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v6&quot;, &quot;label&quot;: &quot;6&quot;, &quot;x&quot;: 524, &quot;y&quot;: 264, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}, {&quot;id&quot;: &quot;v2&quot;, &quot;label&quot;: &quot;2&quot;, &quot;x&quot;: 429, &quot;y&quot;: 407, &quot;shape&quot;: &quot;circle&quot;, &quot;r&quot;: 16, &quot;state&quot;: &quot;default&quot;}], &quot;edges&quot;: [{&quot;from&quot;: &quot;v9&quot;, &quot;to&quot;: &quot;v1&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v9&quot;, &quot;to&quot;: &quot;v5&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v9&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v5&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v4&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v1&quot;, &quot;to&quot;: &quot;v8&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v8&quot;, &quot;to&quot;: &quot;v4&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v5&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v4&quot;, &quot;to&quot;: &quot;v2&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v2&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v6&quot;, &quot;to&quot;: &quot;v3&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v3&quot;, &quot;to&quot;: &quot;v5&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v3&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v5&quot;, &quot;to&quot;: &quot;v7&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v5&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}, {&quot;from&quot;: &quot;v7&quot;, &quot;to&quot;: &quot;v6&quot;, &quot;directed&quot;: false}]}\"></div><figcaption><b>圖</b>：依原卷重畫的無向圖，共 9 個點、18 條邊。</figcaption></figure>",
+      "answer": "4；4；no；yes",
+      "explanation": "<p>先把邊列出來：1–9、1–5、1–7、1–4、1–8、9–5、9–7、5–7、5–4、5–3、5–6、7–4、7–3、7–6、4–8、4–2、2–6、6–3，共 18 條。度數：deg(1) = 5、deg(2) = 2、deg(3) = 3、deg(4) = 5、deg(5) = 6、deg(6) = 4、deg(7) = 6、deg(8) = 2、deg(9) = 3，總和 36 = 2 × 18。</p><p><b>Chromatic number（著色數）= 4</b>：1、4、5、7 兩兩相鄰（1–4、1–5、1–7、4–5、4–7、5–7 都有邊），形成 K<sub>4</sub>，至少要 4 色。4 色做得到，例如 {1, 2, 3}、{4, 6, 9}、{5, 8}、{7} 各一色，檢查每條邊兩端不同色即可。</p><p><b>Maximum independent set（最大獨立集）= 4</b>：{2, 3, 8, 9} 兩兩不相鄰。為什麼不能到 5？K<sub>4</sub> {1, 4, 5, 7} 最多只能挑 1 點；剩下 {2, 3, 6, 8, 9} 中 2–6、3–6 相鄰，所以若選 6 就不能選 2、3。程式窮舉所有 2<sup>9</sup> 個子集，最大獨立集大小是 4，而且只有 {2, 3, 8, 9} 這一組。</p><p><b>Eulerian：no</b>。尤拉迴路要求每點度數都是偶數，但 1、3、4、9 是奇數度（4 個奇點，連尤拉路徑都沒有）。</p><p><b>Hamiltonian：yes</b>。找得到經過每點恰一次的迴路：1 → 5 → 9 → 7 → 3 → 6 → 2 → 4 → 8 → 1（每一步都有邊）。注意 2、8 度數都是 2，迴路一定要走 4–2–6 和 1–8–4，這是找迴路的切入點。</p>"
+    },
+    {
+      "id": "dm-0168",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 1,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "（複選）(5%) Which ones of the following directed graphs are Eulerian? ________<figure class=\"fig\"><img class=\"q-img\" data-src=\"assets/exam-img/discrete-math/ntu-114-q1.png\" alt=\"原卷附圖\"><figcaption><b>圖</b>：原卷附圖（有向圖 (A)～(E)）</figcaption></figure>",
+      "choices": [
+        "(A) 圖 (A)",
+        "(B) 圖 (B)",
+        "(C) 圖 (C)",
+        "(D) 圖 (D)",
+        "(E) 圖 (E)"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>有向圖有 <span class=\"term\">Eulerian circuit<small>（尤拉迴路）</small></span> ⇔ 去掉孤立點後（弱）連通，且<b>每個點的 in-degree 等於 out-degree</b>。所以每張圖只要找到一個進出不平衡的點就能淘汰。兩點之間畫兩條線（或一條線上兩個箭頭）代表兩個方向各一條邊。</p><ul><li>(A)：點 4 有 2→4、8→4、5→4、6→4 四條進來，出去只有 4→8 一條，in 4 ≠ out 1，不是。</li><li>(B)：點 1 出去有 1→2、1→3、1→4、1→5、1→6、1→8 六條，進來只有 2→1、4→1 兩條，不是。</li><li>(C)：逐點數，8 個點的 in-degree 和 out-degree 都是 3（共 24 條邊），而且圖連通，所以<b>是</b>。可以實際找出一條尤拉迴路：1→6→5→2→6→1→5→7→5→4→7→6→4→2→4→8→1→8→3→8→2→3→7→3→1。</li><li>(D)：點 4 出去有 4→1、4→5、4→7、4→8 四條，進來只有 6→4、2→4 兩條，不是。</li><li>(E)：和 (A) 一樣，點 4 進 4 出 1，不是。</li></ul><p>判斷時只看「平衡」就好，不用真的去找迴路。常見錯誤是套用無向圖的條件（度數為偶數）：有向圖中度數偶數不代表進出相等。以上邊的方向是從掃描圖逐條判讀，再用程式檢查 (C) 的 24 條邊每點都是進 3 出 3、可以排成一條尤拉迴路。</p>"
+    },
+    {
+      "id": "dm-0169",
+      "topics": [
+        "propositional-logic",
+        "boolean-functions"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 2,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "(5%) There are ________ satisfying truth assignments to<br>(¬<i>w</i> ∧ <i>x</i> ∧ ¬<i>y</i>) ∨ (¬<i>w</i> ∧ ¬<i>x</i> ∧ <i>y</i> ∧ ¬<i>z</i>)",
+      "answer": "3",
+      "explanation": "<p>變數有 w、x、y、z 四個，共 16 種指派。</p><ul><li>第 1 項 ¬w∧x∧¬y：z 沒出現，可以是 T 或 F，2 種。</li><li>第 2 項 ¬w∧¬x∧y∧¬z：全固定，1 種。</li></ul><p>第 1 項要 x = T，第 2 項要 x = F，兩項不可能同時成立，沒有重疊，所以總共 2 + 1 = <b>3</b> 種。程式窮舉 16 種指派驗算也是 3。</p><p>常見錯誤：把第 1 項只算 1 種，忘了沒出現的變數 z 可以任意取值。</p>"
+    },
+    {
+      "id": "dm-0170",
+      "topics": [
+        "relation-properties",
+        "counting-basics",
+        "modular-arithmetic"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 3,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "(10%) Let there be <i>N</i> binary relations from {A, B, C, D} to {1, 2, 3, 4, 5}. Calculate <i>N</i> mod 13: ________",
+      "answer": "9",
+      "explanation": "<p>從 X 到 Y 的 <span class=\"term\">Binary relation<small>（二元關係）</small></span>就是 X × Y 的任意子集。|X × Y| = 4 × 5 = 20，所以 N = 2<sup>20</sup>。</p><p>取 mod 13：2<sup>12</sup> ≡ 1 (mod 13)，所以 2<sup>20</sup> ≡ 2<sup>8</sup> = 256 = 13 × 19 + 9 ≡ <b>9</b>。程式直接算 2<sup>20</sup> mod 13 也是 9。</p><p>常見錯誤：算成函數個數 5<sup>4</sup>。關係不要求每個元素恰好對應一個，所以是子集數。</p>"
+    },
+    {
+      "id": "dm-0171",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 4,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "(10%) Derive the solution for <i>a<sub>n</sub></i> that satisfies the recurrence equation <i>a<sub>n</sub></i> = −3<i>a</i><sub><i>n</i>−1</sub> + 10<i>a</i><sub><i>n</i>−2</sub> with <i>a</i><sub>0</sub> = 3 and <i>a</i><sub>1</sub> = 2: ________",
+      "answer": "a<sub>n</sub> = (17/7)·2<sup>n</sup> + (4/7)·(−5)<sup>n</sup>",
+      "explanation": "<p>特徵方程式 r<sup>2</sup> + 3r − 10 = (r − 2)(r + 5) = 0，根是 2 和 −5，通解 a<sub>n</sub> = A·2<sup>n</sup> + B·(−5)<sup>n</sup>。</p><p>代初始條件：A + B = 3、2A − 5B = 2。第一式乘 5 加第二式：7A = 17，A = 17/7，B = 4/7。所以 <b>a<sub>n</sub> = (17/7)·2<sup>n</sup> + (4/7)·(−5)<sup>n</sup></b>。</p><p>係數是分數看起來怪，但每一項加起來一定是整數。驗算：a<sub>2</sub> = −6 + 30 = 24，公式 (68 + 100)/7 = 24；程式比對前 10 項都相同。</p>"
+    },
+    {
+      "id": "dm-0172",
+      "topics": [
+        "generating-functions",
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 5,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "（承上題：<i>a<sub>n</sub></i> = −3<i>a</i><sub><i>n</i>−1</sub> + 10<i>a</i><sub><i>n</i>−2</sub>，<i>a</i><sub>0</sub> = 3，<i>a</i><sub>1</sub> = 2。）<br>(10%) The generating function in partial fraction decomposition for the above recurrence equation is ________",
+      "answer": "G(x) = (17/7)/(1 − 2x) + (4/7)/(1 + 5x)",
+      "explanation": "<p>令 <span class=\"term\">Generating function<small>（生成函數）</small></span> G(x) = Σ<sub>n≥0</sub> a<sub>n</sub>x<sup>n</sup>。把遞迴乘 x<sup>n</sup> 對 n ≥ 2 加總：</p><p>G − a<sub>0</sub> − a<sub>1</sub>x = −3x(G − a<sub>0</sub>) + 10x<sup>2</sup>G，整理得 G(1 + 3x − 10x<sup>2</sup>) = 3 + 2x + 9x = 3 + 11x，所以 G(x) = (3 + 11x)/((1 − 2x)(1 + 5x))。</p><p>部分分式：設 A/(1 − 2x) + B/(1 + 5x)，A + B = 3、5A − 2B = 11，得 A = 17/7、B = 4/7，即 <b>G(x) = (17/7)/(1 − 2x) + (4/7)/(1 + 5x)</b>。</p><p>對照上一題：1/(1 − 2x) 展開是 Σ2<sup>n</sup>x<sup>n</sup>，1/(1 + 5x) 是 Σ(−5)<sup>n</sup>x<sup>n</sup>，係數剛好就是上一題的 A、B，兩題互相驗證。程式把 G(x) 做冪級數展開，前 8 項 3, 2, 24, −52, 396, … 和遞迴算出來一致。</p>"
+    },
+    {
+      "id": "dm-0173",
+      "topics": [
+        "permutations-combinations"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 6,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "(10%) The number of non-negative integer solutions of <i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> + ⋯ + <i>x</i><sub>4</sub> ≤ 7 equals ________",
+      "answer": "330",
+      "explanation": "<p>不等式先加一個 slack 變數 x<sub>5</sub> = 7 − (x<sub>1</sub> + ⋯ + x<sub>4</sub>) ≥ 0，變成 x<sub>1</sub> + ⋯ + x<sub>5</sub> = 7 的非負整數解，一一對應。</p><p>用 <span class=\"term\">Stars and bars<small>（隔板法）</small></span>：7 顆星、4 根隔板，C(7 + 4, 4) = C(11, 4) = <b>330</b>。</p><p>也可以加總 Σ<sub>k=0..7</sub> C(k + 3, 3) = C(11, 4)（hockey-stick 恆等式）。程式窮舉 8<sup>4</sup> 種組合數出和 ≤ 7 的也是 330。常見錯誤：只算等於 7 的 C(10, 3) = 120。</p>"
+    },
+    {
+      "id": "dm-0174",
+      "topics": [
+        "counting-basics"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 1,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) Consider a 2-dimensional random walk. The starting state is (0,0). In general, if the current state is (<i>i</i>, <i>j</i>), it can move to state (<i>i</i> + 1, <i>j</i> + 1), (<i>i</i> + 1, <i>j</i> − 1), (<i>i</i> − 1, <i>j</i> + 1), (<i>i</i> − 1, <i>j</i> − 1), or (<i>i</i>, <i>j</i>). What is the number of possible states after <i>n</i> steps? ________",
+      "answer": "2n<sup>2</sup> + 2n + 1",
+      "explanation": "<p>先找可達狀態的條件。每一步 i、j 要嘛同時 ±1，要嘛都不動，所以：</p><ul><li>|i| ≤ n、|j| ≤ n（每步最多動 1）。</li><li>i 和 j 的奇偶性相同（每步 i − j 只會變 0 或 ±2）。</li></ul><p>反過來，滿足這兩個條件的 (i, j) 都到得了：令 k = max(|i|, |j|)，k 和 i、j 同奇偶，先走 k 步斜向（較小的那個座標用來回抵銷），剩下 n − k 步原地不動。所以答案就是 [−n, n]<sup>2</sup> 中 i ≡ j (mod 2) 的格點數。</p><p>[−n, n] 有 2n + 1 個整數，其中偶數 E 個、奇數 O 個，n 偶數時 E = n + 1、O = n，n 奇數時反過來。點數 = E<sup>2</sup> + O<sup>2</sup> = (n + 1)<sup>2</sup> + n<sup>2</sup> = <b>2n<sup>2</sup> + 2n + 1</b>。</p><p>檢查：n = 0 時 1 個（只有原點），n = 1 時 5 個（原點和四個斜角）。程式用 BFS 模擬 n = 0～6，得到 1, 5, 13, 25, 41, 61, 85，和公式一致。常見錯誤是忘了「原地不動」這個選項，只算剛好 n 步斜走的點，會漏掉奇偶不同的層。</p>"
+    },
+    {
+      "id": "dm-0175",
+      "topics": [
+        "functions",
+        "counting-basics",
+        "modular-arithmetic"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 2,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) Let there be <i>N</i> functions from A to {1, 2, 3, 4, 5, 6, 7, 8, 9}, where A is a set of functions from {1, 2, 3, 4, 5} to {1, 2, 3, 4, 5, 6}. Calculate <i>N</i> mod 11: ________",
+      "answer": "9",
+      "explanation": "<p>A 是「從 5 元素集合到 6 元素集合的所有函數」形成的集合，所以 |A| = 6<sup>5</sup> = 7776。從 A 到 9 元素集合的函數個數 N = 9<sup>7776</sup>。</p><p>取 mod 11：gcd(9, 11) = 1，Fermat 小定理 9<sup>10</sup> ≡ 1，7776 ≡ 6 (mod 10)，所以 N ≡ 9<sup>6</sup>。9<sup>2</sup> = 81 ≡ 4，9<sup>4</sup> ≡ 16 ≡ 5，9<sup>6</sup> ≡ 4 × 5 = 20 ≡ <b>9</b>。</p><p>程式用 pow(9, 6**5, 11) 驗算得 9。常見錯誤是把 |A| 算成 5<sup>6</sup>（方向反了），或直接把指數 7776 對 11 取餘數（指數要對 φ(11) = 10 取）。</p>"
+    },
+    {
+      "id": "dm-0176",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 3,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) Derive the solution for <i>a<sub>n</sub></i> that satisfies the recurrence equation <i>a<sub>n</sub></i> = 6<i>a</i><sub><i>n</i>−1</sub> − 11<i>a</i><sub><i>n</i>−2</sub> + 6<i>a</i><sub><i>n</i>−3</sub> with <i>a</i><sub>0</sub> = 1, <i>a</i><sub>1</sub> = 2, and <i>a</i><sub>1</sub> = 2: ________<br>（註：原卷寫第二個「<i>a</i><sub>1</sub> = 2」，應為 <i>a</i><sub>2</sub> = 2（待確認））",
+      "answer": "a<sub>n</sub> = −1 + 3·2<sup>n</sup> − 3<sup>n</sup>（以 a<sub>2</sub> = 2 計算，待確認）",
+      "explanation": "<p>三階遞迴需要三個初始值，原卷把 a<sub>1</sub> = 2 寫了兩次，最合理的解讀是第二個是 a<sub>2</sub> = 2 的筆誤，以下照這個解讀計算。</p><p>特徵方程式 r<sup>3</sup> − 6r<sup>2</sup> + 11r − 6 = (r − 1)(r − 2)(r − 3) = 0，根 1、2、3，通解 a<sub>n</sub> = A + B·2<sup>n</sup> + C·3<sup>n</sup>。</p><p>代初始值：A + B + C = 1、A + 2B + 3C = 2、A + 4B + 9C = 2。相鄰兩式相減：B + 2C = 1、2B + 6C = 0，得 C = −1、B = 3、A = −1。所以 <b>a<sub>n</sub> = −1 + 3·2<sup>n</sup> − 3<sup>n</sup></b>。</p><p>驗算：a<sub>3</sub> = 6·2 − 11·2 + 6·1 = −4，公式 −1 + 24 − 27 = −4；程式比對前 10 項都相同。如果 a<sub>2</sub> 是別的值，A、B、C 會跟著變，但解法完全一樣。</p>"
+    },
+    {
+      "id": "dm-0177",
+      "topics": [
+        "generating-functions",
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 4,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "（承上題：<i>a<sub>n</sub></i> = 6<i>a</i><sub><i>n</i>−1</sub> − 11<i>a</i><sub><i>n</i>−2</sub> + 6<i>a</i><sub><i>n</i>−3</sub>，<i>a</i><sub>0</sub> = 1，<i>a</i><sub>1</sub> = 2，<i>a</i><sub>2</sub> = 2（原卷寫成第二個 <i>a</i><sub>1</sub> = 2，待確認）。）<br>(10%) The generating function in <i>partial fraction decomposition</i> for the above recurrence equation is ________",
+      "answer": "G(x) = −1/(1 − x) + 3/(1 − 2x) − 1/(1 − 3x)（以 a<sub>2</sub> = 2 計算，待確認）",
+      "explanation": "<p>令 G(x) = Σ a<sub>n</sub>x<sup>n</sup>。遞迴乘 x<sup>n</sup> 對 n ≥ 3 加總：</p><p>G − 1 − 2x − 2x<sup>2</sup> = 6x(G − 1 − 2x) − 11x<sup>2</sup>(G − 1) + 6x<sup>3</sup>G，整理得 G(1 − 6x + 11x<sup>2</sup> − 6x<sup>3</sup>) = 1 − 4x + x<sup>2</sup>，分母 = (1 − x)(1 − 2x)(1 − 3x)。</p><p>部分分式的係數就是上一題通解的 A、B、C（因為 1/(1 − rx) = Σ r<sup>n</sup>x<sup>n</sup>）：<b>G(x) = −1/(1 − x) + 3/(1 − 2x) − 1/(1 − 3x)</b>。</p><p>檢查：通分後分子 = −(1 − 2x)(1 − 3x) + 3(1 − x)(1 − 3x) − (1 − x)(1 − 2x) = 1 − 4x + x<sup>2</sup>，相符。程式展開前 8 項 1, 2, 2, −4, −34, −148, … 和遞迴一致。</p>"
+    },
+    {
+      "id": "dm-0178",
+      "topics": [
+        "permutations-combinations",
+        "modular-arithmetic"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 5,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) Let <i>N</i> be he number of non-negative integer solutions of <i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> + ⋯ + <i>x</i><sub>12</sub> ≤ 6. Calculate <i>N</i> mod 11: ________",
+      "answer": "7",
+      "explanation": "<p>加 slack 變數 x<sub>13</sub> ≥ 0 變成 x<sub>1</sub> + ⋯ + x<sub>13</sub> = 6，用隔板法：6 顆星、12 根隔板，N = C(18, 12) = C(18, 6) = 18564。</p><p>18564 = 11 × 1687 + 7，所以 N mod 11 = <b>7</b>。</p><p>也可以用 <span class=\"term\">Lucas’ theorem<small>（Lucas 定理）</small></span> 不算出 N：18 = (1, 7)<sub>11</sub>、6 = (0, 6)<sub>11</sub>，C(18, 6) ≡ C(1, 0)·C(7, 6) = 7 (mod 11)，結果一樣。程式直接算 comb(18, 12) % 11 = 7。</p>"
     }
   ]
 }

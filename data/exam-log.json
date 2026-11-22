@@ -82,6 +82,43 @@
       ]
     },
     {
+      "id": "ntu-114-hardware",
+      "school": "國立臺灣大學",
+      "year": 114,
+      "paper": "hardware",
+      "title": "計算機結構與作業系統",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": [
+        {
+          "no": 6,
+          "subject": "operating-systems",
+          "reason": "附圖（開檔時 user space、kernel memory、secondary storage 之間的資料結構）中各操作的圓圈編號①～⑤在掃描檔中被深色底蓋住，無法確認每個編號對應哪個箭頭，五個選項都依賴編號，無法作答"
+        },
+        {
+          "no": 10,
+          "subject": "computer-organization",
+          "reason": "依組合語言推得 CN = 7、元素大小 40 bytes、idx 在偏移 0、x 從偏移 8 開始（即 {long idx, long x[4]}），四個選項的結構宣告都不符（(D) 的 x 會從偏移 16 開始），複選題沒有任何正確選項；另卷上 nt_struct 與 np_struct 名稱不一致"
+        }
+      ]
+    },
+    {
+      "id": "ntu-115-hardware",
+      "school": "國立臺灣大學",
+      "year": 115,
+      "paper": "hardware",
+      "title": "計算機結構與作業系統",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf",
+      "subjects": [
+        "computer-organization",
+        "operating-systems"
+      ],
+      "skipped": []
+    },
+    {
       "id": "ntu-110-math",
       "school": "國立臺灣大學",
       "year": 110,
@@ -114,6 +151,51 @@
       "paper": "math",
       "title": "數學(A)",
       "url": "https://files.cstoolman.com/exam-papers/ntu_112_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "id": "ntu-113-math",
+      "school": "國立臺灣大學",
+      "year": 113,
+      "paper": "math",
+      "title": "數學(A)",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": [
+        {
+          "no": 10,
+          "subject": "linear-algebra",
+          "reason": "資料自相矛盾：題目沒有定義 T（只給了 U = 2×2 self-adjoint complex matrices、V = 3×3 real matrices），若 T: U → V 或 V → U，rank ≤ dim U = 4，最多 4 個非零奇異值，但 multiset S 有 8 個元素（對應 8 個非零奇異值）。若忽略 U、V 只看 S，|σ−1| 對應 σ = 3,1,3,5,1,3,1,4，(T⁺)* 的非零奇異值乘積為 1/540。"
+        }
+      ]
+    },
+    {
+      "id": "ntu-114-math",
+      "school": "國立臺灣大學",
+      "year": 114,
+      "paper": "math",
+      "title": "數學(A)",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf",
+      "subjects": [
+        "discrete-math",
+        "linear-algebra"
+      ],
+      "skipped": []
+    },
+    {
+      "id": "ntu-115-math",
+      "school": "國立臺灣大學",
+      "year": 115,
+      "paper": "math",
+      "title": "數學(A)",
+      "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf",
       "subjects": [
         "discrete-math",
         "linear-algebra"

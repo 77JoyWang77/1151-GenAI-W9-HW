@@ -8597,6 +8597,34 @@
       ],
       "answer": "(A)(D)（待確認）",
       "explanation": "<p>關鍵事實：高度為 H（root 高度 0）的 binary heap 是 complete binary tree，節點數 n 滿足 2<sup>H</sup> ≤ n ≤ 2<sup>H+1</sup> − 1。原本的 heap 有幾個元素題目沒給，只知道 h ≥ 2，也就是原本有 n<sub>0</sub> ≥ 4 個；「After 15 elements are stored」解讀成再放入 15 個，n = n<sub>0</sub> + 15。下面用程式把 h = 2～11 的每一種 n<sub>0</sub> 都跑過。</p>\n<ul>\n<li>(A) 對：pop 一次移除一個元素，最多 n ≤ 2<sup>H+1</sup> − 1 次就清空。</li>\n<li>(B) 錯：「移除三層」解讀成讓高度少 3，至少要把節點數降到 2<sup>H−2</sup> − 1 以下，最多要 pop n − (2<sup>H−2</sup> − 1) 次，約 7·2<sup>H−2</sup> 次，遠大於 2<sup>⌈H/2⌉</sup>。例如 H = 4、n = 31 時要 pop 28 次，但 2<sup>G</sup> = 4。所有情況都不成立。</li>\n<li>(C) 錯：max heap 每次 pop 出最大值，第二小的元素是倒數第二個被 pop 的，所以 N = n − 1，範圍是 [2<sup>H</sup> − 1, 2<sup>H+1</sup> − 2]。只有 n 剛好是 2<sup>H</sup> 或 2<sup>H</sup> + 1 時才落在 [2<sup>H−1</sup>, 2<sup>H</sup>]，不是一定成立。</li>\n<li>(D) 對：h 最小是 2（n<sub>0</sub> = 4～7），加 15 個變成 19～22 個，H = 4，差 2；h 越大，加 15 個造成的高度變化越小（h = 3 時差 1，h ≥ 4 時差最多 1）。所以 |H − h| ≤ 2 一定成立。</li>\n</ul>\n<p>另一種解讀是「放完之後 heap 裡共有 15 個元素」：這時 H = 3、h 為 2 或 3，(A)(D) 仍然對；(C) 的 N = 14 不在 [4, 8]，仍然錯；(B) 移除三層要 pop 14 次 &gt; 2<sup>2</sup> = 4，仍然錯。兩種解讀答案相同，但「15 個元素」的意思和 (B) 的「three levels」都沒有交代清楚，所以標待確認。</p>"
+    },
+    {
+      "id": "ds-0355",
+      "topics": [
+        "min-max-heap",
+        "advanced-heaps-overview"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立成功大學",
+        "year": 113,
+        "dept": "電機資訊學院-資訊聯招（程式設計）",
+        "no": "2-iii",
+        "paper": "ncku-113-software",
+        "url": "https://files.cstoolman.com/exam-papers/ncku_113_software.pdf"
+      },
+      "question": "<p>2. [1%, 1%, 3%] Considering the data pairs with keys in the given order: 20, 5, 10, 18, 4, 22, 11, 32, 21, as inputs to create a tree.</p><p>iii) If you create a <u>symmetric min-max heap</u> for them, which of the following statements is true?</p>",
+      "choices": [
+        "(A) To delete the node containing 5, the node containing 21 is used to replace the deleted node.",
+        "(B) There are two nodes at level 4.",
+        "(C) The leftmost grandchild of the root is 5.",
+        "(D) The keys of the nodes in the right subtree of the root are 32, 10, and 20.",
+        "(E) None of the above."
+      ],
+      "answer": "(E)（待確認：(A) 的說法有解讀空間，見詳解）",
+      "explanation": "<p><span class=\"term\">Symmetric Min-Max Heap<small>（對稱最小最大堆積，SMMH）</small></span> 是一棵完全二元樹，<b>根是空的</b>，其他節點各放一個元素，要滿足：</p><ul><li>P1：每個節點的左兄弟 ≤ 右兄弟。</li><li>P2：節點 N 的祖父 G 存在時，G 的左子 ≤ N。</li><li>P3：G 的右子 ≥ N。</li></ul><p>所以根的左子是全體最小值、右子是全體最大值。插入時把新元素放在最後一個位置，先檢查 P1（比左兄弟小就交換），再一路往上比祖父的左子、右子：比左子小就和左子換，比右子大就和右子換，直到兩邊都滿足。</p><p>依序插入（陣列從位置 2 開始，位置 1 是空的根）：</p><div class=\"table-scroll\"><table><tr><th>插入</th><th>動作</th><th>位置 2～10</th></tr><tr><td>20</td><td>直接放</td><td>20</td></tr><tr><td>5</td><td>5 &lt; 左兄弟 20，交換</td><td>5, 20</td></tr><tr><td>10</td><td>祖父是根：5 ≤ 10 ≤ 20，不動</td><td>5, 20, 10</td></tr><tr><td>18</td><td>18 ≥ 左兄弟 10；5 ≤ 18 ≤ 20，不動</td><td>5, 20, 10, 18</td></tr><tr><td>4</td><td>4 &lt; 根的左子 5，交換</td><td>4, 20, 10, 18, 5</td></tr><tr><td>22</td><td>22 &gt; 根的右子 20，交換</td><td>4, 22, 10, 18, 5, 20</td></tr><tr><td>11</td><td>祖父（位置 2）的左右子是 10、18：10 ≤ 11 ≤ 18，不動</td><td>4, 22, 10, 18, 5, 20, 11</td></tr><tr><td>32</td><td>32 ≥ 左兄弟 11；32 &gt; 祖父的右子 18 → 換到位置 5；再 32 &gt; 根的右子 22 → 換到位置 3</td><td>4, 32, 10, 22, 5, 20, 11, 18</td></tr><tr><td>21</td><td>祖父（位置 2）的左右子是 10、22：10 ≤ 21 ≤ 22，不動</td><td>4, 32, 10, 22, 5, 20, 11, 18, 21</td></tr></table></div><pre class=\"formula\">             (空)\n          /        \\\n        4            32\n      /   \\        /    \\\n    10     22     5      20\n   /  \\   /\n  11  18 21</pre><p>逐一檢查選項（根算第 1 層）：</p><ul><li>(B) 錯：第 4 層是 11、18、21，共 <b>3</b> 個節點（若根算第 0 層，第 4 層根本沒有節點，一樣不是 2 個）。</li><li>(C) 錯：根的孫子由左到右是 10、22、5、20，最左邊是 <b>10</b>。5 在根的<b>右</b>子樹，因為插入 4 時 5 被擠到位置 6。</li><li>(D) 錯：根的右子樹是 32、5、20，不是 32、10、20。(C)(D) 都是把 5 和 10 的位置搞混的陷阱。</li><li>(A) 錯：5 在位置 6，是葉節點。刪除時先拿掉最後一個節點（21），把 21 放進 5 留下的洞，但還要檢查 P1：21 比右兄弟 20 大，兩者交換。最後填在原本 5 那個位置的是 <b>20</b>，21 跑到位置 7。所以真正取代被刪節點的是 20，不是 21。</li></ul><p>因此選 <b>(E)</b>。（建樹與刪除都已用程式驗算，並檢查 P1～P3 全部成立。）</p><p>（待確認）(A) 的判斷取決於「replace」的解讀：如果把「拿最後一個節點 21 來補洞」這個步驟本身當成 replace，(A) 會被認為正確，答案就變成 (A)。官方沒公布答案，這裡依照刪除完成後的實際結果，認定取代 5 的是 20。</p>"
     }
   ]
 }

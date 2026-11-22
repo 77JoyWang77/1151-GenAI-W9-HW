@@ -3633,6 +3633,309 @@
       ],
       "answer": "(c) 2（待確認）",
       "explanation": "<p>A 是 <span class=\"term\">Hermitian matrix<small>（厄米特矩陣）</small></span>（A<sup>*</sup> = A），所以可以被 unitary 矩陣對角化，特徵值是實數。</p>\n<p><b>特徵值</b>：trace = 3，det = 2·1 − (1 − i)(1 + i) = 2 − 2 = 0，所以 λ = 0、3。</p>\n<p><b>特徵向量</b>（要配合題目的 1/√3，挑長度為 √3 的整數向量）：</p>\n<ul><li>λ = 3：(A − 3I)x = 0 → −x<sub>1</sub> + (1 − i)x<sub>2</sub> = 0，取 x = (1 − i, 1)，長度² = 2 + 1 = 3。</li>\n<li>λ = 0：2x<sub>1</sub> + (1 − i)x<sub>2</sub> = 0，取 x<sub>2</sub> = 1 + i，得 x<sub>1</sub> = −1，x = (−1, 1 + i)，長度² = 1 + 2 = 3。</li></ul>\n<p>所以 U = (1/√3)[[1 − i, −1], [1, 1 + i]]，程式驗算 U<sup>*</sup>U = I、U<sup>*</sup>AU = diag(3, 0)。實部 a = 1、c = −1、e = 1、g = 1，a + c + e + g = 2，答案 ⌊2⌋ % 5 = <b>2</b>。兩行對調（先放 λ = 0）時 a + e 和 c + g 互換，總和不變，仍是 2。</p>\n<p><b>為什麼不唯一</b>：每一行都可以乘上任意的單位複數 e<sup>iθ</sup>，U 仍是 unitary、仍能對角化 A，但實部會改變。即使只允許乘 ±1、±i（讓元素維持整數），λ = 3 那一行的實部和可以是 2、−2、1、−1，λ = 0 那一行可以是 0、0、−1、1，程式列舉後 |a + c + e + g| 可能是 0、1、2、3，對應選項 (a)～(d) 都有可能。這裡取解方程時最直接得到、不另外乘相位的特徵向量，所以答案標待確認。</p>"
+    },
+    {
+      "id": "la-0154",
+      "topics": [
+        "least-squares",
+        "inner-product-projection"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 6,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "(10 points). Consider a system of linear equations <i>Ax</i> = <i>b</i> with the following augmented coefficient matrix:<table><tr><td>1</td><td>0</td><td>−1</td><td>|</td><td>1</td></tr><tr><td>0</td><td>1</td><td>2</td><td>|</td><td>0</td></tr><tr><td>1</td><td>−1</td><td>−3</td><td>|</td><td>2</td></tr></table>Let <i>S</i> = argmin<sub><i>x</i>∈ℂ<sup>3</sup></sub> ‖<i>Ax</i> − <i>b</i>‖.<br>That is, <i>S</i> consists of the vectors <i>x</i> ∈ ℂ<sup>3</sup> that minimize the standard norm (also known as 2-norm or ℓ<sup>2</sup>-norm) of the vector <i>Ax</i> − <i>b</i> ∈ ℂ<sup>3</sup>. The square of the minimum standard norm of the vectors in <i>S</i> is ________.",
+      "answer": "11/9（待確認；若指最小殘差 ‖Ax − b‖² 則為 1/3）",
+      "explanation": "<p><b>先找 S。</b>A 的第 3 列 = 第 1 列 − 第 2 列，rank A = 2，所以 Ax = b 不一定有解。b = (1, 0, 2)：b<sub>1</sub> − b<sub>2</sub> = 1 ≠ b<sub>3</sub> = 2，無解，要用 <span class=\"term\">Least squares<small>（最小平方法）</small></span>。</p><p>A 的 column space 是 {y : y<sub>3</sub> = y<sub>1</sub> − y<sub>2</sub>}，法向量 n = (1, −1, −1)。b 到這個平面的距離平方 = (n·b)<sup>2</sup>/‖n‖<sup>2</sup> = (1 − 0 − 2)<sup>2</sup>/3 = 1/3，這是<b>最小殘差平方</b> ‖Ax − b‖<sup>2</sup>。</p><p>解正規方程式 A<sup>T</sup>Ax = A<sup>T</sup>b，得到 S = {(4/3 + t, −1/3 − 2t, t) : t}，是一條直線（因為 A 的 null space 是 span{(1, −2, 1)}）。</p><p><b>題目問的是「S 中向量的最小 norm」的平方</b>，S 裡的向量是 x，所以要找 S 上離原點最近的點，也就是 <span class=\"term\">Minimum-norm least-squares solution<small>（最小範數最小平方解）</small></span> x<sup>+</sup> = A<sup>+</sup>b。</p><p>‖x‖<sup>2</sup> = (t + 4/3)<sup>2</sup> + (2t + 1/3)<sup>2</sup> + t<sup>2</sup>，對 t 微分：2(t + 4/3) + 4(2t + 1/3) + 2t = 12t + 4 = 0，t = −1/3，x = (1, 1/3, −1/3)。檢查它和 null space 向量 (1, −2, 1) 正交：1 − 2/3 − 1/3 = 0，沒錯。‖x‖<sup>2</sup> = 1 + 1/9 + 1/9 = <b>11/9</b>。</p><p>程式用 pseudo-inverse 驗算：A<sup>+</sup>b = (1, 1/3, −1/3)，平方 norm 11/9；殘差平方 1/3。</p><p>（待確認）題目句子「the minimum standard norm of the vectors in S」照字面是指 S 中向量 x 的最小 norm，答案 11/9；但前一句一直在講 ‖Ax − b‖ 的最小值，也可能有人解讀成最小殘差平方 1/3。兩種都要會算。</p>"
+    },
+    {
+      "id": "la-0155",
+      "topics": [
+        "orthogonal-subspaces",
+        "subspaces",
+        "basis-dimension"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 7,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "(10 points) Consider the following sets <i>R</i> and <i>S</i> of quadruples of rational numbers:<br><i>R</i> = {(1/3, −2/3, 1/3, 0), (−3/2, 0, 3/2, 0)}<br><i>S</i> = {(1, 0, −1, 0), (1, −1, 0, 0), (−1, 1, 0, 1), (1, 0, −1, 1)}.<br>If <i>V</i> (respectively, <i>W</i>) is the subspace of the rational quadruples spanned by <i>R</i> (respectively, <i>S</i>), then the subspace <i>U</i> of the rational quadruples satisfying the following two conditions<br><i>W</i> = <i>U</i> ⊕ <i>V</i>　(i.e., <i>W</i> is the direct sum of <i>U</i> and <i>V</i>)<br><i>U</i> ⊥ <i>V</i>　(i.e., <i>U</i> is orthogonal to <i>V</i> with respect to the standard inner-product of ℚ)<br>is ________.",
+      "answer": "U = span{(0, 0, 0, 1)}",
+      "explanation": "<p>條件 W = U ⊕ V 且 U ⊥ V，意思是 U 是 V 在 W 裡的 <span class=\"term\">Orthogonal complement<small>（正交補空間）</small></span>：U = W ∩ V<sup>⊥</sup>。前提是 V ⊆ W，先檢查。</p><p><b>W 的維度</b>：S 的 4 個向量中 (1, 0, −1, 1) = (1, 0, −1, 0) + (0, 0, 0, 1)，(−1, 1, 0, 1) = −(1, −1, 0, 0) + (0, 0, 0, 1)，所以 W = span{(1, 0, −1, 0), (1, −1, 0, 0), (0, 0, 0, 1)}，dim W = 3。</p><p><b>V ⊆ W</b>：(1/3, −2/3, 1/3, 0) = (2/3)(1, −1, 0, 0) − (1/3)(1, 0, −1, 0)；(−3/2, 0, 3/2, 0) = −(3/2)(1, 0, −1, 0)。兩個都在 W 裡，且線性獨立，dim V = 2。</p><p><b>求 U</b>：dim U = 3 − 2 = 1。V 的兩個向量第 4 個分量都是 0，而 (0, 0, 0, 1) ∈ W 和它們內積都是 0，所以 <b>U = span{(0, 0, 0, 1)}</b>。</p><p>程式驗算：rank W = 3、rank [W | V] = 3（V ⊆ W），解 V<sup>T</sup>Wc = 0 得到 W 中與 V 正交的向量只有 (0, 0, 0, 1) 的倍數。常見錯誤是直接求整個 ℚ<sup>4</sup> 中的 V<sup>⊥</sup>（那是 2 維），忘了要限制在 W 裡。</p>"
+    },
+    {
+      "id": "la-0156",
+      "topics": [
+        "gaussian-elimination",
+        "subspaces"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 8,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "(10 points) Let <i>F</i> be the field ({0, 1, 2}, +, ·), where + is the mod-3 addition and · is the mod-3 multiplication. If the polynomial <i>p</i>(<i>x</i>) = <i>a</i> + <i>bx</i> + <i>cx</i><sup>2</sup> ∈ ℙ(<i>F</i>) satisfies <i>p</i>(<i>i</i>) = <i>i</i><sup>3</sup> + 2 for each <i>i</i> ∈ <i>F</i>, then (<i>a</i>, <i>b</i>, <i>c</i>) is ________.",
+      "answer": "(2, 1, 0)",
+      "explanation": "<p>在 mod 3 的體上，Fermat 小定理給 i<sup>3</sup> ≡ i（0、1、2 代入：0 → 0、1 → 1、8 ≡ 2），所以條件變成 p(i) = i + 2 對 i = 0, 1, 2 都成立。</p><p>直接解線性方程組（係數都在 mod 3 下算）：</p><ul><li>p(0) = a = 2。</li><li>p(1) = a + b + c = 0 → b + c = 1。</li><li>p(2) = a + 2b + 4c = a + 2b + c = 1 → 2b + c = 2。</li></ul><p>兩式相減：b = 1，c = 0。所以 <b>(a, b, c) = (2, 1, 0)</b>，也就是 p(x) = 2 + x。</p><p>為什麼唯一？3 個點的插值矩陣是 Vandermonde 矩陣，0、1、2 兩兩相異，行列式不為 0，在任何體上都可逆。程式窮舉 27 組 (a, b, c) 也只有 (2, 1, 0) 符合。常見錯誤是直接把 x<sup>3</sup> + 2 當答案，但 p 的次數最多 2，必須先用 i<sup>3</sup> = i 降次。</p>"
+    },
+    {
+      "id": "la-0157",
+      "topics": [
+        "cayley-hamilton",
+        "eigenvalues-eigenvectors",
+        "rank-nullity"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 113,
+        "dept": "數學(A)",
+        "no": 9,
+        "paper": "ntu-113-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_113_math.pdf"
+      },
+      "question": "(10 points) If the characteristic polynomial of a linear operator <i>T</i> on a complex inner-product space <i>V</i> is<br><i>f<sub>T</sub></i>(<i>x</i>) = <i>x</i><sup>4</sup> − 2<i>x</i><sup>2</sup> + 1,<br>then the rank(<i>S</i>) of the linear operator<br><i>S</i> = <i>T</i><sup>6</sup> − 2<i>T</i><sup>5</sup> − <i>T</i><sup>4</sup> + 4<i>T</i><sup>3</sup> − <i>T</i><sup>2</sup> − 2<i>T</i><br>in terms of rank(<i>T</i>) is ________.",
+      "answer": "rank(S) = rank(T)（兩者都是 4）",
+      "explanation": "<p>特徵多項式是 4 次，所以 dim V = 4。f<sub>T</sub>(x) = (x<sup>2</sup> − 1)<sup>2</sup> = (x − 1)<sup>2</sup>(x + 1)<sup>2</sup>，特徵值只有 ±1，0 不是特徵值，T 可逆，rank(T) = 4。</p><p><b>方法一：Cayley–Hamilton</b>。f<sub>T</sub>(T) = 0。把 s(x) = x<sup>6</sup> − 2x<sup>5</sup> − x<sup>4</sup> + 4x<sup>3</sup> − x<sup>2</sup> − 2x 用 f<sub>T</sub>(x) 做長除法，餘式是 −1，也就是 s(x) = q(x)f<sub>T</sub>(x) − 1。代入 T：S = q(T)·0 − I = <b>−I</b>，rank(S) = 4。</p><p><b>方法二：特徵值</b>。S = s(T) 的特徵值是 s(λ)，λ = ±1：s(1) = 1 − 2 − 1 + 4 − 1 − 2 = −1，s(−1) = 1 + 2 − 1 − 4 − 1 + 2 = −1，都不為 0，所以 S 可逆。這個方法不需要 T 可對角化（上三角化就夠）。</p><p>結論 <b>rank(S) = rank(T) = 4</b>。程式用多項式除法驗算餘式確實是 −1。常見錯誤：看到 s(x) 有因式 x 就以為 S 會降秩，但 T 可逆，T 這個因式不會讓 rank 掉。</p>"
+    },
+    {
+      "id": "la-0158",
+      "topics": [
+        "linear-independence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 7,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "（複選）(10%) Which ones of the following sets are linearly independent? Points will be counted only if all the answers are correct.<br>（矩陣以列表示，[p q; r s] 代表第一列 p q、第二列 r s；ℝ<sup>n</sup> 的向量為行向量）",
+      "choices": [
+        "(A) {−x<sup>2</sup> + 3x + 6, x<sup>3</sup> + 2, x<sup>3</sup> − 3x<sup>2</sup> + 5} in P<sub>3</sub>(R).",
+        "(B) {[0 −1; 1 1], [−1 2; 0 0], [2 1; 0 0], [1 0; 1 0]} in M<sub>2×2</sub>(R)",
+        "(C) {[1 1; 0 0; 0 0], [0 0; 1 1; 0 0], [0 0; 0 0; 1 1], [1 0; 1 0; 1 0], [0 1; 0 1; 0 1]} in M<sub>3×2</sub>(R)",
+        "(D) {(2, 1, 2, −1)<sup>T</sup>, (1, 0, 1, 0)<sup>T</sup>, (3, 1, 3, −1)<sup>T</sup>, (1, 1, 1, −1)<sup>T</sup>} in R<sup>4</sup>",
+        "(E) {(1, −1, 3)<sup>T</sup>, (1, 2, 3)<sup>T</sup>, (1, −2, 1)<sup>T</sup>} in R<sup>3</sup>"
+      ],
+      "answer": "(A)(B)(E)",
+      "explanation": "<p>判斷 <span class=\"term\">Linear independence<small>（線性獨立）</small></span>：把每個元素寫成座標向量排成矩陣，rank 等於向量個數就獨立。</p><ul><li>(A) 對基底 {1, x, x<sup>2</sup>, x<sup>3</sup>} 取座標：(6, 3, −1, 0)、(2, 0, 0, 1)、(5, 0, −3, 1)。只有第一個有 x 項，所以它的係數必為 0；剩下兩個 x<sup>2</sup> 係數一個 0 一個 −3，也只能都是 0。rank 3，<b>獨立</b>。</li><li>(B) 座標 (0, −1, 1, 1)、(−1, 2, 0, 0)、(2, 1, 0, 0)、(1, 0, 1, 0)。只有第一個的右下角非 0 → 係數 0；接著只剩第四個的左下角非 0 → 係數 0；剩下兩個 (−1, 2)、(2, 1) 不成比例。rank 4，<b>獨立</b>。</li><li>(C) 前三個加起來是全 1 矩陣，後兩個加起來也是全 1 矩陣：M<sub>1</sub> + M<sub>2</sub> + M<sub>3</sub> − M<sub>4</sub> − M<sub>5</sub> = 0，<b>相依</b>（rank 4 &lt; 5）。</li><li>(D) 第 3 個 = 第 1 個 + 第 2 個；第 4 個 = 第 1 個 − 第 2 個。rank 只有 2，<b>相依</b>。</li><li>(E) det[(1, −1, 3), (1, 2, 3), (1, −2, 1)] = −6 ≠ 0（以這三個為行），rank 3，<b>獨立</b>。</li></ul><p>答案 (A)(B)(E)。程式把五組都排成矩陣算 rank，分別是 3/3、4/4、4/5、2/4、3/3。常見陷阱是 (C)：每個矩陣看起來都只有「一條」1，很像標準基底，但它們其實只是列和行的指示矩陣，總和會撞在一起。</p>"
+    },
+    {
+      "id": "la-0159",
+      "topics": [
+        "inner-product-projection",
+        "matrix-representation"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": "8-(A)",
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "Let <i>V</i> = <i>P</i><sub>3</sub>(<i>x</i>) be a subspace of <i>P</i>(<i>x</i>) with inner product &lt;<i>f</i>, <i>g</i>&gt; = ∫<sub>−1</sub><sup>1</sup> <i>f</i>(<i>x</i>)<i>g</i>(<i>x</i>)<i>dx</i>.<br>(A) (10%) Find the matrix <i>A</i> with respect to the basis {1, <i>x</i>, <i>x</i><sup>2</sup>, <i>x</i><sup>3</sup>} in <i>V</i> such that &lt;<i>f</i>, <i>g</i>&gt; = [<i>f</i>]<sup><i>T</i></sup><i>A</i>[<i>g</i>].",
+      "answer": "A = [2 0 2/3 0; 0 2/3 0 2/5; 2/3 0 2/5 0; 0 2/5 0 2/7]（以列表示）",
+      "explanation": "<p>要讓 [f]<sup>T</sup>A[g] = &lt;f, g&gt; 對所有 f、g 成立，A 必須是基底的 <span class=\"term\">Gram matrix<small>（Gram 矩陣）</small></span>：A<sub>ij</sub> = &lt;x<sup>i</sup>, x<sup>j</sup>&gt;（i, j = 0..3）。</p><p>&lt;x<sup>i</sup>, x<sup>j</sup>&gt; = ∫<sub>−1</sub><sup>1</sup> x<sup>i+j</sup> dx：i + j 是奇數時被積函數是奇函數，積分 0；i + j 偶數時等於 2/(i + j + 1)。</p><table><tr><td>A =</td><td>2</td><td>0</td><td>2/3</td><td>0</td></tr><tr><td></td><td>0</td><td>2/3</td><td>0</td><td>2/5</td></tr><tr><td></td><td>2/3</td><td>0</td><td>2/5</td><td>0</td></tr><tr><td></td><td>0</td><td>2/5</td><td>0</td><td>2/7</td></tr></table><p>例如 A<sub>00</sub> = ∫1 dx = 2（區間長度）、A<sub>13</sub> = ∫x<sup>4</sup> dx = 2/5。A 對稱、而且正定（因為內積正定），這是檢查答案的好方法。程式用符號積分逐一驗算 16 個元素。常見錯誤是把積分區間當成 [0, 1]，得到 1/(i + j + 1) 的 Hilbert 矩陣。</p>"
+    },
+    {
+      "id": "la-0160",
+      "topics": [
+        "inner-product-projection",
+        "gram-schmidt"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": "8-(B)",
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "（承上題：<i>V</i> = <i>P</i><sub>3</sub>(<i>x</i>) 是 <i>P</i>(<i>x</i>) 的子空間，內積 &lt;<i>f</i>, <i>g</i>&gt; = ∫<sub>−1</sub><sup>1</sup> <i>f</i>(<i>x</i>)<i>g</i>(<i>x</i>)<i>dx</i>。）<br>(B) (10%) Find the Fourier coefficient of <i>x</i><sup>5</sup> along <i>x</i><sup>3</sup> − (3/5)<i>x</i>.",
+      "answer": "10/9",
+      "explanation": "<p>f 沿著 p 的 <span class=\"term\">Fourier coefficient<small>（傅立葉係數）</small></span>是 &lt;f, p&gt;/&lt;p, p&gt;，也就是 f 投影到 p 方向時 p 前面的倍數。</p><p>p(x) = x<sup>3</sup> − (3/5)x（剛好是 Legendre 多項式 P<sub>3</sub> 的倍數）。</p><ul><li>&lt;x<sup>5</sup>, p&gt; = ∫(x<sup>8</sup> − (3/5)x<sup>6</sup>) dx = 2/9 − (3/5)(2/7) = 2/9 − 6/35 = 16/315。</li><li>&lt;p, p&gt; = ∫(x<sup>6</sup> − (6/5)x<sup>4</sup> + (9/25)x<sup>2</sup>) dx = 2/7 − 12/25 + 6/25 = 2/7 − 6/25 = 8/175。</li></ul><p>係數 = (16/315)/(8/175) = (16 × 175)/(315 × 8) = <b>10/9</b>。程式用符號積分驗算相同。</p><p>常見錯誤：只算 &lt;x<sup>5</sup>, p&gt; 而沒有除以 &lt;p, p&gt;（p 不是單位向量）。</p>"
+    },
+    {
+      "id": "la-0161",
+      "topics": [
+        "determinant-properties",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 9,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "(10%) <i>A</i> = <table><tr><td>1</td><td>a</td><td>a<sup>2</sup></td><td>a<sup>3</sup></td><td>⋯</td><td>a<sup>n</sup></td></tr><tr><td>a</td><td>1</td><td>a</td><td>a<sup>2</sup></td><td>⋯</td><td>a<sup>n−1</sup></td></tr><tr><td>a<sup>2</sup></td><td>a</td><td>1</td><td>a</td><td>⋯</td><td>a<sup>n−2</sup></td></tr><tr><td>a<sup>3</sup></td><td>a<sup>2</sup></td><td>a</td><td>1</td><td></td><td>⋮</td></tr><tr><td>⋮</td><td>⋮</td><td>⋮</td><td></td><td>⋱</td><td>a</td></tr><tr><td>a<sup>n</sup></td><td>a<sup>n−1</sup></td><td>a<sup>n−2</sup></td><td>⋯</td><td>a</td><td>1</td></tr></table>, where <i>a</i> ∈ <i>R</i> and <i>n</i> is a positive integer. Find the product of all the eigenvalues of <i>A</i> in the simplest form.",
+      "answer": "(1 − a<sup>2</sup>)<sup>n</sup>",
+      "explanation": "<p>所有特徵值（含重數）的乘積 = det A。A 是 (n + 1) × (n + 1) 矩陣，A<sub>ij</sub> = a<sup>|i−j|</sup>。</p><p>化簡技巧：從最後一列往上，每一列減掉「上一列的 a 倍」（R<sub>k</sub> ← R<sub>k</sub> − aR<sub>k−1</sub>，由下往上做，才不會用到已經改過的列）。對第 k 列（k ≥ 2）：</p><ul><li>在 j &lt; k 的位置：a<sup>k−j</sup> − a·a<sup>k−1−j</sup> = 0。</li><li>在對角線 j = k：1 − a·a = 1 − a<sup>2</sup>。</li></ul><p>所以得到上三角矩陣，對角線是 1, 1 − a<sup>2</sup>, …, 1 − a<sup>2</sup>（後面共 n 個），這種列運算不改變行列式，det A = <b>(1 − a<sup>2</sup>)<sup>n</sup></b>。</p><p>程式用符號運算對 n = 1～5 算 det，都是 (1 − a<sup>2</sup>)<sup>n</sup>（sympy 顯示成 (a − 1)<sup>n</sup>(a + 1)<sup>n</sup> 乘正負號）。常見錯誤：矩陣大小是 n + 1 不是 n，寫成 (1 − a<sup>2</sup>)<sup>n−1</sup>。</p>"
+    },
+    {
+      "id": "la-0162",
+      "topics": [
+        "eigenvalues-eigenvectors",
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "數學(A)",
+        "no": 10,
+        "paper": "ntu-114-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_math.pdf"
+      },
+      "question": "(10%) Given <i>A</i> = <table><tr><td>2</td><td>1</td><td>−2</td><td>2</td><td>0</td></tr><tr><td>2</td><td>3</td><td>−4</td><td>2</td><td>5</td></tr><tr><td>1</td><td>1</td><td>−1</td><td>0</td><td>2</td></tr><tr><td>0</td><td>0</td><td>0</td><td>4</td><td>−1</td></tr><tr><td>0</td><td>0</td><td>0</td><td>2</td><td>1</td></tr></table> and a polynomial <i>f</i>(<i>x</i>) = <i>x</i><sup>4</sup> − 7<i>x</i><sup>3</sup> + 13<i>x</i><sup>2</sup> − 6<i>x</i> + 1. Find the largest eigenvalue of <i>f</i>(<i>A</i>).",
+      "answer": "2",
+      "explanation": "<p>關鍵性質：若 λ 是 A 的特徵值，f(λ) 就是 f(A) 的特徵值（而且 f(A) 的特徵值全部都是這樣來的，重數也對應）。所以先求 A 的特徵值。</p><p>A 是區塊上三角 [B C; 0 D]，B 是左上 3×3、D 是右下 2×2，特徵值 = B 的 ∪ D 的。</p><ul><li>D = [4 −1; 2 1]：λ<sup>2</sup> − 5λ + 6 = 0，λ = 2, 3。</li><li>B = [2 1 −2; 2 3 −4; 1 1 −1]：trace = 4，det B = 2(−3 + 4) − 1(−2 + 4) − 2(2 − 3) = 2，特徵多項式 λ<sup>3</sup> − 4λ<sup>2</sup> + 5λ − 2 = (λ − 1)<sup>2</sup>(λ − 2)，λ = 1, 1, 2。</li></ul><p>A 的特徵值：1（兩次）、2（兩次）、3。代入 f：f(1) = 1 − 7 + 13 − 6 + 1 = 2，f(2) = 16 − 56 + 52 − 12 + 1 = 1，f(3) = 81 − 189 + 117 − 18 + 1 = −8。</p><p>f(A) 的特徵值是 2, 2, 1, 1, −8，最大的是 <b>2</b>。程式直接算 f(A) 再求特徵值，得 {2: 2, 1: 2, −8: 1}，相符。常見錯誤：以為 A 最大的特徵值 3 代進去就是答案，但 f 不是遞增函數，f(3) = −8 反而最小。</p>"
+    },
+    {
+      "id": "la-0163",
+      "topics": [
+        "determinant-properties",
+        "gaussian-elimination"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 6,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) The following linear system of three unknowns has a non-zero solution if and only if λ = ________:<br><i>x</i><sub>1</sub> + 2<i>x</i><sub>2</sub> − 2<i>x</i><sub>3</sub> = 0,<br>2<i>x</i><sub>1</sub> − <i>x</i><sub>2</sub> + λ<i>x</i><sub>3</sub> = 0,<br>3<i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> + <i>x</i><sub>3</sub> = 0.",
+      "answer": "3",
+      "explanation": "<p>齊次方程組 Ax = 0 有非零解 ⇔ A 不可逆 ⇔ det A = 0。</p><p>det [1 2 −2; 2 −1 λ; 3 1 1] 沿第一列展開 = 1·(−1 − λ) − 2·(2 − 3λ) + (−2)·(2 + 3) = −1 − λ − 4 + 6λ − 10 = 5λ − 15。</p><p>5λ − 15 = 0 → <b>λ = 3</b>。λ = 3 時，可以找到非零解：由第 1、3 式消去得 x = t(4, −7, −5)，代回第 2 式 8 + 7 − 15 = 0 也成立。程式解 det = 0 也得 λ = 3。</p>"
+    },
+    {
+      "id": "la-0164",
+      "topics": [
+        "diagonalization",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 7,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) Let <i>A</i> = [4 3; 1 2] and suppose that <i>A</i><sup>2004</sup> = [<i>a</i> <i>b</i>; <i>c</i> <i>d</i>].<br>Then, (<i>a</i> + <i>b</i> + <i>c</i> + <i>d</i>)/5<sup>2004</sup> = ________.<br>（矩陣以列表示，[p q; r s] 代表第一列 p q、第二列 r s）",
+      "answer": "2",
+      "explanation": "<p>特徵多項式 λ<sup>2</sup> − 6λ + 5 = (λ − 5)(λ − 1)，特徵值 5、1，相異所以可 <span class=\"term\">Diagonalization<small>（對角化）</small></span>。</p><p>用譜分解：A<sup>n</sup> = 5<sup>n</sup>P<sub>5</sub> + 1<sup>n</sup>P<sub>1</sub>，其中 P<sub>5</sub> = (A − I)/4 = [3/4 3/4; 1/4 1/4]，P<sub>1</sub> = (5I − A)/4 = [1/4 −3/4; −1/4 3/4]。</p><p>a + b + c + d 是所有元素和：P<sub>5</sub> 元素和 = 2，P<sub>1</sub> 元素和 = 0。所以 a + b + c + d = 2·5<sup>2004</sup>，除以 5<sup>2004</sup> 得 <b>2</b>（剛好是整數，不是只有極限）。</p><p>另一個角度：元素和 = (1, 1)A<sup>n</sup>(1, 1)<sup>T</sup>，而 (1, 1)<sup>T</sup> = (3/4)(3, 1)<sup>T</sup> + (1/4)(−1, 1)<sup>T</sup> 拆成兩個特徵向量。程式用整數精確計算 A<sup>2004</sup> 驗算比值剛好等於 2。</p>"
+    },
+    {
+      "id": "la-0165",
+      "topics": [
+        "least-squares",
+        "svd"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 8,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) Let <i>A</i> = [1 1; 1 1; 0 0], <i>b</i> = (1, 0, 1)<sup>T</sup>.<br>Then, the minimum-norm least-squares solution of the linear system <i>Ax</i> = <i>b</i> is ________.<br>（矩陣以列表示，A 的三列依序為 (1, 1)、(1, 1)、(0, 0)）",
+      "answer": "x = (1/4, 1/4)<sup>T</sup>",
+      "explanation": "<p>A 的 rank 是 1（兩行一樣），A<sup>T</sup>A = [2 2; 2 2] 不可逆，最小平方解有無限多個，要挑 norm 最小的那個，就是 A<sup>+</sup>b（<span class=\"term\">Pseudo-inverse<small>（虛反矩陣）</small></span>）。</p><p><b>正規方程式</b>：A<sup>T</sup>b = (1, 1)，A<sup>T</sup>Ax = A<sup>T</sup>b 變成 2x<sub>1</sub> + 2x<sub>2</sub> = 1，解集合是直線 x<sub>1</sub> + x<sub>2</sub> = 1/2。</p><p><b>最小 norm</b>：直線上離原點最近的點要和 null space 方向 (1, −1) 垂直，所以 x<sub>1</sub> = x<sub>2</sub> = <b>1/4</b>。</p><p>用秩一公式驗證：A = uv<sup>T</sup>，u = (1, 1, 0)、v = (1, 1)，A<sup>+</sup> = vu<sup>T</sup>/(‖u‖<sup>2</sup>‖v‖<sup>2</sup>) = vu<sup>T</sup>/4，A<sup>+</sup>b = v·(u·b)/4 = (1, 1)·1/4。程式 pinv 驗算相同。常見錯誤是隨便挑一個最小平方解如 (1/2, 0)，殘差一樣小但 norm 不是最小。</p>"
+    },
+    {
+      "id": "la-0166",
+      "topics": [
+        "positive-definite",
+        "svd",
+        "symmetric-matrices"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 9,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) Let <i>A</i> be an <i>n</i> × <i>n</i> positive semi-definite matrix with eigenvalues λ<sub>1</sub>, …, λ<sub><i>n</i></sub> and corresponding eigenvectors <i>v</i><sub>1</sub>, …, <i>v<sub>n</sub></i>. Suppose that λ<sub>1</sub> &gt; λ<sub>2</sub> &gt; ⋯ &gt; λ<sub><i>n</i></sub> and that the eigenvectors have unit 2-norms. Let <i>c</i> be a strictly positive real number. Then, the minimum value of the function <i>f</i>(<i>X</i>) = trace(<i>AX</i>) over all <i>n</i> × <i>n</i> Hermitian matrices <i>X</i> satisfying ‖<i>X</i>‖<sub>*</sub> ≤ <i>c</i> is attained at <i>X</i> = ________. Here, ‖<i>X</i>‖<sub>*</sub> denotes the nuclear norm of the matrix <i>X</i>, i.e., the sum of the singular values of <i>X</i>. Express your answer in terms of λ<sub><i>i</i></sub>, <i>v<sub>i</sub></i>, <i>v<sub>i</sub></i><sup>*</sup>, <i>c</i>, and numbers, where <i>v<sub>i</sub></i><sup>*</sup> denotes the conjugate transpose of <i>v<sub>i</sub></i>.",
+      "answer": "X = −c v<sub>1</sub>v<sub>1</sub><sup>*</sup>（最小值為 −cλ<sub>1</sub>）",
+      "explanation": "<p>X 是 Hermitian，可以寫成 X = Σ μ<sub>k</sub> u<sub>k</sub>u<sub>k</sub><sup>*</sup>（μ<sub>k</sub> 實數、u<sub>k</sub> 單位正交），Hermitian 矩陣的奇異值就是 |μ<sub>k</sub>|，所以 ‖X‖<sub>*</sub> = Σ|μ<sub>k</sub>| ≤ c。</p><p>trace(AX) = Σ μ<sub>k</sub> u<sub>k</sub><sup>*</sup>Au<sub>k</sub>。每個 u<sub>k</sub><sup>*</sup>Au<sub>k</sub> 是 A 的 <span class=\"term\">Rayleigh quotient<small>（瑞利商）</small></span>，介於 λ<sub>n</sub> ≥ 0 和 λ<sub>1</sub> 之間。所以 trace(AX) ≥ −Σ|μ<sub>k</sub>|·λ<sub>1</sub> ≥ −cλ<sub>1</sub>。</p><p>等號成立條件：所有「權重」都放在負的係數上，而且方向對準最大特徵值的特徵向量，也就是 X = −c v<sub>1</sub>v<sub>1</sub><sup>*</sup>。代入：trace(A·(−c v<sub>1</sub>v<sub>1</sub><sup>*</sup>)) = −c v<sub>1</sub><sup>*</sup>Av<sub>1</sub> = −cλ<sub>1</sub>，‖X‖<sub>*</sub> = c 剛好在邊界上。</p><p>λ<sub>1</sub> &gt; λ<sub>2</sub> 保證 v<sub>1</sub> 方向唯一，所以最小值點唯一：<b>X = −c v<sub>1</sub>v<sub>1</sub><sup>*</sup></b>。（λ<sub>1</sub> 嚴格大於其他非負的 λ<sub>i</sub>，所以 λ<sub>1</sub> &gt; 0。）</p><p>直覺：這是「trace 內積下，nuclear norm 的對偶是 spectral norm」：|trace(AX)| ≤ ‖A‖<sub>2</sub>‖X‖<sub>*</sub> = λ<sub>1</sub>‖X‖<sub>*</sub>。常見錯誤：以為 A 半正定就要讓 X 也半正定，得到 X = c v<sub>n</sub>v<sub>n</sub><sup>*</sup>（值 cλ<sub>n</sub> ≥ 0），但 X 只要求 Hermitian，可以取負的，最小值會更小。</p>"
+    },
+    {
+      "id": "la-0167",
+      "topics": [
+        "positive-definite",
+        "quadratic-forms"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "數學(A)",
+        "no": 10,
+        "paper": "ntu-115-math",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_math.pdf"
+      },
+      "question": "(10%) We say that a function <i>f</i> is <i>L</i>-smooth relative to another function <i>g</i> for some positive real number <i>L</i> over a set 𝒳 if the matrix ∇<sup>2</sup>(<i>Lg</i> − <i>f</i>)(<i>x</i>) is positive semidefinite for all <i>x</i> ∈ 𝒳. Now, let<br><i>f</i>(<i>x</i>) = −α ln(<i>a</i><sub>1</sub><sup><i>T</i></sup><i>x</i>) − β ln(<i>a</i><sub>2</sub><sup><i>T</i></sup><i>x</i>),<br>where α and β are strictly positive real numbers and <i>a</i><sub>1</sub> and <i>a</i><sub>2</sub> are entry-wise strictly positive real <i>n</i>-dimensional vectors. Here, <i>a</i><sup><i>T</i></sup> and <i>b</i><sup><i>T</i></sup> denote the transposes of <i>a</i> and <i>b</i>. Let<br><i>g</i>(<i>x</i>) = −Σ<sub><i>i</i>=1</sub><sup><i>n</i></sup> ln(<i>x</i>[<i>i</i>]),<br>where <i>x</i>[<i>i</i>] denotes the <i>i</i>-th entry of the vector <i>x</i>. Then, the smallest possible <i>L</i> such that the function <i>f</i> is <i>L</i>-smooth relative to <i>g</i> over the set<br>{<i>v</i> ∈ ℝ<sup><i>d</i></sup> | <i>v</i>[<i>i</i>] &gt; 0 for all <i>i</i>, <i>v</i>[1] + <i>v</i>[2] + ⋯ + <i>v</i>[<i>n</i>] = 1}<br>is given by <i>L</i> = ________. Express your answer in terms of α, β, <i>a</i><sub>1</sub>, <i>a</i><sub>2</sub>, <i>a</i><sub>1</sub><sup><i>T</i></sup>, <i>a</i><sub>2</sub><sup><i>T</i></sup>, and numbers.",
+      "answer": "L = α + β",
+      "explanation": "<p><b>先算 Hessian。</b>∇<sup>2</sup>f(x) = α a<sub>1</sub>a<sub>1</sub><sup>T</sup>/(a<sub>1</sub><sup>T</sup>x)<sup>2</sup> + β a<sub>2</sub>a<sub>2</sub><sup>T</sup>/(a<sub>2</sub><sup>T</sup>x)<sup>2</sup>，∇<sup>2</sup>g(x) = diag(1/x[1]<sup>2</sup>, …, 1/x[n]<sup>2</sup>)。條件是對所有 u：L·Σu[i]<sup>2</sup>/x[i]<sup>2</sup> ≥ α(a<sub>1</sub><sup>T</sup>u)<sup>2</sup>/(a<sub>1</sub><sup>T</sup>x)<sup>2</sup> + β(a<sub>2</sub><sup>T</sup>u)<sup>2</sup>/(a<sub>2</sub><sup>T</sup>x)<sup>2</sup>，也就是二次型 u<sup>T</sup>(L∇<sup>2</sup>g − ∇<sup>2</sup>f)u ≥ 0。</p><p><b>L = α + β 夠用。</b>對正向量 a、x，用 Cauchy–Schwarz：a<sup>T</sup>u = Σ(a[i]x[i])(u[i]/x[i]) ≤ √(Σ(a[i]x[i])<sup>2</sup>)·√(Σu[i]<sup>2</sup>/x[i]<sup>2</sup>)，又因為各項為正，Σ(a[i]x[i])<sup>2</sup> ≤ (Σa[i]x[i])<sup>2</sup> = (a<sup>T</sup>x)<sup>2</sup>。所以 (a<sup>T</sup>u)<sup>2</sup>/(a<sup>T</sup>x)<sup>2</sup> ≤ Σu[i]<sup>2</sup>/x[i]<sup>2</sup>，也就是每個 −ln(a<sup>T</sup>x) 都對 g 是 1-smooth，乘上權重相加得到 α + β。</p><p><b>不能更小。</b>讓 x 靠近某個頂點 e<sub>j</sub>（x[j] → 1、其他 → 0，仍在集合內），取 u = e<sub>j</sub>：右邊 → α·a<sub>1</sub>[j]<sup>2</sup>/a<sub>1</sub>[j]<sup>2</sup> + β·a<sub>2</sub>[j]<sup>2</sup>/a<sub>2</sub>[j]<sup>2</sup> = α + β，左邊 → L。所以 L 必須 ≥ α + β（上確界在邊界逼近，不一定被取到，但 L 小一點點就會在某些 x 失敗）。</p><p>結論 <b>L = α + β</b>，和 a<sub>1</sub>、a<sub>2</sub> 無關。程式在 n = 2、3 隨機取 a<sub>1</sub>、a<sub>2</sub>、α、β，在單體上取點逼近頂點計算 ∇<sup>2</sup>g<sup>−1/2</sup>∇<sup>2</sup>f∇<sup>2</sup>g<sup>−1/2</sup> 的最大特徵值，數值趨近 α + β 且從不超過。注意定義要求的是整個 Hessian 矩陣 L∇<sup>2</sup>g − ∇<sup>2</sup>f 半正定，所以 u 取遍所有方向（包含離開單體平面的方向，例如上面的 e<sub>j</sub>）；如果只看單體切空間的方向，所需的 L 會小很多，但那不是題目的定義。題目集合寫成 ℝ<sup>d</sup>、下標卻到 n，這裡視為 d = n。</p><p>這題用到的線代觀念是「兩個對稱矩陣的 Loewner 序（A ⪰ B）」與正半定二次型；relative smoothness 本身屬於最佳化。</p>"
     }
   ]
 }

@@ -4955,6 +4955,391 @@
       ],
       "answer": "(b)(c)(d)（待確認）",
       "explanation": "<p>這個硬體是乘除法共用的版本：5-bit 的 Divisor（乘法時放被乘數），10-bit 的 Remainder 暫存器（乘法時放乘積，右半一開始放乘數；除法時右半一開始放被除數，最後左半是餘數、右半是商）。以下每一步都用程式模擬過。</p>\n<p><b>(a) 錯</b>：乘法每一輪：看 Remainder 的最低位，是 1 就把被乘數加到左半，然後整個右移 1 位。初始 00000 00011：</p>\n<ul><li>第 1 輪：LSB = 1，左半 + 00101 → 00101 00011，右移 → 00010 10001</li>\n<li>第 2 輪：LSB = 1，左半 00010 + 00101 = 00111 → 00111 10001，右移 → 00011 11000</li>\n<li>第 3 輪：LSB = 0，只右移 → <b>00001 11100</b></li></ul>\n<p>選項的 0001111000 是<b>兩輪</b>之後的值，三輪後應為 0000111100。最後 5 輪做完是 0000001111 = 15 = 5 × 3，可以拿來檢查。</p>\n<p><b>(b) 對</b>：題目特別說明 shift 在每一輪的「最後」做，所以一開始不先左移。每一輪：左半減除數 → 結果 ≥ 0 就保留差、商位元 1，&lt; 0 就還原、商位元 0 → 整個左移 1 位並把商位元補進最右邊。初始 00000 01101、除數 00011：</p>\n<ul><li>第 1 輪：00000 − 3 &lt; 0，商 0 → 左移 → 00000 11010</li>\n<li>第 2 輪：00000 − 3 &lt; 0，商 0 → 00001 10100</li>\n<li>第 3 輪：00001 − 3 &lt; 0，商 0 → 00011 01000</li>\n<li>第 4 輪：00011 − 3 = 0 ≥ 0，商 1 → 左半變 00000，左移 → <b>00000 10001</b></li></ul>\n<p>和選項相同。若照常見的改良版做法「開始前先左移 1 次」，四輪後會是 0000100010，選項就變錯；但題目已明講 shift 不在開頭，所以照題意判對。</p>\n<p><b>(c) 對</b>：shift 放在每輪最後、一開始不先移，第 1 輪拿去和除數比的左半永遠是 0，等於白做一輪，要 n + 1 = 6 輪才能產生 5 個正確的商位元。用程式把所有 5-bit 被除數 0～31、除數 1～31 跑過：5 輪有 496 組商錯誤，6 輪全部正確。</p>\n<p><b>(d) 對</b>：Booth 演算法看乘數相鄰兩位 (b<sub>i</sub>, b<sub>i−1</sub>)，最右邊補 0：10 → 減被乘數、01 → 加被乘數、00／11 → 不動。乘數 01001 從低位起的配對是 (1,0) 減、(0,1) 加、(0,0) 不動、(1,0) 減、(0,1) 加，共 <b>2 次加法、2 次減法</b>。若反過來把 00101 當乘數：(1,0) 減、(0,1) 加、(1,0) 減、(0,1) 加、(0,0)，也一樣是 2 加 2 減。</p>\n<p>(a)(b)(c) 的結果都取決於硬體的細節（一開始有沒有先移位、一輪怎麼算），卷上只有圖和 (b)(c) 的一句說明；這裡照「shift 在每輪最後、開頭不先移位」來判，所以答案標待確認。</p>"
+    },
+    {
+      "id": "co-0192",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 11,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(5 points)（複選）Two different compilers were used to compile the same program. When using compiler A, the program executed 1.0E9 instructions and took 1.5 seconds to complete. With compiler B, the program executed 1.5E9 instructions and took 1.8 seconds to complete. Assume the processor has a clock cycle time of 1ns.</p>",
+      "choices": [
+        "(A) The average CPI of the program produced by compiler A is 1.5.",
+        "(B) The average CPI of the program produced by compiler B is 1.5.",
+        "(C) Assume that the compiled programs now run on two new distinct processors. If the execution times on the two processors are the same, the clock of the processor running compiler A's code is 1.37x faster than the clock of the processor running compiler B's code.",
+        "(D) Assume that a new compiler, C, is developed using 4.0E8 instructions and achieves an average CPI of 0.8. The speedup of using the new compiler versus compiler A is less than 4.7x.",
+        "(E) The speedup of using compiler C described in (D) versus compiler B is less than 4x."
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>CPU time = IC × CPI × cycle time，cycle time = 1 ns。</p>\n<p><b>(A) 對</b>：CPI<sub>A</sub> = 1.5 s / (10<sup>9</sup> × 1 ns) = <b>1.5</b>。<br>\n<b>(B) 錯</b>：CPI<sub>B</sub> = 1.8 / (1.5 × 10<sup>9</sup> × 10<sup>-9</sup>) = <b>1.2</b>。<br>\n<b>(C) 錯</b>：執行時間相同時，時脈比 = 所需 cycle 數的比：f<sub>A</sub> / f<sub>B</sub> = (IC<sub>A</sub> × CPI<sub>A</sub>) / (IC<sub>B</sub> × CPI<sub>B</sub>) = 1.5 × 10<sup>9</sup> / 1.8 × 10<sup>9</sup> ≈ <b>0.83</b>，A 的處理器時脈反而比較慢，不是快 1.37 倍。<br>\n<b>(D) 對</b>：compiler C 時間 = 4 × 10<sup>8</sup> × 0.8 × 1 ns = 0.32 s，相對 A 的 speedup = 1.5 / 0.32 = <b>4.69</b>，小於 4.7。<br>\n<b>(E) 錯</b>：相對 B 的 speedup = 1.8 / 0.32 = <b>5.625</b>，大於 4。</p>"
+    },
+    {
+      "id": "co-0193",
+      "topics": [
+        "pipelining"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 12,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(6 points)（複選）Assume the individual stages of the datapath have the following latencies:<br>\nIF: 150ps; ID: 250ps; EX: 50ps; MEM: 200ps; WB: 100ps</p>\n<p>Assume the instructions executed by the processor break down as follows:<br>\nALU: 45%; BEQ: 20%; LW: 20%; SW: 15%</p>\n<p>Choices:</p>",
+      "choices": [
+        "(A) The clock cycle time in a pipelined processor is 350 ps.",
+        "(B) The total latency of an LW instruction in a non-pipelined processor is 850 ps.",
+        "(C) The total latency of an LW instruction in a pipelined processor is 1250 ps.",
+        "(D) The utilization of the data memory is 35% (Assume there are no stalls or hazards)."
+      ],
+      "answer": "(C)(D)",
+      "explanation": "<p><b>(A) 錯</b>：pipeline 的 clock 要遷就最慢的 stage，也就是 ID 的 <b>250 ps</b>。<br>\n<b>(B) 錯</b>：non-pipelined 的 LW 要走完五個 stage：150 + 250 + 50 + 200 + 100 = <b>750 ps</b>。<br>\n<b>(C) 對</b>：pipelined 時每個 stage 都佔一個 250 ps 的 cycle，LW 走 5 個 stage = 5 × 250 = <b>1250 ps</b>；單一指令的延遲反而比 750 ps 長，pipeline 改善的是 throughput。<br>\n<b>(D) 對</b>：只有 LW 和 SW 用 data memory，20% + 15% = <b>35%</b> 的 cycle 有在用。</p>"
+    },
+    {
+      "id": "co-0194",
+      "topics": [
+        "data-hazards",
+        "pipelining"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 13,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(5 points) Consider a processor with a load delay slot: this means that the value loaded into a destination register (Rd) is not available for use in the instruction immediately following the load. Assume the following code sequence runs on this processor (with RISC-V ISA).</p>\n<pre class=\"code\">addi x3, x0, 0x18 //x0 is the zero register\nlw x3, 8(x3)\nadd x4, x3, x3</pre>\n<p>Suppose that MEM[32] = -4, and the load delay slot is <i>ignored</i>. What will be the value (in decimal) stored in the register x4 after all the code is executed?</p>",
+      "choices": [
+        "(A) 48",
+        "(B) 14",
+        "(C) -8",
+        "(D) 40"
+      ],
+      "answer": "(A)（待確認）",
+      "explanation": "<p>addi 之後 x3 = 0x18 = 24；lw 的位址是 24 + 8 = 32，載入 MEM[32] = −4。</p>\n<p>關鍵在 <span class=\"term\">Load Delay Slot<small>（載入延遲槽）</small></span>：處理器<b>不會</b>自動 stall，lw 後面緊接的那一條指令讀到的是 x3 的<b>舊值</b>。題目說程式「ignored（沒有理會）」delay slot，也就是沒有在 lw 後面插 nop 或搬一條無關指令，所以 add 正好落在 delay slot 裡：</p>\n<p>x4 = 24 + 24 = <b>48</b> → (A)。</p>\n<p>如果把「ignored」理解成「當作沒有 delay slot、硬體會等新值」，x4 = (−4) + (−4) = −8，也就是 (C)。題目先特別定義了 delay slot 的行為，又強調 ignored，比較合理的讀法是「程式沒處理 delay slot 而讀到舊值」，選 (A)；官方未公布答案，標待確認。</p>"
+    },
+    {
+      "id": "co-0195",
+      "topics": [
+        "cache-mapping",
+        "virtual-memory"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 14,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>（題組 A 共同題幹）(Question Group A: 8points – 2 questions) Assume we have a 2-way set associative cache that employs a write-back policy and uses a perfect LRU mechanism to decide which block to evict. The tag store, which includes bits for valid status, dirty status, and LRU tracking, requires 13 × 2<sup>8</sup> bits of storage space. The cache implements virtual indexing with physical tagging. The system has a virtual address space of 1 MB, uses pages of 1 KB in size, and each cache block is 8 bytes long. Answer the following questions.</p><p>14. (4 points) What is the size of the cache's data store?</p>",
+      "choices": [
+        "(A) 1KB",
+        "(B) 2KB",
+        "(C) 4KB",
+        "(D) 8KB"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>設 set 數 S = 2<sup>s</sup>、physical address 有 p bits。block 8 bytes → offset 3 bits，tag = p − s − 3。</p>\n<p>每個 set 的 tag store：2 個 way × (tag + valid + dirty) ＋ 2-way 的 perfect LRU 只要 1 bit：</p>\n<pre class=\"formula\">每 set = 2(p − s − 3 + 2) + 1 = 2(p − s) − 1\n總共 = 2^s × (2(p − s) − 1) = 13 × 2^8</pre>\n<p>2(p − s) − 1 是奇數，只能對應 13 → p − s = 7，且 2<sup>s</sup> = 2<sup>8</sup> → <b>256 個 set</b>（physical address 15 bits）。</p>\n<p>data store = 256 sets × 2 ways × 8 bytes = <b>4KB</b> → (C)。</p>\n<p>常見錯誤：把 LRU 當成每個 block 1 bit，會得到 128 sets、2KB，但接下來 15 題就會算出 0 bit，和選項對不上。</p>"
+    },
+    {
+      "id": "co-0196",
+      "topics": [
+        "cache-mapping",
+        "virtual-memory"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 15,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>（題組 A 共同題幹）(Question Group A: 8points – 2 questions) Assume we have a 2-way set associative cache that employs a write-back policy and uses a perfect LRU mechanism to decide which block to evict. The tag store, which includes bits for valid status, dirty status, and LRU tracking, requires 13 × 2<sup>8</sup> bits of storage space. The cache implements virtual indexing with physical tagging. The system has a virtual address space of 1 MB, uses pages of 1 KB in size, and each cache block is 8 bytes long. Answer the following questions.</p><p>15. (4 points) How many bits of the virtual index come from the virtual page number?</p>",
+      "choices": [
+        "(A) 1 bit",
+        "(B) 2 bits",
+        "(C) 3 bits",
+        "(D) 4 bits"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>承 14 題：cache 有 256 個 set → index 8 bits，block offset 3 bits，所以 cache 用到虛擬位址的低 <b>11 bits</b>（index + offset）。</p>\n<p>page 1 KB → page offset 只有 <b>10 bits</b>。11 − 10 = <b>1 bit</b> 的 index 超出 page offset，必須取自 virtual page number → (A)。</p>\n<p>這 1 bit 就是 <span class=\"term\">VIPT<small>（Virtually Indexed, Physically Tagged）</small></span>cache 可能產生 synonym（同一實體位址出現在兩個 set）問題的來源；若 index + offset ≤ page offset，就不會有這個問題。</p>"
+    },
+    {
+      "id": "co-0197",
+      "topics": [
+        "data-hazards",
+        "instruction-level-parallelism"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 16,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>（題組 B 共同題幹）(Question Group B: 12points – 2 questions) Assume the following C code is given:</p>\n<pre class=\"code\">for (i=2; i&lt;=1100; i++)\n    A[i] = A[i-1] + A[i-2];</pre>\n<p>The RISC-V assembly respective to the C code is:</p>\n<pre class=\"code\">    li x5, 8800\n    add x12, x10, x5\n    addi x11, x10, 16\nLOOP:\n    fld f0, -16(x11)\n    fld f1, -8(x11)\n    fadd.d f2, f0, f1\n    fsd f2, 0(x11)\n    addi x11, x11, 8\n    ble x11, x12, LOOP</pre>\n<p>Here, an instruction's latency represents how many clock cycles must pass before another instruction can use its result. The floating point instructions have the following associated latencies (in cycles):</p>\n<pre class=\"code\">fadd.d = 4\nfld = 6\nfsd = 1</pre><p>16. (4 points) How many clock cycles are needed to execute this code?</p>",
+      "choices": [
+        "(A) 15984",
+        "(B) 17587",
+        "(C) 25280",
+        "(D) 25283"
+      ],
+      "answer": "(B)",
+      "explanation": "<p><b>迭代次數</b>：x11 從 x10 + 16 開始，每次加 8，直到超過 x12 = x10 + 8800 為止，x11 走過 16, 24, …, 8800，共 (8800 − 16)/8 + 1 = <b>1099 次</b>（正好是 i = 2～1100）。</p>\n<p><b>每一圈</b>（單發射、依序執行；latency = 使用者必須空等的 cycle 數）：</p>\n<div class=\"table-scroll\"><table><tr><th>cycle</th><th>指令</th><th>說明</th></tr>\n<tr><td>1</td><td>fld f0</td><td></td></tr>\n<tr><td>2</td><td>fld f1</td><td></td></tr>\n<tr><td>3～8</td><td>stall × 6</td><td>fadd 要等 fld f1 的 6 個 cycle</td></tr>\n<tr><td>9</td><td>fadd.d</td><td></td></tr>\n<tr><td>10～13</td><td>stall × 4</td><td>fsd 要等 fadd 的 4 個 cycle</td></tr>\n<tr><td>14</td><td>fsd</td><td></td></tr>\n<tr><td>15</td><td>addi</td><td></td></tr>\n<tr><td>16</td><td>ble</td><td></td></tr></table></div>\n<p>每圈 16 cycles，1099 圈 = 17,584，再加上迴圈前 li、add、addi 3 個 cycle = <b>17,587</b> → (B)。</p>\n<p>可以看到 16 個 cycle 裡有 10 個在空等，超過六成時間浪費在相依性上，這就是 17 題要改進的地方。</p>"
+    },
+    {
+      "id": "co-0198",
+      "topics": [
+        "data-hazards",
+        "instruction-level-parallelism"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 17,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>（題組 B 共同題幹）(Question Group B: 12points – 2 questions) Assume the following C code is given:</p>\n<pre class=\"code\">for (i=2; i&lt;=1100; i++)\n    A[i] = A[i-1] + A[i-2];</pre>\n<p>The RISC-V assembly respective to the C code is:</p>\n<pre class=\"code\">    li x5, 8800\n    add x12, x10, x5\n    addi x11, x10, 16\nLOOP:\n    fld f0, -16(x11)\n    fld f1, -8(x11)\n    fadd.d f2, f0, f1\n    fsd f2, 0(x11)\n    addi x11, x11, 8\n    ble x11, x12, LOOP</pre>\n<p>Here, an instruction's latency represents how many clock cycles must pass before another instruction can use its result. The floating point instructions have the following associated latencies (in cycles):</p>\n<pre class=\"code\">fadd.d = 4\nfld = 6\nfsd = 1</pre><p>17. (8 points) Storing and re-loading data from the main memory during the loop cause a slowdown.</p>\n<p>Assume now that you have a new instruction called <i>fmv.d</i> that executes in a single cycle. This instruction performs register move operations. For instance: \"<i>fmv.d rd, rs1</i>\" — writes the value of floating-point register <i>rs1</i> into the floating-point register <i>rd</i>.</p>\n<p>If the <i>fmv.d</i> instruction is used to optimize the code's performance by using registers to carry the data between iterations of the loop, how many cycles are needed to execute this code?<br>\nHint: think of what the assembly will look like after applying <i>fmv.d</i> and count the total cycles the resulting code takes.</p>",
+      "choices": [
+        "(A) 7703",
+        "(B) 7806",
+        "(C) 7823",
+        "(D) 6934"
+      ],
+      "answer": "(A)（待確認）",
+      "explanation": "<p>A[i−1]、A[i−2] 其實上一圈才算出來，不必每圈重新 fld。改法：迴圈前先把 A[0]、A[1] 載入 f0、f1，迴圈裡只算加法、存結果，再用 fmv.d 把值「往前推」一格：</p>\n<pre class=\"code\">    li   x5, 8800\n    add  x12, x10, x5\n    addi x11, x10, 16\n    fld  f0, -16(x11)      # A[0]\n    fld  f1, -8(x11)       # A[1]\nLOOP:\n    fadd.d f2, f0, f1      # A[i] = A[i-1] + A[i-2]\n    fsd    f1, -8(x11)     # 存上一圈的結果（第一圈存回 A[1]，值不變）\n    fmv.d  f0, f1          # A[i-2] &lt;- A[i-1]\n    addi   x11, x11, 8\n    (stall)                # f2 還沒好（fadd 要等 4 cycles）\n    fmv.d  f1, f2          # A[i-1] &lt;- A[i]\n    ble    x11, x12, LOOP\n    fsd    f1, -8(x11)     # 迴圈外補存最後一個結果</pre>\n<p>每圈 6 條指令 ＋ 1 個 stall = <b>7 cycles</b>（fadd 在第 1 個 cycle，fmv.d f1, f2 最早第 6 個 cycle）。fld 完全移出迴圈，每圈從 16 cycles 降到 7 cycles。</p>\n<p>1099 圈 × 7 = 7,693，再加上迴圈前的指令與第一次 fadd 等 fld 的延遲、迴圈後的 fsd，大約 10 個 cycle → <b>7,703</b> → (A)。</p>\n<p>其他選項檢查：7806、7823 和 7 × 1099 = 7693 差了 113、130，額外開銷不可能這麼多；6934 也不是「每圈整數 cycles × 1099 ＋ 小常數」的形式。</p>\n<p>（迴圈前後那約 10 個 cycle 的精確值依指令排法會差 1～2 個 cycle；另外若更積極地排程，理論上每圈可壓到 6 cycles。官方未公布答案，依選項判斷出題者以每圈 7 cycles 計算，標待確認。）</p>"
+    },
+    {
+      "id": "co-0199",
+      "topics": [
+        "instruction-level-parallelism",
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 18,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>18. (6 points) Consider a computer system equipped with a single CPU with the following organization: It contains two cores, where each core implements superscalar processing with two functional units and can execute instructions out of order. The cores operate in single-threaded mode, meaning each core can only execute one thread at a time.</p>\n<p>Two threads, X and Y, must be executed on this CPU. Each thread consists of the following sequence of operations: Unless noted or encountered a hazard, you can assume all operations take a single cycle to execute.</p>\n<div class=\"table-scroll\"><table><tr><th>X</th><th>Y</th></tr><tr><td>A1: takes two cycles to execute</td><td>B1: no dependencies</td></tr><tr><td>A2: depends on the result of A1</td><td>B2: conflicts for a functional unit with B1</td></tr><tr><td>A3: conflicts for a functional unit with A1</td><td>B3: no dependencies</td></tr><tr><td>A4: depends on the result of A2</td><td>B4: depends on the result of B2</td></tr></table></div>\n<p>How many cycles will it take to execute these two threads? How many issue slots are wasted because of hazards?</p>",
+      "choices": [
+        "(A) 4 cycles, 7 slots wasted",
+        "(B) 4 cycles, 3 slots wasted",
+        "(C) 5 cycles, 5 slots wasted",
+        "(D) 6 cycles, 7 slots wasted"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>兩個 core 各跑一個 thread（X 在 core 0、Y 在 core 1），每個 core 每個 cycle 有 2 個 slot。A1 要執行兩個 cycle，會連續佔用它的 functional unit 兩個 cycle。</p>\n<div class=\"table-scroll\"><table><tr><th>cycle</th><th>core 0（X）</th><th>core 1（Y）</th></tr>\n<tr><td>1</td><td>A1 ｜ 空（A2 要等 A1、A3 和 A1 搶同一個 FU）</td><td>B1 ｜ B3（B2 和 B1 搶 FU，B3 無相依，亂序先做）</td></tr>\n<tr><td>2</td><td>A1（第 2 個 cycle）｜ 空</td><td>B2 ｜ 空（B4 要等 B2）</td></tr>\n<tr><td>3</td><td>A2 ｜ A3</td><td>B4 ｜ 空</td></tr>\n<tr><td>4</td><td>A4 ｜ 空</td><td>空 ｜ 空</td></tr></table></div>\n<p>總共 <b>4 cycles</b>（由 X 決定：A1 兩個 cycle → A2 → A4 是一條相依鏈，至少 4 個 cycle）。</p>\n<p>slot 總數 = 2 cores × 2 slots × 4 cycles = 16，被用掉的有 X 的 5 個（A1 佔 2 個）＋ Y 的 4 個 = 9 個，浪費 16 − 9 = <b>7 個</b> → (A)。</p>\n<p>常見錯誤：只算 X 的浪費，或把 A1 當成只佔 1 個 slot（會得到 8 個浪費，選項中沒有）。</p>"
+    },
+    {
+      "id": "co-0200",
+      "topics": [
+        "cpu-performance",
+        "mips-instruction-formats",
+        "addressing-modes"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 7,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q7 (5pts)（複選）Regarding a general computer architecture and ISA design principles, select correct description(s).</p>",
+      "choices": [
+        "(A) Increasing pipeline depth improves performance primarily by decreasing the CPI.",
+        "(B) Removing byte load and store instructions from the ISA can potentially increase the code sizes of most applications.",
+        "(C) Transitioning from a load/store ISA to a memory-register ISA (allowing memory operands in arithmetic instructions) typically increases instruction count.",
+        "(D) Increasing the number of architectural registers can reduce instruction count and thus improve overall performance.",
+        "(E) Incorporating complex addressing modes into ISA reduces instruction count but complicates hardware implementations, leading to an increase in the clock cycle time."
+      ],
+      "answer": "(B)(D)(E)（(D) 待確認）",
+      "explanation": "<p>用 CPU time = IC × CPI × cycle time 來判斷每個設計改變了哪一項。</p>\n<p><b>(A) 錯</b>：pipeline 加深主要是把每個 stage 切短、<b>縮短 cycle time</b>；hazard 與分支失誤的代價反而變大，CPI 通常會上升。<br>\n<b>(B) 對</b>：拿掉 lb/sb 後，存取一個 byte 要用 word load 再搭配 shift、mask（寫入還要讀-改-寫），多出好幾條指令，處理字元、字串的程式碼會變大。<br>\n<b>(C) 錯</b>：memory-register ISA 可以一條指令就「讀記憶體＋運算」，省下 load 指令，instruction count 通常<b>減少</b>（代價是 CPI 或 cycle time 變大）。<br>\n<b>(D) 對</b>：暫存器多了，register spilling（把變數暫存回記憶體）的 load/store 變少，IC 下降、效能可能提升。題目用「can」，是可能性的敘述；但暫存器多也會讓指令編碼變長、register file 變慢，不保證一定變快（待確認）。<br>\n<b>(E) 對</b>：複雜定址模式一條指令做更多事，IC 下降；但解碼與位址計算硬體變複雜，可能拉長 critical path、增加 cycle time。</p>"
+    },
+    {
+      "id": "co-0201",
+      "topics": [
+        "cache-mapping",
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 8,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q8 (5pts)（複選）Regarding cache conflict patterns, consider the following C code executing on a system with a 32 KB direct-mapped L1 data cache, 64-byte cache lines, and 4-byte integers:</p>\n<pre class=\"code\">int A[8192], B[8192];  // Arrays allocated contiguously, cache-line aligned\nfor (int i = 0; i &lt; 8192; i++) {\n    A[i] = A[i] + B[i];\n}</pre>\n<p>Select correct description(s).</p>",
+      "choices": [
+        "(A) Every access to B[i] results in a cache miss due to conflict with A[i].",
+        "(B) Changing the cache to 2-way set-associative with the same total size would eliminate all conflict misses.",
+        "(C) Adding padding of 8192 integers between arrays A and B would eliminate conflict misses.",
+        "(D) Loop interchange would improve cache performance for this code.",
+        "(E) Prefetching B[i+16] in each iteration would eliminate all cache misses."
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<p>A 佔 8192 × 4 = 32 KB，剛好等於 cache 大小，所以 B 緊接在 A 後面時，B[i] 和 A[i] 的位址差 32 KB，<b>映射到同一條 cache line</b>。</p>\n<p>每次迭代依序：讀 A[i] → 讀 B[i]（把 A 那條踢掉）→ 寫 A[i]（又把 B 那條踢掉）。</p>\n<p><b>(A) 對</b>：B 那條每次都在下一次被用到前被 A 踢掉，B 的 8192 次存取全部 miss（程式模擬：B 命中 0 次、miss 8192 次）。<br>\n<b>(B) 對</b>：改成 2-way（同樣 32 KB）後，A[i] 和 B[i] 的 line 落在同一個 set 的兩個 way，可以共存；只剩第一次碰到每條 line 的 compulsory miss（A、B 各 512 次），conflict miss 全部消失。<br>\n<b>(C) 錯</b>：padding 8192 個 int = 32 KB，B 和 A 相距變成 64 KB，仍是 32 KB 的倍數，還是映射到同一條 line，衝突照舊。要錯開應該 padding 一條 line（16 個 int）之類不是 32 KB 倍數的量。<br>\n<b>(D) 錯</b>：只有一層迴圈，沒有 loop interchange 可言；存取本來就是連續的。<br>\n<b>(E) 錯</b>：prefetch B[i+16]（剛好下一條 line）一樣會被 A 的存取踢掉，也解決不了 A 本身的衝突與 compulsory miss，不可能消除「所有」miss。</p>"
+    },
+    {
+      "id": "co-0202",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 9,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q9 (10pts)（複選）Regarding LLM inference, quantization, and memory hierarchy, consider running inference for a large language model on a CPU system with the following specifications:</p>\n<ul><li>L1 cache: 32 KB per core, 4 cycles latency</li>\n<li>L2 cache: 256 KB per core, 12 cycles latency</li>\n<li>L3 cache: 32 MB shared, 40 cycles latency</li>\n<li>Main memory: 64 GB DDR5, 200 cycles latency, 50 GB/s bandwidth</li>\n<li>The model has 7 billion parameters</li></ul>\n<p>The following code performs a single matrix-vector multiplication for one transformer layer:</p>\n<pre class=\"code\">// Weight matrix W: 4096 x 4096, activation vector x: 4096\n// FP16: 2 bytes per element, INT8: 1 byte per element, INT4: 0.5 bytes per element\nvoid matvec(void *W, float *x, float *y, int N, int precision) {\n    for (int i = 0; i &lt; N; i++) {\n        float sum = 0;\n        for (int j = 0; j &lt; N; j++) {\n            float w = dequantize(W, i, j, precision);\n            sum += w * x[j];\n        }\n        y[i] = sum;\n    }\n}</pre>\n<p>Select correct description(s).</p>",
+      "choices": [
+        "(A) With FP16 weights, the 4096×4096 weight matrix requires 32 MB and fits comfortably in L3 cache with room for activations and other data.",
+        "(B) Quantizing from FP16 to INT4 reduces memory bandwidth requirements by 4× for weight loading.",
+        "(C) The activation vector x (4096 floats = 16 KB) can remain in L1 cache throughout the computation if accessed with proper loop ordering.",
+        "(D) For a memory-bound workload, switching from FP16 to INT8 would approximately double the achievable tokens per second.",
+        "(E) The 7B parameter model in INT4 format requires approximately 3.5 GB, making it possible to fit entirely in L3 cache."
+      ],
+      "answer": "(B)(C)(D)",
+      "explanation": "<p><b>(A) 錯</b>：4096 × 4096 × 2 bytes = 32 MiB，<b>剛好等於</b>整個 L3，連 x、y 和其他資料都放不下，更不可能「comfortably with room」。<br>\n<b>(B) 對</b>：每個權重 2 bytes → 0.5 bytes，要從記憶體搬的權重資料量變成 1/4，頻寬需求降 4 倍。<br>\n<b>(C) 對</b>：x 只有 4096 × 4 = 16 KB，小於 L1 的 32 KB；i 在外層、j 在內層時每一列都從頭掃一次 x，x 一直被重複使用。兩次用到同一個 x[j] 之間只會碰到 16 KB 的 x 和一列權重（FP16 一列 8 KB），合計 24 KB &lt; 32 KB，在 LRU 下 x 可以一直留在 L1。<br>\n<b>(D) 對</b>：memory-bound 時速度由「每個 token 要搬多少 bytes」決定，FP16 → INT8 權重減半，token/s 約變兩倍。<br>\n<b>(E) 錯</b>：7 × 10<sup>9</sup> × 0.5 byte = 3.5 GB 沒錯，但 L3 只有 32 MB，差了 100 倍以上，不可能放進 L3（放得進的是 64 GB 主記憶體）。</p>"
+    },
+    {
+      "id": "co-0203",
+      "topics": [
+        "cpu-performance",
+        "amdahls-law"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 10,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q10 (10pts)（複選）Regarding CPU-accelerator data orchestration for LLM inference, consider a system designed for LLM inference with the following specifications:</p>\n<ul><li>Hardware Configuration:\n<ul><li>CPU: 128 GB DDR5 memory, 50 GB/s memory bandwidth, 2 TFLOPS INT8 throughput</li>\n<li>NPU (Neural Processing Unit): 8 GB on-chip SRAM, 1 TB/s internal bandwidth, 400 TFLOPS INT8 throughput</li>\n<li>Interconnect: PCIe 5.0 x16, 50 GB/s effective transfer bandwidth</li></ul></li>\n<li>Model Characteristics (70B parameter LLM, INT8 quantization):\n<ul><li>Total model weights: 70 GB</li>\n<li>Number of transformer layers: 80</li>\n<li>Weight size per layer: 875 MB</li>\n<li>Computation operations per layer: 140 billion INT8 operations</li></ul></li></ul>\n<p>Since the NPU delivers 200× higher computation throughput than the CPU, running inference on the CPU alone would be impractically slow (35 seconds per token versus 175 ms on NPU). The system must use the NPU for all matrix computations. However, the NPU's 8 GB SRAM cannot hold the 70 GB model, requiring layer weights to be streamed from CPU memory during inference.</p>\n<p>The following code generates a single output token:</p>\n<pre class=\"code\">void generate_one_token() {\n    // Process all 80 layers sequentially\n    for (int L = 0; L &lt; 80; L++) {\n\n        // Transfer: CPU memory -&gt; NPU SRAM (875 MB per layer)\n        pcie_transfer_to_npu(weight[L], 875 MB);\n\n        // Compute: 140 billion INT8 operations at 400 TFLOPS\n        npu_compute_layer(L);\n    }\n    sample_output_token();\n}</pre>\n<ul><li>Calculated Latencies Per Layer:\n<ul><li>PCIe transmission latency: 875 MB ÷ 50 GB/s = 17.5 ms</li>\n<li>NPU computation latency: 140 × 10<sup>9</sup> ops ÷ 400 × 10<sup>12</sup> ops/s = 0.35 ms</li></ul></li></ul>\n<p>Select correct description(s).</p>",
+      "choices": [
+        "(A) The total PCIe transmission latency per token (1.4 seconds) is 50× longer than the total NPU computation latency (28 ms), making this system severely PCIe-bandwidth-bound.",
+        "(B) Quantizing from INT8 to INT4 would halve the weight size to 35 GB, reducing per-token latency from approximately 1.4 seconds to approximately 0.7 seconds.",
+        "(C) If the NPU had 70 GB of SRAM instead of 8 GB, all weights would remain resident and per-token latency would drop to approximately 28 ms.",
+        "(D) Running inference entirely on the CPU would achieve lower latency than using the NPU because it eliminates PCIe transmission overhead.",
+        "(E) Doubling the PCIe bandwidth to 100 GB/s would reduce total per-token latency by exactly 50%."
+      ],
+      "answer": "(A)(B)(C)（(C) 待確認）",
+      "explanation": "<p>每個 token 跑 80 層，程式是「先傳、再算」依序執行，沒有重疊。</p>\n<p><b>(A) 對</b>：PCIe 80 × 17.5 ms = <b>1.4 s</b>；計算 80 × 0.35 ms = <b>28 ms</b>；1400 / 28 = <b>50 倍</b>，時間幾乎全花在搬權重，是 PCIe 頻寬瓶頸。<br>\n<b>(B) 對</b>：INT4 權重 35 GB，PCIe 時間減半為 0.7 s，加上約 28 ms 計算，總共約 0.73 s ≈ 0.7 s。<br>\n<b>(C) 對（依題目給的延遲模型）</b>：權重常駐 SRAM 就不必走 PCIe，只剩計算 80 × 0.35 = 28 ms。<br>\n<b>(D) 錯</b>：題目自己說 CPU 單獨跑每個 token 要 35 s，遠比 NPU 方案的 1.43 s 慢。<br>\n<b>(E) 錯</b>：PCIe 變 0.7 s，但計算的 28 ms 不變：(1.4 + 0.028) → (0.7 + 0.028)，減少 0.7 / 1.428 ≈ <b>49%</b>，不是剛好 50%——這正是 Amdahl's law：只加速其中一部分，整體改善一定小於該部分的倍率。</p>\n<p>（待確認：(C) 若把 NPU SRAM 的 1 TB/s 內部頻寬也算進去，每個 token 要從 SRAM 讀 70 GB，至少 70 ms，就不是 28 ms；題目的「Calculated Latencies」只算了運算時間，本題依題目模型判 (C) 對。另外題目敘述中的 35 s 與 175 ms 和逐層數據推不出來（80 × 0.35 ms = 28 ms），不影響各選項判斷。）</p>"
+    },
+    {
+      "id": "co-0204",
+      "topics": [
+        "pipelining",
+        "data-hazards",
+        "control-hazards"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 11,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q11 (10pts)（複選）You are analyzing a RISC-V 6-stage pipeline consisting of IF (Fetch), ID (Decode), EX (Execute), MEM1&amp;MEM2 (Memory), and WB (Write-Back) stages. The pipeline utilizes a split-phase register file, where writes occur in the first half of the clock cycle and reads in the second. A 2-bit branch predictor is used, and a branch instruction is resolved in the EX stage. The processor implements a branch target buffer. Therefore, when a branch is predicted \"taken\", the target address is also predicted. Assume this loop executes 10 iterations. Consider the following assembly code segment:</p>\n<pre class=\"code\">Loop:\n    lw   x3, 0(x11)\n    lw   x4, 0(x12)\n    add  x5, x3, x4\n    sw   x5, 0(x11)\n    addi x11, x11, 4\n    addi x12, x12, 4\n    bne  x11, x13, loop</pre>\n<figure class=\"fig\"><div class=\"q-fig\" data-spec=\"{&quot;width&quot;: 640, &quot;height&quot;: 330, &quot;nodes&quot;: [{&quot;id&quot;: &quot;s00&quot;, &quot;label&quot;: &quot;Predict taken 00&quot;, &quot;x&quot;: 110, &quot;y&quot;: 90, &quot;shape&quot;: &quot;box&quot;, &quot;w&quot;: 200, &quot;h&quot;: 52}, {&quot;id&quot;: &quot;s01&quot;, &quot;label&quot;: &quot;Predict taken 01&quot;, &quot;x&quot;: 530, &quot;y&quot;: 90, &quot;shape&quot;: &quot;box&quot;, &quot;w&quot;: 200, &quot;h&quot;: 52}, {&quot;id&quot;: &quot;s10&quot;, &quot;label&quot;: &quot;Predict not taken 10&quot;, &quot;x&quot;: 530, &quot;y&quot;: 240, &quot;shape&quot;: &quot;box&quot;, &quot;w&quot;: 200, &quot;h&quot;: 52}, {&quot;id&quot;: &quot;s11&quot;, &quot;label&quot;: &quot;Predict not taken 11&quot;, &quot;x&quot;: 110, &quot;y&quot;: 240, &quot;shape&quot;: &quot;box&quot;, &quot;w&quot;: 200, &quot;h&quot;: 52}], &quot;edges&quot;: [{&quot;from&quot;: &quot;s00&quot;, &quot;to&quot;: &quot;s01&quot;, &quot;directed&quot;: true}, {&quot;from&quot;: &quot;s01&quot;, &quot;to&quot;: &quot;s00&quot;, &quot;directed&quot;: true}, {&quot;from&quot;: &quot;s01&quot;, &quot;to&quot;: &quot;s10&quot;, &quot;directed&quot;: true}, {&quot;from&quot;: &quot;s10&quot;, &quot;to&quot;: &quot;s01&quot;, &quot;directed&quot;: true}, {&quot;from&quot;: &quot;s10&quot;, &quot;to&quot;: &quot;s11&quot;, &quot;directed&quot;: true}, {&quot;from&quot;: &quot;s11&quot;, &quot;to&quot;: &quot;s10&quot;, &quot;directed&quot;: true}], &quot;labels&quot;: [{&quot;id&quot;: &quot;l0&quot;, &quot;x&quot;: 110, &quot;y&quot;: 38, &quot;text&quot;: &quot;Taken：停在 00&quot;}, {&quot;id&quot;: &quot;l1&quot;, &quot;x&quot;: 320, &quot;y&quot;: 74, &quot;text&quot;: &quot;Not taken：00 到 01&quot;}, {&quot;id&quot;: &quot;l2&quot;, &quot;x&quot;: 320, &quot;y&quot;: 106, &quot;text&quot;: &quot;Taken：01 到 00&quot;}, {&quot;id&quot;: &quot;l3&quot;, &quot;x&quot;: 518, &quot;y&quot;: 165, &quot;text&quot;: &quot;Not taken：01 到 10&quot;, &quot;anchor&quot;: &quot;end&quot;}, {&quot;id&quot;: &quot;l4&quot;, &quot;x&quot;: 542, &quot;y&quot;: 165, &quot;text&quot;: &quot;Taken：10 到 01&quot;, &quot;anchor&quot;: &quot;start&quot;}, {&quot;id&quot;: &quot;l5&quot;, &quot;x&quot;: 320, &quot;y&quot;: 224, &quot;text&quot;: &quot;Not taken：10 到 11&quot;}, {&quot;id&quot;: &quot;l6&quot;, &quot;x&quot;: 320, &quot;y&quot;: 256, &quot;text&quot;: &quot;Taken：11 到 10&quot;}, {&quot;id&quot;: &quot;l7&quot;, &quot;x&quot;: 110, &quot;y&quot;: 292, &quot;text&quot;: &quot;Not taken：停在 11&quot;}]}\"></div><figcaption><b>圖</b>：原卷的 2-bit branch predictor 狀態圖（重畫）。原卷左側兩個深色橢圓的文字在掃描檔中不清楚，依題目「Predict Non-Taken, 11」與轉移關係補成 00（Predict taken）與 11（Predict not taken）</figcaption></figure>\n<p>Assume the predictor state is initialized to \"Predict Non-Taken, 11\", and the loop is executed multiple times. The execution cycles of an iteration are measured as the distance between the start of its Instruction Fetch (IF) stage and the start of the next iteration's IF stage (or the beginning of the first instruction that exits the loop). For example, if the i-<i>th</i> iteration begins its IF stage at cycle 12 and the (i+1)-<i>th</i> iteration begins at cycle 25, the total execution time for the i-<i>th</i> iteration is 13 cycles. Select correct description(s).</p>",
+      "choices": [
+        "(A) With full hardware forwarding, the second iteration of the first loop executes in a total of 11 cycles",
+        "(B) With full hardware forwarding, the second iteration of the first loop executes in a total of 9 cycles.",
+        "(C) Without hardware forwarding, the last iteration of the first loop executes in a total of 18 cycles.",
+        "(D) Without hardware forwarding, the last iteration of the first loop executes in a total of 21 cycles.",
+        "(E) The prediction accuracy of the bne instruction is 90% except for the first loop."
+      ],
+      "answer": "(A)(E)（(C)(D) 的判定待確認）",
+      "explanation": "<p><b>預測器</b>：00、01 預測 taken，10、11 預測 not taken；taken 往 00 走、not taken 往 11 走。迴圈 10 圈，bne 前 9 次 taken、第 10 次 not taken。</p>\n<div class=\"table-scroll\"><table><tr><th>第一次執行迴圈</th><th>狀態</th><th>預測</th><th>實際</th><th>結果</th></tr>\n<tr><td>第 1 圈</td><td>11</td><td>NT</td><td>T</td><td>失誤 → 10</td></tr>\n<tr><td>第 2 圈</td><td>10</td><td>NT</td><td>T</td><td>失誤 → 01</td></tr>\n<tr><td>第 3～9 圈</td><td>01 → 00</td><td>T</td><td>T</td><td>正確</td></tr>\n<tr><td>第 10 圈</td><td>00</td><td>T</td><td>NT</td><td>失誤 → 01</td></tr></table></div>\n<p>之後每次重新執行迴圈都從 01 開始：前 9 次預測 taken 正確、第 10 次失誤，準確率 9/10 = <b>90%</b>，<b>(E) 對</b>（第一次執行有 3 次失誤，只有 70%）。</p>\n<p><b>有 forwarding</b>：load 的值要到 MEM2 結束才有，add 緊接在 lw x4 後面要 stall 2 個 cycle；其他相依（add→sw、addi→bne）都能 forward。</p>\n<div class=\"table-scroll\"><table><tr><th>指令</th><th>IF</th><th>ID</th><th>EX</th></tr>\n<tr><td>lw x3</td><td>1</td><td>2</td><td>3</td></tr>\n<tr><td>lw x4</td><td>2</td><td>3</td><td>4（MEM2 在 6）</td></tr>\n<tr><td>add</td><td>3</td><td>4～6（stall 2）</td><td>7</td></tr>\n<tr><td>sw</td><td>4～6</td><td>7</td><td>8</td></tr>\n<tr><td>addi x11</td><td>7</td><td>8</td><td>9</td></tr>\n<tr><td>addi x12</td><td>8</td><td>9</td><td>10</td></tr>\n<tr><td>bne</td><td>9</td><td>10</td><td>11</td></tr></table></div>\n<p>預測正確（taken、BTB 給出目標）時下一圈在 cycle 10 開始 → 9 cycles；預測錯誤要等 bne 在 EX（cycle 11）判定，正確路徑在 cycle 12 才 fetch → <b>11 cycles</b>。第一次執行迴圈的第 2 圈預測失誤，所以是 11 cycles：<b>(A) 對、(B) 錯</b>。</p>\n<p><b>沒有 forwarding</b>：值要到 WB 才寫回，split-phase 讓「同一個 cycle 的 ID」讀得到。第 10 圈（預測 taken、實際 not taken）用程式逐 cycle 模擬：lw x4 的 WB 在第 6 cycle → add 的 ID 等到 6；add 的 WB 在 10 → sw 的 ID 等到 10；addi x11 的 WB 在 15 → bne 的 ID 等到 15、EX 在 16，失誤後第 17 cycle 才 fetch 迴圈外的指令（以本圈第一條 lw 的 IF 為第 0 cycle），共 <b>17 cycles</b>；若把上一圈 addi 對本圈 lw 的相依也算進去、且以第一次進入 IF 的時間起算，則是 19 cycles。各種算法都得不到 18 或 21，所以判 <b>(C)(D) 錯</b>（只有在不使用 split-phase、讀取要等 WB 的下一個 cycle 時，穩定狀態的一圈才會是 18 cycles）。</p>\n<p>（官方未公布答案；(C)(D) 對「迭代起點」與 stall 計法很敏感，標待確認。）</p>"
+    },
+    {
+      "id": "co-0205",
+      "topics": [
+        "power-wall",
+        "cpu-performance",
+        "amdahls-law"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 12,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q12 (10pts)（複選）You are evaluating the energy efficiency of two RISC-V dual-core processors running a specific workload. When only one core is active, the second core is power-gated (i.e., no power consumption). Once the workload completes, both cores are power-gated.</p>\n<ul><li><b>Workload</b>: 10<sup>9</sup> instructions, of which 75% are parallelizable (i.e., can be split on two cores without incurring overheads) and the remaining 25% are strictly serial.</li>\n<li><b>Processor A</b>: Two cores, Frequency: 3.0 GHz, Voltage: 1.1V, Avg. CPI (per core) = 1.2, Capacitance = 1.2 nF, Leakage Power = 500mW (total for 2 cores)</li>\n<li><b>Processor B</b>: Two cores, Frequency: 2.0 GHz, Voltage: 0.9V, Avg. CPI (per core) = 1, Capacitance = 1.0 nF, Leakage Power = 400mW (total for 2 cores)</li>\n<li><b>Dynamic power</b> = C x V<sup>2</sup> x F</li></ul>\n<p>Select correct description(s).</p>",
+      "choices": [
+        "(A) In both Processor A and Processor B, 25% of the total execution time is executed in serial mode.",
+        "(B) Processor A consumes the same leakage energy as Processor B.",
+        "(C) 2 &lt; Energy(A) / Energy(B) ≤ 2.3",
+        "(D) If the metric of energy efficiency is defined as Energy x Delay, Processor A is more energy efficient than Processor B.",
+        "(E) Although Processor A operates at a higher frequency than Processor B, the target workload runs faster on Processor B due to its lower average CPI."
+      ],
+      "answer": "(B)(C)（(C) 依每核心電容解讀，待確認）",
+      "explanation": "<p>serial 部分 0.25 × 10<sup>9</sup> 條只能單核心跑；parallel 部分 0.75 × 10<sup>9</sup> 條兩核心各分 0.375 × 10<sup>9</sup> 條。</p>\n<div class=\"table-scroll\"><table><tr><th></th><th>Processor A</th><th>Processor B</th></tr>\n<tr><td>serial 時間</td><td>0.25G × 1.2 / 3 GHz = 0.1 s</td><td>0.25G × 1 / 2 GHz = 0.125 s</td></tr>\n<tr><td>parallel 時間</td><td>0.375G × 1.2 / 3 GHz = 0.15 s</td><td>0.375G × 1 / 2 GHz = 0.1875 s</td></tr>\n<tr><td>總時間</td><td>0.25 s</td><td>0.3125 s</td></tr>\n<tr><td>每核心動態功率 CV²F</td><td>1.2n × 1.21 × 3G = 4.356 W</td><td>1.0n × 0.81 × 2G = 1.62 W</td></tr>\n<tr><td>動態能量</td><td>0.1 × 4.356 + 0.15 × 2 × 4.356 = 1.742 J</td><td>0.125 × 1.62 + 0.1875 × 2 × 1.62 = 0.81 J</td></tr>\n<tr><td>漏電能量</td><td>0.1 × 0.25 + 0.15 × 0.5 = 0.1 J</td><td>0.125 × 0.2 + 0.1875 × 0.4 = 0.1 J</td></tr>\n<tr><td>總能量</td><td>1.842 J</td><td>0.91 J</td></tr></table></div>\n<p>（單核心執行時另一核心被 power-gate，所以漏電只算一半：A 250 mW、B 200 mW。）</p>\n<p><b>(A) 錯</b>：serial 指令佔 25%，但它只能用一顆核心，所佔<b>時間</b>是 0.1 / 0.25 = 0.125 / 0.3125 = <b>40%</b>——這就是 Amdahl's law 的效果。<br>\n<b>(B) 對</b>：兩者漏電能量都是 <b>0.1 J</b>。<br>\n<b>(C) 對</b>：1.842 / 0.91 ≈ <b>2.02</b>，落在 (2, 2.3]。<br>\n<b>(D) 錯</b>：Energy × Delay：A = 1.842 × 0.25 ≈ 0.461，B = 0.91 × 0.3125 ≈ 0.284，B 比較小、比較有效率。<br>\n<b>(E) 錯</b>：A 總共 0.25 s，B 0.3125 s，A 比較快；A 的 CPI 雖然高 20%，但時脈快 50%，每條指令時間 0.4 ns 比 B 的 0.5 ns 短。</p>\n<p>（待確認：上面把電容當成「每顆核心」的值。若把 1.2 nF／1.0 nF 當成整顆處理器兩核心全開時的總電容，單核心時只算一半，比值變成 0.971 / 0.505 ≈ 1.92，(C) 就不成立；(A)(B)(D)(E) 的判斷不受影響。）</p>"
     }
   ]
 }

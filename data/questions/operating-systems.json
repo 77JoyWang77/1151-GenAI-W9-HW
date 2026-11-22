@@ -5746,6 +5746,446 @@
       "question": "<p>(10 pts) Suppose that a process needs to read and write a large file from the storage sub-system. Please answer the <b>five</b> sub-questions using one of three values: (<b>A</b>) – less than, (<b>B</b>) – greater than, and (<b>C</b>) – similar to.</p>\n<p>Assume blocking I/O is adopted as the I/O model, the file to be stored has very large size, and the delay of system load can be ignored here. The file system has 4K-byte data blocks.</p>\n<p>The following table shows the setting of the process and the sub-questions to be answered. The first column defines the buffering model, the second column defines the parameters of the buffering model, and the third column shows the function calls used to store the data. The first line of below table stands for the baseline, which considers the combination of unbuffered I/O, 4K buffer size, and no disk synchronization, to be compared to.</p>\n<div class=\"table-scroll\"><table>\n<tr><th colspan=\"3\">Setting</th><th>Sub-Questions</th></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 4KB</td><td>write()</td><td>(Baseline to be compared to)</td></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 4KB</td><td>fsync() after write ()</td><td><b>(a) (2 pts) How is the Clock time compared with that of baseline?</b></td></tr>\n<tr><td>Unbuffered IO</td><td>Buf Size 8KB</td><td>fsync () after write ()</td><td><b>(b) (2 pts) How is the User CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>line-at-a-time</td><td>puts()</td><td><b>(c) (2 pts) How is the System CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>fully buffer</td><td>puts()</td><td><b>(d) (2 pts) How is the User CPU time compared with that of baseline?</b></td></tr>\n<tr><td>Buffered IO</td><td>fully buffer</td><td>puts()+fflush()+fsync ()</td><td><b>(e) (2 pts) How is the System CPU time compared with that of baseline?</b></td></tr>\n</table></div>",
       "answer": "(a) B；(b) C；(c) B；(d) B；(e) B（(b)、(e) 待確認）",
       "explanation": "<p>先把三種時間分清楚：<b>clock time</b>（牆上時間，含等磁碟）、<b>user CPU time</b>（在使用者空間執行的時間，例如 stdio 函式庫搬資料）、<b>system CPU time</b>（在 kernel 裡執行的時間，主要跟 system call 次數和 kernel 處理的資料量有關）。baseline 是每次 write() 4KB、不同步磁碟，資料寫進 page cache 就返回。</p>\n<ul>\n<li><b>(a) B（greater）</b>：每次 write() 之後都 fsync()，process 要等資料真的寫到磁碟才繼續（blocking），磁碟比記憶體慢好幾個數量級，牆上時間明顯變長。</li>\n<li><b>(b) C（similar）</b>：fsync() 增加的是等待時間和 kernel 的工作，不會增加 user 時間；buffer 從 4KB 加到 8KB，write() 次數減半，user 端少一點迴圈開銷，但 unbuffered I/O 的 user time 本來就很小，差距可以忽略 → 「差不多」。若把「呼叫次數減半」看得比較重，也可能答 A（less），所以標待確認。</li>\n<li><b>(c) B（greater）</b>：line buffering 遇到換行就 flush，一行通常遠小於 4KB，所以 write() system call 的次數比 baseline（每 4KB 一次）多很多，system time 增加。</li>\n<li><b>(d) B（greater）</b>：fully buffered 時 system call 次數和 baseline 差不多（stdio 緩衝區也是一個 block 大小），但每次 puts() 都要在使用者空間把資料逐字元複製到 stdio 的緩衝區、找字串結尾，這些都算 user time，所以 user CPU 比直接 write() 多。</li>\n<li><b>(e) B（greater）</b>：表格第三欄是「存資料時用到的呼叫」，和 (a)(b) 列的「fsync() after write()」同樣解讀成每次 puts() 之後都 fflush() + fsync()：fflush 讓緩衝失效、每次都觸發 write()，再加上 fsync() 在 kernel 裡處理回寫，system time 增加。若解讀成只在最後 fflush/fsync 一次，write() 次數和 baseline 相同，system time 會「差不多」（C），所以標待確認。</li>\n</ul>\n<p>這題沒有唯一的數字答案，比較的是趨勢；作答時把「哪個動作增加了哪一種時間」講清楚最重要：同步（fsync）主要拉長 clock time，system call 次數影響 system time，stdio 的複製影響 user time。</p>"
+    },
+    {
+      "id": "os-0227",
+      "topics": [
+        "critical-section",
+        "semaphores"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 1,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(5 points) Which <b>ONE</b> of the following statements is correct for the critical-section problem? Assume there are several concurrent processes, each of which has one critical section. Memory variables shared among these processes are protected by the critical section from concurrent updates.</p>",
+      "choices": [
+        "a. Memory barriers can prevent concurrent updates by enforcing mutual exclusion to the shared memory.",
+        "b. Atomic instructions can prevent concurrent updates by completing the load and store instructions to the shared memory.",
+        "c. Semaphores can allow more than one process to update the shared memory.",
+        "d. Mutex locks acquire the lock before updating the shared memory and release the lock after updating the shared memory when the locks are mandatory to assure mutual exclusion.",
+        "e. None of all."
+      ],
+      "answer": "d（待確認）",
+      "explanation": "<p>逐項看每個同步工具「真正保證了什麼」：</p>\n<p><b>a 錯</b>：<span class=\"term\">Memory Barrier<small>（記憶體屏障）</small></span>只保證屏障前後的 load/store 不會被重新排序、寫入對其他處理器可見，它<b>不提供互斥</b>，兩個 process 仍然可以同時進入更新。<br>\n<b>b 錯</b>：atomic instruction（例如 test_and_set、compare_and_swap）保證「單一一條指令的讀-改-寫」不可分割，是用來<b>蓋鎖</b>的積木；但 critical section 裡通常有好幾條 load/store，單靠 atomic instruction 本身並不會讓整段更新互斥，敘述把它說成直接防止並行更新，不精確。<br>\n<b>c 錯（就本題情境）</b>：counting semaphore 的初值大於 1 時確實可以讓多個 process 同時進入，但那就違反了本題要保護的 mutual exclusion（互斥）——題目設定共享變數要「被 critical section 保護、不可並行更新」，這樣用 semaphore 正好破壞保護。<br>\n<b>d 對</b>：<span class=\"term\">Mutex Lock<small>（互斥鎖）</small></span>的標準用法就是 acquire() → critical section → release()，而且所有 process 都必須遵守（mandatory）才保證互斥。<br>\n所以選 <b>d</b>。</p>\n<p>（官方未公布答案；b、c 依解讀可能有爭議：若把 b 理解成「atomic 變數的單一更新」或把 c 理解成「semaphore 的能力」，也可能被認為對，故標待確認。）</p>"
+    },
+    {
+      "id": "os-0228",
+      "topics": [
+        "raid"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 2,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(5 points) Which <b>ONE</b> of the following statements is correct for the redundant array of inexpensive disks (RAID)?</p>",
+      "choices": [
+        "a. Reliability of the storage system is increased by the parallelism of the multiple disks.",
+        "b. RAID 5 uses the block-interleaved distributed parity check to increase the reliability.",
+        "c. If the MTBF of a single drive is 100,000 hours and the mean time to repair is 10 hours, the mean time to data loss of a mirrored drive (two disks) system is 5,700 years.",
+        "d. RAID 10 refers to a combination of RAID levels that are stripped first and mirrored later.",
+        "e. None of the above."
+      ],
+      "answer": "b",
+      "explanation": "<p><b>a 錯</b>：多顆磁碟「平行」提升的是效能（striping 讓多顆同時傳輸）；可靠度要靠 <b>redundancy（冗餘）</b>——鏡像或 parity。單純平行反而讓「任何一顆壞掉」的機率變高。<br>\n<b>b 對</b>：RAID 5 = block-interleaved distributed parity：資料以 block 為單位分散，parity 也輪流放在各顆磁碟上，壞一顆可以用 parity 算回來。<br>\n<b>c 錯</b>：mirrored 兩顆時，資料遺失要「一顆壞了、修好之前另一顆也壞」：MTTDL = MTBF² / (2 × MTTR) = 100,000² / (2 × 10) = 5 × 10<sup>8</sup> 小時 ÷ 8,760 ≈ <b>57,000 年</b>，不是 5,700 年（少了一個 0，已用程式驗算 57,077 年）。<br>\n<b>d 錯</b>：RAID 10（RAID 1+0）是<b>先鏡像、再 striping</b>（mirrored pairs 再分條）；「先 stripe 再 mirror」是 RAID 0+1。另外原文 stripped 應為 striped。</p>"
+    },
+    {
+      "id": "os-0229",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 3,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(3 Points) Which <b>ONE</b> of the following statements is correct? Please select the correct description for the output of the following program.（註：原卷 parent 分支寫 <code>print(</code>，應為 <code>printf(</code>）</p>\n<pre class=\"code\">#include &lt;sys/types.h&gt;\n#include &lt;stdio.h&gt;\n#include &lt;unistd.h&gt;\n#include &lt;sys/wait.h&gt;\nint value = 10;\nint main()\n{\n    pid_t pid;\n    pid = fork();\n\n    if (pid == 0) {\n        value += 10;\n        printf(\"A = %d\\n\",value);\n        return 0;\n    }\n    else if (pid &gt; 0) {\n        wait(NULL);\n        print(\"B = %d\\n\",value);\n        return 0;\n    }\n}</pre>\n<p>Choices:</p>",
+      "choices": [
+        "(A) A+B<sup>2</sup>=120",
+        "(B) A=B",
+        "(C) 2A+3B=50",
+        "(D) B=20",
+        "(E) None of the above."
+      ],
+      "answer": "(A)",
+      "explanation": "<p>fork() 之後 child 拿到的是 parent 位址空間的<b>複本</b>，兩邊的 global 變數 value 各自獨立。</p>\n<p>child（pid == 0）：value = 10 + 10 = 20，印出 <b>A = 20</b>。<br>\nparent：wait(NULL) 等 child 結束後印自己的 value，parent 的 value 從來沒被改過，所以 <b>B = 10</b>。</p>\n<p>代入選項：A + B² = 20 + 100 = <b>120</b> → (A) 對；A = B 錯；2A + 3B = 70 ≠ 50；B = 10 ≠ 20。</p>\n<p>常見錯誤：以為 child 改了 global 變數 parent 也看得到（B = 20）——那是 thread 共享 data section 的行為，不是 process。原卷 parent 那行寫成 print，照題意當成 printf。</p>"
+    },
+    {
+      "id": "os-0230",
+      "topics": [
+        "paging"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 4,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(7 Points) Given the following descriptions, which <b>ONE</b> of the following statements is correct? Please calculate the values of variables <b>P, L, X, N, Y, A, and B</b> to select the correct statement.</p>\n<p>Consider a paging system with a page size of 2KB. The amount of physical memory is 64KB. Let <b>P</b> denote the number of bits required in the physical address. Let <b>L</b> denote the number of bits required in the logical address.</p>\n<p>Conventionally, a single-level page table is stored in the memory. If the page table is implemented in the conventional way, a page table in the memory contains 1024 entries. The memory access time is 180 nanoseconds (ns). Assume that the hit ratio of the conventional page table is 60% and the average page fault service time is 30,000 microseconds (μs). Therefore, the effective memory access time for the conventional approach with a single-level page table is <b>X</b>.</p>\n<p>Alex would like to consider an \"<i>inverted page table</i>\" to improve the translation from a logical address to a physical address. After careful calculation, he found that the inverted page table requires <b>N</b> entries. Furthermore, Alex considers the translation look-aside buffer (TLB) hardware to implement the idea of the inverted page table. Searching TLB takes 20 nanoseconds (ns). Assume that the hit ratio of the inverted page table is 90%. The effective memory access time for Alex's approach with a TLB-implemented inverted page table is <b>Y.</b> So, Alex's approach improves the effective memory access time, where <b>A&lt; speedup</b> (in terms of the effective memory access time) <b>&lt;B.</b> Here, A and B are positive integers.</p>\n<p>Choices:</p>",
+      "choices": [
+        "(A) 2L+3P+5N+A<sup>3</sup>+B<sup>2</sup>=293.",
+        "(B) AB(5L+2P+N)&gt;10000",
+        "(C) 4L-2P+3N-5A+2B=205",
+        "(D) 3L+PN-4A+2B&gt;1024",
+        "(E) None of the Above."
+      ],
+      "answer": "(A)",
+      "explanation": "<p><b>位址長度</b>：page 2KB → offset 11 bits。實體記憶體 64KB = 2<sup>16</sup> → <b>P = 16</b>。page table 有 1024 = 2<sup>10</sup> 個 entry，代表 logical page 有 10 bits → <b>L = 10 + 11 = 21</b>。</p>\n<p><b>N</b>：<span class=\"term\">Inverted Page Table<small>（反轉分頁表）</small></span>是「每個實體 frame 一個 entry」，frame 數 = 64KB / 2KB = <b>N = 32</b>。</p>\n<p><b>X</b>：傳統 page table 放在記憶體裡，命中（頁面在記憶體）時要查表一次＋取資料一次 = 2 × 180 = 360 ns；沒命中就是 page fault，30,000 μs = 30,000,000 ns。<br>\nX = 0.6 × 360 + 0.4 × 30,000,000 = <b>12,000,216 ns</b>。</p>\n<p><b>Y</b>：用 TLB 實作 inverted table，命中時 20 + 180 = 200 ns；沒命中一樣是 page fault。<br>\nY = 0.9 × 200 + 0.1 × 30,000,000 = <b>3,000,180 ns</b>。</p>\n<p>speedup = X / Y ≈ <b>3.9998</b>，介於 3 和 4 之間 → <b>A = 3、B = 4</b>。（page fault 那一項要不要再加一次查表或 TLB 時間，speedup 都落在 3.9998 左右，不影響 A、B，已用程式驗算各種加法。）重點是 page fault 時間比記憶體存取大了 5 個數量級，speedup 幾乎就是 fault 比例 40% / 10% = 4，但因為命中部分 X 比較慢，結果「略小於 4」。</p>\n<p>代入：(A) 2(21) + 3(16) + 5(32) + 27 + 16 = 42 + 48 + 160 + 43 = <b>293</b> → 對。<br>\n(B) 12 × (105 + 32 + 32) = 2028，沒有大於 10000；(C) 84 − 32 + 96 − 15 + 8 = 141 ≠ 205；(D) 63 + 512 − 12 + 8 = 571，沒有大於 1024。</p>"
+    },
+    {
+      "id": "os-0231",
+      "topics": [
+        "page-replacement",
+        "thrashing"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 5,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(10 Points) Given the following descriptions, which <b>ONE</b> of the following statements is correct? Please calculate the values of <b>P, D, M, and F</b> to select the correct statement.</p>\n<p>Assume that we have a computer system with a 32-bit processor. The computer supports a paged virtual memory. The page size is 8KB. Each address referenced by the processor contains <b>P</b> bits for indexing the page number and <b>D</b> bits for indexing the page offset. Initially, three empty frames are given to execute a process. Assume that the processor of the computer references the following sequence of hexadecimal addresses to execute the process:</p>\n<pre class=\"code\">4DF6BC24\n1CA54523\n4DF6AC24\n1CA55523\n23A22260\n23BCDFFF\n23A23261\n23BCCFFF\n1CA54523\n23B23261</pre>\n<p>The working-set model is implemented in the system. The size of the working-set window is W=6. Generally, processes tend to have locality of memory references. Alex looked over the sizes of working sets resulting from the above sequence of referenced addresses. He found that the maximal size of working sets over the referenced sequence is <b>M</b>. Therefore, Alex designed a locality-based page replacement algorithm according to the locality principle. To implement his algorithm, he quantifies \"<i>referenced likelihood for each page</i>\" as the ratio of the total number of references to the page within the working-set window to the size of the working-set window. Note that the pages referenced within the working-set window include the page that the processor is currently attempting to reference. When a hexadecimal address is referenced, the algorithm needs to track the referenced likelihood for each page. If a page fault happens, the page with the minimal referenced likelihood is selected to be replaced. If multiple pages have the same referenced likelihood, the Least recently used (LRU) algorithm is used to break the tie. So, the total number of page faults arising from the sequence of hexadecimal addresses referenced by the processor is <b>F</b>.</p>\n<p>Choices:</p>",
+      "choices": [
+        "(A) 2P+5D+M<sup>4</sup>+F<sup>2</sup>&gt;1000",
+        "(B) M+D+P+F=42",
+        "(C) 5M+2D+2P-F=34",
+        "(D) M<sup>2</sup>-D<sup>2</sup>+3P+4F&gt;500",
+        "(E) None of the above."
+      ],
+      "answer": "(B)",
+      "explanation": "<p><b>P、D</b>：8KB = 2<sup>13</sup> → <b>D = 13</b>，<b>P = 32 − 13 = 19</b>。</p>\n<p><b>換成頁號</b>（位址右移 13 bits；注意 bit 12 屬於 offset，所以 …BC24 和 …AC24、…4523 和 …5523、…DFFF 和 …CFFF、…22260 和 …23261 都是同一頁）：</p>\n<div class=\"table-scroll\"><table><tr><th>#</th><th>位址</th><th>頁</th></tr>\n<tr><td>1</td><td>4DF6BC24</td><td>a（0x26FB5）</td></tr><tr><td>2</td><td>1CA54523</td><td>b（0xE52A）</td></tr>\n<tr><td>3</td><td>4DF6AC24</td><td>a</td></tr><tr><td>4</td><td>1CA55523</td><td>b</td></tr>\n<tr><td>5</td><td>23A22260</td><td>c（0x11D11）</td></tr><tr><td>6</td><td>23BCDFFF</td><td>d（0x11DE6）</td></tr>\n<tr><td>7</td><td>23A23261</td><td>c</td></tr><tr><td>8</td><td>23BCCFFF</td><td>d</td></tr>\n<tr><td>9</td><td>1CA54523</td><td>b</td></tr><tr><td>10</td><td>23B23261</td><td>e（0x11D91）</td></tr></table></div>\n<p>頁序列：a b a b c d c d b e。</p>\n<p><b>M</b>：視窗 6（含目前這次）各時刻的 working set 大小依序是 1, 2, 2, 2, 3, 4, 4, 4, 3, 4，最大 <b>M = 4</b>（例如第 6 次時視窗 a b a b c d）。</p>\n<p><b>F</b>：3 個 frame。前面 a、b、c 各 fault 一次（3 次），a、b 重複命中。<br>\n第 6 次 d fault：視窗 a b a b c d，likelihood a = 2/6、b = 2/6、c = 1/6 → 換掉 c。<br>\n第 7 次 c fault：視窗 b a b c d c，frame 中 a = 1/6、b = 2/6、d = 1/6，a 和 d 平手，用 LRU：a 最後用在第 3 次、d 在第 6 次 → 換掉 a。<br>\n第 8 次 d、第 9 次 b 命中。<br>\n第 10 次 e fault：視窗 c d c d b e，c = 2/6、d = 2/6、b = 1/6 → 換掉 b。<br>\n總共 <b>F = 6</b>（已用程式模擬確認）。</p>\n<p>代入：(B) 4 + 13 + 19 + 6 = <b>42</b> → 對。(A) 38 + 65 + 256 + 36 = 395，沒有大於 1000；(C) 20 + 26 + 38 − 6 = 78 ≠ 34；(D) 16 − 169 + 57 + 24 = −72。</p>\n<p>常見錯誤：沒注意 offset 有 13 bits，把只差在第 4 個 hex digit 的位址當成不同頁。</p>"
+    },
+    {
+      "id": "os-0232",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 7,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(5 points)（複選）Given a set of 5 processes, the arrival time of the i-th process P<sub>i</sub> is A[i], and the burst time of the i-th process P<sub>i</sub> is B[i], as shown below:</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Arrival Time, A[i]</th><th>Burst Time, B[i]</th></tr><tr><td>P<sub>1</sub></td><td>0</td><td>10</td></tr><tr><td>P<sub>2</sub></td><td>0</td><td>8</td></tr><tr><td>P<sub>3</sub></td><td>0</td><td>5</td></tr><tr><td>P<sub>4</sub></td><td>0</td><td>2</td></tr><tr><td>P<sub>5</sub></td><td>0</td><td>4</td></tr></table></div>\n<p>Perform <b>round-robin</b> scheduling for these five processes. Assume that the average waiting time of all processes is a x 10<sup>2</sup>+ b x10<sup>1</sup>+ c x10<sup>0</sup>+ d x10<sup>-1</sup>. Select the correct description(s).</p>\n<p>Choices:</p>",
+      "choices": [
+        "(A) a + b + c + d = 8.",
+        "(B) b = 2c.",
+        "(C) b + d = 3.",
+        "(D) 5b = c.",
+        "(E) a x c = 5."
+      ],
+      "answer": "(A)(C)(D)（題目沒給 time quantum，依 q = 2 計算，待確認）",
+      "explanation": "<p>這題卷面<b>沒有給 time quantum</b>，答案會隨 q 改變，所以先把各種 q 都算出來（已用程式模擬，所有 process 時間 0 到達、依 P1→P5 排隊）：</p>\n<div class=\"table-scroll\"><table><tr><th>q</th><th>完成時間 P1～P5</th><th>平均等待時間</th></tr>\n<tr><td>1</td><td>29, 27, 21, 9, 18</td><td>15.0</td></tr>\n<tr><td>2</td><td>29, 27, 23, 8, 18</td><td>15.2</td></tr>\n<tr><td>3</td><td>29, 28, 22, 11, 23</td><td>16.8</td></tr>\n<tr><td>4</td><td>29, 26, 27, 14, 18</td><td>17.0</td></tr>\n<tr><td>5</td><td>26, 29, 15, 17, 21</td><td>15.8</td></tr></table></div>\n<p>等待時間 = 完成時間 − burst（到達都是 0）。以 q = 2 為例：(29−10) + (27−8) + (23−5) + (8−2) + (18−4) = 19 + 19 + 18 + 6 + 14 = 76，平均 <b>15.2</b> → a = 0、b = 1、c = 5、d = 2。</p>\n<p>(A) 0 + 1 + 5 + 2 = 8 對；(B) 1 ≠ 10 錯；(C) 1 + 2 = 3 對；(D) 5 × 1 = 5 = c 對；(E) 0 × 5 = 0 錯 → <b>(A)(C)(D)</b>。</p>\n<p>q = 2 的結果剛好讓三個選項成立、各選項設計一致，推測出題者用 q = 2（q ≥ 10 退化成 FCFS 也是 15.2，答案相同）。若用 q = 1 則平均 15.0，只有 (D) 對；q = 4 平均 17.0，只有 (A) 對。因為缺 quantum，本題答案標待確認。</p>"
+    },
+    {
+      "id": "os-0233",
+      "topics": [
+        "realtime-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 8,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(5 points)（複選）Given a set of 5 <b>periodic</b> processes, which all arrive at time 0, as shown below:</p>\n<div class=\"table-scroll\"><table><tr><th>Process</th><th>Relative Deadline</th><th>Period</th><th>Burst Time</th></tr><tr><td>P<sub>1</sub></td><td>10</td><td>50</td><td>10</td></tr><tr><td>P<sub>2</sub></td><td>10</td><td>120</td><td>10</td></tr><tr><td>P<sub>3</sub></td><td>5</td><td>800</td><td>5</td></tr><tr><td>P<sub>4</sub></td><td>10</td><td>20</td><td>10</td></tr><tr><td>P<sub>5</sub></td><td>10</td><td>40</td><td>10</td></tr></table></div>\n<p>Perform the <b>deadline-monotonic scheduling</b>. Select the correct description(s).</p>",
+      "choices": [
+        "(A) Deadline monotonic algorithm and rate monotonic algorithm have the same schedulability for this task set.",
+        "(B) The worst-case response time (from the arrival time to the time of the completion of a process) of P<sub>2</sub> is 20.",
+        "(C) Process P<sub>4</sub> is schedulable.",
+        "(D) If we increase the burst time of P<sub>2</sub> by X time units, the worst-case response time of P<sub>2</sub> will also be increased by X time units.",
+        "(E) All the tasks remain schedulable when the burst time of process P<sub>4</sub> is set to 8."
+      ],
+      "answer": "(A)（待確認）",
+      "explanation": "<p><span class=\"term\">Deadline-Monotonic Scheduling<small>（截止期限單調排程）</small></span>：relative deadline 越短，優先權越高，可搶先。</p>\n<p>先算總使用率：10/50 + 10/120 + 5/800 + 10/20 + 10/40 = 0.2 + 0.083 + 0.006 + 0.5 + 0.25 ≈ <b>1.04 &gt; 1</b>，單一 CPU 上<b>任何演算法都排不完</b>。</p>\n<p>再看 DM：P3（deadline 5）最高，0～5 先跑；剩下 P1、P2、P4、P5 的 deadline 都是 10、burst 也都是 10，必須在時間 0 就開始才趕得上，但最早也要到 5 才能開始，最快 15 才完成 → 這四個全部 miss。</p>\n<p><b>(A) 對</b>：DM 和 RM（period 越短越優先）對這組 task 都排不出來（使用率超過 1），可排程性相同。<br>\n<b>(B) 錯</b>：四個 deadline 相同的 task 誰先跑要看平手規則：P2 排在 P1 前面時是 15，排在 P1（或 P4）後面時是 25，都不會是 20（已用程式模擬各種平手順序）。<br>\n<b>(C) 錯</b>：P4 至少要等 P3 跑完，最快 15 才完成 &gt; deadline 10。<br>\n<b>(D) 錯</b>：burst 加長可能跨過更高優先權 task 的下一次到達，被多搶一次，response time 增加量會大於 X，「一定剛好增加 X」不成立。<br>\n<b>(E) 錯</b>：P4 改成 8，P1、P2、P5 仍然是 deadline 10、burst 10，被 P3 擋住 5 個時間單位就趕不上。</p>\n<p>（官方未公布答案。本題所有 task 幾乎都排不完，題目設計可能另有意圖，標待確認。）</p>"
+    },
+    {
+      "id": "os-0234",
+      "topics": [
+        "threads",
+        "process-concept",
+        "contiguous-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 114,
+        "dept": "計算機結構與作業系統",
+        "no": 9,
+        "paper": "ntu-114-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_114_hardware.pdf"
+      },
+      "question": "<p>(5 Points)（複選）Please select the correct description(s).</p>",
+      "choices": [
+        "(A) A system with two processing cores can always get a double speedup.",
+        "(B) For process execution, it is possible to have concurrency without parallelism.",
+        "(C) The Pthreads API(s) can be used in multithreaded C programs for thread creation and synchronization. When the parent thread calls the pthread_join() function, it waits for the child thread to terminate. It is synchronous threading.",
+        "(D) A process transits from a waiting state to a running state when it is assigned CPU for execution.",
+        "(E) If the binding of instructions and data to memory addresses (i.e., address binding) is done at the compile time, it is called \"dynamic binding\"."
+      ],
+      "answer": "(B)(C)",
+      "explanation": "<p><b>(A) 錯</b>：Amdahl's law——程式有序列部分、還有同步與溝通的成本，兩核心不可能「總是」兩倍。<br>\n<b>(B) 對</b>：<span class=\"term\">Concurrency<small>（並行）</small></span>只要求多個工作都在推進，單核心靠快速切換就能做到；<span class=\"term\">Parallelism<small>（平行）</small></span>才要求同一時刻真的同時執行，需要多核心。<br>\n<b>(C) 對</b>：parent 呼叫 pthread_join() 等 child 結束才繼續，這就是 synchronous threading（同步執行緒）；parent 建完 child 就自己繼續跑的叫 asynchronous threading。<br>\n<b>(D) 錯</b>：waiting 狀態的 process 等到事件後是先變成 <b>ready</b>，之後被排程器選中才 ready → running；不會從 waiting 直接跳到 running。<br>\n<b>(E) 錯</b>：compile time 就決定位址叫 static binding（產生 absolute code）；dynamic binding 指的是 execution time 才決定（需要 MMU 等硬體支援）。</p>"
+    },
+    {
+      "id": "os-0235",
+      "topics": [
+        "os-basics"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 1,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q1 (5pts)（複選）Regarding system design, modern operating systems are often designed for specific scenarios such as smartphones, artificial intelligence servers, and safety-critical systems (e.g., avionics, vehicles, medical devices). Select correct description(s).</p>",
+      "choices": [
+        "(A) Energy efficiency is an important design goal for smartphones.",
+        "(B) Efficient GPU management is an important design goal for artificial intelligence servers.",
+        "(C) High memory bandwidth is an important design goal for artificial intelligence servers.",
+        "(D) Improving average-case performance is more important than improving worst-case performance for safety-critical systems.",
+        "(E) Nondeterministic scheduling is usually preferred for safety-critical systems."
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p><b>(A) 對</b>：手機靠電池供電，省電是第一級設計目標。<br>\n<b>(B) 對</b>：AI 伺服器的計算主力是 GPU，GPU 的排程、記憶體配置、多工共享都是 OS／runtime 要處理的重點。<br>\n<b>(C) 對</b>：AI 訓練與推論常常是 memory-bound，記憶體頻寬（例如 HBM）直接決定吞吐量。<br>\n<b>(D) 錯</b>：safety-critical（安全關鍵）系統要保證「最壞情況下也趕得上 deadline」，重視的是 worst-case（WCET），而不是平均效能。<br>\n<b>(E) 錯</b>：這類系統要可預測、可驗證，偏好 deterministic（確定性）的排程，例如固定優先權或時間觸發排程。</p>"
+    },
+    {
+      "id": "os-0236",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 2,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q2 (5pts)（複選）Regarding processes and threads, select correct description(s).</p>",
+      "choices": [
+        "(A) Threads belonging to the same process share the same stack section in the process address space.",
+        "(B) Threads belonging to the same process share the same data section in the process address space.",
+        "(C) Threads belonging to the same process share the same program counter.",
+        "(D) Context switching between threads is usually faster than that between processes.",
+        "(E) With synchronous threading, the parent thread creates a child and resumes its execution."
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<p>同一個 process 的 thread 共享 code、data、heap、開啟的檔案；每個 thread <b>各自擁有</b> thread ID、program counter、register set、stack。</p>\n<p><b>(A) 錯</b>：每個 thread 有自己的 stack（函式呼叫、區域變數各自獨立）。<br>\n<b>(B) 對</b>：global 變數所在的 data section 是共享的，這也是 thread 之間需要同步的原因。<br>\n<b>(C) 錯</b>：每個 thread 執行到不同位置，PC 各自獨立。<br>\n<b>(D) 對</b>：thread 切換不用換位址空間（不用換 page table、TLB 不必清），比 process 切換便宜。<br>\n<b>(E) 錯</b>：那是 asynchronous threading；synchronous threading 是 parent 建立 child 後<b>等待</b> child 結束（例如 pthread_join）才繼續。</p>"
+    },
+    {
+      "id": "os-0237",
+      "topics": [
+        "demand-paging",
+        "page-replacement",
+        "thrashing"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 3,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q3 (5pts)（複選）Regarding virtual memory, select correct description(s).</p>",
+      "choices": [
+        "(A) Under pure demand paging, a process may begin execution without any page loaded in physical memory and immediately incur a page fault on its first instruction fetch.",
+        "(B) The optimal page replacement algorithm cannot be implemented in practice as it requires future knowledge of page references.",
+        "(C) A page replacement algorithm that satisfies the stack property cannot suffer from the Belady's anomaly.",
+        "(D) If the total demand for frames, computed as the summation of all processes' working-set sizes, exceeds the number of available physical frames, the system may enter a thrashing state.",
+        "(E) Compared to global page replacement, local page replacement generally provides more predictable per-process performance at the cost of lower overall system throughput."
+      ],
+      "answer": "(A)(B)(C)(D)(E)",
+      "explanation": "<p><b>(A) 對</b>：<span class=\"term\">Pure Demand Paging<small>（純需求分頁）</small></span>一開始一頁都不載入，第一條指令就 page fault，之後用到才載入。<br>\n<b>(B) 對</b>：OPT 要知道「未來最久不會被用到的頁」，實務上做不到，只能當比較基準。<br>\n<b>(C) 對</b>：stack algorithm（例如 LRU、OPT）滿足「n 個 frame 時的頁集合 ⊆ n+1 個 frame 時的頁集合」，frame 變多 fault 不會變多，不會有 Belady's anomaly；FIFO 不是 stack algorithm 才會有。<br>\n<b>(D) 對</b>：D = Σ WSS<sub>i</sub> 大於可用 frame 數 m 時，總有 process 拿不到它的 working set，會一直 fault，系統可能陷入 thrashing（輾轉）。<br>\n<b>(E) 對</b>：local replacement 只在自己的 frame 裡換，效能不會被別的 process 影響，比較可預測；但閒置的 frame 不能給別人用，整體 throughput 通常比 global replacement 低。</p>"
+    },
+    {
+      "id": "os-0238",
+      "topics": [
+        "security",
+        "protection"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 4,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q4 (5pts)（複選）Regarding security, select correct description(s).</p>",
+      "choices": [
+        "(A) User-kernel mode separation helps prevent user programs from directly accessing hardware resources.",
+        "(B) Address space isolation helps prevent processes from unauthorized memory access by other processes.",
+        "(C) Mandatory access control allows users to freely change file permissions for their own files.",
+        "(D) Sandboxing imposes an irremovable set of restrictions on a process right after the execution of the main() function of the process.",
+        "(E) Encrypting data at rest can help protect user privacy."
+      ],
+      "answer": "(A)(B)(E)",
+      "explanation": "<p><b>(A) 對</b>：I/O、改 page table 等是 privileged instruction，只能在 kernel mode 執行，user program 要透過 system call。<br>\n<b>(B) 對</b>：每個 process 有獨立的位址空間（由 page table／MMU 保證），存取別人的記憶體會被擋下來。<br>\n<b>(C) 錯</b>：那是 <span class=\"term\">Discretionary Access Control<small>（自主存取控制，DAC）</small></span>的特性；<span class=\"term\">Mandatory Access Control<small>（強制存取控制，MAC）</small></span>由系統政策決定，連檔案擁有者都不能任意更改。<br>\n<b>(D) 錯</b>：sandbox 的限制是在 process 啟動<b>早期、執行 main() 之前</b>就套上，讓程式從一開始就無法移除；說成 main() 執行之後才加，時間點錯了。<br>\n<b>(E) 對</b>：data at rest（存在磁碟上的資料）加密後，就算硬碟被偷或被直接讀取，也看不到內容。</p>"
+    },
+    {
+      "id": "os-0239",
+      "topics": [
+        "cpu-scheduling",
+        "realtime-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 5,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q5 (5pts)（複選）Regarding scheduling and neglecting context-switching time, given a set of processes, select correct description(s).</p>",
+      "choices": [
+        "(A) If the processes arrive at the same time, the optimal nonpreemptive scheduling for minimizing average waiting time is the Shortest-Job-First (SJF) scheduling.",
+        "(B) If the processes arrive at different times, the optimal nonpreemptive scheduling for minimizing average waiting time is the Shortest-Job-First (SJF) scheduling.",
+        "(C) If the processes arrive at different times, the optimal preemptive scheduling for minimizing average waiting time is the Shortest-Remaining-Time-First (SRTF) scheduling.",
+        "(D) If the processes have deadlines and arrive at different times, the optimal nonpreemptive scheduling for schedulability is the Earliest-Deadline-First (EDF) scheduling.",
+        "(E) If the processes have deadlines and arrive at different times, the optimal preemptive scheduling for schedulability is the Earliest-Deadline-First (EDF) scheduling."
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<p><b>(A) 對</b>：同時到達時，短的先做能讓後面每個人少等，交換論證可證 SJF 最佳。<br>\n<b>(B) 錯</b>：到達時間不同時，nonpreemptive SJF 只能在「目前已到的」裡挑，可能一個長工作剛開始，下一刻就來了很短的工作，只能乾等。反例：P1（到達 0、burst 10）、P2（到達 1、burst 1）：SJF 先跑 P1，平均等待 (0 + 9)/2 = 4.5；若先空等 1 個單位讓 P2 先做，平均等待 (2 + 0)/2 = 1。<br>\n<b>(C) 對</b>：可搶先時，SRTF 每一刻都做剩餘時間最短的，可證明平均等待時間最小。<br>\n<b>(D) 錯</b>：不可搶先時 EDF 不保證最佳，有時候刻意先閒置、等一個 deadline 更急的工作到達才排得出來。反例：J1（到達 0、執行 4、deadline 10）、J2（到達 1、執行 1、deadline 2）：EDF 在 0 時只有 J1 可選，跑到 4，J2 就 miss；若先空等到 1 做 J2，再做 J1（2～6），兩個都趕上。<br>\n<b>(E) 對</b>：單一處理器、可搶先時，EDF 是最佳的：只要有任何排法能讓所有工作趕上 deadline，EDF 也一定可以。</p>"
+    },
+    {
+      "id": "os-0240",
+      "topics": [
+        "critical-section"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 6,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q6 (5pts)（複選）Regarding synchronization, P<sub>i</sub> and P<sub>j</sub> are two processes sharing the critical section with the following assumptions:</p>\n<ul><li>The \"load\" and \"store\" machine-language instructions are atomic.</li>\n<li>The two processes share \"turn\" to indicate whose turn.</li></ul>\n<p>Given the following two approaches:</p>\n<div class=\"table-scroll\"><table><tr><th>Approach 1 for Process P<sub>i</sub></th><th>Approach 2 for Process P<sub>i</sub></th></tr>\n<tr><td><pre class=\"code\">while (true){\n    turn = i;\n    while (turn == j)\n        ;\n    /* critical section */\n    turn = j;\n    /* remainder section */\n}</pre></td><td><pre class=\"code\">while (true){\n\n    while (turn == j)\n        ;\n    /* critical section */\n    turn = j;\n    /* remainder section */\n}</pre></td></tr>\n<tr><td>Note: exchange i and j for P<sub>j</sub></td><td>Note: exchange i and j for P<sub>j</sub></td></tr></table></div>\n<p>Select correct description(s).</p>",
+      "choices": [
+        "(A) Approach 1 satisfies the requirement of mutual exclusion.",
+        "(B) Approach 1 satisfies the requirement of bounded waiting.",
+        "(C) Approach 2 satisfies the requirement of mutual exclusion.",
+        "(D) Approach 2 satisfies the requirement of progress.",
+        "(E) Approach 2 satisfies the requirement of bounded waiting."
+      ],
+      "answer": "(C)(E)",
+      "explanation": "<p><b>Approach 1</b>：每個人進場前把 turn 設成「自己」，然後只在 turn 是對方時等待。</p>\n<p>反例：P<sub>i</sub> 執行 turn = i，檢查 turn == j 為假 → 進入 critical section；接著 P<sub>j</sub> 執行 turn = j，檢查 turn == i 為假 → 也進入。兩個同時在 critical section，<b>(A) 錯</b>。<br>\nbounded waiting 也不成立：P<sub>i</sub> 離開時設 turn = j，但如果 P<sub>j</sub> 還沒被排到，P<sub>i</sub> 又回來把 turn 設成 i 直接再進去，P<sub>j</sub> 可能一直等，<b>(B) 錯</b>。</p>\n<p><b>Approach 2</b> 就是 strict alternation（嚴格輪流）：</p>\n<p><b>(C) 對</b>：只有 turn == i 時 P<sub>i</sub> 才能進，turn 同一時間只會是一個值，所以互斥。<br>\n<b>(D) 錯</b>：如果 turn = j 但 P<sub>j</sub> 根本不想進（一直在 remainder section），P<sub>i</sub> 就算想進也進不去，違反 progress。<br>\n<b>(E) 對</b>：P<sub>i</sub> 想進時，P<sub>j</sub> 最多再進一次就會把 turn 交給 P<sub>i</sub>，等待次數有上限 1。</p>\n<p>常見錯誤：以為 Approach 1「先宣告自己的回合」比較安全，其實它少了 Peterson 解法中的 flag，而且 turn 應該設成「對方」才對。</p>"
+    },
+    {
+      "id": "os-0241",
+      "topics": [
+        "file-allocation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 13,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q13 (10pts)（複選）Regarding file allocation, a block size is 4,096 bytes, and a pointer to a block is 8 bytes. We will allocate an N-byte file to an unlimited disk space, where using a file allocation table is not allowed.</p>\n<ul><li>The contiguous allocation allocates W blocks for the file.</li>\n<li>The linked allocation without clustering allocates X blocks for the file and the corresponding pointers.</li>\n<li>The linked allocation with clustering and 2 blocks as a cluster allocates Y blocks for the file and the corresponding pointers.</li>\n<li>The indexed allocation, where the linked allocation without clustering is used for the indexes, allocates Z blocks for the file and the corresponding pointers.</li></ul>\n<p>Select correct description(s).</p>",
+      "choices": [
+        "(A) When N is approaching infinity, W / X = 512 / 513.",
+        "(B) When N is approaching infinity, W / Y = 1,024 / 1,025.",
+        "(C) When N is approaching infinity, W / Z = 512 / 513.",
+        "(D) When N is approaching infinity, X &gt; Y.",
+        "(E) When N is approaching infinity, X = Z."
+      ],
+      "answer": "(D)(E)（待確認）",
+      "explanation": "<p>N 趨近無限大，可以忽略取整，只看比例。一個 block 4096 bytes、一個 pointer 8 bytes → 一個 block 可放 4096 / 8 = 512 個 pointer。</p>\n<p><b>W</b>（contiguous）：沒有指標，W = N / 4096。</p>\n<p><b>X</b>（linked，無 clustering）：每個 block 要留 8 bytes 放「下一個 block」的指標，只剩 4088 bytes 放資料：X = N / 4088 = W × 4096/4088 = <b>W × 512/511</b>。W / X = 511/512，不是 512/513，<b>(A) 錯</b>。</p>\n<p><b>Y</b>（2 個 block 一個 cluster）：每 8192 bytes 才一個指標，放資料 8184 bytes：Y = 2N / 8184 = <b>W × 1024/1023</b>。W / Y = 1023/1024，<b>(B) 錯</b>。</p>\n<p><b>Z</b>（indexed，index block 之間用 linked 串起來）：每個 index block 512 個 slot 中 1 個拿來指向下一個 index block，剩 511 個指向資料 block：Z = W + W/511 = <b>W × 512/511</b>。W / Z = 511/512，<b>(C) 錯</b>。</p>\n<p><b>(D) 對</b>：512/511 ≈ 1.00196 &gt; 1024/1023 ≈ 1.00098，X &gt; Y，clustering 讓指標開銷減半。<br>\n<b>(E) 對</b>：X 和 Z 都是 W × 512/511，每 511 個資料 block 都多付出一個 block 的指標空間，兩者相等。</p>\n<p>（另一種解讀：把指標當成「資料 block 之外另外佔用的空間」，則 X = W × 513/512、Y = W × 1025/1024，會變成 (A)(B)(D) 對、(E) 錯。但 linked allocation 的指標本來就放在資料 block 裡，上面的解讀比較符合定義；官方未公布答案，標待確認。）</p>"
+    },
+    {
+      "id": "os-0242",
+      "topics": [
+        "cpu-scheduling"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立臺灣大學",
+        "year": 115,
+        "dept": "計算機結構與作業系統",
+        "no": 14,
+        "paper": "ntu-115-hardware",
+        "url": "https://files.cstoolman.com/exam-papers/ntu_115_hardware.pdf"
+      },
+      "question": "<p>Q14 (10pts)（複選）Regarding system design and scheduling, consider the following system and requirements:</p>\n<ul><li>There is one CPU executing tasks. The CPU cannot execute multiple tasks at the same time, and the task execution is nonpreemptive.</li>\n<li>There are two queues of tasks: s<sub>1</sub>, s<sub>2</sub>, ..., s<sub>m</sub> and t<sub>1</sub>, t<sub>2</sub>, ..., t<sub>n</sub>. The task execution must follow the order of each queue, meaning that s<sub>i</sub> must be executed before s<sub>j</sub> if i &lt; j, and t<sub>i</sub> must be executed before t<sub>j</sub> if i &lt; j.</li>\n<li>Each task has its arrival time: A<sub>1</sub>, A<sub>2</sub>, ..., A<sub>m</sub> and B<sub>1</sub>, B<sub>2</sub>, ..., B<sub>n</sub>, representing the earliest time that the CPU can execute the task.</li>\n<li>Each task has its execution time on the CPU: E<sub>1</sub>, E<sub>2</sub>, ..., E<sub>m</sub> and F<sub>1</sub>, F<sub>2</sub>, ..., F<sub>n</sub>, representing the time from the start to the completion of the execution of the task.</li>\n<li>The execution between two tasks has a switching time, representing the required time switching from the completion of the execution of one task to the start of the execution of the other task. The switching time of the tasks from the same queue is W, and the switching time of the tasks from different queues is W*.</li>\n<li>The goal of system design is to decide the start time of each task so that the requirements above are satisfied and the completion time of the last-completed task (which is either s<sub>m</sub> or t<sub>n</sub>) is minimized.</li></ul>\n<p>Given the following problem instance with m = n = 7, W = 1, and W* = 3:</p>\n<div class=\"table-scroll\"><table><tr><th>Task</th><td>s<sub>1</sub></td><td>s<sub>2</sub></td><td>s<sub>3</sub></td><td>s<sub>4</sub></td><td>s<sub>5</sub></td><td>s<sub>6</sub></td><td>s<sub>7</sub></td></tr><tr><th>Arrival Time (A<sub>i</sub>)</th><td>0</td><td>25</td><td>50</td><td>100</td><td>107</td><td>108</td><td>141</td></tr><tr><th>Execution Time (E<sub>i</sub>)</th><td>16</td><td>8</td><td>24</td><td>8</td><td>10</td><td>5</td><td>4</td></tr><tr><th>Task</th><td>t<sub>1</sub></td><td>t<sub>2</sub></td><td>t<sub>3</sub></td><td>t<sub>4</sub></td><td>t<sub>5</sub></td><td>t<sub>6</sub></td><td>t<sub>7</sub></td></tr><tr><th>Arrival Time (B<sub>i</sub>)</th><td>0</td><td>25</td><td>50</td><td>75</td><td>101</td><td>108</td><td>142</td></tr><tr><th>Execution Time (F<sub>i</sub>)</th><td>8</td><td>16</td><td>4</td><td>4</td><td>6</td><td>4</td><td>16</td></tr></table></div>\n<p>The minimized objective is 100X + 10Y+ Z, where X, Y, Z are integers and 0 ≤ X, Y, Z ≤ 9. Select correct description(s).</p>",
+      "choices": [
+        "(A) There are multiple optimal solutions to this problem instance (some tasks can have different start times that lead to the minimized objective).",
+        "(B) There exists a polynomial time (to m and n) algorithm which solves the problem optimally.",
+        "(C) X + Y + Z = 12.",
+        "(D) Y<sup>2</sup> + Z<sup>2</sup> &lt; 50.",
+        "(E) X<sup>2</sup> + 2Y + 4Z &gt; 30."
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<p><b>想法</b>：兩條佇列內部順序固定，要決定的只是「兩條怎麼交錯」。對固定的交錯順序，每個 task 盡早開始（max(前一個完成 + 切換時間, 到達時間)）一定最好。</p>\n<p><b>Dynamic Programming（動態規劃）</b>：狀態 (i, j, last) = 已做完 s 的前 i 個、t 的前 j 個、最後做的是哪一條佇列，值 = 最早完成時間。轉移只有兩種（下一個做 s<sub>i+1</sub> 或 t<sub>j+1</sub>），切換時間依 last 決定是 W 還是 W*。狀態數 O(mn)、每個 O(1) 轉移 → 總共 <b>O(mn)</b>，是多項式時間，<b>(B) 對</b>。（「較早完成」一定不會比「較晚完成」差，所以每個狀態只要記最早完成時間。）</p>\n<p>用程式跑這個 DP，並列舉全部 C(14,7) = 3432 種交錯順序驗算，最佳值是 <b>164</b>，例如順序 s1 s2 t1 t2 s3 t3 t4 t5 t6 s4 s5 s6 s7 t7。所以 X = 1、Y = 6、Z = 4。</p>\n<p><b>(A) 對</b>：達到 164 的交錯順序有 12 種，而且排程中有閒置空檔（例如等 s4 在 100 到達），部分 task 的開始時間也可以挪動，最佳解不唯一。<br>\n<b>(C) 錯</b>：1 + 6 + 4 = 11。<br>\n<b>(D) 錯</b>：36 + 16 = 52，沒有小於 50。<br>\n<b>(E) 錯</b>：1 + 12 + 16 = 29，沒有大於 30。</p>\n<p>常見錯誤：用貪婪法「哪個先到就先做」，忽略跨佇列切換要 3 個單位，算出比 164 大的結果。</p>"
     }
   ]
 }
