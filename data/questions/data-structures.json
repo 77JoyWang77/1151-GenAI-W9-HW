@@ -7661,6 +7661,369 @@
       ],
       "answer": "(A)、(C)、(D)、(E)",
       "explanation": "<p>磁碟上的成本主要是「讀幾個 page」，大約等於樹高。</p><ul><li><b>(A) 對</b>：一個 page 塞滿 key 和指標，fan-out 可以上百，樹高 = log<sub>fan-out</sub> n 很小。例如 fan-out 100、一億筆資料只要約 4 層。</li><li>(B) 錯：fan-out 只有 2 正是缺點，樹高約 2 log<sub>2</sub> n，一億筆可能要 50 次以上的讀取。</li><li><b>(C) 對</b>：B+ tree 內部節點只放 key，fan-out 甚至比 B-tree 更高。</li><li><b>(D) 對</b>：資料都在葉子，而且葉子串成 linked list，範圍查詢找到起點後順著掃就好。</li><li><b>(E) 對</b>：理由同 (B)。</li></ul>"
+    },
+    {
+      "id": "ds-0328",
+      "topics": [
+        "polynomial"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "7-⑰",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_software.pdf"
+      },
+      "question": "（第 7 題題幹）Let p be a prime number and the set ℤ<sub>p</sub> = {0, 1, 2, ⋯, p − 1}. We can map a vector a = ⟨a<sub>0</sub>, a<sub>1</sub>, a<sub>2</sub>, ⋯, a<sub>k−1</sub>⟩ into a vector b = ⟨b<sub>0</sub>, b<sub>1</sub>, b<sub>2</sub>, ⋯, b<sub>p−1</sub>⟩, where p &gt; k &gt; 1, a<sub>i</sub>, b<sub>i</sub> ∈ ℤ<sub>p</sub> and b<sub>j</sub> = Σ<sub>i=0</sub><sup>k−1</sup> a<sub>i</sub>j<sup>i</sup> mod p, for j = 0, .., p − 1.<br>⑰ Which of the following statements is/are true?",
+      "choices": [
+        "(A) Each b<sub>j</sub> can be computed in Θ(k) time.",
+        "(B) Each b<sub>j</sub> cannot be computed in O(k log p) time.",
+        "(C) The vector b can be computed in O(kp) time.",
+        "(D) The mapping from a to b is a 1-1 mapping.",
+        "(E) For any p dimensional vector with entries from ℤ<sub>p</sub>, we can find a corresponding k dimensional vector based on the above mapping."
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<p>把 a 看成係數，b<sub>j</sub> 就是多項式 A(x) = a<sub>0</sub> + a<sub>1</sub>x + … + a<sub>k−1</sub>x<sup>k−1</sup> 在 x = j 的值（mod p）。</p><ul><li>(A) 對：用 <span class=\"term\">Horner's Rule<small>（Horner 法則）</small></span> A(j) = (…((a<sub>k−1</sub>j + a<sub>k−2</sub>)j + a<sub>k−3</sub>)…)j + a<sub>0</sub>，k − 1 次乘加，Θ(k)。</li><li>(B) 錯：Θ(k) 本來就在 O(k log p) 之內。</li><li>(C) 對：p 個點各 Θ(k)，總共 O(kp)。</li><li>(D) 對：若 a ≠ a′ 卻 b = b′，差多項式 A − A′ 次數 ≤ k − 1 且不為 0，卻在 p &gt; k − 1 個點都是 0，根太多，矛盾（ℤ<sub>p</sub> 是體，非零多項式的根數不超過次數）。</li><li>(E) 錯：a 只有 p<sup>k</sup> 種，b 有 p<sup>p</sup> 種，k &lt; p 時一定有 b 對不到任何 a，不是 onto。</li></ul><p>程式以 p = 5、k = 3 窮舉 125 個 a，得到 125 個不同的 b，確認 1-1。</p>"
+    },
+    {
+      "id": "ds-0329",
+      "topics": [
+        "polynomial"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 113,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "7-⑱",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_113_software.pdf"
+      },
+      "question": "（第 7 題題幹）Let p be a prime number and the set ℤ<sub>p</sub> = {0, 1, 2, ⋯, p − 1}. We can map a vector a = ⟨a<sub>0</sub>, a<sub>1</sub>, a<sub>2</sub>, ⋯, a<sub>k−1</sub>⟩ into a vector b = ⟨b<sub>0</sub>, b<sub>1</sub>, b<sub>2</sub>, ⋯, b<sub>p−1</sub>⟩, where p &gt; k &gt; 1, a<sub>i</sub>, b<sub>i</sub> ∈ ℤ<sub>p</sub> and b<sub>j</sub> = Σ<sub>i=0</sub><sup>k−1</sup> a<sub>i</sub>j<sup>i</sup> mod p, for j = 0, .., p − 1.<br>⑱ Consider 2 distinct vectors a = ⟨a<sub>0</sub>, a<sub>1</sub>, a<sub>2</sub>, ⋯, a<sub>k−1</sub>⟩, a′ = ⟨a′<sub>0</sub>, a′<sub>1</sub>, a′<sub>2</sub>, ⋯, a′<sub>k−1</sub>⟩, a<sub>i</sub>, a′<sub>i</sub> ∈ ℤ<sub>p</sub>, for i = 0 to k − 1. Suppose a is mapped to b and a′ to b′ as above. Which of the following statements is/are true?",
+      "choices": [
+        "(A) b ≠ b′.",
+        "(B) There are at most (k − 1) j's such that b<sub>j</sub> = b′<sub>j</sub>.",
+        "(C) Let c ∈ ℤ<sub>p</sub>. Then ca + a′ is mapped to cb + b′.",
+        "(D) From b we can reconstruct a.",
+        "(E) If a = 0, then b = 0."
+      ],
+      "answer": "(A)(B)(C)(D)(E)",
+      "explanation": "<ul><li>(A) 對：上一小題的 1-1 性質。</li><li>(B) 對：b<sub>j</sub> = b′<sub>j</sub> 表示 j 是差多項式 A − A′ 的根，A − A′ 非零且次數 ≤ k − 1，最多 k − 1 個根。程式以 p = 5、k = 3 窮舉所有相異對，最多只有 2 = k − 1 個位置相等。</li><li>(C) 對：映射是線性的，Σ(c a<sub>i</sub> + a′<sub>i</sub>) j<sup>i</sup> = cΣa<sub>i</sub>j<sup>i</sup> + Σa′<sub>i</sub>j<sup>i</sup>（mod p）。</li><li>(D) 對：任取 k 個點的值，用 Lagrange 插值就能唯一還原次數 &lt; k 的多項式。</li><li>(E) 對：零多項式在每一點都是 0。</li></ul><p>這其實就是 Reed-Solomon 碼的原理：兩個不同訊息的碼字至少有 p − k + 1 個位置不同。</p>"
+    },
+    {
+      "id": "ds-0330",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "（複選）Which of the following statements for minimum spanning tree (MST) are true?",
+      "choices": [
+        "(A) If an MST has N nodes, it has N−1 edges.",
+        "(B) If all edge weights in the graph are distinct, the MST is unique.",
+        "(C) If a constant C is added to the weights of all edges, the MST will remain the same.",
+        "(D) If the weight of a non-MST edge is decreased, the MST will not change.",
+        "(E) If the weight of a non-MST edge is increased, the MST will not change."
+      ],
+      "answer": "(A)(B)(C)(E)",
+      "explanation": "<ul><li>(A) 對：任何生成樹都是 N − 1 條邊。</li><li>(B) 對：權重兩兩不同時，每個 cut 的 light edge 唯一，MST 唯一。</li><li>(C) 對：每棵生成樹都恰好 N − 1 條邊，全部加 C 後每棵樹總重都多 (N − 1)C，大小順序不變；Kruskal 的邊排序也不變。</li><li>(D) 錯：非 MST 邊變得夠小，就可能比它所在 cycle 上最大的樹邊還輕，換進來會得到更小的樹。</li><li>(E) 對：非 MST 邊本來就沒被選，變更重更不會被選。</li></ul>"
+    },
+    {
+      "id": "ds-0331",
+      "topics": [
+        "bfs-dfs"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "（複選）Which of the following problems can be solved using breadth-first search?",
+      "choices": [
+        "(A) Find the shortest path from the start to the end in a maze.",
+        "(B) Determine whether an undirected graph is a bipartite graph.",
+        "(C) In a directed network, starting from a specific node, find all nodes that can be reached from this node.",
+        "(D) In a tree or graph, find all nodes that are at a depth of k from a given starting node.",
+        "(E) Identify all connected components in an undirected graph."
+      ],
+      "answer": "(A)(B)(C)(D)(E)",
+      "explanation": "<ul><li>(A) 迷宮每步成本相同，BFS 第一次走到終點就是最短路徑。</li><li>(B) BFS 時把相鄰點塗成不同顏色（依層數奇偶），若有一條邊兩端同色就不是二分圖。</li><li>(C) 從起點 BFS，走得到的就是可達點。</li><li>(D) BFS 本來就是一層一層展開，第 k 層就是距離 k 的點。</li><li>(E) 對每個還沒拜訪的點啟動一次 BFS，每次走到的就是一個 connected component。</li></ul>"
+    },
+    {
+      "id": "ds-0332",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "（複選）Which of the following statements about Red-Black Trees are correct?",
+      "choices": [
+        "(A) A Red-Black Tree is a self-balancing Binary Search Tree.",
+        "(B) The length of any path from the root to a leaf differs by at most a factor of 2.",
+        "(C) The root node is red.",
+        "(D) If the deleted node is red, rebalancing is required.",
+        "(E) Left rotation and right rotation are used to restore the balance of the Red-Black Tree."
+      ],
+      "answer": "(A)(B)(E)",
+      "explanation": "<ul><li>(A) 對。</li><li>(B) 對：每條路徑黑色節點數相同（設為 b），紅色不能相連，所以最長路徑 ≤ 2b、最短 ≥ b，相差不超過 2 倍。</li><li>(C) 錯：根一定是黑色。</li><li>(D) 錯：刪掉紅色節點不影響任何路徑的黑色數量，也不會產生紅紅相連，不用調整；刪掉<b>黑色</b>節點才需要修正。</li><li>(E) 對：插入、刪除後用旋轉配合變色恢復性質。</li></ul>"
+    },
+    {
+      "id": "ds-0333",
+      "topics": [
+        "b-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "After sequentially inserting the following numbers into an empty B-tree with max degree 3 (i.e, each node has at most 3 children),<br>80 40 20 100 60 30 50 70 10 25 35<br>how many nodes in the B-tree are of one number?",
+      "choices": [
+        "(A) 4",
+        "(B) 6",
+        "(C) 8",
+        "(D) 10",
+        "(E) None of the above"
+      ],
+      "answer": "(E)",
+      "explanation": "<p>最大分支度 3 = 每個節點最多 2 個 key（2-3 tree），出現 3 個 key 就把中間那個往上推。</p><ul><li>80, 40, 20 → [20, 40, 80] 溢位，40 上推：[40]、子 [20] [80]。</li><li>100 → [80, 100]；60 → [60, 80, 100] 溢位，80 上推：根 [40, 80]，子 [20] [60] [100]。</li><li>30 → [20, 30]；50 → [50, 60]；70 → [50, 60, 70] 溢位，60 上推到根變 [40, 60, 80] 又溢位，60 上推成新根：[60]，子 [40]（[20, 30] [50]）、[80]（[70] [100]）。</li><li>10 → [10, 20, 30] 溢位，20 上推：[20, 40]，子 [10] [30] [50]。</li><li>25 → [25, 30]；35 → [25, 30, 35] 溢位，30 上推：[20, 30, 40] 溢位，30 再上推到根：[30, 60]。</li></ul><p>最終：根 [30, 60]；[20]（[10] [25]）、[40]（[35] [50]）、[80]（[70] [100]）。</p><p>只有 1 個 key 的節點：20, 10, 25, 40, 35, 50, 80, 70, 100，共 <b>9</b> 個（程式模擬驗證），選項中沒有 9，所以選 (E)。</p>"
+    },
+    {
+      "id": "ds-0334",
+      "topics": [
+        "b-plus-tree",
+        "avl-tree",
+        "b-tree"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "（複選）Which of the following statement(s) is/are true?",
+      "choices": [
+        "(A) AVL tree, B-tree and B+-tree are search trees.",
+        "(B) B+-tree offers more efficient sequential data access (such as \"searching all numbers that are greater than 10\") than B-tree does.",
+        "(C) B-tree offers more efficient data search than B+-tree does.",
+        "(D) AVL tree outperforms B-tree and B+-tree in minimizing the number of disk access operations.",
+        "(E) Consider the case that the following numbers are sequentially inserted into an empty AVL tree.<br>100 80 60 40 50 65 70 75 64<br>In the resultant AVL tree, the right child of root is 70."
+      ],
+      "answer": "(A)(B)(E)（(C) 待確認）",
+      "explanation": "<ul><li>(A) 對：三者都是搜尋樹。</li><li>(B) 對：B+-tree 所有資料都在葉子，葉子之間用鏈結串起來，找到 10 之後沿著葉子往右掃即可；B-tree 要做中序走訪，上上下下。</li><li>(C)：B-tree 的 key 可能在內部節點就找到而提早結束，但 B+-tree 內部節點只放索引、fan-out 較大、樹較矮，而且每次搜尋都走到葉子，成本穩定。一般認為兩者的單筆搜尋都是 O(log n)，B+-tree 在實務上通常不比較差，所以判為錯（待確認）。</li><li>(D) 錯：AVL 是二元樹，樹高約 log<sub>2</sub> n，每層都可能是一次磁碟存取；B-tree / B+-tree 一個節點塞很多 key，樹高 log<sub>m</sub> n，磁碟存取少得多。</li><li>(E) 對：逐步插入（程式驗證）：100, 80, 60 → LL 右旋成 80(60, 100)；40；50 造成 60 的 LR → 50(40, 60)；65 讓根 80 不平衡（LR）→ 60 成根：60(50(40), 80(65, 100))；70、75 插入 65 右邊造成 RR → 70(65, 75)；64 插入後 80 不平衡（LL）→ 70 上升。最後：60( 50(40, −), 70( 65(64, −), 80(75, 100) ) )，根的右子是 70。</li></ul>"
+    },
+    {
+      "id": "ds-0335",
+      "topics": [
+        "shortest-path"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "（複選）Consider the right graph and the following functions. V is the number vertices, graph[V][V] is the adjacency matrix, and INF is the maximal number that can be stored in int. graph[u][v] is set to INF when there is no edge from u to v. Please answer the following question.<br>（原圖以有向邊列表描述，u → v: 權重）<pre>0 → 2: 7    2 → 3: -5   4 → 2: 4\n3 → 0: 3    3 → 4: 3    0 → 1: 1\n1 → 3: 2    4 → 1: 2</pre><pre class=\"code\">void foo1(int graph[V][V], int src)\n{\n    int dist[V];\n    for (int i = 0; i &lt; V; ++i)\n        dist[i] = graph[src][i];\n    for (int k = 2; k &lt; V; ++k)\n        for (int u = 0; u &lt; V ; ++u) {\n            if (u == src) continue;\n            for(int i=0; i &lt; V; ++i)\n                if (i!=u &amp;&amp; graph[i][u] != INF &amp;&amp;\n                    dist[i]!=INF &amp;&amp;\n                    dist[u]&gt;dist[i]+graph[i][u])\n                    dist[u]=dist[i]+graph[i][u];\n        }\n}\n\nint minDistance(int dist[V], bool sptSet[V]);\nvoid foo2(int graph[V][V], int src)\n{\n    int dist[V];\n    bool sptSet[V];\n    for (int i = 0; i &lt; V; i++)\n        dist[i] = INF, sptSet[i] = false;\n    dist[src] = 0;\n    for (int count = 0; count &lt; V - 1; count++) {\n        int u = minDistance(dist, sptSet);\n        sptSet[u] = true;\n        for (int v = 0; v &lt; V; v++)\n            if (sptSet[v]==false &amp;&amp; graph[u][v]!=INF\n                &amp;&amp; dist[u] != INF\n                &amp;&amp; dist[u] + graph[u][v] &lt; dist[v])\n                dist[v] = dist[u] + graph[u][v];\n    }\n}\n\nint minDistance(int dist[V], bool sptSet[V])\n{\n    int min = INF, min_index;\n    for (int v = 0; v &lt; V; v++)\n        if (sptSet[v] == false &amp;&amp; dist[v] &lt;= min)\n            min = dist[v], min_index = v;\n    return min_index;\n}\nvoid foo3(int graph[V][V], int src)\n{\n    int i, j, k;\n    int dist[V][V];\n    for(i=0; i&lt;V;i++)\n        for(j=0;j&lt;V;j++)\n            dist[i][j]=graph[i][j];\n    for (k = 0; k &lt; V; k++) {\n        for (i = 0; i &lt; V; i++) {\n            for (j = 0; j &lt; V; j++) {\n                if (dist[i][k] + dist[k][j] &lt; dist[i][j])\n                    dist[i][j] = dist[i][k] + dist[k][j];\n            }\n        }\n    }\n}</pre>",
+      "choices": [
+        "(A) Dijkstra's algorithm can be used to get the shortest path from vertex 4 to all other nodes.",
+        "(B) Function foo1 can be used to get the shortest path from vertex 4 to all other nodes.",
+        "(C) Function foo2 can be used to get the shortest path from vertex 4 to all other nodes.",
+        "(D) Function foo3 can be used to get the shortest path from vertex 4 to all other nodes.",
+        "(E) Function foo2 is part of implementation of Dijkstra's algorithm."
+      ],
+      "answer": "(B)(E)（(D) 待確認）",
+      "explanation": "<p>正確答案（Bellman-Ford 驗證）：從 4 出發到 0, 1, 2, 3 的最短距離是 2, 2, 4, −1，例如到 3 走 4→2→3 = 4 − 5 = −1，到 0 走 4→2→3→0 = −1 + 3 = 2（比 4→1→3→0 = 7 短）。圖中有負邊 2→3 = −5，但沒有負環（例如 3→4→2→3 = 3 + 4 − 5 = 2 &gt; 0）。</p><ul><li>(A)(C) 錯：foo2 是 Dijkstra（每次挑 dist 最小且未確定的點），遇到負邊會出錯。實際跑 foo2(4) 得 dist = [7, 2, 4, 4, 0]：1 先被確定，接著 3 經由 1 得到 4 並被確定，之後 2 雖然能把 3 降到 −1，但 3 已經在 sptSet 裡不再更新。</li><li>(B) 對：foo1 先用直接邊初始化（等於做完第 1 輪），再做 k = 2..V−1 共 V − 2 輪鬆弛，總共 V − 1 輪，就是 Bellman-Ford，能處理負邊。跑出來其他點是 [2, 2, 4, −1]，全對（dist[src] 因 graph[4][4] = INF 而保持 INF，但題目只問到其他點）。</li><li>(D)：foo3 是 Floyd-Warshall 的架構，數學上會得到正確結果；但它<b>沒有檢查 INF</b>，INF 是 int 最大值，dist[i][k] + dist[k][j] 兩個 INF 相加會溢位變成負數，把錯的值寫進去。以 32 位元 int 模擬，第 4 列得到 −47, −48, … 這種垃圾值。所以照這份程式判為錯（題目可能沒考慮到溢位，待確認）。</li><li>(E) 對：foo2 + minDistance 就是 O(V²) 版 Dijkstra。</li></ul>"
+    },
+    {
+      "id": "ds-0336",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "II-4",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "(6%) A Red-Black Tree is a self-balancing binary search tree that maintains specific balance properties. For a given black height h, derive the minimum and maximum number of nodes N<sub>min</sub>(h) and N<sub>max</sub>(h) that a Red-Black Tree can have. Clearly explain the reasoning and provide the final formulas for N<sub>min</sub>(h) and N<sub>max</sub>(h) in terms of h.",
+      "answer": "（black height 不含根本身、含 NIL 時）N<sub>min</sub>(h) = 2<sup>h</sup> − 1，N<sub>max</sub>(h) = 2<sup>2h</sup> − 1 = 4<sup>h</sup> − 1（內部節點數；black height 的計算方式不同時會差一個位移，待確認）",
+      "explanation": "<p>以 black height h = 從根往下到 NIL 經過的黑色節點數（不算根、算 NIL；等價於根到 NIL 每條路徑上的黑色內部節點都是 h 個）為準，計算內部節點數。</p><p><b>最少</b>：每條路徑都要有 h 個黑節點，最省的做法是完全不用紅色：一棵全黑、高度 h 的 perfect binary tree，節點數 1 + 2 + … + 2<sup>h−1</sup> = <b>2<sup>h</sup> − 1</b>。不能更少：用歸納法可證 black height 為 h 的子樹至少有 2<sup>h</sup> − 1 個內部節點（兩個子樹的 black height 都 ≥ h − 1，所以 ≥ 2(2<sup>h−1</sup> − 1) + 1）。</p><p><b>最多</b>：紅色不能相連，每條路徑最多紅黑交錯，長度最多 2h。全部塞滿：一棵高度 2h 的 perfect binary tree，層次紅黑相間（最底層是紅、往上黑紅交錯），每條路徑恰有 h 個黑、h 個紅，節點數 <b>2<sup>2h</sup> − 1 = 4<sup>h</sup> − 1</b>。不能更多：任何路徑長度 ≤ 2h，高度 ≤ 2h 的二元樹最多 2<sup>2h</sup> − 1 個節點。</p><p>例子：h = 1，最少 1 個（只有黑根），最多 3 個（黑根加兩個紅子）。</p><p>注意：如果 black height 定義成「把根也算進去」或節點數把 NIL 也算進去，公式會整體位移，作答時要先寫清楚自己的定義。</p>"
+    },
+    {
+      "id": "ds-0337",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "填空",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 114,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": "II-6",
+        "url": "https://files.cstoolman.com/exam-papers/nycu_114_software.pdf"
+      },
+      "question": "(4%) A binary search tree can be augmented for specialized applications such as an order statistic tree. The provided pseudo-code is an implementation of the OS-SELECT function, which retrieves the i-th smallest element in the set represented by the binary search tree. The variable x represents a node in the tree and initially points to the root when the function is called. As the function recurses, x updates to reflect the current node being processed. Your task is to fill in the missing part of the pseudo-code in line 1.<pre class=\"code\">OS-SELECT(x, i)\n1   r ← ________\n2       if i = r\n3           then return x\n4       else if i &lt; r\n5           then return OS-SELECT(left[x], i)\n6       else return OS-SELECT(right[x], i − r)</pre>",
+      "answer": "r ← size[left[x]] + 1",
+      "explanation": "<p><span class=\"term\">Order Statistic Tree<small>（順序統計樹）</small></span>在每個節點多存 size[x] = 以 x 為根的子樹節點數（空樹 size = 0）。</p><p>r 是 x 在「以 x 為根的子樹」中的名次：左子樹的所有節點都比 x 小，所以 x 排第 size[left[x]] + 1。</p><ul><li>i = r：x 就是答案。</li><li>i &lt; r：答案在左子樹，名次不變。</li><li>i &gt; r：答案在右子樹，要扣掉左子樹和 x 本身這 r 個，變成找右子樹的第 i − r 小。</li></ul><p>每層 O(1)，總時間 O(h)，配合紅黑樹就是 O(log n)。常見錯誤：寫成 size[left[x]]（少了 +1），會讓名次差一。</p>"
+    },
+    {
+      "id": "ds-0338",
+      "topics": [
+        "red-black-tree"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_software.pdf"
+      },
+      "question": "[8%] Three students tried to build red-black trees from the following numbers: 10, 20, 30, 15, 25, 35, 45, 12, 22, 32. They ended up with three different trees (for clarity, the external nodes are not shown):<br>（原圖以括號表示：節點(左子, 右子)，- 表示空；B = black、R = red）<pre>Tree A: 20B( 15R( 10B(-, 12R), - ), 30R( 25B(22R, -), 35B(32R, 45R) ) )\nTree B: 20B( 12B(10R, 15R), 30R( 25B(22R, 32R), 35B(-, 45R) ) )\nTree C: 22B( 15R( 10B(-, 12R), 20B ), 30R( 25B, 35B(32R, 45R) ) )</pre>(a) [6%] For each of these trees, indicate whether it is a valid red-black tree. If your answer is NO for any tree, you need to state the reason why it is invalid to get the credit.<br>(b) [2%] The depth ratio between two subtrees of the same parent in a red-black tree is no more than ____ (give the closest integer).",
+      "answer": "(a) Tree A：NO（15 的右邊 NIL 路徑只有 0 個黑節點，其他路徑有 1 個，black height 不一致）；Tree B：NO（32 在 30 的左子樹中卻大於 30，不是 BST）；Tree C：YES。(b) 2",
+      "explanation": "<p>檢查紅黑樹要看四件事：是 BST、根是黑、紅節點的子節點都是黑、每條根到 NIL 的路徑黑色數相同。</p><ul><li><b>Tree A：不合法。</b>BST 順序沒問題、也沒有紅紅相連，但看黑色數（不含根）：20→15→10→NIL 經過 1 個黑（10），而 20→15→NIL（15 沒有右子）經過 0 個黑。black height 不一致。</li><li><b>Tree B：不合法。</b>顏色規則都成立（每條路徑恰 1 個黑內部節點：12、25 或 35），但 32 放在 30 的<b>左</b>子樹（25 的右子），32 &gt; 30，違反 BST 性質。</li><li><b>Tree C：合法。</b>BST：左子樹 10, 12, 15, 20 都 &lt; 22，右子樹 25, 30, 32, 35, 45 都 &gt; 22；15 的左 10（含右子 12）、右 20 都正確。顏色：根黑；紅節點 15、30 的子節點都是黑，12、32、45 是紅葉；每條路徑（不含根）都恰好 1 個黑內部節點（10、20、25 或 35）。</li></ul><p><b>(b) 2</b>：同一個節點的兩個子樹 black height 相同（設 b），最短路徑至少 b，最長路徑紅黑交錯最多 2b，所以深度比不超過 2。</p>"
+    },
+    {
+      "id": "ds-0339",
+      "topics": [
+        "activity-network",
+        "graph-representation"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_software.pdf"
+      },
+      "question": "[10%] For the given directed graph (the numbers inside the vertices are the vertex indices), answer the following questions:<br>（原圖以有向邊列表描述）<pre>2 → 8   2 → 4   2 → 3   2 → 5   8 → 1   4 → 3\n1 → 0   3 → 0   0 → 7   0 → 6   6 → 5   5 → 9</pre>(a) [2%] Give the count of \"1\" elements in the transitive closure of this graph.<br>(b) [2%] Give a topological order of the vertices in the graph. (The answer is not unique; you only need to give a valid one.)<br>(c) [2%] Assume now that the direction of edge 2→5 is flipped to 5→2. What happens to the topological order? If there still exists a topological order, give one. If no topological order exists now, explain why.<br>(d) [2%] Starting from the original graph, if one more edge 1→3 is added, what happens to the topological order? If there still exists a topological order, give one. If no topological order exists now, explain why.<br>(e) [2%] Consider the following statement: \"If a suitable starting vertex is selected, one can obtain the topological order of a directed graph using breadth-first search (BFS) if one exists.\" Indicate whether the statement is TRUE of FALSE. If your answer is TRUE, indicate how you will select the suitable starting vertex. If you answer if FALSE, describe one condition that makes BFS fail this task.",
+      "answer": "(a) 38（不含對角線；若把每個點到自己也算 1，則為 48，待確認）；(b) 例如 2, 4, 8, 3, 1, 0, 6, 7, 5, 9；(c) 產生環 2→3→0→6→5→2，沒有拓樸順序；(d) 仍是 DAG，例如 2, 4, 8, 1, 3, 0, 6, 7, 5, 9；(e) FALSE。",
+      "explanation": "<p><b>(a)</b> transitive closure 的 (i, j) = 1 表示 i 有長度 ≥ 1 的路徑到 j。逐點算可達集合（程式驗證）：</p><div class=\"table-scroll\"><table><tr><th>點</th><th>可到達</th><th>個數</th></tr><tr><td>0</td><td>5, 6, 7, 9</td><td>4</td></tr><tr><td>1</td><td>0, 5, 6, 7, 9</td><td>5</td></tr><tr><td>2</td><td>0, 1, 3, 4, 5, 6, 7, 8, 9</td><td>9</td></tr><tr><td>3</td><td>0, 5, 6, 7, 9</td><td>5</td></tr><tr><td>4</td><td>0, 3, 5, 6, 7, 9</td><td>6</td></tr><tr><td>5</td><td>9</td><td>1</td></tr><tr><td>6</td><td>5, 9</td><td>2</td></tr><tr><td>7、9</td><td>無</td><td>0</td></tr><tr><td>8</td><td>0, 1, 5, 6, 7, 9</td><td>6</td></tr></table></div><p>合計 38。圖中沒有環，所以對角線都是 0；若題目採用含自己的 reflexive closure，就是 38 + 10 = 48（待確認）。</p><p><b>(b)</b> 2 是唯一沒有入邊的點，先放；之後依入度歸零的順序（Kahn 演算法），例如 2, 4, 8, 3, 1, 0, 6, 7, 5, 9。檢查每條邊都由前指向後即可。</p><p><b>(c)</b> 翻轉後 5→2，而原本就有 2→3→0→6→5，形成 cycle 2→3→0→6→5→2。拓樸順序要求每條邊都從前指向後，環上的點不可能排出這種順序，所以<b>不存在</b>。</p><p><b>(d)</b> 加 1→3 不會形成環（3 走不回 1：3 只能到 0, 5, 6, 7, 9），仍是 DAG。只要讓 1 排在 3 前面，例如 2, 4, 8, 1, 3, 0, 6, 7, 5, 9。</p><p><b>(e) FALSE。</b>單純的 BFS 依「距離起點的層數」排序，不是依相依關係。例如本圖從 2 開始 BFS，第一層就會拿到 3 和 5，但 5 必須排在 6 後面（6→5），而 6 要到更後面的層才出現，BFS 順序就違反了 6→5。另外圖中若有多個入度 0 的點，或有點從任何起點都走不到，單一起點的 BFS 也無法涵蓋。（能做到拓樸排序的是 Kahn 演算法：用 queue 但依<b>入度歸零</b>才放入，形式像 BFS，但不是一般的 BFS。）</p>"
+    },
+    {
+      "id": "ds-0340",
+      "topics": [
+        "minimum-spanning-tree"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_software.pdf"
+      },
+      "question": "[7%] For the given undirected weighted graph (the numbers inside the vertices are the vertex indices; the numbers beside the edges are their weights), answer the following questions:<br>（原圖以無向邊列表描述）<pre>1–8: 7    8–2: 10   2–4: 12   1–0: 13   2–3: 3\n4–3: 6    0–3: 2    0–7: 8    0–5: 4    2–5: 9\n3–9: 11   0–6: 5    6–5: 14   5–9: 1</pre>(a) [2%] Assume that you're using Kruskal's algorithm to build the minimum spanning tree (MST). Indicate the edges selected in the second and the fifth steps. You get credits only if both answers are correct.<br>(b) [2%] Assume that you're using Prim's algorithm to build the minimum spanning tree. Indicate the edges selected in the second and the fifth steps. You get credits only if both answers are correct.<br>(c) [3%] You get credits only if your answers to the following three questions are all correct:<br>(1) Is the MST of this graph unique? Answer YES or NO.<br>(2) One can apply Dijkstra's algorithm to an undirected weighted graph from any vertex to obtain a spanning tree. Is this tree always a MST? Answer YES or NO.<br>(3) Give the number of edges in the MSTs obtained in (a) and (b).",
+      "answer": "(a) 第 2 步 (0, 3)、第 5 步 (0, 6)；(b) 從頂點 0 開始時，第 2 步 (2, 3)、第 5 步 (0, 6)（題目未指定起點，待確認）；(c) (1) YES　(2) NO　(3) 9",
+      "explanation": "<p><b>(a) Kruskal</b>：權重由小到大：(5, 9) 1 → (0, 3) 2 → (2, 3) 3 → (0, 5) 4 → (0, 6) 5 → (3, 4) 6 → (1, 8) 7 → (0, 7) 8 → (2, 5) 9 會成環跳過 → (8, 2) 10 選，10 個點湊滿 9 條邊。第 2 步是 <b>(0, 3)</b>，第 5 步是 <b>(0, 6)</b>。MST 總重 46（程式驗證）。</p><p><b>(b) Prim</b>：題目沒有指定起點，以頂點 0 開始（待確認）：每步選「已選集合」連出去最輕的邊：(0, 3) 2 → <b>(3, 2) 3</b> → (0, 5) 4 → (5, 9) 1 → <b>(0, 6) 5</b> → (3, 4) 6 → (0, 7) 8 → (2, 8) 10 → (8, 1) 7。注意 Prim 的順序不是全域權重順序：(5, 9) 權重 1 要等 5 加入之後才選得到。起點不同，步驟也會不同。</p><p><b>(c)</b></p><ul><li>(1) YES：14 條邊權重兩兩不同，MST 唯一。</li><li>(2) NO：Dijkstra 得到的是最短路徑樹，最小化的是「起點到每個點的距離」，不是總邊重。例如從 0 出發，到 1 最短是直接 0–1（13），但 MST 用的是 1–8（7）。</li><li>(3) 9：10 個頂點，任何生成樹都是 9 條邊。</li></ul>"
+    },
+    {
+      "id": "ds-0341",
+      "topics": [
+        "binary-search"
+      ],
+      "level": "exam",
+      "type": "實作",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_software.pdf"
+      },
+      "question": "[5%] Binary Search<br>There is ONE BUG in the following binary search program. Please provide:<br>− The line number where the bug occurs, and<br>− The corrected solution in C.<pre class=\"code\"> 1 #include &lt;stdio.h&gt;\n 2 // Function to perform binary search\n 3 // Returns the index of the target if found, otherwise returns -1\n 4 int binarySearch(int arr[], int size, int target) {\n 5     int left = 0;              // Left boundary of the search\n 6     int right = size - 1;      // Right boundary of the search\n 7     while (left &lt;= right) {\n 8         int mid = left + (right - left) / 2; // Calculate middle index safely\n 9         // Check if target is at mid\n10         if (arr[mid] == target) {\n11             return mid; // Target found\n12         }\n13         if (arr[mid] &lt; target) {\n14             right = mid - 1;\n15         }\n16         else {\n17             left = mid + 1;\n18         }\n19     }\n20     return -1; // Target not found\n21 }\n22 int main() {\n23     // Sorted array (binary search requires sorted data)\n24     int arr[] = {2, 4, 6, 8, 10, 12, 14, 16};\n25     int size = sizeof(arr) / sizeof(arr[0]);\n26     int target = 10; // Value to search for\n27     int result = binarySearch(arr, size, target);\n28     return 0;\n29 }</pre>",
+      "answer": "第 13 行：比較方向寫反，應改為 if (arr[mid] &gt; target) {（或等價地把第 14 行與第 17 行的動作對調）",
+      "explanation": "<p>陣列由小到大排序。arr[mid] &lt; target 表示目標在<b>右半邊</b>，應該移動 left；原程式卻移動 right，等於把答案所在的那一半丟掉。</p><p>追蹤原程式找 10：left = 0、right = 7，mid = 3，arr[3] = 8 &lt; 10 → right = 2（錯了，10 在右邊）；之後在 [0, 2] 裡永遠找不到，回傳 −1。</p><p>修正（只改第 13 行）：</p><pre class=\"code\">13         if (arr[mid] &gt; target) {\n14             right = mid - 1;\n15         }\n16         else {\n17             left = mid + 1;\n18         }</pre><p>修正後：mid = 3（8 &lt; 10）→ left = 4；mid = 5（12 &gt; 10）→ right = 4；mid = 4，arr[4] = 10，回傳 4。</p><p>另一種寫法是保留第 13 行，把第 14 行改成 left = mid + 1、第 17 行改成 right = mid − 1，但那要改兩行，題目說只有一個 bug，改條件那一行最乾淨。第 8 行的 left + (right − left)/2 是避免溢位的正確寫法，不是 bug。</p>"
+    },
+    {
+      "id": "ds-0342",
+      "topics": [
+        "heap"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_software.pdf"
+      },
+      "question": "4%<div class=\"table-scroll\"><table><tr><th>index</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr><tr><th>val</th><td>-</td><td>11</td><td>5</td><td>10</td><td>2</td><td>9</td><td>3</td><td>8</td><td>4</td><td>7</td><td>6</td><td>1</td></tr></table></div>A binary min-heap (the one for heap-sort) is stored in an array. In a C array, we store values starting from index 1. The array in the above is not a min-heap. Build the min-heap from the array shown above using <b>the bottom-up linear-time algorithm</b>. Present your result in the same array where each value is in the correct array entry.",
+      "answer": "index 1..11：1, 2, 3, 4, 5, 10, 8, 11, 7, 6, 9",
+      "explanation": "<p>Bottom-up 建堆（heapify）：從最後一個內部節點 ⌊11/2⌋ = 5 開始，往前到 1，每個節點做 sift-down（和較小的子節點比，比它大就交換，一路往下）。</p><ul><li>i = 5（9）：子 10:6、11:1，最小 1 → 交換：A[5] = 1、A[11] = 9。</li><li>i = 4（2）：子 8:4、9:7，2 已最小，不動。</li><li>i = 3（10）：子 6:3、7:8 → 和 3 交換：A[3] = 3、A[6] = 10（6 沒有子節點，停）。</li><li>i = 2（5）：子 4:2、5:1 → 和 1 交換：A[2] = 1、A[5] = 5；再看 5 的子 10:6、11:9，5 最小，停。</li><li>i = 1（11）：子 2:1、3:3 → 和 1 交換，11 到 index 2；子 4:2、5:5 → 和 2 交換，11 到 index 4；子 8:4、9:7 → 和 4 交換，11 到 index 8，停。</li></ul><div class=\"table-scroll\"><table><tr><th>index</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr><tr><th>val</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>10</td><td>8</td><td>11</td><td>7</td><td>6</td><td>9</td></tr></table></div><p>以上結果用程式模擬驗證。常見錯誤：用「逐一插入」建堆（O(n log n)），結果會不同；題目指定的是 bottom-up 的 O(n) 做法。</p>"
+    },
+    {
+      "id": "ds-0343",
+      "topics": [
+        "binary-search-tree"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "exam",
+        "school": "國立陽明交通大學",
+        "year": 115,
+        "dept": "資訊聯招（資料結構與演算法）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/nycu_115_software.pdf"
+      },
+      "question": "(a) 4%<pre class=\"code\">class Node {\n    public int v;\n    public Node lc;\n    public Node rc;\n    public Node p;\n}</pre>The above is pseudo-code defining a Node class used in a binary search tree T. In the Node, v stores the key value, lc and rc are the pointers to the left child and right child, respectively, and p is the pointer to the parent. If T contains a single node X, then X.p, X.lc, X.rc are NULL. There are 3 NULL pointers in T. Show that there are n + 2 NULL pointers in T, where T is an n-node binary search tree.<br>(b) 6%<pre class=\"code\">a = n1\nb = n2\nwhile a!=b:\n    a=a.p if a else n2\n    b=b.p if b else n1\nreturn a</pre>In the above pseudo code, n1 and n2 are two nodes in a binary search tree T. a=a.p if a else n2 means if a is not NULL then set a to a.p otherwise set a to n2. What does this piece of code compute (what is \"a\" returned by the function)?<br>(c) 7% Show the correctness of the piece of code, i.e., the code correctly computes the answer you gave me in 3.(b).",
+      "answer": "(a) 共 3n 個指標，非 NULL 的有 2(n − 1) 個，NULL 有 3n − 2(n − 1) = n + 2 個；(b) n1 與 n2 的 lowest common ancestor（最低共同祖先）；(c) 兩個指標都走 d<sub>1</sub> + d<sub>2</sub> 步後同時抵達 LCA。",
+      "explanation": "<p><b>(a)</b> n 個節點，每個有 3 個指標（lc、rc、p），共 3n 個。數「非 NULL」的指標：樹有 n − 1 條邊，每條邊 (父 u, 子 w) 剛好產生 2 個非 NULL 指標：u 的 lc 或 rc 指向 w，以及 w.p 指向 u。除此之外沒有其他非 NULL 指標（根的 p 是 NULL）。所以非 NULL 共 2(n − 1) 個，NULL = 3n − 2(n − 1) = <b>n + 2</b>。n = 1 時是 3，與題目一致。</p><p><b>(b)</b> 回傳 n1 與 n2 的 <span class=\"term\">Lowest Common Ancestor<small>（最低共同祖先）</small></span>（LCA）：同時是兩者祖先（節點本身也算自己的祖先）中最深的那一個。（題目 (c) 提到的「3.(b)」應是指本題 (b)。）</p><p><b>(c) 正確性</b>：令 L = LCA(n1, n2)，n1 到 L 走 x 步、n2 到 L 走 y 步、L 到根走 z 步。所以 n1 往上走到 NULL 要 x + z + 1 步、n2 要 y + z + 1 步。</p><ul><li>指標 a 的路線：從 n1 往上走到 NULL（x + z + 1 步），再跳到 n2 往上。</li><li>指標 b 的路線：從 n2 往上走到 NULL（y + z + 1 步），再跳到 n1 往上。</li><li>走了 k = (x + z + 1) + y 步時：a 跳到 n2 後又往上走了 y 步，剛好到 L；b 跳到 n1 後走了 (x + z + 1 + y) − (y + z + 1) = x 步，也剛好到 L。兩者在同一步抵達 L。</li><li>在此之前不會提早相等：在第一段時兩者分別在 n1、n2 各自的祖先鏈上，若在 L 以下就相等，那個點就是比 L 更深的共同祖先，矛盾；兩者到 L 的步數不同（除非 x = y，那時第一段就在 L 相遇，同樣回傳 L）。若 x = y，兩者第一段走 x 步就同時到達 L，迴圈直接結束。</li><li>終止性：最多走 x + y + z + 1 步一定在 L 相遇，不會無窮迴圈。</li></ul><p>這個「走完自己的路再走對方的路」技巧，等同於「兩條鏈結串列找交點」：兩個指標總步數都是 (x + z + 1) + (y + z + 1)，長度差自動抵消。時間 O(h)，不需要額外空間，也沒用到 BST 的大小性質。</p>"
     }
   ]
 }
