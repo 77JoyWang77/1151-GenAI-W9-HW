@@ -3172,6 +3172,275 @@
       ],
       "answer": "(a)、(b)、(d)、(e)",
       "explanation": "<ul><li>(a) 為 0：這是 <b>skew-symmetric（反對稱）</b>矩陣（A<sup>T</sup> = −A），det A = det(A<sup>T</sup>) = det(−A) = (−1)<sup>5</sup>det A ⇒ det A = 0。奇數階反對稱矩陣行列式必為 0。</li><li>(b) 為 0：第四列 (2,6,4,8,6) = 2 × 第一列 (1,3,2,4,3)。</li><li>(c) 不為 0：三對角矩陣，用遞迴 D<sub>k</sub> = 3D<sub>k−1</sub> + D<sub>k−2</sub>（主對角 3、上下各 1 與 −1，乘積 −1），D<sub>1</sub> = 1、D<sub>2</sub> = 4，得 13、43、142，det = 142。</li><li>(d) 為 0：三對角全 1，遞迴 D<sub>k</sub> = D<sub>k−1</sub> − D<sub>k−2</sub>，D<sub>1</sub> = 1、D<sub>2</sub> = 0、D<sub>3</sub> = −1、D<sub>4</sub> = −1、D<sub>5</sub> = 0。也可以看出第一列 − 第二列 + 第四列 − 第五列 = 0。</li><li>(e) 為 0：沿最後一列展開剩左上 4×4，它的行有線性關係：−2·(第一行) + 3·(第二行) − 4·(第三行) + 2·(第四行) = 0（例如第一列 −2 + 6 − 12 + 8 = 0），所以行列式為 0（程式驗算）。</li></ul><p>五個行列式都用程式計算確認。</p>"
+    },
+    {
+      "id": "la-0142",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 1,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let A and B be n × n matrices over ℝ. Which of the following statements about <b>determinants</b> are <b>true</b>?",
+      "choices": [
+        "(a) If det(A) ≠ 0, then the rows of A form a basis of ℝ<sup>n</sup>.",
+        "(b) For any scalar c, det(cA) = c det(A).",
+        "(c) If A has rank r &lt; n, then det(A) = 0.",
+        "(d) If A is triangular, then its determinant equals the product of its diagonal entries.",
+        "(e) If AB = BA, then det(A + B) = det(A) + det(B)."
+      ],
+      "answer": "(a)、(c)、(d)",
+      "explanation": "<ul><li>(a) 對：det(A) ≠ 0 ⇔ A 可逆 ⇔ n 個列向量線性獨立，n 個獨立向量在 ℝ<sup>n</sup> 裡就是一組基底。</li><li>(b) 錯：cA 是每一列都乘 c，行列式每一列提出一個 c，共提出 n 次，所以 det(cA) = c<sup>n</sup> det(A)。這是最常見的陷阱。</li><li>(c) 對：rank &lt; n 代表列向量線性相依，A 不可逆，det(A) = 0。</li><li>(d) 對：上三角或下三角矩陣沿第一行（或第一列）展開，一路只剩對角線乘積。</li><li>(e) 錯：行列式不是線性函數。反例 A = B = I（n ≥ 2，兩者可交換）：det(2I) = 2<sup>n</sup>，但 det(I) + det(I) = 2，n = 2 時就是 4 ≠ 2。</li></ul>"
+    },
+    {
+      "id": "la-0143",
+      "topics": [
+        "basis-dimension",
+        "linear-independence"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 2,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let V be a vector space over a field 𝔽. Which of the following statements are <b>true</b>?",
+      "choices": [
+        "(a) Every linearly independent subset of V can be extended to a basis of V.",
+        "(b) If V is finite-dimensional, then every spanning set of V is a basis.",
+        "(c) Any two bases of a finite-dimensional vector space have the same number of vectors.",
+        "(d) A vector space has a unique basis.",
+        "(e) If a set of vectors spans V, then it must be linearly independent."
+      ],
+      "answer": "(a)、(c)",
+      "explanation": "<ul><li>(a) 對：有限維時，一直把「不在目前 span 裡的向量」加進去，最多加到 dim V 個就停，得到基底（無限維時也成立，要用 Zorn's lemma，考試知道結論即可）。</li><li>(b) 錯：spanning set 可能有多餘的向量。例如 {(1,0), (0,1), (1,1)} 生成 ℝ²，但三個向量在二維空間一定相依，不是基底。</li><li>(c) 對：這正是 <b>dimension（維度）</b>能被良好定義的原因。</li><li>(d) 錯：基底不唯一，例如 ℝ² 的 {(1,0),(0,1)} 和 {(1,1),(1,−1)} 都是基底（只有零空間 {0} 的基底是唯一的空集合）。</li><li>(e) 錯：同 (b) 的反例，生成不代表獨立。</li></ul><p>記法：基底 = 「生成」＋「獨立」兩個條件都要有；只有其中一個時，分別可以「刪減」或「擴充」成基底。</p>"
+    },
+    {
+      "id": "la-0144",
+      "topics": [
+        "linear-transformations",
+        "rank-nullity",
+        "matrix-representation"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 3,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let T: V → W be a linear transformation between finite-dimensional vector spaces over the same field. Which of the following statements are <b>true</b>?",
+      "choices": [
+        "(a) T is injective if and only if ker(T) = {0}.",
+        "(b) T is surjective if and only if dim(V) = dim(Image(T)).",
+        "(c) If {v<sub>1</sub>, ..., v<sub>n</sub>} is a basis of V, then {T(v<sub>1</sub>), ..., T(v<sub>n</sub>)} is a basis of W.",
+        "(d) If dim(V) = dim(W) and T is injective, then T is surjective.",
+        "(e) The matrix representation of T depends on the choice of bases for V and W."
+      ],
+      "answer": "(a)、(d)、(e)",
+      "explanation": "<ul><li>(a) 對：T(u) = T(v) ⇔ T(u − v) = 0，所以一對一 ⇔ kernel 只有 0。</li><li>(b) 錯：onto 的條件是 Image(T) = W，也就是 dim(<b>W</b>) = dim(Image(T))。dim(V) = dim(Image(T)) 由 rank-nullity 等價於 ker(T) = {0}，那是「一對一」的條件，被偷換了。</li><li>(c) 錯：T(v<sub>i</sub>) 只會生成 Image(T)，不一定是 W 的基底。例如零變換把所有 v<sub>i</sub> 都送到 0。</li><li>(d) 對：一對一 ⇒ nullity = 0 ⇒ rank = dim V = dim W，所以 Image(T) = W，也是 onto。</li><li>(e) 對：換基底，矩陣就會變（變成相似或等價的另一個矩陣），所以寫矩陣表示時一定要說是對哪兩組基底。</li></ul>"
+    },
+    {
+      "id": "la-0145",
+      "topics": [
+        "inner-product-projection",
+        "orthogonal-subspaces"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 4,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let V be a finite-dimensional inner product space over ℝ, and let u, v, w ∈ V. Which of the following statements about <b>orthogonality</b> are <b>true</b>?",
+      "choices": [
+        "(a) If u ⊥ v and u ⊥ w, then u ⊥ (v + w).",
+        "(b) If {v<sub>1</sub>, v<sub>2</sub>, ..., v<sub>n</sub>} is an orthogonal set of nonzero vectors, then it is linearly independent.",
+        "(c) Every set of orthonormal vectors forms a basis of the vector space.",
+        "(d) If u ⊥ v, then ‖u + v‖² = ‖u‖² + ‖v‖².",
+        "(e) Two nonzero vectors u and v are orthogonal if and only if ‖u + v‖ = ‖u‖ + ‖v‖."
+      ],
+      "answer": "(a)、(b)、(d)",
+      "explanation": "<ul><li>(a) 對：⟨u, v + w⟩ = ⟨u, v⟩ + ⟨u, w⟩ = 0 + 0。</li><li>(b) 對：設 Σc<sub>i</sub>v<sub>i</sub> = 0，兩邊和 v<sub>j</sub> 做內積，只剩 c<sub>j</sub>‖v<sub>j</sub>‖² = 0，又 v<sub>j</sub> ≠ 0，所以 c<sub>j</sub> = 0。</li><li>(c) 錯：正交單位向量一定獨立，但個數不夠就生不出整個空間。例如 ℝ³ 裡只有 {e<sub>1</sub>} 一個向量。</li><li>(d) 對：‖u + v‖² = ‖u‖² + 2⟨u, v⟩ + ‖v‖²，正交時中間項為 0，就是 <b>Pythagorean theorem（畢氏定理）</b>。</li><li>(e) 錯：‖u + v‖ = ‖u‖ + ‖v‖ 是三角不等式取等號，發生在 u、v <b>同方向</b>（v = cu，c &gt; 0）時，跟正交剛好相反。正交對應的是 (d) 的平方關係，不是長度直接相加。</li></ul>"
+    },
+    {
+      "id": "la-0146",
+      "topics": [
+        "symmetric-matrices",
+        "eigenvalues-eigenvectors",
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 5,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let A be an n × n Hermitian matrix over ℂ. Which of the following statements are <b>true</b>?",
+      "choices": [
+        "(a) All eigenvalues of A are real.",
+        "(b) If x and y are eigenvectors corresponding to <b>distinct eigenvalues</b>, then x and y are orthogonal.",
+        "(c) The sum of two Hermitian matrices is Hermitian.",
+        "(d) Every Hermitian matrix is diagonalizable by a unitary matrix.",
+        "(e) The product of two Hermitian matrices is always Hermitian."
+      ],
+      "answer": "(a)、(b)、(c)、(d)",
+      "explanation": "<p><b>Hermitian（厄米特）</b>矩陣：A<sup>H</sup> = A，是實對稱矩陣在複數上的推廣。</p><ul><li>(a) 對：Ax = λx ⇒ x<sup>H</sup>Ax = λ‖x‖²；左邊取共軛轉置後不變，是實數，所以 λ 是實數。</li><li>(b) 對：λ<sub>1</sub>⟨x, y⟩ = ⟨Ax, y⟩ = ⟨x, Ay⟩ = λ<sub>2</sub>⟨x, y⟩（λ 為實數），λ<sub>1</sub> ≠ λ<sub>2</sub> 所以 ⟨x, y⟩ = 0。</li><li>(c) 對：(A + B)<sup>H</sup> = A<sup>H</sup> + B<sup>H</sup> = A + B。</li><li>(d) 對：<b>Spectral theorem（譜定理）</b>：Hermitian 矩陣可寫成 A = UDU<sup>H</sup>，U 是 unitary。</li><li>(e) 錯：(AB)<sup>H</sup> = B<sup>H</sup>A<sup>H</sup> = BA，只有 AB = BA 時才會等於 AB。反例 A = [[1,0],[0,0]]、B = [[0,1],[1,0]]：AB = [[0,1],[0,0]]，不是 Hermitian。</li></ul>"
+    },
+    {
+      "id": "la-0147",
+      "topics": [
+        "diagonalization",
+        "eigenvalues-eigenvectors"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 6,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "A = <pre>[ 3  2]\n[-1  0]</pre>B = <pre>[M  N]\n[P  Q]</pre>= A<sup>20</sup>. What is mod(|P|, 5), where mod(.) is the modulo operator?",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(a)",
+      "explanation": "<p>算高次方最穩的做法是對角化。特徵多項式 λ² − 3λ + 2 = (λ − 1)(λ − 2)，特徵值 1、2。</p><ul><li>λ = 2：(A − 2I) = [[1,2],[−1,−2]]，特徵向量 (2, −1)。</li><li>λ = 1：(A − I) = [[2,2],[−1,−1]]，特徵向量 (1, −1)。</li></ul><p>令 S = [[2,1],[−1,−1]]，A<sup>n</sup> = S·diag(2<sup>n</sup>, 1)·S<sup>−1</sup>，展開得</p><pre class=\"formula\">A^n = [ 2^(n+1) − 1    2^(n+1) − 2 ]\n      [ 1 − 2^n        2 − 2^n     ]</pre><p>（代 n = 1 回去得 [[3,2],[−1,0]]，檢查無誤。）所以 P = 1 − 2<sup>20</sup> = −1048575，|P| = 2<sup>20</sup> − 1。</p><p>不用算出大數：2<sup>4</sup> = 16 ≡ 1 (mod 5)，所以 2<sup>20</sup> = (2<sup>4</sup>)<sup>5</sup> ≡ 1，|P| ≡ 1 − 1 = 0 (mod 5)。程式直接算 A<sup>20</sup> 得 P = −1048575，個位數 5，餘數確實是 0。</p>"
+    },
+    {
+      "id": "la-0148",
+      "topics": [
+        "gram-schmidt"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 7,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "A = <pre>[ 1  1  1  1]\n[-1  1  1  1]\n[ 0  0  2  3]\n[ 0  0  0  7]</pre>Apply QR factorization on A so that A=QR, where Q is an orthogonal matrix, and R is an upper triangular matrix. “K” is equal to multiplying all the nonzero elements in R. What is mod(round(|K|),5), where round(.) is the rounding function (to the nearest integer), and mod(.) is the modulo operator?",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(d)",
+      "explanation": "<p>用 Gram-Schmidt，R 的第 (i, j) 項是 q<sub>i</sub> · a<sub>j</sub>（i &lt; j），對角線是扣掉投影後的長度。</p><ol><li>a<sub>1</sub> = (1, −1, 0, 0)，r<sub>11</sub> = √2，q<sub>1</sub> = (1, −1, 0, 0)/√2。</li><li>a<sub>2</sub> = (1, 1, 0, 0)：q<sub>1</sub>·a<sub>2</sub> = 0，本來就正交，r<sub>12</sub> = 0、r<sub>22</sub> = √2，q<sub>2</sub> = (1, 1, 0, 0)/√2。</li><li>a<sub>3</sub> = (1, 1, 2, 0)：r<sub>13</sub> = 0、r<sub>23</sub> = 2/√2 = √2，扣掉後剩 (0, 0, 2, 0)，r<sub>33</sub> = 2，q<sub>3</sub> = e<sub>3</sub>。</li><li>a<sub>4</sub> = (1, 1, 3, 7)：r<sub>14</sub> = 0、r<sub>24</sub> = √2、r<sub>34</sub> = 3，剩 (0, 0, 0, 7)，r<sub>44</sub> = 7。</li></ol><pre class=\"formula\">R = [√2   0   0   0 ]\n    [ 0  √2  √2  √2 ]\n    [ 0   0   2   3 ]\n    [ 0   0   0   7 ]</pre><p>非零元素相乘：(√2)<sup>4</sup> × 2 × 3 × 7 = 4 × 42 = 168，168 mod 5 = 3。</p><p>注意 r<sub>12</sub> = r<sub>13</sub> = r<sub>14</sub> = 0 不能乘進去（題目說只乘非零元素）。即使 Q 的某些欄取負號、R 對應列跟著變號，|K| 也不變。程式做 QR 分解結果一致。</p>"
+    },
+    {
+      "id": "la-0149",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 8,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "The determinant of <pre>[ 1   2   5   3   7]\n[ 3   7   1   4   2]\n[ 2   5   1   2   6]\n[-1  -6   2  -5   3]\n[-3  -7   4  -3   9]</pre>is K. What is mod(|K|,5)?",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(a)",
+      "explanation": "<p>5 × 5 硬展開太累，禁用計算器的題目通常藏著列之間的線性關係。試著用前三列組出第五列：</p><pre class=\"formula\">r1 − 2·r2 + r3 = (1−6+2, 2−14+5, 5−2+1, 3−8+2, 7−4+6)\n               = (−3, −7, 4, −3, 9) = r5</pre><p>第五列是其他列的線性組合，列向量相依，所以 K = det = 0，0 mod 5 = 0。</p><p>技巧：看到題目矩陣數字很雜、又問 mod 的時候，先找有沒有列（或行）相依；程式計算行列式確實為 0。</p>"
+    },
+    {
+      "id": "la-0150",
+      "topics": [
+        "inner-product-projection",
+        "least-squares",
+        "orthogonal-subspaces"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 9,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "A = <pre>[ 1  -1   1   3   2]\n[ 1   1  -1  -4   1]\n[-1   1   1   2  -2]\n[ 1   1   1   1   1]</pre>Project b=[1 2 3 4]<sup>T</sup> onto A’s column space and the resulting vector is c. K is equal to the multiplication of all the elements of c. What is mod(round(|K×4|),5)?",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(e)",
+      "explanation": "<p>A 是 4 × 5，很多人直覺以為五個欄向量一定生成整個 ℝ<sup>4</sup>，投影就是 b 本身——這是陷阱。實際上 rank(A) = 3。</p><p>找 <b>Left nullspace（左零空間）</b>：解 y<sup>T</sup>A = 0，得 y = (−1, −1, −1, 1)（檢查第一欄：−1 − 1 + 1 + 1 = 0，其他欄同理）。C(A) 就是和 y 正交的三維子空間，所以投影只要把 b 在 y 方向的分量扣掉：</p><pre class=\"formula\">y·b = −1 − 2 − 3 + 4 = −2,  ‖y‖² = 4\nc = b − (y·b/‖y‖²) y = b + y/2 = (1/2, 3/2, 5/2, 9/2)</pre><p>K = (1·3·5·9)/16 = 135/16，K × 4 = 135/4 = 33.75，四捨五入為 34，34 mod 5 = 4。</p><p>程式用欄空間的基底算投影矩陣，結果 c 一致。</p>"
+    },
+    {
+      "id": "la-0151",
+      "topics": [
+        "change-of-basis"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 10,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "Let S={V<sub>1</sub>,V<sub>2</sub>,V<sub>3</sub>} and T={U<sub>1</sub>,U<sub>2</sub>,U<sub>3</sub>} be the ordered bases for the vector space ℝ<sup>3</sup>, where V<sub>1</sub>= [-1 2 1]<sup>T</sup>, V<sub>2</sub>=[0 1 0]<sup>T</sup>, V<sub>3</sub>=[-2 2 1]<sup>T</sup>, and U<sub>1</sub>= [-1 1 0]<sup>T</sup>, U<sub>2</sub>=[0 1 1]<sup>T</sup>, U<sub>3</sub>=[2 1 1]<sup>T</sup>. For a vector V in ℝ<sup>3</sup>, the coordinate vector of V with respect to the basis T is [2 3 1]<sup>T</sup>. The coordinate vector of V with respect to the basis S is [M N P]<sup>T</sup>. What is mod(round(|M+N+P|),5)?",
+      "choices": [
+        "(a) 0",
+        "(b) 1",
+        "(c) 2",
+        "(d) 3",
+        "(e) 4"
+      ],
+      "answer": "(c)",
+      "explanation": "<p>先把 V 還原成標準座標，再解 S 座標：</p><pre class=\"formula\">V = 2U1 + 3U2 + U3 = (−2,2,0) + (0,3,3) + (2,1,1) = (0, 6, 4)</pre><p>解 M·V<sub>1</sub> + N·V<sub>2</sub> + P·V<sub>3</sub> = (0, 6, 4)：</p><ul><li>第一分量：−M − 2P = 0 ⇒ M = −2P。</li><li>第三分量：M + P = 4 ⇒ −2P + P = 4 ⇒ P = −4，M = 8。</li><li>第二分量：2M + N + 2P = 6 ⇒ 16 + N − 8 = 6 ⇒ N = −2。</li></ul><p>[M N P] = [8 −2 −4]，M + N + P = 2，mod 5 = 2。代回檢查 8V<sub>1</sub> − 2V<sub>2</sub> − 4V<sub>3</sub> = (−8+8, 16−2−8, 8−4) = (0, 6, 4)，正確。</p><p>也可以用轉移矩陣 P<sub>S←T</sub> = S<sup>−1</sup>T 一次算，但這題只有一個向量，直接解比較快。程式驗算一致。</p>"
     }
   ]
 }

@@ -3162,6 +3162,303 @@
       ],
       "answer": "(b)、(c)",
       "explanation": "<ul><li><b>Vertex connectivity（點連通度）</b>κ：拿掉 {b, f} 後，{a, g} 和 {c, d, e} 分開，所以 κ ≤ 2。拿掉任何單一點圖都還連通（沒有割點），所以 κ = 2。</li><li><b>Edge connectivity（邊連通度）</b>λ：最小度數是 3（a、b、g、d、e），所以 λ ≤ 3。左半 {a, b, g} 和右半 {c, d, e, f} 之間的邊有 a–f、g–f、b–c 三條，任何拿掉 2 條邊的方式都斷不開圖，λ = 3。</li></ul><p>這是 κ ≤ λ ≤ δ 的典型例子：2 ≤ 3 ≤ 3。程式計算結果一致。</p>"
+    },
+    {
+      "id": "dm-0146",
+      "topics": [
+        "closures",
+        "partial-orders",
+        "sets"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 114,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_114_math.pdf"
+      },
+      "question": "（複選）For questions 11 and 12, matrix <b>A</b> describes a binary relation <b>R</b>（元素依序記為 1~6，第 i 列第 j 行為 1 表示 (i, j) ∈ R）:<pre>    [1 0 0 0 1 0]\n    [1 1 1 1 1 1]\nA = [1 0 1 1 1 0]\n    [0 0 0 1 1 0]\n    [0 0 0 0 1 0]\n    [0 0 1 1 1 1]</pre>12. Let <b>S</b> be the transitive closure of <b>R</b> and each element is a set. If <b>S</b> reflects operators’ behavior on <b>Set</b>, what are possible operators?",
+      "choices": [
+        "(a) ∩",
+        "(b) ∪",
+        "(c) ⊆",
+        "(d) − (set difference)",
+        "(e) ⊃"
+      ],
+      "answer": "(c)、(e)（待確認）",
+      "explanation": "<p>先算 <b>Transitive closure（遞移閉包）</b>S：用 Warshall 演算法跑一遍，R 只缺一對 (6, 1)（因為 (6,3)、(3,1) ∈ R），加進去後 S 就遞移了。</p><p>接著看 S 是什麼樣的關係：</p><ul><li>Reflexive：對角線全是 1。</li><li>Anti-symmetric：加進 (6,1) 後，(1,6) 仍不在 S 裡，所以還是反對稱。</li><li>Transitive：閉包本來就遞移。</li></ul><p>所以 S 是一個 <b>Partial order（偏序）</b>。題目問「把每個元素看成集合時，S 可能代表哪個運算子的行為」：</p><ul><li>(a) ∩、(b) ∪、(d) − 是把兩個集合變成第三個集合的<b>運算</b>，不是「兩個集合之間成立與否」的二元關係，不可能是 S。</li><li>(c) ⊆：任何偏序都可以用集合包含來實現。令元素 x 對應的集合是「所有 S 到 x 的元素」{y | (y, x) ∈ S}，則 (x, y) ∈ S ⇔ 對應集合 X ⊆ Y。</li><li>(e) ⊃：同理，令 x 對應 {y | (x, y) ∈ S}，則 (x, y) ∈ S ⇔ X ⊇ Y。選項印的是 ⊃，但由於 S 是自反的（每個元素都和自己有關係），嚴格的 ⊃ 不會自反，嚴格來說要寫成 ⊇ 才完全符合；考場上應是把它當成「包含」的方向相反版本。</li></ul><p>程式驗證：兩種集合指派都讓「(x, y) ∈ S」和「⊆／⊇ 成立」完全一致。</p><p>常見錯誤：直接看矩陣就以為只有 ⊆ 一種，忘了把元素反過來指派就能得到 ⊇。（待確認：題意較模糊，(e) 印成 ⊃ 而非 ⊇，官方答案可能只取 (c)，或取 (c)(e)。）</p>"
+    },
+    {
+      "id": "dm-0147",
+      "topics": [
+        "divide-and-conquer-recurrences"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 11,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Consider an analytical algorithm A to take <b>n</b> items as input set. When input size <b>n</b>≤4, the process will terminate and return results, otherwise it will divide the input set into 4 roughly equal-size subsets; 2 of 4 subsets serve as samples and act as inputs to recursively apply A twice; the results of the previous 2 outcomes (from the 2 recursive A executions) each has <b>n</b>/4 items; then we will use a procedure <i>I</i> to integrate the 2 outcomes, where <i>I</i> takes θ(√(m/4)) when inputs are 2 sets of size m subsets. What about this algorithm are true?",
+      "choices": [
+        "(a) A is a linear recursive algorithm",
+        "(b) A is a divide-and-conquer recursive algorithm",
+        "(c) A’s complexity is θ(n<sup>2</sup>)",
+        "(d) A’s complexity is θ(n√n)",
+        "(e) A’s complexity is θ(√n log n)"
+      ],
+      "answer": "(b)、(e)（待確認）",
+      "explanation": "<p>把敘述翻成遞迴式：每次切成 4 份、只對其中 2 份遞迴，每份大小 n/4；合併時兩個結果各 m = n/4 個元素，<i>I</i> 花 Θ(√(m/4)) = Θ(√n / 4) = Θ(√n)。</p><pre class=\"formula\">T(n) = 2T(n/4) + Θ(√n)</pre><p>用 <b>Master theorem（主定理）</b>：a = 2、b = 4，n<sup>log<sub>4</sub>2</sup> = n<sup>1/2</sup>，和 f(n) = Θ(√n) 同階，屬於 case 2，T(n) = Θ(√n log n)。</p><ul><li>(a) 錯：<b>linear recursion（線性遞迴）</b>指每次只呼叫自己一次；這裡每層呼叫兩次，是 tree recursion。</li><li>(b) 對：切成子問題、遞迴解、再合併，就是 divide-and-conquer。</li><li>(c)(d) 錯；(e) 對。</li></ul><p>程式直接迭代 T(n)，T(n) / (√n log n) 趨近常數，而 T(n)/n → 0，確認是 Θ(√n log n)。</p><p>（待確認）題目沒有說「切成 4 份」本身要花多少時間。若把切割算成 Θ(n)，遞迴式變成 2T(n/4) + Θ(n)，答案會是 Θ(n)，(c)(d)(e) 都不對；這裡依題意只計入 <i>I</i> 的成本。</p>"
+    },
+    {
+      "id": "dm-0148",
+      "topics": [
+        "predicate-logic",
+        "congruences"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 12,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Suppose x and y are integer numbers, and we define the following predicates: D(x, y): y is a multiple of x;  C<sub>3</sub>(x,y): x is congruent to y modulo 3;  C<sub>6</sub>(,x,y): x is is congruent to y modulo 6<br>Which of the following clauses are correct interpretations of the logical statement:<br>∀x, y, (C<sub>3</sub>(x, y) ∧ (¬C<sub>6</sub>(x, y)) ∧ (D(6, x)) → ¬D(x, y)",
+      "choices": [
+        "(a) if y is a multiple of y, it is not possible that x is a multiple of 6, and x is congruent to y modulo 3, but not congruent toy modulo 6.",
+        "(b) for y to be a multiple of x, x and y cannot both congruent modulo 6 and modulo 3 and still x is a multiple of 6.",
+        "(c) It is possible that x is a multiple of 6 and y is a multiple of x, where x is congruent to y modulo 3 but not congruent to y modulo 6.",
+        "(d) if x is congruent to y modulo 3 but not congruent to y modulo 6, and x is a multiple of 6, then y connot be a multiple of x.",
+        "(e) none of the above."
+      ],
+      "answer": "(a)、(d)（待確認）",
+      "explanation": "<p>原式是 p ∧ q ∧ r → ¬s，其中 p = C<sub>3</sub>、q = ¬C<sub>6</sub>、r = D(6, x)、s = D(x, y)。和它等價的寫法有：</p><ul><li>直接讀：「若 p、q、r 都成立，則 ¬s」。</li><li><b>Contrapositive（逆否）</b>：s → ¬(p ∧ q ∧ r)，「若 y 是 x 的倍數，則不可能同時 p、q、r」。</li></ul><p>逐項看：</p><ul><li>(a) 對（待確認）：是逆否命題的讀法，但原文印成「y is a multiple of <b>y</b>」，應是 of x 的筆誤；若照字面，前提永遠成立，意思就變成「p ∧ q ∧ r 永遠不成立」，和原式不同。</li><li>(b) 錯：寫成「modulo 6 和 modulo 3 都同餘」，把 ¬C<sub>6</sub> 變成 C<sub>6</sub> 了。</li><li>(c) 錯：說「有可能 p、q、r、s 同時成立」，正好是原式的否定。</li><li>(d) 對：就是原式直接翻譯（connot 是 cannot 的筆誤）。</li><li>(e) 錯：(d) 已經正確。</li></ul><p>補充：這個命題本身是真的。x 是 6 的倍數、y 又是 x 的倍數 ⇒ y 也是 6 的倍數 ⇒ x ≡ y ≡ 0 (mod 6)，所以 ¬C<sub>6</sub> 不可能和它們同時成立。程式在 |x| ≤ 60、|y| ≤ 300 範圍窮舉找不到反例。</p>"
+    },
+    {
+      "id": "dm-0149",
+      "topics": [
+        "generating-functions",
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 13,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）When using the generating function g(x) to solve the recurrence relation ∀n ≥ 2, a<sub>n</sub> = −a<sub>n−1</sub> + 6a<sub>n−2</sub>, a<sub>0</sub> = 0, a<sub>1</sub> = 5, what of the followings are true?",
+      "choices": [
+        "(a) G(x)(1 + x − 6x<sup>2</sup>) = 5x",
+        "(b) G(x)(1 + x − 6x<sup>2</sup>) = 2 + 7x",
+        "(c) G(x) = 1/(1−2x) − 1/(1+3x)",
+        "(d) G(x) = 2/(1−2x) − 3/(1+3x)",
+        "(e) a<sub>n</sub> = 2<sup>n</sup> − (−3)<sup>n</sup>"
+      ],
+      "answer": "(a)、(c)、(e)",
+      "explanation": "<p>令 G(x) = Σ a<sub>n</sub>x<sup>n</sup>（題目 g(x) 和 G(x) 指同一個）。對 n ≥ 2 乘 x<sup>n</sup> 加總：</p><pre class=\"formula\">G − a0 − a1·x = −x(G − a0) + 6x²G\nG(1 + x − 6x²) = a0 + (a1 + a0)x = 5x</pre><p>(a) 對、(b) 錯。</p><p>分母因式分解 1 + x − 6x² = (1 − 2x)(1 + 3x)，部分分式 5x/[(1−2x)(1+3x)] = A/(1−2x) + B/(1+3x)：A + B = 0、3A − 2B = 5，得 A = 1、B = −1。(c) 對、(d) 錯（(d) 在 x = 0 時是 2 − 3 = −1 ≠ a<sub>0</sub> = 0，一眼就能排除）。</p><p>展開 a<sub>n</sub> = 2<sup>n</sup> − (−3)<sup>n</sup>，(e) 對。檢查：a<sub>0</sub> = 0、a<sub>1</sub> = 2 + 3 = 5。程式迭代前 10 項（0, 5, −5, 35, −65, …）和公式完全一致。</p>"
+    },
+    {
+      "id": "dm-0150",
+      "topics": [
+        "sets",
+        "cardinality"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 14,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）In history, which of the following statements about mathematic concepts are true?",
+      "choices": [
+        "(a) ”Set” is a basic mathematic structure, it was formally defined before Calculus.",
+        "(b) all infinite sets have the same cardinality.",
+        "(c) “Hilbert’s program” successfully formalized all possible theories to base on finite axioms.",
+        "(d) With “empiricism”, knowledges should entirely be justified by logic.",
+        "(e) none of the above."
+      ],
+      "answer": "(e)",
+      "explanation": "<ul><li>(a) 錯：微積分在 17 世紀（Newton、Leibniz）就發展出來；集合論是 19 世紀後半 Cantor 才建立，公理化（ZF）更在 20 世紀初，順序反了。</li><li>(b) 錯：Cantor 的對角線論證證明 |ℝ| &gt; |ℕ|；更一般地 |P(S)| &gt; |S|，無限集合有無窮多種大小。</li><li>(c) 錯：Hilbert 想把數學建立在有限、一致且完備的公理系統上，但 Gödel 的 <b>incompleteness theorems（不完備定理）</b>證明夠強的一致系統必定不完備，這個計畫沒有成功。</li><li>(d) 錯：<b>empiricism（經驗主義）</b>主張知識來自感官經驗；「完全靠邏輯推理證成」比較接近 rationalism（理性主義）。</li><li>(e) 對：以上都不對。</li></ul><p>這題偏數學史常識，考前看過 Cantor、Hilbert、Gödel 這幾個名字的重點就夠了。</p>"
+    },
+    {
+      "id": "dm-0151",
+      "topics": [
+        "functions",
+        "cardinality"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 15,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）for functions <i>f</i>: C→D, <i>g</i>: A→B, there exist a function composition <i>f</i> o <i>g</i>, and we know <i>f</i> o <i>g</i> is an onto function. What about the following comparisons <u>can be true</u>?",
+      "choices": [
+        "(a) |A| = |B| = |C| &gt; |D|",
+        "(b) |A| &lt; |B| = |C| = |D|",
+        "(c) |A| &gt; |B| = |C| &gt; |D|",
+        "(d) |A| = |B| = |C| = |D|",
+        "(e) |A| = |B| &lt; |C| = |D|"
+      ],
+      "answer": "(a)、(c)、(d)",
+      "explanation": "<p>f ∘ g 要有定義，g 的值域 B 要落在 f 的定義域 C 裡（一般就取 B = C）。f ∘ g: A → D 是 onto，代表 D 的每個元素都被 A 的某個元素打到，所以一定有</p><pre class=\"formula\">|D| ≤ |A|</pre><p>（onto 函數的定義域至少和對應域一樣大）。除此之外沒有別的限制。</p><ul><li>(a) 可以：g 取 bijection，f 把多個元素壓到同一個值，例如 |A| = |B| = |C| = 2、|D| = 1。</li><li>(b) 不行：|A| &lt; |D|，違反 |D| ≤ |A|。</li><li>(c) 可以：例如 |A| = 3、|B| = |C| = 2、|D| = 1。</li><li>(d) 可以：f、g 都取 bijection。</li><li>(e) 不行：|A| &lt; |D|。</li></ul><p>程式在小集合上窮舉所有 f、g，(a)(c)(d) 都找得到讓 f ∘ g onto 的例子，(b)(e) 找不到。</p>"
+    },
+    {
+      "id": "dm-0152",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 16,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let a<sub>n</sub> be the number of ways in which a line of n people can be formed such that no two males are standing beside each other (each person is either <i>M</i> or <i>F</i>). For example, a<sub>3</sub> = 5.<br>Which of the following statements are correct?",
+      "choices": [
+        "(a) a<sub>n</sub> = a<sub>n-1</sub> + a<sub>n-2</sub> for n ≥ 3, with a<sub>1</sub> = 2, a<sub>2</sub> = 3.",
+        "(b) a<sub>n</sub> = 2a<sub>n-1</sub> − a<sub>n-2</sub> for n ≥ 3, with a<sub>1</sub> = 2, a<sub>2</sub> = 3.",
+        "(c) a<sub>n</sub> = a<sub>n-1</sub> + a<sub>n-2</sub> for n ≥ 3, with a<sub>1</sub> = 1, a<sub>2</sub> = 2.",
+        "(d) a<sub>1</sub> = 2, a<sub>2</sub> =3, a<sub>3</sub> =5, a<sub>4</sub> = 8, a<sub>5</sub> = 13.",
+        "(e) a<sub>n</sub> = <i>F</i><sub>n+2</sub>, where <i>F</i><sub>1</sub> = 1, <i>F</i><sub>2</sub> = 1 is the Fibonacci sequence."
+      ],
+      "answer": "(a)、(d)、(e)",
+      "explanation": "<p>看最後一個人：</p><ul><li>是 F：前面 n − 1 人任意合法排法，a<sub>n−1</sub> 種。</li><li>是 M：倒數第二個一定是 F，前 n − 2 人任意合法，a<sub>n−2</sub> 種。</li></ul><p>所以 a<sub>n</sub> = a<sub>n−1</sub> + a<sub>n−2</sub>。初始值 a<sub>1</sub> = 2（M、F）、a<sub>2</sub> = 3（MF、FM、FF）。</p><ul><li>(a) 對。</li><li>(b) 錯：2·3 − 2 = 4 ≠ a<sub>3</sub> = 5。</li><li>(c) 錯：遞迴對了但初始值錯（a<sub>1</sub> 應為 2）。</li><li>(d) 對：2, 3, 5, 8, 13。</li><li>(e) 對：F<sub>3</sub> = 2、F<sub>4</sub> = 3，數列整體往後平移兩格。</li></ul><p>程式窮舉 n = 1~7 的 M/F 字串，不含「MM」的個數是 2, 3, 5, 8, 13, 21, 34，一致。</p>"
+    },
+    {
+      "id": "dm-0153",
+      "topics": [
+        "euler-hamilton",
+        "connectivity"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 17,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let <i>G</i> be a connected simple graph with n ≥ 3 vertices. Which of the following statements are correct?",
+      "choices": [
+        "(a) If <i>G</i> has a Hamiltonian cycle, then <i>G</i> has no cut vertex.",
+        "(b) If <i>G</i> has no cut vertex, then <i>G</i> is Hamiltonian.",
+        "(c) Every Hamiltonian graph is 2-connected.",
+        "(d) There exists a Hamiltonian graph that is not 3-connected.",
+        "(e) A graph with minimum degree at least 2 must be Hamiltonian."
+      ],
+      "answer": "(a)、(c)、(d)",
+      "explanation": "<ul><li>(a) 對：拿掉任一點 v，Hamiltonian cycle 變成經過其餘所有點的一條路徑，圖仍連通，所以沒有 <b>cut vertex（割點）</b>。</li><li>(b) 錯：反例 K<sub>2,3</sub>，沒有割點，但二分圖兩邊大小不同，不可能有 Hamiltonian cycle。</li><li>(c) 對：就是 (a) 換句話說（n ≥ 3 且無割點 ⇔ 2-connected）。</li><li>(d) 對：C<sub>n</sub> 本身是 Hamiltonian，但拿掉 2 個不相鄰的點就斷開，連通度只有 2。</li><li>(e) 錯：同樣 K<sub>2,3</sub>，最小度數 2，不是 Hamiltonian。最小度數要到 n/2（Dirac 定理）才有保證。</li></ul>"
+    },
+    {
+      "id": "dm-0154",
+      "topics": [
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 18,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let G be a connected graph. Which of these graphs have an Euler circuit?",
+      "choices": [
+        "(a) <i>C</i><sub>6</sub>",
+        "(b) <i>W</i><sub>6</sub>",
+        "(c) <i>K</i><sub>5</sub>",
+        "(d) <i>K</i><sub>4,4</sub>",
+        "(e) <i>Q</i><sub>4</sub>"
+      ],
+      "answer": "(a)、(c)、(d)、(e)",
+      "explanation": "<p>連通圖有 Euler circuit ⇔ 每個頂點度數都是偶數。</p><ul><li>(a) C<sub>6</sub>：每點度數 2，有。</li><li>(b) W<sub>6</sub>：C<sub>6</sub> 加一個中心連到外圈 6 點，中心度數 6，但外圈每點度數 3，沒有。</li><li>(c) K<sub>5</sub>：每點度數 4，有。</li><li>(d) K<sub>4,4</sub>：每點度數 4，有。</li><li>(e) Q<sub>4</sub>：4 維超立方體每點度數 4，有。</li></ul><p>通則：K<sub>n</sub> 要 n 奇數、K<sub>m,n</sub> 要 m、n 都偶數、Q<sub>n</sub> 要 n 偶數、W<sub>n</sub> 永遠沒有（外圈度數 3）。</p>"
+    },
+    {
+      "id": "dm-0155",
+      "topics": [
+        "graph-basics",
+        "planar-graphs",
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 19,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Which of the following statements about bipartite graphs are true?",
+      "choices": [
+        "(a) A bipartite graph contains no odd cycle.",
+        "(b) Every bipartite graph is planar.",
+        "(c) <i>K</i><sub>3,3</sub> is bipartite.",
+        "(d) Every tree is bipartite.",
+        "(e) A bipartite graph can contain a Hamiltonian cycle only if its two parts have the same size."
+      ],
+      "answer": "(a)、(c)、(d)、(e)",
+      "explanation": "<ul><li>(a) 對：<b>Bipartite graph（二分圖）</b>的邊只連兩邊，走一圈回到原點必須來回偶數次，所以沒有奇圈（反過來也成立，這是二分圖的判定定理）。</li><li>(b) 錯：K<sub>3,3</sub> 就是二分圖，而且是最經典的非平面圖。</li><li>(c) 對：定義上就是兩邊各 3 點的完全二分圖。</li><li>(d) 對：樹沒有任何圈，當然沒有奇圈；也可以依深度奇偶塗兩色。</li><li>(e) 對：Hamiltonian cycle 經過每個點一次且兩邊交替，所以兩邊點數必須相同（這是必要條件，不是充分條件）。</li></ul>"
+    },
+    {
+      "id": "dm-0156",
+      "topics": [
+        "planar-graphs",
+        "graph-coloring",
+        "euler-hamilton"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "exam",
+        "school": "國立中央大學",
+        "year": 115,
+        "dept": "資工類（離散數學與線性代數）",
+        "no": 20,
+        "url": "https://files.cstoolman.com/exam-papers/ncu_115_math.pdf"
+      },
+      "question": "（複選）Let <i>G</i> be a <b>simple planar graph</b> with <i>n</i> ≥ <b>3 vertices</b> and <i>m</i> <b>edges</b>. Which of the following statements are <b>true</b>?",
+      "choices": [
+        "(a) Every simple planar graph satisfies <i>m</i> ≤ 3<i>n</i> − 6.",
+        "(b) If every face in a planar embedding of <i>G</i> has degree at least 4, then <i>m</i> ≤ 2<i>n</i> − 4.",
+        "(c) A planar graph may contain a subdivision of <i>K</i><sub>5</sub> or <i>K</i><sub>3,3</sub>.",
+        "(d) Every planar graph contains a Hamiltonian cycle.",
+        "(e) Every planar graph can be properly colored using at most four colors."
+      ],
+      "answer": "(a)、(b)、(e)",
+      "explanation": "<ul><li>(a) 對：簡單圖每個面至少 3 條邊，2m ≥ 3f；代入 Euler 公式 n − m + f = 2 得 m ≤ 3n − 6（n ≥ 3）。</li><li>(b) 對：同樣推導，每面至少 4 條邊 ⇒ 2m ≥ 4f ⇒ f ≤ m/2，代入 n − m + m/2 ≥ 2 得 m ≤ 2n − 4。這就是 K<sub>3,3</sub>（m = 9 &gt; 2·6 − 4 = 8）不是平面圖的證明。</li><li>(c) 錯：<b>Kuratowski's theorem</b>：平面圖 ⇔ 不含 K<sub>5</sub> 或 K<sub>3,3</sub> 的 subdivision。</li><li>(d) 錯：例如星形圖 K<sub>1,3</sub>（一棵樹）是平面圖，但沒有任何圈。</li><li>(e) 對：<b>Four color theorem（四色定理）</b>。</li></ul>"
     }
   ]
 }
