@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paging and TLB 分頁與 TLB · 作業系統 | 資工考研互動學習站</title>
+  <meta name="description" content="分頁的位址轉換、頁表大小、TLB 與 EAT、保護與共享、多層／雜湊／反向頁表。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=44614248">
+  <script src="../../../assets/js/theme.js?v=44614248"></script>
+</head>
+<body data-subject="operating-systems" data-chapter="main-memory" data-chno="6" data-topic="operating-systems/main-memory/paging" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Operating Systems 作業系統</a> › Ch6 Main Memory 主記憶體 › Paging and TLB 分頁與 TLB</nav>
+      <div class="topic-head">
+        <h1>Paging and TLB 分頁與 TLB<small>把位址切成頁號與位移，用頁表和 TLB 找到實體位置</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch6 Main Memory</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">page table</span>
+          <span class="chip">TLB</span>
+          <span class="chip">EAT</span>
+          <span class="chip">multi-level paging</span>
+          <span class="chip">inverted page table</span>
+        </div>
+      </div>
+
+      <section id="why-paging">
+        <h2>為什麼需要分頁</h2>
+        <div class="panel prose">
+          <p>最直覺的記憶體管理是 <span class="term">Contiguous Allocation<small>（連續配置）</small></span>：每個行程在實體記憶體裡佔一整段連續的空間，用一組 base／limit 暫存器做位址轉換和保護（細節見籌備中的「Contiguous Memory Allocation 連續記憶體配置與碎片」）。它簡單，但有一個治不好的病：行程來來去去之後，空閒空間會被切成很多零碎的洞，這叫 <span class="term">External Fragmentation<small>（外部碎片）</small></span>。</p>
+          <p>看圖 1(a)：記憶體裡共有 30 + 20 + 25 = 75 KB 空著，新來的 P4 只要 60 KB，可是沒有任何一個洞大於等於 60 KB，P4 還是放不進去。解法之一是 compaction（把行程往同一邊搬、把洞合併），但搬動要複製大量資料，而且行程必須能在執行期間重新定位，代價很高。</p>
+          <p>問題的根源在於「一個行程必須連續」。<span class="term">Paging<small>（分頁）</small></span>換個想法：</p>
+          <ul>
+            <li>把實體記憶體切成固定大小的 <span class="term">Frame<small>（頁框）</small></span>。</li>
+            <li>把每個行程的邏輯位址空間切成同樣大小的 <span class="term">Page<small>（頁）</small></span>。</li>
+            <li>每一頁可以放進<b>任何一個</b>空的 frame，不必相鄰；用一張 <span class="term">Page Table<small>（頁表）</small></span>記下「第幾頁放在第幾個 frame」。</li>
+          </ul>
+          <p>行程看到的邏輯位址仍然是 0 開始、連續的一整段；只是背後每一頁散落在不同的 frame。因為所有 frame 一樣大，任何空 frame 都能拿來用，<b>外部碎片就消失了</b>（圖 1(b)）。代價是每次存取記憶體都要多做一次查表，以及最後一頁可能用不滿（內部碎片，下面會算）。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="paging-contiguous-vs-paging"></div>
+            <figcaption><b>圖 1</b>：(a) 連續配置：空著的 75 KB 分散在三個洞裡，60 KB 的 P4 放不進去；(b) 分頁：P4 切成 4 頁，分別放進不相鄰的 frame 2、4、6、7，邏輯上仍然連續。</figcaption>
+          </figure>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 分頁的本質：<b>邏輯上連續、實體上分散</b>。頁表負責把兩者接起來，硬體中負責查表的單元叫 <span class="term">MMU<small>（Memory-Management Unit，記憶體管理單元）</small></span>。</p></div>
+        </div>
+      </section>
+
+      <section id="address-translation">
+        <h2>位址怎麼切、怎麼轉換</h2>
+        <div class="panel prose">
+          <h3>邏輯位址 = 頁號 p ＋ 頁內位移 d</h3>
+          <p>頁大小一定是 2 的次方，設為 2<sup>n</sup> bytes。CPU 產生的邏輯位址（m 位元）就可以直接切成兩段：</p>
+          <ul>
+            <li><b>page number p</b>（高 m − n 位元）：第幾頁，用來當頁表的索引。p = 位址 ÷ 頁大小。</li>
+            <li><b>page offset d</b>（低 n 位元）：頁內第幾個 byte。d = 位址 mod 頁大小。</li>
+          </ul>
+          <p>轉換時 MMU 用 p 查頁表得到 frame 號 f，<b>d 原封不動</b>，實體位址 = f × 頁大小 + d，也就是把 f 和 d 的位元接在一起。因為頁大小是 2 的次方，除法和 mod 都只是「從中間切開位元」，硬體不用做除法。</p>
+          <pre class="formula">p = ⌊位址 / 2^n⌋          d = 位址 mod 2^n
+實體位址 = 頁表[p] × 2^n + d</pre>
+          <h3>例子：頁 1 KB、16 位元邏輯位址</h3>
+          <p>頁大小 1 KB = 2<sup>10</sup>，offset 10 位元；頁號 16 − 10 = 6 位元，邏輯空間最多 2<sup>6</sup> = 64 頁。實體記憶體 16 KB，共 16 KB ÷ 1 KB = 16 個 frame，實體位址只要 14 位元，比邏輯位址短：<b>邏輯空間和實體空間的大小互相獨立</b>，頁數和 frame 數通常不一樣。設頁表為 0→7、1→3、2→12、5→9，其餘 invalid：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>邏輯位址</th><th>p = 位址 / 1024</th><th>d = 位址 mod 1024</th><th>頁表[p]</th><th>實體位址</th></tr></thead>
+              <tbody>
+                <tr><td>1000</td><td>0</td><td>1000</td><td>7</td><td>7 × 1024 + 1000 = 8168</td></tr>
+                <tr><td>2100</td><td>2</td><td>52</td><td>12</td><td>12 × 1024 + 52 = 12340</td></tr>
+                <tr><td>5500</td><td>5</td><td>380</td><td>9</td><td>9 × 1024 + 380 = 9596</td></tr>
+                <tr><td>4000</td><td>3</td><td>928</td><td>invalid</td><td>trap 給作業系統</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="paging-translation"></div>
+            <figcaption><b>圖 2</b>：邏輯位址 5500 的轉換。p = 5 當索引去查頁表（頁表起點記在 PTBR），得到 frame 9；d = 380 直接接到後面，實體位址 9596。</figcaption>
+          </figure>
+          <p>頁大小是 16 的次方（4 KB = 16<sup>3</sup>）時，十六進位位址可以直接用「看字」的方式切：32 位元、頁 4 KB，offset 12 位元剛好是最後 3 個十六進位數字。例如 0x00402A1C：d = 0xA1C，p = 0x00402。頁大小不是 16 的次方（例如 1 KB）時就要先換成二進位再切，不能只看十六進位字。</p>
+          <p>每個行程有自己的頁表，頁表放在記憶體裡，起點記在 <span class="term">PTBR<small>（Page-Table Base Register，頁表基底暫存器）</small></span>；context switch 時只要換掉 PTBR 的值（存在 PCB 裡的是這個指標，不是整張頁表）。同一個行程的多個 thread 共用位址空間，也就共用同一張頁表。</p>
+          <details class="code-fold">
+            <summary>看程式碼：translateBasic() 不用 TLB 的位址轉換</summary>
+            <div class="code-block"><div class="code-head">translateBasic()：切 p / d、查頁表</div><pre class="code">int translateBasic(int addr) {
+  int p = addr / pageSize;           /* 頁號 = 位址 ÷ 頁大小 */
+  int d = addr % pageSize;           /* offset = 位址 mod 頁大小 */
+  if (p &gt;= numPages || !pageTable[p].valid) return -1;   /* 超出範圍或 invalid：trap */
+  return pageTable[p].frame * pageSize + d;
+}</pre></div>
+          </details>
+          <h3>位元數與頁表大小</h3>
+          <p>考題最愛問的幾個量，全部從「頁大小決定 offset 位元數」出發：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>要算的量</th><th>公式</th><th>例：32 位元、頁 4 KB、PTE 4 B、實體 1 GB</th></tr></thead>
+              <tbody>
+                <tr><td>offset 位元數</td><td>log<sub>2</sub>(頁大小)</td><td>12</td></tr>
+                <tr><td>頁號位元數、頁數</td><td>邏輯位元數 − offset；2<sup>頁號位元</sup></td><td>20 位元，2<sup>20</sup> ≈ 一百萬頁</td></tr>
+                <tr><td>frame 數、實體位址位元數</td><td>實體大小 ÷ 頁大小；log<sub>2</sub>(實體大小)</td><td>2<sup>30</sup> / 2<sup>12</sup> = 2<sup>18</sup> 個 frame；30 位元</td></tr>
+                <tr><td>單層頁表大小</td><td>頁數 × PTE 大小</td><td>2<sup>20</sup> × 4 B = 4 MB（每個行程一份）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>4 MB 聽起來不多，但它是<b>每個行程</b>都要一份、而且要一整塊連續的記憶體；100 個行程就要 400 MB，光頁表就吃掉 1 GB 實體記憶體的 40%。到了 64 位元更誇張，這就是後面「多層頁表」要解決的問題。注意實體記憶體大小只影響 frame 數和 PTE 裡 frame 欄位的長度，<b>不影響頁表有幾格</b>（頁表格數由邏輯空間決定）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：singleLevelSize() 算單層頁表大小</summary>
+            <div class="code-block"><div class="code-head">singleLevelSize()：offset、頁號位元數與頁表大小</div><pre class="code">void singleLevelSize(int vaBits, long long pageBytes, int pteBytes) {
+  int offset = log2i(pageBytes);
+  int vpn = vaBits - offset;                    /* 頁號位元數 */
+  long long entries = 1LL &lt;&lt; vpn;
+  printf("%d 位元位址、頁 %lld B：offset %d 位元、頁號 %d 位元，頁表 2^%d 格 × %d B = %lld B\n",
+         vaBits, pageBytes, offset, vpn, vpn, pteBytes, entries * pteBytes);
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="page-size">
+        <h2>內部碎片與頁大小的取捨</h2>
+        <div class="panel prose">
+          <p>分頁沒有外部碎片，但有 <span class="term">Internal Fragmentation<small>（內部碎片）</small></span>：行程大小通常不是頁大小的整數倍，最後一頁用不滿，剩下的空間別人也不能用。例如頁 4 KB、行程 10,300 B，要 ⌈10300 / 4096⌉ = 3 頁（12,288 B），最後一頁浪費 12,288 − 10,300 = 1,988 B。</p>
+          <p>最壞浪費「一頁少 1 byte」，最好剛好 0；假設行程大小隨機，<b>平均每個行程浪費半頁</b>。所以頁越小，內部碎片越少。那為什麼現代系統的頁反而越來越大？因為頁大小是一連串取捨：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>考量</th><th>頁小一點</th><th>頁大一點</th></tr></thead>
+              <tbody>
+                <tr><td>內部碎片（平均半頁）</td><td>較少</td><td>較多</td></tr>
+                <tr><td>頁表大小（頁數 × PTE）</td><td>較大</td><td>較小</td></tr>
+                <tr><td>TLB 涵蓋範圍（格數 × 頁大小）</td><td>較小，TLB miss 多</td><td>較大，TLB miss 少</td></tr>
+                <tr><td>磁碟 I/O（搭配需求分頁時）</td><td>每次搬得少，seek 與旋轉延遲分攤不掉</td><td>一次搬一大塊較划算，但可能載入用不到的資料</td></tr>
+                <tr><td>page fault 次數</td><td>同樣的區域性要更多頁，fault 較多</td><td>較少</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>CPU 和記憶體容量成長得比磁碟快，所以趨勢是用更大的頁；x86-64 除了 4 KB 還支援 2 MB、1 GB 的 <b>huge page</b>。一個 2 MB 的 huge page 在 TLB 裡只佔 1 格，卻涵蓋 512 個 4 KB 頁的範圍，掃大陣列、大型資料庫、機器學習這種工作量很適合；代價是內部碎片變大，copy-on-write、搬移頁面時一次要處理 2 MB。</p>
+        </div>
+      </section>
+
+      <section id="tlb">
+        <h2>TLB：頁表的快取</h2>
+        <div class="panel prose">
+          <p>頁表放在記憶體裡，於是每次存取資料其實要存取記憶體<b>兩次</b>：一次讀頁表拿 frame 號，一次讀資料。記憶體存取時間直接變成兩倍，這是不能接受的。解法是在 MMU 裡放一個小而快的快取，專門存「最近用過的頁號 → frame 號」，叫 <span class="term">TLB<small>（Translation Look-aside Buffer，轉換後備緩衝區）</small></span>。</p>
+          <h3>運作流程</h3>
+          <ol>
+            <li>CPU 送出邏輯位址，切出 p 和 d。</li>
+            <li>拿 p 去查 TLB。TLB 是 <b>全關聯</b>的：每一格都存（頁號, frame 號），所有格子同時比對頁號，通常只有 32～1024 格（全關聯的觀念見計算機組織的 <a href="../../computer-organization/memory-hierarchy/cache-mapping.html">Cache Organization and Mapping 快取組織與映射</a>）。</li>
+            <li><b>TLB hit</b>：直接拿到 frame 號，接上 d 去讀資料，只多花一次 TLB 時間。</li>
+            <li><b>TLB miss</b>：到記憶體讀頁表拿 frame 號，再把這筆對應放進 TLB；TLB 滿了就依替換策略換掉一格，考題沒說明時用 <b>LRU</b>（換掉最久沒用的）。</li>
+          </ol>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="paging-tlb-flow"></div>
+            <figcaption><b>圖 3</b>：TLB 在位址轉換中的位置。頁號 5 在 TLB 裡（綠色）就直接得到 frame 9；不在的話走紅色虛線去讀頁表，拿到後再放進 TLB。</figcaption>
+          </figure>
+          <p>TLB 存的方向是 <b>頁號 → frame 號</b>（用虛擬頁號當 key 查詢）。所以兩個不同的虛擬頁即使指向同一個 frame，在 TLB 裡也是兩筆不同的 entry。</p>
+          <h3>TLB miss 不等於 page fault</h3>
+          <p>TLB 只是快取，miss 只代表「這筆對應最近沒被用過、沒留在 TLB 裡」，頁通常好好地在記憶體裡，讀頁表就拿得到。只有頁表裡那一格是 invalid 時才會 trap 給作業系統，也就是 page fault（要從磁碟載入頁面，屬於籌備中的「Demand Paging 需求分頁與有效存取時間」）。三者的代價差很多：TLB hit 約 1 ns 等級、TLB miss 多一兩百 ns、page fault 要數毫秒，差了四五個數量級。</p>
+          <p>TLB miss 由誰處理依架構而定：x86、ARM 是 <b>硬體</b>（MMU 內的 page walker 自己走頁表，作業系統不介入）；MIPS、UltraSPARC 是 <b>軟體</b>（trap 給作業系統，由 OS 查表再填入 TLB）。考題常拿 x86 出題，答案是硬體。</p>
+          <h3>Context switch 與 ASID</h3>
+          <p>每個行程的頁表不同，同一個頁號 5 在 A 行程和 B 行程對到不同 frame。切換行程時，TLB 裡舊行程的 entry 就不能再用，有兩種做法：</p>
+          <ul>
+            <li><b>Flush</b>：切換時把整個 TLB 作廢。簡單，但新行程一開始每次存取都 miss。</li>
+            <li><span class="term">ASID<small>（Address-Space Identifier，位址空間識別碼）</small></span>：每一格多存一個 ASID，查詢時頁號和 ASID 都要對上才算命中。不同行程的 entry 可以同時留在 TLB 裡，切換時不必清空。</li>
+          </ul>
+          <p>同一個行程內切換 thread 不換位址空間，PTBR 和 TLB 都不用動。另外作業系統核心常用的轉換可以設成 <b>wired down</b>（鎖定），不會被替換掉。</p>
+          <details class="code-fold">
+            <summary>看程式碼：tlbLookup() / tlbInsert()（全關聯＋LRU）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="查詢"><div class="code-head">tlbLookup()：比對每一格的頁號</div><pre class="code">int tlbLookup(int p) {
+  now++;
+  for (int i = 0; i &lt; tlbSize; i++)
+    if (tlb[i].valid &amp;&amp; tlb[i].page == p) {
+      tlb[i].lastUsed = now;         /* LRU：記下最後使用時間 */
+      return tlb[i].frame;
+    }
+  return -1;                         /* TLB miss */
+}</pre></div>
+              <div class="code-block" data-tab="放入"><div class="code-head">tlbInsert()：先找空格，再換掉 LRU</div><pre class="code">void tlbInsert(int p, int f) {
+  int v = 0;                         /* 先找空格，沒有空格就換掉最久沒用的 */
+  for (int i = 0; i &lt; tlbSize; i++) {
+    if (!tlb[i].valid) { v = i; break; }
+    if (tlb[i].lastUsed &lt; tlb[v].lastUsed) v = i;
+  }
+  tlb[v].valid = 1;
+  tlb[v].page = p;
+  tlb[v].frame = f;
+  tlb[v].lastUsed = now;
+}</pre></div>
+            </div>
+          </details>
+          <details class="code-fold">
+            <summary>看程式碼：translate() 單層頁表＋TLB</summary>
+            <div class="code-block"><div class="code-head">translate()：先查 TLB，失誤再讀頁表</div><pre class="code">int translate(int addr) {
+  int p = addr / pageSize;           /* 頁號：位址的高位元 */
+  int d = addr % pageSize;           /* offset：位址的低位元 */
+  int f = tlbLookup(p);              /* 先查 TLB */
+  if (f &gt;= 0) {
+    tlbHits++;
+    return f * pageSize + d;         /* TLB 命中：不用讀頁表 */
+  }
+  tlbMisses++;
+  memRefs++;                         /* TLB 失誤：到記憶體讀頁表 */
+  if (!pageTable[p].valid) return -1;   /* invalid：trap 給作業系統 */
+  f = pageTable[p].frame;
+  tlbInsert(p, f);                   /* 放進 TLB，滿了換掉 LRU */
+  return f * pageSize + d;           /* 實體位址 = frame 起點 + offset */
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="eat">
+        <h2>有效存取時間 EAT</h2>
+        <div class="panel prose">
+          <p>有了 TLB，每次存取的時間取決於有沒有命中。設 TLB 命中率（hit ratio）為 h、查 TLB 要 t、存取一次記憶體要 m，頁表為單層：</p>
+          <ul>
+            <li>命中：查 TLB ＋ 讀資料 = t + m。</li>
+            <li>失誤：查 TLB ＋ 讀頁表 ＋ 讀資料 = t + 2m。</li>
+          </ul>
+          <pre class="formula">EAT = h × (t + m) + (1 − h) × (t + 2m)
+多層頁表（k 層）：失誤時 = t + k·m + m</pre>
+          <p>例：t = 10 ns、m = 100 ns、h = 98%。EAT = 0.98 × 110 + 0.02 × 210 = 107.8 + 4.2 = <b>112 ns</b>。和「每次都只要讀一次記憶體」的 100 ns 相比只慢 12%；如果沒有 TLB，每次都要 200 ns，慢 100%。TLB 只有幾十格，就把頁表造成的額外負擔從 100% 壓到 12%，這就是區域性的威力。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>命中率 h</th><th>0%</th><th>50%</th><th>80%</th><th>90%</th><th>95%</th><th>99%</th><th>100%</th></tr></thead>
+              <tbody>
+                <tr><td>單層 EAT（ns）</td><td>210</td><td>160</td><td>130</td><td>120</td><td>115</td><td>111</td><td>110</td></tr>
+                <tr><td>兩層 EAT（ns）</td><td>310</td><td>210</td><td>150</td><td>130</td><td>120</td><td>112</td><td>110</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>表中固定 t = 10、m = 100，只改命中率和層數。看兩件事：命中率越高，層數的影響越小（99% 時兩層只比單層慢 1 ns）；命中率低時多層頁表很傷（0% 時兩層比單層多 100 ns）。所以<b>多層頁表更需要 TLB</b>。</p>
+          <h3>反推命中率</h3>
+          <p>題目也常反過來問「要 EAT 不超過某個值，命中率至少多少」。把 EAT 寫成 h 的一次式再解不等式：t = 20、m = 100、單層、要求 EAT &lt; 140 ns，EAT = 120h + 220(1 − h) = 220 − 100h &lt; 140，得 h &gt; 0.8，命中率要超過 80%。</p>
+          <h3>不同題目的假設</h3>
+          <ul>
+            <li>大多數題目（包括這頁）假設<b>先查 TLB，失誤後才讀頁表</b>，所以失誤時 TLB 時間也要算。</li>
+            <li>有些題目假設 TLB 和頁表平行查詢，或 TLB 時間可忽略，失誤時就是 2m。題目沒給 TLB 時間時，通常就是這種。</li>
+            <li>題目把 page fault 也算進來時，再加上 page fault 率 × 處理時間（毫秒等級），屬於需求分頁的 EAT（籌備中）。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：eat() / minHitRatio()</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="算 EAT"><div class="code-head">eat()：TLB 命中與失誤的加權平均</div><pre class="code">double eat(double hit, double tlbTime, double memTime, int levels) {
+  double hitTime = tlbTime + memTime;                       /* 查 TLB + 存取資料 */
+  double missTime = tlbTime + levels * memTime + memTime;   /* 再加上走頁表 */
+  return hit * hitTime + (1 - hit) * missTime;
+}</pre></div>
+              <div class="code-block" data-tab="反推命中率"><div class="code-head">minHitRatio()：EAT 不超過 target 的最低命中率</div><pre class="code">double minHitRatio(double target, double tlbTime, double memTime, int levels) {
+  double hitTime = tlbTime + memTime;
+  double missTime = tlbTime + levels * memTime + memTime;
+  return (missTime - target) / (missTime - hitTime);
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>輸入一串邏輯位址、頁大小、8 格頁表（「-」表示 invalid）和 TLB 格數，看每個位址怎麼切成 p 和 d、TLB 有沒有命中、失誤時怎麼讀頁表並用 LRU 更新 TLB。最後一步會算出命中率和 EAT（設 TLB 10 ns、記憶體 100 ns）。按「兩層頁表」時，頁號 3 位元再切成 p1（2 位元）和 p2（1 位元），一次 TLB miss 要讀外層、內層各一次。</p>
+          <p>預設例子（頁 16 B、TLB 2 格、頁表 5 2 - - 9 0 7 3）的結果：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>位址</th><th>20</th><th>24</th><th>70</th><th>28</th><th>5</th><th>30</th><th>72</th><th>40</th></tr></thead>
+              <tbody>
+                <tr><td>(p, d)</td><td>(1, 4)</td><td>(1, 8)</td><td>(4, 6)</td><td>(1, 12)</td><td>(0, 5)</td><td>(1, 14)</td><td>(4, 8)</td><td>(2, 8)</td></tr>
+                <tr><td>TLB</td><td>miss</td><td>hit</td><td>miss</td><td>hit</td><td>miss，換掉 4</td><td>hit</td><td>miss，換掉 0</td><td>miss → trap</td></tr>
+                <tr><td>實體位址</td><td>36</td><td>40</td><td>150</td><td>44</td><td>85</td><td>46</td><td>152</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>成功的 7 次存取命中 3 次（42.9%），單層 EAT = (3 × 110 + 4 × 210) / 7 ≈ 167.1 ns；兩層時失誤要 310 ns，EAT ≈ 224.3 ns。第 5 個位址 5 是 LRU 的重點：TLB 裡有 page 1 和 page 4，page 1 雖然比較早放進來，但在位址 28 剛用過，所以 LRU 換掉的是 page 4。若用 FIFO 會換掉 page 1，下一個位址 30 就會 miss。「循環 3 頁」的例子則是 3 頁輪流用、TLB 只有 2 格，LRU 每次都剛好換掉下一個要用的頁，6 次全部 miss；TLB 加到 3 格後，後 3 次全部命中。</p>
+        </div>
+        <div class="viz" data-viz="paging-sim"></div>
+      </section>
+
+      <section id="protection-sharing">
+        <h2>保護與共享</h2>
+        <div class="panel prose">
+          <h3>保護位元與 valid-invalid 位元</h3>
+          <p>每個 <span class="term">PTE<small>（Page-Table Entry，頁表項）</small></span>除了 frame 號，還有幾個控制位元：</p>
+          <ul>
+            <li><b>protection bits</b>：這一頁可讀、可寫、可執行（r／w／x）。例如程式碼頁設成唯讀，寫入時 MMU 會 trap，避免程式改到自己的指令。檢查和位址轉換同時做，不多花時間。</li>
+            <li><b>valid-invalid bit</b>：v 表示這一頁屬於行程合法的位址空間（而且在記憶體裡）；i 表示不合法或還不在記憶體，存取時 trap 給作業系統。</li>
+            <li>行程通常只用到位址空間的一小部分，頁表不一定要做滿整個空間：可以用 <b>PTLR</b>（Page-Table Length Register）記錄頁表長度，頁號超過就直接 trap。</li>
+          </ul>
+          <p>使用者程式只能產生邏輯位址，所有位址都要經過自己的頁表轉換，而頁表只有 kernel 能修改；行程沒辦法碰到不屬於它的 frame，這就是分頁天生的記憶體保護。注意 valid 位元是以頁為單位：行程大小 10,300 B、頁 4 KB 時，第 2 頁的 10,300～12,287 雖然超出程式範圍，但仍屬於 valid 的頁，存取不會 trap，這也是內部碎片的副作用。</p>
+          <h3>共享頁</h3>
+          <p>頁表讓多個行程共享同一塊實體記憶體變得很容易：只要兩張頁表的某一格指向同一個 frame。典型例子是 <b>reentrant code</b>（純程式碼、執行時不會修改自己），例如文字編輯器或 C 函式庫：10 個使用者同時執行，程式碼只需要在記憶體裡放一份，每個人只有自己的資料頁。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="paging-shared-pages"></div>
+            <figcaption><b>圖 4</b>：P1、P2 共享程式碼 ed1、ed2（frame 3、4，綠色），資料頁各自獨立。ed1 在 P1 是第 0 頁、在 P2 是第 1 頁：共享的是 frame，虛擬位址可以不同；保護位元也記在各自的 PTE 裡。</figcaption>
+          </figure>
+          <p>幾個容易考的細節：</p>
+          <ul>
+            <li>共享的頁在兩個行程中<b>不必對到同一個虛擬位址</b>，各自的頁表愛放哪就放哪。</li>
+            <li>保護位元記在各自的 PTE 裡：P1 把共享頁設成唯讀，不影響 P2 那邊能不能寫。</li>
+            <li>真正共享同一個 frame 時，一邊寫入另一邊馬上看得到。fork 時用的 copy-on-write 一開始也共享，但寫入時才複製一份，屬於需求分頁的內容（籌備中）。</li>
+            <li>反向頁表（後面介紹）每個 frame 只有一格、只能記一個（pid, 頁號），共享頁比較難做。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="multi-level">
+        <h2>頁表太大：多層頁表</h2>
+        <div class="panel prose">
+          <p>單層頁表的問題前面算過：32 位元、頁 4 KB、PTE 4 B 時每個行程 4 MB，而且要一整塊<b>連續</b>的記憶體；64 位元用一樣的參數，頁表要 2<sup>52</sup> × 4 B，根本放不下。但大部分行程的位址空間很稀疏：程式碼和資料在低位址、stack 在高位址，中間一大片沒用到，單層頁表卻得替每一頁都留一格。</p>
+          <p><span class="term">Hierarchical Paging<small>（階層式分頁，又叫多層頁表）</small></span>的想法是「把頁表也分頁」：頁表本身切成一頁一頁，再用一張外層頁表記錄每一頁頁表放在哪裡。整段沒用到的區域，對應的內層頁表就不配置，外層那一格寫 NULL（invalid）即可。</p>
+          <h3>兩層頁表：32 位元、頁 4 KB、PTE 4 B</h3>
+          <ul>
+            <li>offset：4 KB = 2<sup>12</sup>，12 位元。</li>
+            <li>每張頁表剛好放一頁：4 KB ÷ 4 B = 1024 = 2<sup>10</sup> 格，所以每一層吃 10 位元。</li>
+            <li>頁號 20 位元切成 p1（外層索引）10 位元＋ p2（內層索引）10 位元，位址寫成 <b>10 | 10 | 12</b>。</li>
+            <li>一張內層表涵蓋 1024 頁 × 4 KB = 4 MB 的位址空間。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="paging-two-level"></div>
+            <figcaption><b>圖 5</b>：兩層頁表。p1 選外層頁表的一格，得到一張內層頁表；p2 再選內層的一格，得到 frame 號。外層第 2 格是 NULL：那 4 MB 都沒用到，就不配置內層表。</figcaption>
+          </figure>
+          <p>省多少？假設行程只用最低 8 MB（程式碼＋資料）和最高 4 MB（stack）：內層表需要 8 / 4 + 4 / 4 = 3 張，加上外層 1 張，共 4 頁 = 16 KB，單層要 4 MB，只用了 0.4%。但如果整個 4 GB 都用滿，兩層要 1024 張內層表＋1 張外層 = 4 MB + 4 KB，<b>反而比單層多一頁</b>：多層頁表省的是稀疏空間，不是任何情況都省。</p>
+          <h3>一般的切法：要幾層</h3>
+          <p>通則是「每一張頁表剛好放進一頁」：</p>
+          <pre class="formula">每層位元數 = log2(頁大小 / PTE 大小)
+層數 = ⌈(位址位元數 − offset 位元數) / 每層位元數⌉
+最上層只用剩下的位元（可能比一頁少）</pre>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>位址</th><th>頁大小</th><th>PTE</th><th>offset</th><th>頁號</th><th>每層</th><th>層數</th><th>最上層</th></tr></thead>
+              <tbody>
+                <tr><td>32 位元</td><td>4 KB</td><td>4 B</td><td>12</td><td>20</td><td>10</td><td>2</td><td>10 位元</td></tr>
+                <tr><td>48 位元（x86-64）</td><td>4 KB</td><td>8 B</td><td>12</td><td>36</td><td>9</td><td>4</td><td>9 位元</td></tr>
+                <tr><td>64 位元</td><td>8 KB</td><td>8 B</td><td>13</td><td>51</td><td>10</td><td>6</td><td>1 位元</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>x86-64 那一列就是真實的 4 層頁表（9 | 9 | 9 | 9 | 12）。64 位元那列只是把位元數除一除就要 6 層，這也是 64 位元系統只實際使用 48 或 57 位元位址的原因之一。</p>
+          <h3>代價：一次轉換要幾次記憶體存取</h3>
+          <p>k 層頁表在 TLB miss 時要依序讀 k 張表，加上讀資料共 <b>k + 1</b> 次記憶體存取：兩層 3 次、x86-64 的四層 5 次。所以多層頁表一定要配 TLB（上一節的表：命中率 99% 時兩層只比單層慢 1 ns）。另外 2 MB 的 huge page 在 x86-64 上只要走 3 層，因為最後 21 位元都是 offset。</p>
+          <details class="code-fold">
+            <summary>看程式碼：levelSplit() 算層數與各層位元數</summary>
+            <div class="code-block"><div class="code-head">levelSplit()：每張表放一頁時要幾層</div><pre class="code">void levelSplit(int vaBits, long long pageBytes, int pteBytes) {
+  int offset = log2i(pageBytes);
+  int perLevel = log2i(pageBytes / pteBytes);   /* 一頁放 2^perLevel 個 entry */
+  int vpn = vaBits - offset;                    /* 要被各層頁表吃掉的位元 */
+  int levels = (vpn + perLevel - 1) / perLevel; /* 無條件進位 */
+  int top = vpn - (levels - 1) * perLevel;      /* 最上層只用剩下的位元 */
+  printf("%d 位元位址、頁 %lld B、PTE %d B：offset %d、每層 %d 位元，頁號 %d 位元 → %d 層，最上層 %d 位元；"
+         "TLB miss 要讀 %d 次頁表＋1 次資料\n",
+         vaBits, pageBytes, pteBytes, offset, perLevel, vpn, levels, top, levels);
+}</pre></div>
+          </details>
+          <details class="code-fold">
+            <summary>看程式碼：translate2() 兩層頁表＋TLB</summary>
+            <div class="code-block"><div class="code-head">translate2()：外層、內層各讀一次</div><pre class="code">int translate2(int addr) {
+  int p = addr / pageSize, d = addr % pageSize;
+  int p1 = p / INNER;                /* 外層索引：頁號的高位元 */
+  int p2 = p % INNER;                /* 內層索引：頁號的低位元 */
+  int f = tlbLookup(p);              /* TLB 仍然用完整的頁號查 */
+  if (f &gt;= 0) {
+    tlbHits++;
+    return f * pageSize + d;
+  }
+  tlbMisses++;
+  memRefs++;                         /* 第 1 次：讀外層頁表 */
+  if (outer[p1] == NULL) return -1;  /* 內層表不存在：trap */
+  memRefs++;                         /* 第 2 次：讀內層頁表 */
+  if (!outer[p1][p2].valid) return -1;
+  f = outer[p1][p2].frame;
+  tlbInsert(p, f);
+  return f * pageSize + d;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="hashed-inverted">
+        <h2>雜湊頁表與反向頁表</h2>
+        <div class="panel prose">
+          <p>多層頁表在 64 位元時層數太多，另外兩種結構換個角度解決「頁表太大」：</p>
+          <h3>Hashed Page Table 雜湊頁表</h3>
+          <p><span class="term">Hashed Page Table<small>（雜湊頁表）</small></span>把虛擬頁號丟進雜湊函數，得到雜湊表的一格；每格是一條鏈結串列，節點存（虛擬頁號, frame 號, 下一個）。查詢時沿著串列比對頁號，找到就得到 frame。表的大小跟「實際用到的頁數」有關，不必替沒用到的頁留位置，適合大於 32 位元的位址空間。變形 <b>clustered page table</b> 讓每個節點記錄連續好幾頁（例如 16 頁），對稀疏但成群的位址空間更省。缺點是碰撞時要走串列，最壞情況存取次數不固定。</p>
+          <h3>Inverted Page Table 反向頁表</h3>
+          <p>前面的頁表都是「每個行程一張、每個虛擬頁一格」。<span class="term">Inverted Page Table<small>（反向頁表）</small></span>反過來：<b>全系統只有一張、每個實體 frame 一格</b>，第 i 格記錄「frame i 現在放的是哪個行程（pid）的哪一頁」。表的大小只跟實體記憶體有關：1 GB 實體記憶體、頁 4 KB 有 2<sup>18</sup> 個 frame，每格 8 B，整張表 2 MB；同樣的 100 個行程如果各用 4 MB 的單層頁表，要 400 MB。</p>
+          <p>代價是查詢方向反了：要找 (pid, p) 在哪個 frame，只能在表裡<b>搜尋</b>（找到的列號就是 frame 號），最壞要比對整張表。實務上用雜湊表加速，並靠 TLB 擋掉大部分查詢。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="paging-inverted"></div>
+            <figcaption><b>圖 6</b>：反向頁表用（pid, p）= (2, 7) 去搜尋，第 3 列吻合，所以 frame 號 f = 3。列號就是 frame 號，表裡不必另外存 frame。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>單層頁表</th><th>多層頁表</th><th>雜湊頁表</th><th>反向頁表</th></tr></thead>
+              <tbody>
+                <tr><td>幾張表</td><td>每行程 1 張</td><td>每行程 1 棵樹</td><td>每行程 1 張（或共用）</td><td>全系統 1 張</td></tr>
+                <tr><td>格數由什麼決定</td><td>虛擬頁數</td><td>實際用到的區段</td><td>實際用到的頁數</td><td>實體 frame 數</td></tr>
+                <tr><td>TLB miss 時查表</td><td>1 次存取</td><td>每層 1 次</td><td>雜湊＋走串列，不固定</td><td>搜尋（搭配雜湊）</td></tr>
+                <tr><td>優點</td><td>最簡單、查一次就好</td><td>稀疏空間很省</td><td>適合 64 位元</td><td>總大小最小、和行程數無關</td></tr>
+                <tr><td>缺點</td><td>太大、要連續空間</td><td>層數多、存取次數多</td><td>碰撞時變慢</td><td>查詢慢、共享頁難做</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>反向頁表只記錄「在記憶體裡的頁」，不在記憶體的頁還是需要另外的資料結構記錄它們在磁碟的位置，這部分和需求分頁一起看（籌備中）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：invertedSize() 反向頁表大小</summary>
+            <div class="code-block"><div class="code-head">invertedSize()：每個 frame 一格</div><pre class="code">void invertedSize(int paBits, long long pageBytes, int entryBytes) {
+  long long frames = (1LL &lt;&lt; paBits) / pageBytes;
+  printf("實體記憶體 2^%d B、頁 %lld B：%lld 個 frame，反向頁表 %lld B\n",
+         paBits, pageBytes, frames, frames * entryBytes);
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>位址轉換（含十六進位、分段＋分頁）</td><td>很常考</td><td>offset = log<sub>2</sub>(頁大小)；p = 位址 / 頁大小、d = 位址 mod 頁大小；查頁表得 f；實體 = f × 頁大小 + d</td><td><a class="q-link" href="#q-os-0077">例題</a> <a class="q-link" href="#q-os-0157">例題</a> <a class="q-link" href="#q-os-0217">例題</a> <a class="q-link" href="#q-os-0248">例題</a></td></tr>
+                <tr><td>位元數與頁表大小</td><td>很常考</td><td>頁號 = 位址位元 − offset；frame 數 = 實體 ÷ 頁大小；頁表 = 頁數 × PTE；實體記憶體大小不影響頁表格數</td><td><a class="q-link" href="#q-os-0078">例題</a> <a class="q-link" href="#q-os-0113">例題</a> <a class="q-link" href="#q-os-0230">例題</a></td></tr>
+                <tr><td>TLB 的 EAT、反推命中率</td><td>很常考</td><td>命中 = t + m；失誤 = t + k·m + m（k 層）；EAT = 加權平均；反推時寫成 h 的一次式解不等式</td><td><a class="q-link" href="#q-os-0022">例題</a> <a class="q-link" href="#q-os-0113">例題</a> <a class="q-link" href="#q-os-0170">例題</a> <a class="q-link" href="#q-os-0247">例題</a></td></tr>
+                <tr><td>多層頁表的層數與位元</td><td>很常考</td><td>每層 = log<sub>2</sub>(頁大小 / PTE)；層數 = ⌈頁號位元 / 每層⌉；最上層用剩下的位元；最底層頁數 = 虛擬頁數 / 每頁格數</td><td><a class="q-link" href="#q-os-0206">例題</a> <a class="q-link" href="#q-os-0089">例題</a> <a class="q-link" href="#q-os-0249">例題</a></td></tr>
+                <tr><td>多層／反向／雜湊頁表觀念</td><td>常考</td><td>多層省稀疏空間、但滿的時候更大、存取次數多；反向頁表每 frame 一格、全系統一張、要搜尋</td><td><a class="q-link" href="#q-os-0209">例題</a> <a class="q-link" href="#q-os-0049">例題</a> <a class="q-link" href="#q-os-0250">例題</a></td></tr>
+                <tr><td>TLB 觀念題</td><td>常考</td><td>方向是頁號 → frame；miss 只是沒快取，不等於 page fault；換行程要 flush 或用 ASID；x86 的 TLB miss 由硬體走表</td><td><a class="q-link" href="#q-os-0071">例題</a> <a class="q-link" href="#q-os-0054">例題</a> <a class="q-link" href="#q-os-0197">例題</a></td></tr>
+                <tr><td>頁大小取捨、huge page</td><td>常考</td><td>小頁：內部碎片少；大頁：頁表小、TLB reach 大、I/O 划算、fault 少，但碎片大</td><td><a class="q-link" href="#q-os-0016">例題</a> <a class="q-link" href="#q-os-0139">例題</a> <a class="q-link" href="#q-os-0126">例題</a></td></tr>
+                <tr><td>保護與共享頁</td><td>常考</td><td>共享的是 frame，虛擬位址可不同；保護位元在各自的 PTE；頁表只有 kernel 能改</td><td><a class="q-link" href="#q-os-0172">例題</a> <a class="q-link" href="#q-os-0069">例題</a> <a class="q-link" href="#q-os-0035">例題</a></td></tr>
+                <tr><td>TLB 替換追蹤（LRU）</td><td>偶爾</td><td>逐一存取，命中時更新使用時間，滿了換掉最久沒用的</td><td><a class="q-link" href="#q-os-0246">例題</a></td></tr>
+                <tr><td>巢狀頁表（虛擬化）</td><td>偶爾</td><td>guest 走 n 層，每讀一層 guest 表都要先用 NPT 走 m 層；總次數 n(m + 1) + m</td><td><a class="q-link" href="#q-os-0086">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> TLB miss 就是 page fault</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> TLB miss 只是這筆對應沒被快取，讀頁表通常就拿得到；頁表裡是 invalid 才是 page fault</span> <a class="q-link" href="#q-os-0071">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> TLB 存的是 frame 號 → 頁號</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 方向是頁號 → frame 號，用虛擬頁號查詢</span> <a class="q-link" href="#q-os-0054">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> TLB 失誤時只要 t + m</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 失誤要多讀頁表：單層 t + 2m，k 層 t + (k + 1)m</span> <a class="q-link" href="#q-os-0022">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 多層頁表在任何情況都比單層省記憶體</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只在位址空間稀疏時省；全部用滿時多了上層表，反而比較大，而且每次轉換存取次數更多</span> <a class="q-link" href="#q-os-0209">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 反向頁表每個虛擬頁一格</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每個實體 frame 一格、全系統一張，大小只跟實體記憶體有關</span> <a class="q-link" href="#q-os-0049">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 頁表的格數和實體記憶體大小有關</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 格數由邏輯位址空間決定；實體大小只影響 frame 數與 PTE 內 frame 欄位長度，算層數時是干擾條件</span> <a class="q-link" href="#q-os-0113">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 共享頁在兩個行程中一定是同一個虛擬位址，一邊設唯讀另一邊也不能寫</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 共享的是 frame，各自的頁表可以放在不同虛擬頁、設不同保護位元</span> <a class="q-link" href="#q-os-0172">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> x86 的 TLB miss 由作業系統走頁表</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> x86 由 MMU 硬體走頁表，OS 只處理 page fault</span> <a class="q-link" href="#q-os-0197">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 同一個行程內切換 thread 也要換 PTBR、清 TLB</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> thread 共用位址空間，PTBR 不變；換行程時才要 flush 或靠 ASID</span> <a class="q-link" href="#q-os-0069">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 內部碎片最多半頁</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 平均半頁，最壞接近一整頁（行程比整數頁多 1 byte）</span> <a class="q-link" href="#q-os-0245">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="paging"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=44614248"></script>
+  <script src="../../../assets/js/viz-core.js?v=44614248"></script>
+  <script src="../../../assets/js/viz/operating-systems/paging.js?v=44614248"></script>
+</body>
+</html>

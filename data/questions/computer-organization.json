@@ -5340,6 +5340,131 @@
       ],
       "answer": "(B)(C)（(C) 依每核心電容解讀，待確認）",
       "explanation": "<p>serial 部分 0.25 × 10<sup>9</sup> 條只能單核心跑；parallel 部分 0.75 × 10<sup>9</sup> 條兩核心各分 0.375 × 10<sup>9</sup> 條。</p>\n<div class=\"table-scroll\"><table><tr><th></th><th>Processor A</th><th>Processor B</th></tr>\n<tr><td>serial 時間</td><td>0.25G × 1.2 / 3 GHz = 0.1 s</td><td>0.25G × 1 / 2 GHz = 0.125 s</td></tr>\n<tr><td>parallel 時間</td><td>0.375G × 1.2 / 3 GHz = 0.15 s</td><td>0.375G × 1 / 2 GHz = 0.1875 s</td></tr>\n<tr><td>總時間</td><td>0.25 s</td><td>0.3125 s</td></tr>\n<tr><td>每核心動態功率 CV²F</td><td>1.2n × 1.21 × 3G = 4.356 W</td><td>1.0n × 0.81 × 2G = 1.62 W</td></tr>\n<tr><td>動態能量</td><td>0.1 × 4.356 + 0.15 × 2 × 4.356 = 1.742 J</td><td>0.125 × 1.62 + 0.1875 × 2 × 1.62 = 0.81 J</td></tr>\n<tr><td>漏電能量</td><td>0.1 × 0.25 + 0.15 × 0.5 = 0.1 J</td><td>0.125 × 0.2 + 0.1875 × 0.4 = 0.1 J</td></tr>\n<tr><td>總能量</td><td>1.842 J</td><td>0.91 J</td></tr></table></div>\n<p>（單核心執行時另一核心被 power-gate，所以漏電只算一半：A 250 mW、B 200 mW。）</p>\n<p><b>(A) 錯</b>：serial 指令佔 25%，但它只能用一顆核心，所佔<b>時間</b>是 0.1 / 0.25 = 0.125 / 0.3125 = <b>40%</b>——這就是 Amdahl's law 的效果。<br>\n<b>(B) 對</b>：兩者漏電能量都是 <b>0.1 J</b>。<br>\n<b>(C) 對</b>：1.842 / 0.91 ≈ <b>2.02</b>，落在 (2, 2.3]。<br>\n<b>(D) 錯</b>：Energy × Delay：A = 1.842 × 0.25 ≈ 0.461，B = 0.91 × 0.3125 ≈ 0.284，B 比較小、比較有效率。<br>\n<b>(E) 錯</b>：A 總共 0.25 s，B 0.3125 s，A 比較快；A 的 CPI 雖然高 20%，但時脈快 50%，每條指令時間 0.4 ns 比 B 的 0.5 ns 短。</p>\n<p>（待確認：上面把電容當成「每顆核心」的值。若把 1.2 nF／1.0 nF 當成整顆處理器兩核心全開時的總電容，單核心時只算一半，比值變成 0.971 / 0.505 ≈ 1.92，(C) 就不成立；(A)(B)(D)(E) 的判斷不受影響。）</p>"
+    },
+    {
+      "id": "co-0206",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某 L1 快取的 hit time 是 2 cycles、miss rate 4%、miss penalty 50 cycles（miss penalty 指 miss 時「多付」的時間）。平均記憶體存取時間 AMAT 是多少？",
+      "choices": [
+        "(A) 2 cycles",
+        "(B) 3.92 cycles",
+        "(C) 4 cycles",
+        "(D) 52 cycles"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>AMAT = hit time + miss rate × miss penalty = 2 + 0.04 × 50 = 2 + 2 = <b>4 cycles</b>。平均每次存取的時間是命中時的 2 倍：只有 4% 的 miss，卻貢獻了一半的存取時間。</p><ul><li>(A) 2：只算了 miss rate × penalty（0.04 × 50 = 2），忘了每次存取都要先付 hit time，這是最常見的錯誤。</li><li>(B) 3.92：寫成 0.96 × 2 + 0.04 × 50，等於假設 miss 時不用查快取。題目說 penalty 是「多付」的時間，miss 時也付了 hit time，所以不對。</li><li>(D) 52：hit time + penalty 是一次 miss 的時間，沒有乘上 miss rate 做平均。</li></ul>"
+    },
+    {
+      "id": "co-0207",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）關於含記憶體停頓的 CPI 與多層快取，下列哪些敘述正確？",
+      "choices": [
+        "(A) I-cache 的停頓要以「每條指令都要取指令」來算；D-cache 的停頓要先乘上 load/store 佔指令的比例",
+        "(B) L2 的 local miss rate 一定小於它的 global miss rate",
+        "(C) 時脈加倍但主記憶體存取時間（ns）不變時，以 cycle 計的 miss penalty 會加倍",
+        "(D) write buffer 的主要目的是降低 read miss 的 miss rate",
+        "(E) 快取 miss 造成的停頓會讓 CPI 變大，但不會改變程式的指令數"
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<ul><li>(A) 對：每條指令都要取一次指令；只有 load/store 會存取資料，所以 D-cache 的 miss 次數 / 指令 = load/store 比例 × D miss rate。</li><li>(B) 錯：剛好相反。global miss rate = L1 miss rate × L2 local miss rate，L1 miss rate ≤ 1，所以 global ≤ local。例如 L1 5%、L2 local 20%，global 只有 1%。</li><li>(C) 對：cycle 數 = 時間 × 時脈頻率，時間不變、頻率加倍，cycle 數加倍。</li><li>(D) 錯：write buffer 讓 write-through 的寫入不必等主記憶體，降低的是寫入造成的停頓，和 read miss rate 無關。</li><li>(E) 對：執行時間 = 指令數 × CPI × cycle time，快取只改變 CPI（停頓加在 CPI 上），指令數由程式和 ISA 決定。</li></ul>"
+    },
+    {
+      "id": "co-0208",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某處理器在快取全部命中時 CPI 為 1.2。25% 的指令是 load/store。I-cache miss rate 2%、D-cache miss rate 6%，兩者的 miss penalty 都是 60 cycles。<br>(a) 考慮記憶體停頓後的 CPI 是多少？<br>(b) 記憶體停頓佔了多少比例的執行時間？<br>(c) 如果快取永遠命中，程式會快幾倍？",
+      "answer": "(a) 3.3　(b) 約 63.6%　(c) 2.75 倍",
+      "explanation": "<p>(a) 分開算兩種存取：</p><ul><li>I-cache：每條指令取 1 次 → 1 × 0.02 × 60 = <b>1.2</b> cycles／指令。</li><li>D-cache：只有 25% 的指令存取資料 → 0.25 × 0.06 × 60 = <b>0.9</b> cycles／指令。</li></ul><p>CPI = 1.2 + 1.2 + 0.9 = <b>3.3</b>。D-cache miss rate 是 I-cache 的 3 倍，但因為只有四分之一的指令會用到，停頓反而比 I-cache 少。</p><p>(b) 停頓 2.1 ÷ 3.3 ≈ <b>63.6%</b>：超過一半的時間在等記憶體。</p><p>(c) 指令數和時脈不變，只有 CPI 不同：3.3 ÷ 1.2 = <b>2.75 倍</b>。</p><p>常見錯誤：D-cache 停頓寫成 0.06 × 60 = 3.6（忘了乘 0.25），CPI 算成 6.0；或只算 D-cache 忘了 I-cache，得到 2.1。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "co-0209",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "CPU 送出 1000 次記憶體存取，L1 miss 了 60 次；這 60 次到 L2 後，L2 又 miss 了 15 次。L1 hit time 1 cycle、L2 hit time 12 cycles、主記憶體 penalty 150 cycles。<br>(a) L1 miss rate、L2 local miss rate、L2 global miss rate 各是多少？<br>(b) AMAT 是多少？<br>(c) 如果拿掉 L2，AMAT 是多少？L2 讓存取快了幾倍？",
+      "answer": "(a) 6%、25%、1.5%　(b) 3.97 cycles　(c) 10 cycles，約 2.52 倍",
+      "explanation": "<p>(a) L1 miss rate = 60 / 1000 = <b>6%</b>。L2 local miss rate = 15 / <b>60</b> = <b>25%</b>（分母是到達 L2 的次數）。global miss rate = 15 / <b>1000</b> = <b>1.5%</b> = 6% × 25%。</p><p>(b) L1 的 miss penalty = L2 hit + L2 local miss × 主記憶體 penalty = 12 + 0.25 × 150 = 49.5 cycles。AMAT = 1 + 0.06 × 49.5 = 1 + 2.97 = <b>3.97 cycles</b>。用 global miss rate 驗算：1 + 0.06 × 12 + 0.015 × 150 = 1 + 0.72 + 2.25 = 3.97，一樣。</p><p>(c) 沒有 L2：AMAT = 1 + 0.06 × 150 = <b>10 cycles</b>，10 ÷ 3.97 ≈ <b>2.52 倍</b>。</p><p>L2 的 local miss rate 25% 看起來很高，但它把需要到主記憶體的存取從 6% 降到 1.5%，平均存取時間少了六成。常見錯誤：把 local miss rate 直接乘主記憶體 penalty 卻沒乘 L1 miss rate（1 + 0.25 × 150），或把 global miss rate 當成 L2 的 local miss rate 再乘一次 L1 miss rate。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "co-0210",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "快取區塊大小為 8 words。送位址到記憶體要 1 cycle，DRAM 每次存取要 10 cycles，匯流排每傳一次要 1 cycle。求下列三種記憶體組織的 miss penalty 和頻寬（bytes/cycle，1 word = 4 bytes）：<br>(a) 記憶體與匯流排都是 1 word 寬<br>(b) 記憶體與匯流排都是 2 words 寬<br>(c) 匯流排 1 word 寬，記憶體分成 8 個 bank 交錯（interleaving）",
+      "answer": "(a) 89 cycles，約 0.36 B/cycle　(b) 45 cycles，約 0.71 B/cycle　(c) 19 cycles，約 1.68 B/cycle",
+      "explanation": "<p>區塊 8 words = 32 bytes。penalty = 送位址 + 存取輪數 × 存取時間 + 傳送次數 × 傳送時間。</p><ul><li>(a) 每次只能拿 1 word，要存取 8 次、傳 8 次：1 + 8 × 10 + 8 × 1 = <b>89</b> cycles，頻寬 32 / 89 ≈ <b>0.36</b> B/cycle。</li><li>(b) 每次拿 2 words，存取 4 次、傳 4 次：1 + 4 × 10 + 4 × 1 = <b>45</b> cycles，頻寬 32 / 45 ≈ <b>0.71</b> B/cycle，加寬一倍、penalty 差不多減半。</li><li>(c) 8 個 bank 同時存取一輪（10 cycles 重疊），再由 1 word 寬的匯流排輪流傳 8 次：1 + 10 + 8 × 1 = <b>19</b> cycles，頻寬 32 / 19 ≈ <b>1.68</b> B/cycle。</li></ul><p>interleaving 不用加寬匯流排，penalty 卻只有 (a) 的 21%。常見錯誤：在 (c) 把存取時間也乘 8（忘了各 bank 是同時存取的），或把傳送時間只算 1 次（匯流排只有 1 word 寬，8 個 word 還是要傳 8 次）。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "co-0211",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一顆 2 GHz 的處理器，快取全部命中時 CPI 為 1.0，40% 的指令是 load/store。I-cache miss rate 2%、D-cache miss rate 5%，主記憶體存取時間 60 ns（L1 miss 直接到主記憶體）。<br>(a) 2 GHz 時的 CPI 是多少？<br>(b) 把時脈提高到 4 GHz（miss rate、主記憶體的 ns 時間都不變），CPI 變多少？相對 (a) 加速幾倍？<br>(c) 在 4 GHz 的版本加上 L2：L2 hit time 5 ns、local miss rate 25%。CPI 變多少？每條指令平均花幾 ns？相對 (a) 加速幾倍？",
+      "answer": "(a) 5.8　(b) 10.6，約 1.09 倍　(c) 4.2，1.05 ns，約 2.76 倍",
+      "explanation": "<p>(a) 2 GHz 的 cycle time 0.5 ns，penalty = 60 / 0.5 = 120 cycles。停頓 = 1 × 0.02 × 120 + 0.4 × 0.05 × 120 = 2.4 + 2.4 = 4.8，CPI = <b>5.8</b>，每條指令 5.8 × 0.5 = 2.9 ns。</p><p>(b) 4 GHz 的 cycle time 0.25 ns，同樣 60 ns 變成 240 cycles。停頓 = 4.8 + 4.8 = 9.6，CPI = <b>10.6</b>，每條指令 10.6 × 0.25 = 2.65 ns。加速 = 2.9 / 2.65 ≈ <b>1.09 倍</b>：時脈加倍，只快 9%，因為記憶體停頓已經佔了 91% 的 cycle。</p><p>(c) L2 hit time 5 ns = 20 cycles。L1 miss penalty = 20 + 0.25 × 240 = 80 cycles。停頓 = (0.02 + 0.4 × 0.05) × 80 = 0.04 × 80 = 3.2，CPI = <b>4.2</b>，每條指令 4.2 × 0.25 = <b>1.05 ns</b>。相對 (a)：2.9 / 1.05 ≈ <b>2.76 倍</b>；相對 (b)：2.65 / 1.05 ≈ 2.52 倍。</p><p>重點：(b) 的 CPI 比 (a) 大，但不代表變慢，要比的是 CPI × cycle time。時脈變快的好處要配合 L2 降低 miss penalty 才發揮得出來。常見錯誤：(b) 忘了把 penalty 換算成 240 cycles；(c) 忘了 L2 hit time 也要換算成 cycle，或只算停頓 3.2 就當成 CPI。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "co-0212",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某程式 20% 的指令是 load、10% 是 store。D-cache 的 miss rate 為 4%（load、store 都一樣）。從主記憶體讀一個區塊要 100 cycles；把一個區塊寫回主記憶體也要 100 cycles；把一個 word 寫到主記憶體要 50 cycles。只考慮 D-cache，求每條指令平均的記憶體停頓 cycle 數：<br>(a) write-back + write-allocate，被換掉的區塊有 40% 是 dirty，沒有 write buffer（dirty 區塊要先寫回才讀新區塊）<br>(b) write-through + no-write-allocate，沒有 write buffer（每次 store 都要等 word 寫完）<br>(c) 同 (b)，但有一個永遠不會滿的 write buffer",
+      "answer": "(a) 1.68　(b) 5.8　(c) 0.8",
+      "explanation": "<p>(a) write-allocate：load、store miss 都要把區塊讀進來，資料存取共 0.3 次／指令。每次 miss 平均要 100 × (1 + 0.4) = 140 cycles（40% 要先寫回 100 cycles）。停頓 = 0.3 × 0.04 × 140 = <b>1.68</b>。</p><p>(b) 讀取：只有 load 會 read miss，0.2 × 0.04 × 100 = 0.8。寫入：write-through 每次 store 都要寫到主記憶體，不管 hit 或 miss，0.1 × 50 = 5。合計 <b>5.8</b>。no-write-allocate 下 store miss 不把區塊搬進來，所以 store 沒有額外的區塊讀取。</p><p>(c) store 丟進 write buffer 就繼續，不用等，只剩 load 的 read miss：<b>0.8</b>。</p><p>比較：沒有 buffer 的 write-through 最差，寫入停頓（5）是讀取停頓的 6 倍以上；有 buffer 後比 write-back 還好，因為 write-back 換掉 dirty 區塊要多等。但「永遠不會滿」是理想假設：store 頻率高於主記憶體能吸收的速度時，buffer 會滿，CPU 還是得停。常見錯誤：(a) 只用 load 的 20% 計算（write-allocate 時 store miss 也要讀區塊），或忘了 dirty 的寫回；(b) 只算 store miss 才寫主記憶體。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "co-0213",
+      "topics": [
+        "cache-performance"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "D-cache 是 1 KiB 的直接映射快取，區塊 32 bytes，一開始是空的。int 為 4 bytes，二維陣列 int a[N][N] 從位址 0 開始以 row-major 存放（區塊對齊）。考慮兩種走訪：<pre class=\"code\">/* 列優先 */ for (i = 0; i &lt; N; i++) for (j = 0; j &lt; N; j++) sum += a[i][j];\n/* 行優先 */ for (i = 0; i &lt; N; i++) for (j = 0; j &lt; N; j++) sum += a[j][i];</pre>只考慮陣列的存取（sum、i、j 在暫存器）。<br>(a) N = 16 時，兩種走訪的 miss rate 各是多少？<br>(b) N = 32 時，兩種走訪的 miss rate 各是多少？<br>(c) N = 32，理想 CPI 1，每條指令平均 0.25 次陣列存取，miss penalty 50 cycles，I-cache 不 miss。兩種走訪的 CPI 各是多少？",
+      "answer": "(a) 都是 12.5%　(b) 列優先 12.5%、行優先 100%　(c) 2.5625 與 13.5",
+      "explanation": "<p>快取有 1024 / 32 = 32 個區塊，每個區塊放 8 個 int。a[r][c] 的位址 = (rN + c) × 4，區塊編號 = (rN + c) / 8，set = 區塊編號 mod 32。</p><p><b>列優先</b>：連續存取，每 8 個 int 只有第一個 miss（compulsory），miss rate = 1/8 = <b>12.5%</b>，N = 16 和 32 都一樣。</p><p><b>(a) N = 16 行優先</b>：一列 16 個 int 是 2 個區塊，a[r][c] 的區塊是 2r + c/8。整個陣列 16 × 16 × 4 = 1 KiB，正好 32 個區塊，而且編號 0～31 分別落在 32 個不同的 set，<b>沒有衝突</b>。走第 0 行時把 16 個區塊（2r，r = 0～15）都搬進來，第 1～7 行全部命中；第 8 行再搬另外 16 個區塊（2r + 1），第 9～15 行命中。共 32 次 miss / 256 次存取 = <b>12.5%</b>，和列優先一樣。</p><p><b>(b) N = 32 行優先</b>：一列 32 個 int 是 4 個區塊，a[r][c] 的區塊是 4r + c/8，set = (4r + c/8) mod 32。r、r+8、r+16、r+24 落在同一個 set，一行 32 個區塊只用到 8 個 set，每個 set 輪流被 4 個區塊搶。等到下一行（同一批區塊）回來時早就被擠掉了，<b>每次都 miss，miss rate 100%</b>（全是 conflict miss）。</p><p><b>(c)</b> 列優先：CPI = 1 + 0.25 × 0.125 × 50 = <b>2.5625</b>；行優先：CPI = 1 + 0.25 × 1 × 50 = <b>13.5</b>，慢了約 5.27 倍。</p><p>重點：「行優先一定比較差」不是絕對的，(a) 中陣列放得進快取又沒有衝突，兩種順序一樣好；陣列變大、跨步讓很多列對到同一個 set 時才會崩潰。（已用 C 模擬器實際跑過兩種走訪驗算。）</p>"
     }
   ]
 }

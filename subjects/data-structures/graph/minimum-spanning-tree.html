@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minimum Cost Spanning Tree 最小成本生成樹 · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="MST 定義、cut 與 cycle property，Kruskal、Prim、Sollin 的做法與複雜度，以及唯一性。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=44614248">
+  <script src="../../../assets/js/theme.js?v=44614248"></script>
+</head>
+<body data-subject="data-structures" data-chapter="graph" data-chno="6" data-topic="data-structures/graph/minimum-spanning-tree" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures 資料結構</a> › Ch6 Graphs 圖 › Minimum Cost Spanning Tree 最小成本生成樹</nav>
+      <div class="topic-head">
+        <h1>Minimum Cost Spanning Tree 最小成本生成樹<small>邊由小到大挑、從一點往外長，貪婪也能拿到最佳解</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch6 Graphs</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">MST</span>
+          <span class="chip">Kruskal</span>
+          <span class="chip">Prim</span>
+          <span class="chip">union-find</span>
+          <span class="chip">cut property</span>
+        </div>
+      </div>
+
+      <section id="why-mst">
+        <h2>為什麼需要最小生成樹</h2>
+        <div class="panel prose">
+          <p>假設學校要用光纖把 7 棟大樓連起來，每兩棟之間能不能拉線、拉一條要花多少錢都估好了。要求很單純：<b>任兩棟大樓之間都要通</b>（可以經過別棟轉接），而且<b>總花費越少越好</b>。把大樓當頂點、可以拉的線當邊、花費當邊的權重，這就是一張 <span class="term">Weighted Graph<small>（加權圖）</small></span>，問題變成：從這張圖挑出一些邊，讓所有頂點連通，而且挑出的邊權重總和最小。</p>
+          <p>先想想答案長什麼樣子。如果挑出來的邊裡有環，環上隨便拿掉一條邊，所有頂點還是連通（環的另一半路還在），花費卻變少了。所以最省的答案一定<b>沒有環</b>，又要連通所有頂點，那它就是一棵樹。在 <a href="bfs-dfs.html#spanning-tree">BFS &amp; DFS</a> 那一頁已經看過：包含圖上所有頂點、而且只用圖上的邊的樹，叫做 <span class="term">Spanning Tree<small>（生成樹）</small></span>。BFS、DFS 隨便走一遍就能得到一棵，但那時候邊沒有權重，任何一棵都一樣好；現在邊有成本了，我們要的是<b>成本最低的那一棵</b>，叫做 <span class="term">Minimum Cost Spanning Tree<small>（MST，最小成本生成樹）</small></span>。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mst-spanning-trees"></div>
+            <figcaption><b>圖 1</b>：(a) 4 個頂點、5 條邊的加權圖；(b) 一棵生成樹，成本 10；(c) 成本最低的生成樹（MST），成本 6；(d) 3 條邊但有環、頂點 3 沒接上，不是生成樹。這張圖一共有 8 棵生成樹（已用程式列舉），成本最低的只有 (c) 一棵。</figcaption>
+          </figure>
+          <p>生成樹的數量通常非常多：4 個頂點的完全圖就有 16 棵，n 個頂點的完全圖有 n<sup>n−2</sup> 棵（Cayley 公式），10 個頂點就是一億棵。一棵一棵列出來比較是不可能的，所以需要聰明的演算法。好消息是 MST 可以用 <span class="term">Greedy Algorithm<small>（貪婪演算法）</small></span>解：<b>每一步都挑目前看起來最便宜、又不違反規則的邊</b>，最後得到的就是全域最佳解。這一頁要講三種挑法（Kruskal、Prim、Sollin），以及最重要的問題：為什麼這樣貪心不會出錯。</p>
+          <p>MST 的應用很直接：網路佈線、電路板走線、道路與水管規劃，都是「全部連起來、總長度最短」。它也是很多問題的子程序，例如分群（把 MST 最重的 k − 1 條邊拿掉，剩下 k 群），以及旅行推銷員問題的近似解。</p>
+        </div>
+      </section>
+
+      <section id="definition">
+        <h2>定義與生成樹的基本性質</h2>
+        <div class="panel prose">
+          <p>設 G = (V, E) 是<b>連通、無向</b>的加權圖，n = |V|、e = |E|，每條邊 (u, v) 有權重 w(u, v)。G 的生成樹 T 是一個子圖 (V, T)：T ⊆ E、包含全部 n 個頂點、連通且沒有環。T 的成本是 T 中所有邊的權重和；成本最小的生成樹就是 MST。</p>
+          <h3>生成樹的四個性質（後面的證明全靠它們）</h3>
+          <ul>
+            <li><b>邊數固定是 n − 1</b>。不管哪一棵生成樹、不管是最小還是最大，邊數都一樣；所以「MST 有幾條邊」永遠是 n − 1，範例圖 7 個頂點就是 6 條。</li>
+            <li><b>加一條非樹邊，恰好形成一個環</b>。T 上任兩點之間本來就有唯一一條路，再加一條邊 (u, v)，就和 T 上 u 到 v 的那條路圍成一個環，而且只有這一個。</li>
+            <li><b>拿掉一條樹邊，樹剛好斷成兩塊</b>。兩塊之間原本只靠這條邊相連。</li>
+            <li><b>換邊之後還是生成樹</b>：加入非樹邊 e 形成環，再拿掉環上任何一條其他的邊 f，得到的 T + e − f 仍是生成樹。這個「換邊」動作是所有 MST 證明的基本工具。</li>
+          </ul>
+          <h3>容易忽略的細節</h3>
+          <ul>
+            <li><b>圖要連通</b>。不連通的圖沒有生成樹，每個連通元件各自的 MST 合起來叫 <span class="term">Minimum Spanning Forest<small>（最小生成樹林）</small></span>，k 個元件時邊數是 n − k。</li>
+            <li><b>權重可以是負的</b>。MST 只比較邊的大小，不像最短路徑那樣要把權重沿著路徑累加，所以負權重完全沒問題；把所有權重都加上同一個常數 c，每棵生成樹的成本都多 (n − 1)c，誰最小不會變。</li>
+            <li><b>MST 不一定唯一</b>。有相同權重的邊時，可能有好幾棵成本一樣的 MST（後面<a href="#uniqueness">唯一性</a>一節會講什麼時候一定唯一）。題目問的「MST 的成本」一定唯一，但「MST 的邊」不一定。</li>
+            <li><b>只談無向圖</b>。有向圖的對應問題叫 minimum arborescence，要用別的演算法，考研的 MST 題一律是無向圖。</li>
+          </ul>
+          <p>圖可以用相鄰矩陣或相鄰串列存（在 <a href="bfs-dfs.html#why-traverse">BFS &amp; DFS</a> 介紹過）；下面的程式兩種都用到：Kruskal 和 Sollin 只需要一個「邊的陣列」，Prim 的 O(V²) 版用相鄰矩陣 <code>cost[u][v]</code>，heap 版用相鄰串列。</p>
+          <details class="code-fold">
+            <summary>看程式碼：邊的結構與排序用的比較函式</summary>
+            <div class="code-block">
+              <div class="code-head">Edge 與 cmpEdge()</div>
+              <pre class="code">typedef struct {
+  int u, v, w;                           /* 無向邊 (u, v)，權重 w */
+} Edge;
+
+/* 權重小的在前；權重相同時依 (u, v) 由小到大，讓結果固定 */
+int cmpEdge(const void *x, const void *y) {
+  const Edge *a = x, *b = y;
+  if (a-&gt;w != b-&gt;w) return (a-&gt;w &gt; b-&gt;w) - (a-&gt;w &lt; b-&gt;w);
+  if (a-&gt;u != b-&gt;u) return a-&gt;u - b-&gt;u;
+  return a-&gt;v - b-&gt;v;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="cut-cycle">
+        <h2>為什麼貪婪是對的：cut property 與 cycle property</h2>
+        <div class="panel prose">
+          <p>貪婪演算法很容易寫，難的是確定它不會因為「眼前最便宜」而錯過全域最佳。MST 的所有演算法都靠兩個性質撐腰，考研的觀念題也幾乎都在考它們的正確敘述與反例。</p>
+          <h3>Cut 與 light edge</h3>
+          <p>把頂點分成兩堆 S 和 V − S，叫做一個 <span class="term">Cut<small>（切割）</small></span>。一端在 S、另一端在 V − S 的邊叫做<b>跨越</b>這個 cut；跨越的邊裡權重最小的叫 <span class="term">Light Edge<small>（輕邊）</small></span>。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>Cut property</b>：對任何一個 cut，跨越它的最輕邊一定屬於<b>某一棵</b> MST；如果這條最輕邊是唯一的（沒有別的跨越邊和它一樣輕），它就屬於<b>每一棵</b> MST。</p></div>
+          <p><b>證明（換邊法）</b>：設 e = (u, v) 是跨越 cut (S, V − S) 的最輕邊，T 是一棵不含 e 的 MST。把 e 加進 T，會形成一個環；這個環從 u 出發、繞到 v 再回來，一定有<b>另一條</b>邊 f 也跨越同一個 cut（從 S 走到 V − S 再走回來，至少要跨兩次）。因為 e 是最輕的跨越邊，w(e) ≤ w(f)，所以 T + e − f 是一棵成本 ≤ T 的生成樹，它也是 MST，而且包含 e。若 e 是唯一最輕，w(e) &lt; w(f)，T + e − f 就比 T 更便宜，和 T 是 MST 矛盾，所以每棵 MST 都一定含 e。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>Cycle property</b>：圖上任何一個環，環上<b>唯一最重</b>的邊不屬於任何 MST；如果最重的邊有好幾條並列，至少存在一棵 MST 不用其中某一條。</p></div>
+          <p><b>證明</b>：設 f 是環 C 上唯一最重的邊，假設某棵 MST T 含 f。拿掉 f，T 斷成兩塊；C 是一個環，所以 C 上除了 f 之外一定還有別的邊 e 連接這兩塊，而且 w(e) &lt; w(f)。T − f + e 是更便宜的生成樹，矛盾。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mst-cut-cycle"></div>
+            <figcaption><b>圖 2</b>：本頁範例圖（7 個頂點、11 條邊，權重互不相同）。(a) cut S = {0, 1}（綠色）對 V − S，藍色虛線是 4 條跨越的邊，最輕的 (1,3) 3（橘色）一定在 MST 裡；(b) 環 2-3-5-6 上最重的 (2,3) 7（紅色虛線）一定不在 MST 裡。</figcaption>
+          </figure>
+          <h3>常考的推論與反例</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>敘述</th><th>對錯</th><th>理由</th></tr></thead>
+              <tbody>
+                <tr><td>全圖最輕的邊一定在某棵 MST</td><td>對</td><td>它是任何「把它的兩端分開的 cut」的最輕邊；Kruskal 第一條就收它</td></tr>
+                <tr><td>第二輕的邊一定在某棵 MST</td><td>對</td><td>簡單圖中兩條邊不可能成環，Kruskal 一定也收</td></tr>
+                <tr><td>第三輕的邊一定在某棵 MST</td><td>錯</td><td>可能和前兩條圍成三角形，例如三角形權重 1、2、3，邊 3 不在 MST</td></tr>
+                <tr><td>全圖唯一最重的邊一定不在 MST</td><td>錯</td><td>它可能是 bridge（拿掉就不連通），例如一個頂點只靠這條邊接上，每棵生成樹都要用它</td></tr>
+                <tr><td>某個環上唯一最<b>輕</b>的邊一定在 MST</td><td>錯</td><td>它在別的環上可能是最重的；cycle property 只講「最重的不在」</td></tr>
+                <tr><td>在某棵 MST 裡的邊，一定是某個 cut 的 light edge</td><td>對</td><td>把它從 MST 拿掉形成的 cut，它就是最輕的跨越邊，否則可以換成更輕的</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>通用的貪婪框架</h3>
+          <p>把兩個性質合起來，就得到所有 MST 演算法的共同骨架：維護一個邊集合 A，保證 A 一直「包含在某棵 MST 裡」。每一步找一個<b>不切到 A 的 cut</b>（A 的邊都不跨越它），把跨越它的最輕邊加進 A，依 cut property，A 仍然包含在某棵 MST 裡；做 n − 1 次就完成了。這樣的邊叫做 A 的 <span class="term">Safe Edge<small>（安全邊）</small></span>。三種演算法的差別只在「怎麼挑 cut」：</p>
+          <ul>
+            <li><b>Kruskal</b>：A 是一片森林。下一條要看的邊 (u, v) 如果連接兩棵不同的樹，就用「u 所在的那棵樹 | 其餘頂點」當 cut，(u, v) 是目前沒看過的邊裡最輕的，所以一定是最輕的跨越邊。</li>
+            <li><b>Prim</b>：A 永遠是一棵包含起點的樹 X，cut 固定是 X | V − X。</li>
+            <li><b>Sollin</b>：每一棵樹各自當一個 cut，同時挑邊。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="kruskal">
+        <h2>Kruskal：邊由小到大，不成環就收</h2>
+        <div class="panel prose">
+          <p><span class="term">Kruskal's Algorithm<small>（Kruskal 演算法）</small></span>的想法最直覺：把所有邊照權重由小到大排好，從最便宜的開始一條一條看，<b>加進來不會形成環就收，會形成環就丟掉</b>，收滿 n − 1 條就結束。過程中收下的邊不一定連在一起，是一片慢慢合併的森林。</p>
+          <ol>
+            <li>把 e 條邊依權重排序。</li>
+            <li>一開始每個頂點自己是一棵樹（n 棵）。</li>
+            <li>依序取下一條邊 (u, v)：如果 u、v 在不同的樹上，收下它並把兩棵樹合併；如果已在同一棵樹上，丟掉（樹上已經有一條 u 到 v 的路，加進來就成環）。</li>
+            <li>收滿 n − 1 條就停；邊看完了還不滿，代表圖不連通。</li>
+          </ol>
+          <p>為什麼丟掉的邊不可惜？它是在「比它輕的邊都看過之後」才發現兩端已經連通，所以它和樹上那條路形成的環中，<b>它是最重的</b>，cycle property 保證它不在 MST。為什麼收下的邊安全？它是目前沒看過的邊裡最輕的，又跨越「u 所在的樹 | 其他」這個 cut，cut property 保證它安全。</p>
+          <h3>判斷會不會成環：union-find</h3>
+          <p>「u、v 在不在同一棵樹上」要能快速判斷。把每棵樹當成一個集合，就是 <span class="term">Union-Find<small>（聯集-搜尋，又叫 disjoint set）</small></span>的兩個操作：<code>find(x)</code> 找出 x 所在集合的代表（root），兩端 root 相同就是同一棵樹；收下一條邊時用 <code>union</code> 把兩個集合合併。加上「小集合掛到大集合下面」與「路徑壓縮」，每次操作的均攤成本是 α(n)，α 是成長極慢的反阿克曼函數，實務上 ≤ 4，可以當成常數。union-find 的細節會在「Set Representation (Union-Find) 集合表示法」（籌備中）一頁講，這裡會用就好。</p>
+          <details class="code-fold">
+            <summary>看程式碼：union-find（路徑壓縮＋依大小合併）</summary>
+            <div class="code-block">
+              <div class="code-head">initSets() / find() / unionSets()</div>
+              <pre class="code">int parent[MAXV], setSize[MAXV];
+
+void initSets(void) {
+  for (int i = 0; i &lt; n; i++) {
+    parent[i] = i;                       /* 一開始每個頂點自己一棵樹 */
+    setSize[i] = 1;
+  }
+}
+
+int find(int x) {                        /* 找 x 所在集合的代表（root），順便壓縮路徑 */
+  if (parent[x] != x) parent[x] = find(parent[x]);
+  return parent[x];
+}
+
+void unionSets(int a, int b) {           /* a、b 都是 root：小的集合掛到大的下面 */
+  if (setSize[a] &lt; setSize[b]) { int t = a; a = b; b = t; }
+  parent[b] = a;
+  setSize[a] += setSize[b];
+}</pre>
+            </div>
+          </details>
+          <h3>例子：範例圖跑一次 Kruskal</h3>
+          <p>範例圖（圖 2 那張）有 11 條邊，排序後是 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>順序</th><th>邊</th><th>find 兩端</th><th>結果</th><th>收下後的集合</th><th>累計成本</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>(5,6) 2</td><td>不同</td><td>收（第 1 條）</td><td>{5,6}，其餘各自一個</td><td>2</td></tr>
+                <tr><td>2</td><td>(1,3) 3</td><td>不同</td><td>收（第 2 條）</td><td>{1,3} {5,6}</td><td>5</td></tr>
+                <tr><td>3</td><td>(3,5) 4</td><td>不同</td><td>收（第 3 條）</td><td>{1,3,5,6}</td><td>9</td></tr>
+                <tr><td>4</td><td>(2,6) 5</td><td>不同</td><td>收（第 4 條）</td><td>{1,2,3,5,6}</td><td>14</td></tr>
+                <tr><td>5</td><td>(0,1) 6</td><td>不同</td><td>收（第 5 條）</td><td>{0,1,2,3,5,6} {4}</td><td>20</td></tr>
+                <tr><td>6</td><td>(2,3) 7</td><td><b>相同</b></td><td>略過：環 2-6-5-3-2</td><td>不變</td><td>20</td></tr>
+                <tr><td>7</td><td>(3,4) 8</td><td>不同</td><td>收（第 6 條）</td><td>全部 7 個頂點</td><td>28</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>收滿 6 條就停，後面的 9、10、11、12 四條邊根本不用看。MST 成本 <b>28</b>（已用程式驗證）。注意「第 6 條<b>被收下</b>的邊」是 (3,4) 8，而不是第 6 小的 (2,3) 7，因為 7 成環被略過了。考題問「Kruskal 第 k 條選入的邊」時，最常見的錯就是忘了扣掉被略過的邊。</p>
+          <details class="code-fold">
+            <summary>看程式碼：kruskal()</summary>
+            <div class="code-block">
+              <div class="code-head">kruskal()：排序＋union-find</div>
+              <pre class="code">int kruskal(Edge t[]) {
+  int k = 0, total = 0;
+  qsort(e, m, sizeof(Edge), cmpEdge);    /* 所有邊依權重排序：O(E log E) */
+  initSets();
+  for (int i = 0; i &lt; m &amp;&amp; k &lt; n - 1; i++) {
+    int ru = find(e[i].u), rv = find(e[i].v);
+    if (ru == rv) {                      /* 兩端已在同一棵樹：加進來會形成環 */
+      printf("  略過 (%d,%d) %d：形成環\n", e[i].u, e[i].v, e[i].w);
+      continue;
+    }
+    unionSets(ru, rv);                   /* 兩棵樹合併成一棵 */
+    t[k++] = e[i];
+    total += e[i].w;
+  }
+  if (k &lt; n - 1) return -1;              /* 收不滿 n-1 條：圖不連通，只得到生成樹林 */
+  return total;
+}</pre>
+            </div>
+          </details>
+          <h3>時間複雜度：O(E log E) = O(E log V)</h3>
+          <p>排序 e 條邊要 O(e log e)；之後最多 e 次 find、n − 1 次 union，每次接近 O(1)，總共 O(e α(n))，比排序小。所以 Kruskal 的瓶頸是<b>排序</b>，總時間 O(e log e)。因為簡單圖的 e ≤ n(n − 1)/2 &lt; n²，log e &lt; 2 log n，所以 O(e log e) 和 O(e log n) 是同一個等級，兩種寫法都對。如果邊權是小範圍整數可以用 counting sort 排，Kruskal 就接近 O(e α(n))。另一種寫法是不排序，把邊建成 min-heap 每次取最小，好處是收滿 n − 1 條就能提早停，最差情況一樣是 O(e log e)。</p>
+          <p>改成求<b>最大</b>成本生成樹也很簡單：邊<b>由大到小</b>排，其他完全不變（等於把所有權重取負號再求 MST）。</p>
+        </div>
+      </section>
+
+      <section id="prim">
+        <h2>Prim：從一個點往外長</h2>
+        <div class="panel prose">
+          <p><span class="term">Prim's Algorithm<small>（Prim 演算法）</small></span>換一個角度：從任選的起點 s 開始，手上永遠只有<b>一棵</b>樹 X。每一步看所有「一端在 X、另一端在 X 外」的邊，也就是跨越 cut (X, V − X) 的邊，挑最輕的那條，把它和另一端的頂點加進 X。重複 n − 1 次，X 長滿所有頂點。依 cut property，每次挑的都是安全邊。</p>
+          <p>要快速找「最輕的跨越邊」，替每個樹外頂點 v 記兩個值：<code>key[v]</code> 是「v 用一條邊接到 X，最便宜要多少」，<code>from[v]</code> 是那條邊在樹上的另一端。每一步：</p>
+          <ol>
+            <li>在樹外的頂點中，選 key 最小的 u，把邊 (from[u], u) 收進 MST，u 加入 X。</li>
+            <li>u 進來之後，u 的鄰居 v 多了一條接到樹的路：如果 <code>w(u, v) &lt; key[v]</code>，就更新 <code>key[v] = w(u, v)</code>、<code>from[v] = u</code>。</li>
+          </ol>
+          <p>這個更新規則和 Dijkstra 最短路徑幾乎一模一樣，唯一的差別是 Dijkstra 比較的是 <code>dist[u] + w(u, v)</code>（從起點一路累加的距離），Prim 比較的只是 <code>w(u, v)</code> 這一條邊。考題常把兩者的更新式放在一起考（<a class="q-link" href="#q-ds-0275">例題</a>）。</p>
+          <h3>例子：範例圖從頂點 0 開始</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>選入</th><th>收下的邊</th><th>更新的 key（括號是 from）</th><th>累計成本</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>0（起點）</td><td>—</td><td>key[1] = 6 (0)、key[3] = 11 (0)、key[4] = 9 (0)</td><td>0</td></tr>
+                <tr><td>1</td><td>1（key 6 最小）</td><td>(0,1) 6</td><td>key[2] = 10 (1)、key[3]：11 → 3 (1)</td><td>6</td></tr>
+                <tr><td>2</td><td>3（key 3）</td><td>(1,3) 3</td><td>key[2]：10 → 7 (3)、key[4]：9 → 8 (3)、key[5] = 4 (3)</td><td>9</td></tr>
+                <tr><td>3</td><td>5（key 4）</td><td>(3,5) 4</td><td>key[6] = 2 (5)；(4,5) 12 比 key[4] = 8 貴，不更新</td><td>13</td></tr>
+                <tr><td>4</td><td>6（key 2）</td><td>(5,6) 2</td><td>key[2]：7 → 5 (6)</td><td>15</td></tr>
+                <tr><td>5</td><td>2（key 5）</td><td>(6,2) 5</td><td>2 的鄰居 1、3、6 都已在樹上</td><td>20</td></tr>
+                <tr><td>6</td><td>4（key 8）</td><td>(3,4) 8</td><td>—</td><td>28</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>成本一樣是 <b>28</b>，6 條邊也和 Kruskal 完全相同（範例圖權重互不相同，MST 唯一）。但<b>收邊順序不同</b>：Kruskal 是 2, 3, 4, 5, 6, 8，Prim 是 6, 3, 4, 2, 5, 8。最輕的 (5,6) 2 要等到第 4 步，5 先被接上之後才跨得到。頂點加入的順序是 0, 1, 3, 5, 6, 2, 4，考題也常問「Prim 第 k 個加入的頂點」，要注意起點本身算不算第 1 個。換成從頂點 4 開始，收邊順序變成 8, 3, 4, 2, 5, 6，總成本仍是 28（已用程式驗證）。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mst-order"></div>
+            <figcaption><b>圖 3</b>：範例圖的同一棵 MST（綠色），紫色方塊是收邊順序。(a) Kruskal 照全域權重由小到大；(b) Prim 從 0 出發，只看當下跨得出去的邊，所以 6 先於 2。</figcaption>
+          </figure>
+          <h3>兩種實作：O(V²) 與 O(E log V)</h3>
+          <ul>
+            <li><b>相鄰矩陣＋key 陣列</b>（預設頁籤）：每一步掃一遍 n 個頂點找最小 key，O(n)；更新時掃 u 的那一列，也是 O(n)。做 n 步，總共 <code>O(n²)</code>，和邊數無關。</li>
+            <li><b>binary heap＋相鄰串列</b>：把候選邊放進 min-heap，每次 pop 最輕的；pop 出來的邊另一端如果已經在樹上，是過期的候選，直接丟掉。每條邊最多被 push 一次（一端先進樹時 push，另一端進樹時它已過期、不會再 push），每次 push、pop 都是 O(log e)，總共 <code>O(e log e) = O(e log n)</code>。另一種寫法是 heap 裡放頂點、用 decrease-key 更新 key，同樣 O((n + e) log n)。</li>
+            <li><b>Fibonacci heap</b>：decrease-key 均攤 O(1)、extract-min O(log n)，總共 <code>O(e + n log n)</code>，是理論上最快的 Prim。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：prim()（相鄰矩陣版／heap 版）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="相鄰矩陣 O(V²)"><div class="code-head">prim()：key 陣列，O(V²)</div><pre class="code">int prim(int s, Edge t[]) {
+  int key[MAXV], from[MAXV], inTree[MAXV], total = 0;
+  for (int v = 0; v &lt; n; v++) {
+    key[v] = INF;                        /* key[v]：v 連到樹上最便宜的邊權 */
+    from[v] = -1;                        /* from[v]：那條邊的另一端（樹上的頂點） */
+    inTree[v] = 0;
+  }
+  key[s] = 0;
+  for (int k = 0; k &lt; n; k++) {
+    int u = -1;
+    for (int v = 0; v &lt; n; v++)          /* 在樹外找 key 最小的頂點：O(V) */
+      if (!inTree[v] &amp;&amp; (u == -1 || key[v] &lt; key[u])) u = v;
+    if (key[u] == INF) return -1;        /* 剩下的頂點都接不上：圖不連通 */
+    inTree[u] = 1;                       /* 邊 (from[u], u) 是跨越 cut 最輕的邊 */
+    total += key[u];
+    if (from[u] != -1) t[k - 1] = (Edge){from[u], u, key[u]};
+    for (int v = 0; v &lt; n; v++)          /* 用 u 的邊更新樹外頂點的 key */
+      if (!inTree[v] &amp;&amp; cost[u][v] &lt; key[v]) {
+        key[v] = cost[u][v];
+        from[v] = u;
+      }
+  }
+  return total;
+}</pre></div>
+              <div class="code-block" data-tab="heap O(E log V)"><div class="code-head">primHeap()：min-heap 放候選邊，O(E log V)</div><pre class="code">int primHeap(int s, Edge t[]) {
+  int inTree[MAXV] = {0}, k = 0, total = 0;
+  hsize = 0;
+  inTree[s] = 1;
+  for (int i = head[s]; i != -1; i = nxt[i]) heapPush((Edge){s, to[i], wt[i]});
+  while (hsize &gt; 0 &amp;&amp; k &lt; n - 1) {
+    Edge x = heapPop();                  /* heap 裡最便宜的候選邊 */
+    if (inTree[x.v]) continue;           /* 另一端也已在樹上：過期的候選，丟掉 */
+    inTree[x.v] = 1;
+    t[k++] = x;
+    total += x.w;
+    for (int i = head[x.v]; i != -1; i = nxt[i])
+      if (!inTree[to[i]]) heapPush((Edge){x.v, to[i], wt[i]});
+  }
+  return k == n - 1 ? total : -1;
+}</pre></div>
+            </div>
+          </details>
+          <p>heap 版用到的 <code>heapPush</code>、<code>heapPop</code> 就是一般的 min-heap 插入與刪除最小值（上浮、下沉），做法和 <a href="../tree/heap.html">Heap 堆積</a>那一頁的 max-heap 相同，只是比較方向相反；排序依據是邊的權重。</p>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>在第一個輸入框用「頂點-頂點:權重」輸入無向邊（空白隔開，頂點 0～9、最多 16 條邊、權重 −99～999），第二個輸入框是 Prim 的起點。按 <b>Kruskal</b> 看右側排好序的邊一條一條被考慮：藍色是正在看的邊，綠色收下，紅色虛線因為兩端 find 到同一個 root（會成環）而略過，下方是 union-find 目前的集合。按 <b>Prim</b> 看樹從起點長出去：綠色是樹上的頂點與邊，藍色是跨越 cut 的邊（實線是每個樹外頂點目前 key 所對應的邊，虛線是其他較貴的跨越邊），樹外頂點下方標著 key。「同權重」範例可以看到同權重時依 (u, v) 決定順序；「不連通」範例可以看到收不滿 n − 1 條邊的情況。</p>
+        </div>
+        <div class="viz" data-viz="mst-build"></div>
+      </section>
+
+      <section id="complexity">
+        <h2>複雜度比較：稀疏圖與稠密圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>演算法</th><th>關鍵資料結構</th><th>時間</th><th>適合</th></tr></thead>
+              <tbody>
+                <tr><td>Kruskal</td><td>排序＋union-find</td><td><code>O(E log E)</code> = <code>O(E log V)</code></td><td>稀疏圖、邊已經排好或用邊表給的題目</td></tr>
+                <tr><td>Prim（相鄰矩陣）</td><td>key 陣列</td><td><code>O(V²)</code></td><td>稠密圖（E 接近 V²）</td></tr>
+                <tr><td>Prim（binary heap）</td><td>min-heap＋相鄰串列</td><td><code>O(E log V)</code></td><td>稀疏圖</td></tr>
+                <tr><td>Prim（Fibonacci heap）</td><td>Fibonacci heap</td><td><code>O(E + V log V)</code></td><td>理論最佳，稠密圖時等於 O(V²)</td></tr>
+                <tr><td>Sollin（Borůvka）</td><td>union-find</td><td><code>O(E log V)</code></td><td>平行計算</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>拿數字感受一下，V = 1000：</p>
+          <ul>
+            <li><b>稀疏圖</b> E = 3000：Kruskal 約 3000 × log₂3000 ≈ 3000 × 11.6 ≈ 35,000 次比較；heap 版 Prim 約 3000 × log₂1000 ≈ 30,000；矩陣版 Prim 卻要 1000² = 1,000,000，<b>慢了約 30 倍</b>，因為它不管邊多邊少都要掃完整個矩陣。</li>
+            <li><b>稠密圖</b> E ≈ V²/2 = 500,000：Kruskal 約 500,000 × 18.9 ≈ 9,500,000；heap 版 Prim 約 500,000 × 10 = 5,000,000；矩陣版 Prim 只要 1,000,000，<b>反而最快</b>，比 Kruskal 少了約 9 倍。</li>
+          </ul>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 一句話記：<b>Kruskal 看邊、Prim 看點</b>。Kruskal 的成本跟著邊數走（要排序所有邊），Prim 矩陣版的成本跟著點數走（V²），所以邊很多的稠密圖用 Prim，邊很少的稀疏圖用 Kruskal 或 heap 版 Prim。</p></div>
+          <p>工具也不要記反：<b>union-find 是 Kruskal 的</b>（判斷兩端是否已連通），Prim 只維護一棵樹，用 <code>inTree[]</code> 就知道誰在樹上，不需要 union-find；<b>heap（以及 Fibonacci heap 的 O(1) decrease-key）是 Prim 的</b>，Kruskal 的瓶頸在排序，換成 Fibonacci heap 也不會變快。</p>
+        </div>
+      </section>
+
+      <section id="sollin">
+        <h2>Sollin（Borůvka）：每棵樹同時挑邊</h2>
+        <div class="panel prose">
+          <p>第三種做法叫 <span class="term">Sollin's Algorithm<small>（Sollin 演算法，也叫 Borůvka 演算法）</small></span>，它把 Kruskal 的「森林」和 Prim 的「往外長」結合起來：一開始每個頂點自己一棵樹；每一<b>回合</b>，<b>每一棵樹</b>各自挑出「連到別棵樹最便宜的邊」，把這些邊全部加進來（兩棵樹選到同一條邊時只加一次），樹就兩兩合併。重複到只剩一棵樹。</p>
+          <p>每一棵樹挑的都是「這棵樹 | 其他」這個 cut 的最輕邊，所以都是安全邊。每回合每棵樹至少和另一棵合併，樹的數量至少<b>減半</b>，所以最多 ⌈log₂ n⌉ 回合；每回合掃一遍所有邊 O(e)，總共 <code>O(e log n)</code>。各棵樹挑邊互不干擾，很適合平行處理。</p>
+          <p>有一個陷阱：如果權重有相同的，兩棵樹可能各挑一條同權重但不同的邊，三棵以上的樹就可能被連成環。所以權重相同時要有固定的比較規則（例如再比 (u, v)），程式裡的 <code>cmpEdge</code> 就是做這件事。</p>
+          <h3>例子：範例圖</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>回合</th><th>每棵樹挑的最便宜外連邊</th><th>實際加入（去掉重複）</th><th>回合結束後的樹</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>{0}：(0,1) 6、{1}：(1,3) 3、{2}：(2,6) 5、{3}：(1,3) 3、{4}：(3,4) 8、{5}：(5,6) 2、{6}：(5,6) 2</td><td>(0,1) 6、(1,3) 3、(2,6) 5、(3,4) 8、(5,6) 2</td><td>{0,1,3,4}、{2,5,6}</td></tr>
+                <tr><td>2</td><td>{0,1,3,4}：(3,5) 4、{2,5,6}：(3,5) 4</td><td>(3,5) 4</td><td>只剩一棵</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>只要 2 回合（7 個頂點，⌈log₂ 7⌉ = 3 是上限），得到的 6 條邊和成本 28 都和前兩種演算法相同（已用程式驗證）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：sollin()</summary>
+            <div class="code-block">
+              <div class="code-head">sollin()：每回合每棵樹挑一條最便宜的外連邊</div>
+              <pre class="code">int sollin(Edge t[]) {
+  int k = 0, total = 0, trees = n, cheap[MAXV];
+  initSets();
+  while (trees &gt; 1) {
+    for (int i = 0; i &lt; n; i++) cheap[i] = -1;
+    for (int i = 0; i &lt; m; i++) {        /* 每棵樹找出連到外面最便宜的邊 */
+      int a = find(e[i].u), b = find(e[i].v);
+      if (a == b) continue;
+      if (cheap[a] == -1 || cmpEdge(&amp;e[i], &amp;e[cheap[a]]) &lt; 0) cheap[a] = i;
+      if (cheap[b] == -1 || cmpEdge(&amp;e[i], &amp;e[cheap[b]]) &lt; 0) cheap[b] = i;
+    }
+    int added = 0;
+    for (int i = 0; i &lt; n; i++) {
+      if (cheap[i] == -1) continue;
+      Edge x = e[cheap[i]];
+      int a = find(x.u), b = find(x.v);
+      if (a == b) continue;              /* 兩棵樹選中同一條邊：只加一次 */
+      unionSets(a, b);
+      t[k++] = x;
+      total += x.w;
+      trees--;
+      added = 1;
+    }
+    if (!added) return -1;               /* 沒有樹找得到外連邊：圖不連通 */
+    printf("  一回合後剩 %d 棵樹\n", trees);
+  }
+  return total;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="uniqueness">
+        <h2>MST 唯一性與常見變形</h2>
+        <div class="panel prose">
+          <h3>權重互不相同 → MST 唯一</h3>
+          <p>證明：假設 T₁ ≠ T₂ 都是 MST，取兩者「不共有的邊」中權重最小的一條 e，不妨設 e 在 T₁ 不在 T₂。把 e 加進 T₂ 形成環，環上一定有一條 f 不在 T₁（否則整個環都在 T₁ 裡，T₁ 就有環了）。f 也是不共有的邊，而 e 是不共有邊中最小的，權重又互不相同，所以 w(e) &lt; w(f)。T₂ + e − f 比 T₂ 便宜，和 T₂ 是 MST 矛盾。</p>
+          <p>反過來<b>不成立</b>：有相同權重的邊，MST 仍可能唯一。例如一條路徑 a–b–c，兩條邊都是 1，圖本身就是唯一的生成樹。判斷唯一性的實用方法：對每一條<b>非樹邊</b> e，看它加進 MST 形成的環上，有沒有<b>和它一樣重</b>的樹邊；有就可以互換，MST 不唯一；全部都沒有，MST 就唯一。</p>
+          <h3>同權重時：合法的收邊順序不只一種</h3>
+          <p>Kruskal 遇到同權重的邊，誰先看都可以，所以可能有好幾種合法的選邊序列，甚至選出不同的樹。判斷「哪個序列不可能是 Kruskal 的」時檢查三件事：權重有沒有<b>由小到大</b>（同權重之間可以任意順序）、有沒有收到<b>會成環</b>的邊、有沒有<b>漏掉一定要收</b>的邊。以「同權重」範例（正方形四條邊都是 1，對角線 (0,2) 是 2）來說，四條權重 1 的邊任選 3 條都是 MST，一共 4 棵，成本都是 3；對角線 2 是任何環上最重的，永遠不收。</p>
+          <h3>邊權改變之後</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>改變</th><th>原本的 MST T</th><th>怎麼修正</th></tr></thead>
+              <tbody>
+                <tr><td>樹邊變輕</td><td>還是 MST</td><td>T 的成本變小，其他樹最多也只變小同樣的量</td></tr>
+                <tr><td>非樹邊變重</td><td>還是 MST</td><td>本來就沒用它</td></tr>
+                <tr><td>非樹邊 e 變輕</td><td>可能不是</td><td>e 加進 T 形成環，環上最重的樹邊若比 e 重，換掉它</td></tr>
+                <tr><td>樹邊 f 變重</td><td>可能不是</td><td>拿掉 f 把 T 分成兩塊，找跨越這個 cut 最輕的邊，若比 f 輕就換上</td></tr>
+                <tr><td>所有邊加常數 c、或乘正數</td><td>還是 MST</td><td>邊的大小順序沒變，Kruskal 的排序也不變</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>以範例圖為例：如果把非樹邊 (4,5) 從 12 降成 7，它和樹上 4-3-5 形成環，環上最重的樹邊是 (3,4) 8 &gt; 7，換掉之後成本變成 28 − 8 + 7 = 27。如果只降成 9，9 &gt; 8，不用換，MST 不變。</p>
+          <h3>最大生成樹、第二小生成樹</h3>
+          <ul>
+            <li><b>最大成本生成樹</b>：Kruskal 改成由大到小排；Prim 改成每次挑最重的跨越邊。cut、cycle property 也跟著反過來（跨越 cut 最重的邊安全、環上最輕的邊不要）。</li>
+            <li><b>第二小生成樹</b>（成本嚴格大於 MST 的最小生成樹）：一定可以由 MST <b>只換一條邊</b>得到。對每一條非樹邊 e，加進 MST、拿掉它形成的環上最重的樹邊，成本增加 w(e) − (環上最大樹邊)；取增加量最小的那一個。範例圖中，把 (0,4) 9 加進來、拿掉環 0-1-3-4 上最重的 (3,4) 8，只多 1，所以第二小生成樹的成本是 29（已用程式窮舉 176 棵生成樹驗證）。</li>
+          </ul>
+          <h3>MST 與旅行推銷員</h3>
+          <p>邊權非負時，MST 的成本一定 ≤ 任何一條 <span class="term">TSP Tour<small>（旅行推銷員迴路）</small></span>的成本：迴路拿掉任一條邊會變成一條經過所有頂點的路徑，路徑也是一棵生成樹，成本 ≥ MST，再把拿掉的那條（非負）邊加回去只會更大。這是 TSP 近似演算法的出發點。</p>
+        </div>
+      </section>
+
+      <section id="vs-shortest-path">
+        <h2>MST 和最短路徑樹不一樣</h2>
+        <div class="panel prose">
+          <p>從起點 s 做 Dijkstra，記下每個頂點最後一次被更新時的前一個頂點，也會得到一棵生成樹，叫 <span class="term">Shortest-Path Tree<small>（最短路徑樹）</small></span>。它和 MST 長得很像、程式也很像，但目標完全不同：</p>
+          <ul>
+            <li><b>MST</b>：讓<b>所有邊的總和</b>最小，不在乎任兩點之間的路有多長。</li>
+            <li><b>最短路徑樹</b>：讓<b>從 s 到每個頂點的距離</b>各自最小，不在乎總和。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mst-vs-spt"></div>
+            <figcaption><b>圖 4</b>：(a) 三角形 0-1:4、0-2:5、1-2:2；(b) MST 取 2 和 4，總成本 6，但 0 到 2 要繞 0-1-2 走 6；(c) 從 0 出發的最短路徑樹取 4 和 5，0 到 2 只要 5，總成本卻是 9。</figcaption>
+          </figure>
+          <p>所以「MST 上兩點之間的路徑就是最短路徑」是錯的，「從任一點做 Dijkstra 得到的樹就是 MST」也是錯的。MST 路徑真正保證的是另一個性質：MST 上 u 到 v 的路徑，使「路徑上最重的那條邊」在所有 u 到 v 的路徑中最小，也就是 <span class="term">Minimax Path<small>（瓶頸最小的路徑）</small></span>。Dijkstra 的細節會在「Shortest Path 最短路徑」（籌備中）一頁講。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>項目</th><th>Kruskal</th><th>Prim</th><th>Dijkstra（對照）</th></tr></thead>
+              <tbody>
+                <tr><td>每步挑什麼</td><td>全域最輕、不成環的邊</td><td>跨越 X | V − X 最輕的邊</td><td>dist 最小的樹外頂點</td></tr>
+                <tr><td>更新式</td><td>—</td><td><code>key[v] = min(key[v], w(u,v))</code></td><td><code>dist[v] = min(dist[v], dist[u] + w(u,v))</code></td></tr>
+                <tr><td>中間狀態</td><td>森林</td><td>一棵樹</td><td>一棵樹</td></tr>
+                <tr><td>起點</td><td>不需要</td><td>任選，總成本不變</td><td>必須指定，結果隨起點改變</td></tr>
+                <tr><td>負權邊</td><td>可以</td><td>可以</td><td>不行</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>Kruskal 的選邊順序、第 k 條收入的邊</td><td>很常考</td><td>邊由小到大列表，逐條標「收／成環略過」，第 k 條只數收下的</td><td><a class="q-link" href="#q-ds-0181">例題</a> <a class="q-link" href="#q-ds-0340">例題</a></td></tr>
+                <tr><td>Prim 從指定起點的收邊或加入頂點順序</td><td>很常考</td><td>畫 key 表，每步挑樹外最小 key，再用新頂點的邊更新；注意起點算不算第 1 個</td><td><a class="q-link" href="#q-ds-0182">例題</a> <a class="q-link" href="#q-ds-0268">例題</a></td></tr>
+                <tr><td>求 MST 成本、MST 上的路徑、度數、邊數</td><td>很常考</td><td>先用 Kruskal 求出整棵樹，再回答路徑與度數；邊數永遠是 n − 1</td><td><a class="q-link" href="#q-ds-0218">例題</a> <a class="q-link" href="#q-ds-0130">例題</a></td></tr>
+                <tr><td>cut / cycle property 敘述判斷</td><td>很常考</td><td>記住正確版本：cut 最輕安全、環上唯一最重不在；其餘找反例（bridge、三角形）</td><td><a class="q-link" href="#q-ds-0176">例題</a> <a class="q-link" href="#q-ds-0230">例題</a></td></tr>
+                <tr><td>不可能的 Kruskal 選邊序列（同權重）</td><td>常考</td><td>檢查權重非遞減、沒有收成環的邊、沒有漏掉必收的邊</td><td><a class="q-link" href="#q-ds-0174">例題</a></td></tr>
+                <tr><td>MST 是否唯一、MST 個數</td><td>常考</td><td>權重相異必唯一；有同權重時對每條非樹邊檢查環上有無等重樹邊</td><td><a class="q-link" href="#q-ds-0142">例題</a> <a class="q-link" href="#q-ds-0274">例題</a></td></tr>
+                <tr><td>邊權改變後 MST 會不會變</td><td>常考</td><td>非樹邊變輕看環、樹邊變重看 cut；另外兩種情況不變</td><td><a class="q-link" href="#q-ds-0194">例題</a> <a class="q-link" href="#q-ds-0330">例題</a></td></tr>
+                <tr><td>Kruskal 與 Prim 的比較、複雜度、資料結構</td><td>常考</td><td>Kruskal O(E log E)、union-find；Prim O(V²) 或 O(E log V)、heap；稠密用 Prim</td><td><a class="q-link" href="#q-ds-0263">例題</a> <a class="q-link" href="#q-ds-0279">例題</a></td></tr>
+                <tr><td>讀程式、寫出 Kruskal 演算法</td><td>常考</td><td>認出「排序＋find 判斷＋union」就是 Kruskal；複雜度看排序</td><td><a class="q-link" href="#q-ds-0322">例題</a> <a class="q-link" href="#q-ds-0166">例題</a></td></tr>
+                <tr><td>最大成本生成樹</td><td>偶爾</td><td>Kruskal 由大到小、Prim 每次挑最重的跨越邊</td><td><a class="q-link" href="#q-ds-0258">例題</a> <a class="q-link" href="#q-ds-0241">例題</a></td></tr>
+                <tr><td>第二小生成樹、MST 與 TSP、與最短路徑對照</td><td>偶爾</td><td>第二小：換一條非樹邊、拿掉環上最大樹邊；MST ≤ TSP；Prim 與 Dijkstra 只差更新式</td><td><a class="q-link" href="#q-ds-0210">例題</a> <a class="q-link" href="#q-ds-0288">例題</a> <a class="q-link" href="#q-ds-0275">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Kruskal 第 k 條收入的邊就是第 k 小的邊</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 中間會成環的邊被略過，不算數；要一條一條檢查</span> <a class="q-link" href="#q-ds-0181">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Prim 收邊的順序也是權重由小到大</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> Prim 每次只看跨出目前這棵樹的邊，很輕的邊可能要等兩端靠近樹才輪到</span> <a class="q-link" href="#q-ds-0268">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 某個環上最輕的邊一定在 MST；全圖最重的邊一定不在 MST</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 正確的是「cut 上最輕的邊安全」「環上唯一最重的邊不在」；最重的邊若是 bridge 一定要用</span> <a class="q-link" href="#q-ds-0176">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> MST 一定唯一；有同權重的邊就一定不唯一</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 權重互不相同保證唯一；有同權重時要實際檢查，仍可能唯一</span> <a class="q-link" href="#q-ds-0142">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Prim 換起點，MST 成本可能不同；有負權重就不能用</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 起點只影響收邊順序，成本一定相同；MST 只比大小，負權重沒問題</span> <a class="q-link" href="#q-ds-0279">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> union-find 加速 Prim、Fibonacci heap 加速 Kruskal</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 剛好相反：union-find 給 Kruskal 判斷成環，Fibonacci heap 的 decrease-key 給 Prim</span> <a class="q-link" href="#q-ds-0263">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 降低一條非樹邊的權重，MST 不會變</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 降到比它所在環上最重的樹邊還輕，就要換掉；不會變的是「非樹邊變重」</span> <a class="q-link" href="#q-ds-0330">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> MST 上兩點的路徑是最短路徑；Dijkstra 得到的樹就是 MST</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> MST 讓總和最小，最短路徑樹讓每個距離最小，兩者不同</span> <a class="q-link" href="#q-ds-0340">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="minimum-spanning-tree"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=44614248"></script>
+  <script src="../../../assets/js/viz-core.js?v=44614248"></script>
+  <script src="../../../assets/js/viz/data-structures/minimum-spanning-tree.js?v=44614248"></script>
+</body>
+</html>

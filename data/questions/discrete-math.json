@@ -4097,6 +4097,145 @@
       "question": "(10%) Let <i>N</i> be he number of non-negative integer solutions of <i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> + ⋯ + <i>x</i><sub>12</sub> ≤ 6. Calculate <i>N</i> mod 11: ________",
       "answer": "7",
       "explanation": "<p>加 slack 變數 x<sub>13</sub> ≥ 0 變成 x<sub>1</sub> + ⋯ + x<sub>13</sub> = 6，用隔板法：6 顆星、12 根隔板，N = C(18, 12) = C(18, 6) = 18564。</p><p>18564 = 11 × 1687 + 7，所以 N mod 11 = <b>7</b>。</p><p>也可以用 <span class=\"term\">Lucas’ theorem<small>（Lucas 定理）</small></span> 不算出 N：18 = (1, 7)<sub>11</sub>、6 = (0, 6)<sub>11</sub>，C(18, 6) ≡ C(1, 0)·C(7, 6) = 7 (mod 11)，結果一樣。程式直接算 comb(18, 12) % 11 = 7。</p>"
+    },
+    {
+      "id": "dm-0179",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列哪一個是 <b>2 階常係數線性齊次</b>遞迴關係？",
+      "choices": [
+        "(A) a<sub>n</sub> = a<sub>n−1</sub> + n·a<sub>n−2</sub>",
+        "(B) a<sub>n</sub> = 3a<sub>n−1</sub> − a<sub>n−2</sub> + 1",
+        "(C) a<sub>n</sub> = a<sub>n−1</sub>·a<sub>n−2</sub>",
+        "(D) a<sub>n</sub> = 4a<sub>n−2</sub>"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>逐一檢查四個條件（線性、常係數、齊次、階數）：</p><ul><li>(A) a<sub>n−2</sub> 的係數是 n，和 n 有關，<b>不是常係數</b>。</li><li>(B) 線性、常係數、2 階，但多了常數 1，是<b>非齊次</b>。</li><li>(C) 兩項相乘，<b>不是線性</b>。</li><li>(D) a<sub>n</sub> = 0·a<sub>n−1</sub> + 4a<sub>n−2</sub>：c<sub>1</sub> = 0 沒關係，最遠用到 a<sub>n−2</sub> 而且 c<sub>2</sub> = 4 ≠ 0，所以是 2 階；沒有 f(n)，是齊次。</li></ul><p>常見錯誤是以為少了 a<sub>n−1</sub> 就變成 1 階。階數看的是「最遠用到前幾項」，不是有幾項。(D) 的特徵方程式是 r<sup>2</sup> − 4 = 0，根 ±2，通解 A·2<sup>n</sup> + B·(−2)<sup>n</sup>。</p>"
+    },
+    {
+      "id": "dm-0180",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "a<sub>n</sub> = 7a<sub>n−1</sub> − 10a<sub>n−2</sub>（n ≥ 2），a<sub>0</sub> = 1、a<sub>1</sub> = 8。特徵方程式為 ________，閉合式 a<sub>n</sub> = ________。",
+      "answer": "r<sup>2</sup> − 7r + 10 = 0；a<sub>n</sub> = 2·5<sup>n</sup> − 2<sup>n</sup>",
+      "explanation": "<p>把 a<sub>n−i</sub> 換成 r<sup>2−i</sup> 並全部移到左邊：r<sup>2</sup> − 7r + 10 = 0 = (r − 5)(r − 2)，兩個相異根 5、2。</p><p>通解 a<sub>n</sub> = A·5<sup>n</sup> + B·2<sup>n</sup>。代 n = 0：A + B = 1；代 n = 1：5A + 2B = 8。相減消去得 3A = 6，A = 2、B = −1。</p><p>驗算 n = 2：遞迴 7·8 − 10·1 = 46；閉合式 2·25 − 4 = 46，一致（程式比對前 8 項也全部相同）。常見錯誤是把特徵方程式寫成 r<sup>2</sup> + 7r − 10 = 0（忘了移項變號），會得到無理根。</p>"
+    },
+    {
+      "id": "dm-0181",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "解 a<sub>n</sub> = −6a<sub>n−1</sub> − 9a<sub>n−2</sub>（n ≥ 2），a<sub>0</sub> = 2、a<sub>1</sub> = −3，並求 a<sub>3</sub>。",
+      "answer": "a<sub>n</sub> = (2 − n)·(−3)<sup>n</sup>；a<sub>3</sub> = 27",
+      "explanation": "<p>特徵方程式 r<sup>2</sup> + 6r + 9 = (r + 3)<sup>2</sup> = 0，<b>重根</b> r = −3（判別式 36 − 36 = 0）。</p><p>重根的通解要補 n：a<sub>n</sub> = (A + Bn)(−3)<sup>n</sup>。代 n = 0：A = 2；代 n = 1：(2 + B)(−3) = −3，B = −1。所以 a<sub>n</sub> = (2 − n)(−3)<sup>n</sup>。</p><p>驗算：遞迴 a<sub>2</sub> = −6·(−3) − 9·2 = 0，公式 (2 − 2)·9 = 0；a<sub>3</sub> = −6·0 − 9·(−3) = 27，公式 (−1)·(−27) = 27，一致。</p><p>常見錯誤：寫成 A(−3)<sup>n</sup> + B(−3)<sup>n</sup>，代 n = 0 得 A + B = 2、代 n = 1 得 −3(A + B) = −3，兩式矛盾（2 ≠ 1），無解。這正是「重根只有一個自由度」的訊號。</p>"
+    },
+    {
+      "id": "dm-0182",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "解 a<sub>n</sub> = a<sub>n−1</sub> + 2a<sub>n−2</sub> + 6·2<sup>n</sup>（n ≥ 2），a<sub>0</sub> = 0、a<sub>1</sub> = 14。",
+      "answer": "a<sub>n</sub> = (2 + 4n)·2<sup>n</sup> − 2·(−1)<sup>n</sup>",
+      "explanation": "<p><b>齊次部分</b>：r<sup>2</sup> − r − 2 = (r − 2)(r + 1) = 0，根 2、−1，齊次通解 A·2<sup>n</sup> + B(−1)<sup>n</sup>。</p><p><b>特解</b>：f(n) = 6·2<sup>n</sup> 的底數 2 剛好是 1 重特徵根，所以猜 u·n·2<sup>n</sup>（猜 u·2<sup>n</sup> 代進去會得到 0 = 24，無解）。代入並同除 2<sup>n−2</sup>：4un = 2u(n − 1) + 2u(n − 2) + 24 = 4un − 6u + 24，n 的項抵消，得 u = 4，特解 4n·2<sup>n</sup>。</p><p><b>代初始條件</b>（特解要一起代）：n = 0：A + B + 0 = 0；n = 1：2A − B + 8 = 14。解得 A = 2、B = −2。</p><p>a<sub>n</sub> = 2·2<sup>n</sup> − 2(−1)<sup>n</sup> + 4n·2<sup>n</sup> = (2 + 4n)·2<sup>n</sup> − 2(−1)<sup>n</sup>。驗算 n = 2：遞迴 14 + 0 + 24 = 38，公式 10·4 − 2 = 38；n = 3：遞迴 38 + 28 + 48 = 114，公式 14·8 + 2 = 114，一致。</p>"
+    },
+    {
+      "id": "dm-0183",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "令 a<sub>n</sub> 為長度 n、由 0、1、2 組成且含有<b>偶數個 0</b> 的字串個數（0 個也算偶數）。(a) 寫出 a<sub>n</sub> 的遞迴關係與初始條件；(b) 求閉合式。",
+      "answer": "(a) a<sub>n</sub> = a<sub>n−1</sub> + 3<sup>n−1</sup>（n ≥ 2），a<sub>1</sub> = 2　(b) a<sub>n</sub> = (3<sup>n</sup> + 1)/2",
+      "explanation": "<p>(a) 看最後一個字元：</p><ul><li>最後是 1 或 2（2 種）：前 n−1 個要有偶數個 0，共 2a<sub>n−1</sub>。</li><li>最後是 0：前 n−1 個要有<b>奇數</b>個 0。長度 n−1 的字串共 3<sup>n−1</sup> 個，扣掉偶數個 0 的 a<sub>n−1</sub>，剩 3<sup>n−1</sup> − a<sub>n−1</sub>。</li></ul><p>合計 a<sub>n</sub> = 2a<sub>n−1</sub> + 3<sup>n−1</sup> − a<sub>n−1</sub> = a<sub>n−1</sub> + 3<sup>n−1</sup>。長度 1 的字串 1、2 合法，a<sub>1</sub> = 2。</p><p>(b) 齊次部分 a<sub>n</sub> = a<sub>n−1</sub> 的根是 1，齊次解是常數 A。f(n) = 3<sup>n−1</sup> = (1/3)·3<sup>n</sup>，底數 3 不是根，猜 u·3<sup>n</sup>：u·3<sup>n</sup> = u·3<sup>n−1</sup> + 3<sup>n−1</sup>，同除 3<sup>n−1</sup> 得 3u = u + 1，u = 1/2。通解 a<sub>n</sub> = A + 3<sup>n</sup>/2，代 a<sub>1</sub> = 2：A + 3/2 = 2，A = 1/2。</p><p>a<sub>n</sub> = (3<sup>n</sup> + 1)/2：比一半多 1/2，因為「偶數個 0」比「奇數個 0」多一個。程式暴力列舉 n = 1～7 得 2、5、14、41、122、365、1094，和公式完全一致。</p>"
+    },
+    {
+      "id": "dm-0184",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "解 a<sub>n</sub> = 5a<sub>n−1</sub> − 8a<sub>n−2</sub> + 4a<sub>n−3</sub>（n ≥ 3），a<sub>0</sub> = 1、a<sub>1</sub> = 3、a<sub>2</sub> = 9，並用 a<sub>3</sub>、a<sub>4</sub> 驗算。",
+      "answer": "a<sub>n</sub> = 1 + n·2<sup>n</sup>（a<sub>3</sub> = 25、a<sub>4</sub> = 65）",
+      "explanation": "<p>特徵方程式 r<sup>3</sup> − 5r<sup>2</sup> + 8r − 4 = 0。有理根定理：整數根整除 4，候選 ±1、±2、±4。代 r = 1：1 − 5 + 8 − 4 = 0，是根；綜合除法得 r<sup>2</sup> − 4r + 4 = (r − 2)<sup>2</sup>。所以根是 1（單根）和 2（<b>2 重根</b>）。</p><p>通解 a<sub>n</sub> = A + (B + Cn)·2<sup>n</sup>。代初始條件：</p><ul><li>n = 0：A + B = 1</li><li>n = 1：A + 2B + 2C = 3</li><li>n = 2：A + 4B + 8C = 9</li></ul><p>第二式減第一式：B + 2C = 2；第三式減第二式：2B + 6C = 6，即 B + 3C = 3。相減得 C = 1、B = 0、A = 1。</p><p>a<sub>n</sub> = 1 + n·2<sup>n</sup>。驗算（只代 n = 0、1、2 沒有檢查力，因為係數就是照它們解的）：遞迴 a<sub>3</sub> = 5·9 − 8·3 + 4·1 = 25，公式 1 + 3·8 = 25；a<sub>4</sub> = 5·25 − 8·9 + 4·3 = 65，公式 1 + 4·16 = 65，一致。</p>"
+    },
+    {
+      "id": "dm-0185",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）考慮 a<sub>n</sub> = 4a<sub>n−1</sub> − 4a<sub>n−2</sub> + f(n)。下列「f(n) → 特解的猜測形式」哪些正確？（u、v 為待定係數）",
+      "choices": [
+        "(A) f(n) = 3·2<sup>n</sup> → u·n·2<sup>n</sup>",
+        "(B) f(n) = 3·2<sup>n</sup> → u·n<sup>2</sup>·2<sup>n</sup>",
+        "(C) f(n) = 5n → u·n",
+        "(D) f(n) = 5n → u + vn",
+        "(E) f(n) = 7·(−2)<sup>n</sup> → u·n·(−2)<sup>n</sup>"
+      ],
+      "answer": "(B)、(D)",
+      "explanation": "<p>特徵方程式 r<sup>2</sup> − 4r + 4 = (r − 2)<sup>2</sup>，2 是 <b>2 重根</b>，沒有其他根。</p><ul><li>(A)(B)：底數 2 是 2 重根，2<sup>n</sup> 和 n·2<sup>n</sup> 都是齊次解，代進去都會被消掉，要乘 n<sup>2</sup>。(A) 錯、(B) 對；代入解得 u = 3/2。</li><li>(C)(D)：5n 是 1 次多項式（底數 1），1 不是特徵根，要猜<b>完整的</b> 1 次多項式 u + vn。只猜 un 時代入，常數項會多出一個 −4u 的項沒辦法消掉。(C) 錯、(D) 對；解得 u = 20、v = 5。</li><li>(E)：−2 不是特徵根（根只有 2），直接猜 u(−2)<sup>n</sup> 即可，乘 n 是多餘的，代入會解不出來。(E) 錯；正確猜法解得 u = 7/4。</li></ul><p>三種情況都用動畫實際解過，特解代回遞迴與前 8 項比對全部一致。</p>"
+    },
+    {
+      "id": "dm-0186",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "用兩種顏色的 1×1 方磚和三種顏色的 1×2 長磚鋪滿 1 × n 的長條（同顏色的磚視為相同），令 a<sub>n</sub> 為鋪法數，a<sub>0</sub> = 1。(a) 寫出遞迴關係與 a<sub>1</sub>；(b) 求閉合式；(c) 求使 a<sub>n</sub> &gt; 10000 的最小 n。",
+      "answer": "(a) a<sub>n</sub> = 2a<sub>n−1</sub> + 3a<sub>n−2</sub>，a<sub>1</sub> = 2　(b) a<sub>n</sub> = (3<sup>n+1</sup> + (−1)<sup>n</sup>)/4　(c) n = 9",
+      "explanation": "<p>(a) 看最右邊那塊磚：1×1 方磚（2 種顏色），剩 1 × (n−1)，共 2a<sub>n−1</sub>；1×2 長磚（3 種顏色），剩 1 × (n−2)，共 3a<sub>n−2</sub>。a<sub>1</sub> = 2（只能放一塊方磚，2 種顏色）。驗算 a<sub>2</sub>：兩塊方磚 2·2 = 4 種，加一塊長磚 3 種，共 7 = 2·2 + 3·1。</p><p>(b) r<sup>2</sup> − 2r − 3 = (r − 3)(r + 1)，根 3、−1。a<sub>n</sub> = A·3<sup>n</sup> + B(−1)<sup>n</sup>；A + B = 1、3A − B = 2，得 A = 3/4、B = 1/4，a<sub>n</sub> = (3<sup>n+1</sup> + (−1)<sup>n</sup>)/4。驗算 n = 2：(27 + 1)/4 = 7。</p><p>(c) 主導項是 3<sup>n+1</sup>/4，(−1)<sup>n</sup>/4 只有 ±0.25。3<sup>n+1</sup> &gt; 40000：3<sup>9</sup> = 19683 不夠、3<sup>10</sup> = 59049 夠，所以 n + 1 = 10。精確值 a<sub>8</sub> = (19683 + 1)/4 = 4921、a<sub>9</sub> = (59049 − 1)/4 = 14762，答案 <b>n = 9</b>。程式照遞迴算 a<sub>0</sub>～a<sub>10</sub> = 1、2、7、20、61、182、547、1640、4921、14762、44287，和公式一致。</p>"
+    },
+    {
+      "id": "dm-0187",
+      "topics": [
+        "recurrence-relations"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "設 c<sub>2</sub> ≠ 0，且特徵方程式 r<sup>2</sup> − c<sub>1</sub>r − c<sub>2</sub> = 0 有重根 r<sub>0</sub>。證明：(a) b<sub>n</sub> = n·r<sub>0</sub><sup>n</sup> 滿足 a<sub>n</sub> = c<sub>1</sub>a<sub>n−1</sub> + c<sub>2</sub>a<sub>n−2</sub>；(b) 對任意初始條件 a<sub>0</sub>、a<sub>1</sub>，都存在唯一的 A、B 使 a<sub>n</sub> = (A + Bn)r<sub>0</sub><sup>n</sup>。",
+      "answer": "(a) 由 c<sub>1</sub> = 2r<sub>0</sub>、c<sub>2</sub> = −r<sub>0</sub><sup>2</sup> 直接代入；(b) A = a<sub>0</sub>、B = a<sub>1</sub>/r<sub>0</sub> − a<sub>0</sub>（r<sub>0</sub> ≠ 0）",
+      "explanation": "<p>(a) 重根表示 r<sup>2</sup> − c<sub>1</sub>r − c<sub>2</sub> = (r − r<sub>0</sub>)<sup>2</sup> = r<sup>2</sup> − 2r<sub>0</sub>r + r<sub>0</sub><sup>2</sup>，比較係數得 c<sub>1</sub> = 2r<sub>0</sub>、c<sub>2</sub> = −r<sub>0</sub><sup>2</sup>。代入右邊：</p><p>c<sub>1</sub>b<sub>n−1</sub> + c<sub>2</sub>b<sub>n−2</sub> = 2r<sub>0</sub>·(n−1)r<sub>0</sub><sup>n−1</sup> − r<sub>0</sub><sup>2</sup>·(n−2)r<sub>0</sub><sup>n−2</sup> = [2(n−1) − (n−2)]r<sub>0</sub><sup>n</sup> = n·r<sub>0</sub><sup>n</sup> = b<sub>n</sub>。得證。</p><p>(b) 由 (a) 與 r<sub>0</sub><sup>n</sup> 本身是解，加上線性（疊加原理），(A + Bn)r<sub>0</sub><sup>n</sup> 對任何 A、B 都是解。代初始條件：n = 0 得 A = a<sub>0</sub>；n = 1 得 (A + B)r<sub>0</sub> = a<sub>1</sub>。因為 r<sub>0</sub><sup>2</sup> = −c<sub>2</sub> ≠ 0，r<sub>0</sub> ≠ 0，可以除過去：B = a<sub>1</sub>/r<sub>0</sub> − a<sub>0</sub>，A、B 唯一確定。又因為 2 階遞迴的數列由 a<sub>0</sub>、a<sub>1</sub> 唯一決定（歸納法），這個 (A + Bn)r<sub>0</sub><sup>n</sup> 就是那個數列。</p><p>常見漏洞：沒有說明 r<sub>0</sub> ≠ 0。若 c<sub>2</sub> = 0，遞迴其實是 1 階，題目的假設就是為了排除這種情況。</p>"
     }
   ]
 }

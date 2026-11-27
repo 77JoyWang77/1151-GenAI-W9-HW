@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P, NP, and NP-Completeness P、NP 與 NP 完備 · 演算法 | 資工考研互動學習站</title>
+  <meta name="description" content="P、NP、co-NP 的定義，多項式時間歸約的方向，NP-hard 與 NP 完備的判斷，以及偽多項式時間。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=44614248">
+  <script src="../../../assets/js/theme.js?v=44614248"></script>
+</head>
+<body data-subject="algorithms" data-chapter="np-completeness" data-chno="12" data-topic="algorithms/np-completeness/p-np" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Algorithms 演算法</a> › Ch12 NP-Completeness NP 完備 › P, NP, and NP-Completeness P、NP 與 NP 完備</nav>
+      <div class="topic-head">
+        <h1>P, NP, and NP-Completeness P、NP 與 NP 完備<small>好驗證的問題，是不是都好解？</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch12 NP-Completeness</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">P</span>
+          <span class="chip">NP</span>
+          <span class="chip">NP-complete</span>
+          <span class="chip">reduction</span>
+          <span class="chip">co-NP</span>
+        </div>
+      </div>
+
+      <section id="decision-problems">
+        <h2>為什麼要分類問題：決策問題與輸入大小</h2>
+        <div class="panel prose">
+          <p>前面學的排序、最短路徑、LCS 都有多項式時間的演算法，n 變大時時間只是 n²、n³ 這樣慢慢長。但有一大群問題，例如「排一條經過每個城市恰好一次的最短路線」「把一堆數字分成總和相等的兩堆」，幾十年來沒有人找到多項式時間的解法，也沒有人證明它們一定沒有。NP 完備理論做的事，就是把這些問題<b>分類</b>：哪些已知簡單、哪些「一樣難」、哪些只要解掉一個其他全部跟著解掉。考研的這一章幾乎都是是非判斷題，觀念一錯就整串推論都錯，所以下面每個定義都要記準。</p>
+          <h3>決策問題 vs 最佳化問題</h3>
+          <p>複雜度類別（P、NP……）只收 <span class="term">Decision Problem<small>（決策問題）</small></span>：答案只有 yes 或 no 的問題。我們平常遇到的多半是 <span class="term">Optimization Problem<small>（最佳化問題）</small></span>，要先把它改寫成「有沒有一個解，好到某個門檻 k」：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>最佳化版本</th><th>決策版本</th></tr></thead>
+              <tbody>
+                <tr><td>求圖 G 最小的點覆蓋</td><td>G 有沒有大小 ≤ k 的點覆蓋？</td></tr>
+                <tr><td>求 s 到 t 的最短路徑長</td><td>s 到 t 有沒有長度 ≤ k 的路徑？</td></tr>
+                <tr><td>求最短的旅行推銷員路線</td><td>有沒有總長 ≤ k、經過每個城市一次的迴路？</td></tr>
+                <tr><td>0/1 背包的最大價值</td><td>能不能在重量 ≤ W 下讓價值 ≥ k？</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩個版本的難度關係：</p>
+          <ul>
+            <li><b>決策版本不會比較難</b>：會解最佳化，就算出最佳值再跟 k 比一次。所以「最佳化版本有多項式解」⇒「決策版本有多項式解」。</li>
+            <li><b>反過來通常也行</b>：最佳值通常介於 0 和一個多項式位元數的上限之間，對 k 做二分搜尋，呼叫決策版本 O(log 上限) 次就能找出最佳值。所以對這些常見問題來說，兩個版本「同時在 P 或同時不在」。</li>
+            <li>差別在分類：最佳化版本不是 yes/no 問題，<b>不屬於 NP</b>，最多只能說它是 NP-hard。這是「NP-hard 不一定在 NP 裡」最常見的例子。</li>
+          </ul>
+          <h3>多項式要對「輸入長度」算</h3>
+          <p>「多項式時間」裡的 n 是<b>輸入編碼的長度</b>（多少個位元或符號），不是題目裡某個數字的大小。一張圖的輸入長度和點數、邊數同階；但一個整數 W 只要 ⌈log₂(W + 1)⌉ 個位元就寫得下。這一點會直接決定「背包問題的 O(nW) 算不算多項式」，最後一節再細講。</p>
+        </div>
+      </section>
+
+      <section id="class-p">
+        <h2>P：多項式時間可以解</h2>
+        <div class="panel prose">
+          <div class="callout"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <span class="term">P<small>（Polynomial time）</small></span>：存在一個<b>確定性</b>演算法，對任何長度 n 的輸入都能在 O(n<sup>c</sup>) 時間（c 是常數）內正確回答 yes 或 no 的決策問題所成的集合。</div>
+          <p>為什麼用「多項式」當作「有效率」的分界線？</p>
+          <ul>
+            <li><b>成長速度差太多</b>：n = 50 時，n³ 是 125,000；2<sup>n</sup> 已經超過 10<sup>15</sup>，每秒算 10 億次也要 13 天左右。n 再加 10，n³ 只多了不到一倍，2<sup>n</sup> 卻變成 1024 倍。</li>
+            <li><b>對組合封閉</b>：多項式加、乘、代入多項式還是多項式。一個多項式演算法呼叫另一個多項式副程式多項式次，整體仍是多項式；這讓「歸約」可以一層一層串下去。</li>
+            <li><b>和機器模型無關</b>：RAM、圖靈機、各種合理的程式語言互相模擬只差多項式倍，所以「在不在 P」不會因為換一台電腦而改變。</li>
+          </ul>
+          <p>P 裡的經典例子：排序、最短路徑（Dijkstra、Bellman-Ford）、最小生成樹、最大流與最小割、二分圖匹配、2-SAT、判斷質數（2002 年證明在 P）、線性規劃。注意 P 只收決策問題，嚴格說是「最短路徑的決策版本 ∈ P」，但考題常常直接說「shortest path is in P」，意思一樣。</p>
+          <p>有一個常被問的性質：<b>P 對補集封閉</b>。如果 A ∈ P，把演算法的 yes、no 對調，就得到解「A 的補集」的多項式演算法，所以 A 的補集也在 P。下一節會看到 NP 沒有這麼漂亮的性質。</p>
+        </div>
+      </section>
+
+      <section id="class-np">
+        <h2>NP：答案是 yes 時好驗證</h2>
+        <div class="panel prose">
+          <div class="callout"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <span class="term">NP<small>（Nondeterministic Polynomial time）</small></span>：決策問題 A ∈ NP，若存在一個<b>多項式時間的確定性驗證器</b> V 和多項式 p，使得：輸入 x 的答案是 yes ⇔ 存在一個長度 ≤ p(|x|) 的 <span class="term">Certificate<small>（證據、證書）</small></span> y，讓 V(x, y) 接受。</div>
+          <p>白話：答案是 yes 的時候，有人可以拿出一個<b>不太長的證據</b>，你只要花多項式時間檢查它就能被說服。至於證據怎麼找出來，定義完全不管。以 <span class="term">SAT<small>（Satisfiability，布林可滿足性問題）</small></span>為例：給一個 CNF 公式，問有沒有一組 T/F 指派讓它為真。certificate 就是那組指派，驗證器把每個子句檢查一遍，時間和公式長度成正比。</p>
+          <p>定義裡有兩個容易漏掉的細節：</p>
+          <ul>
+            <li><b>不對稱</b>：只有 yes 的時候需要有證據。答案是 no 時，<b>任何</b> certificate 都必須被拒絕；但你手上某一個 certificate 被拒絕，<b>不代表</b>答案是 no，只代表那一個不對。</li>
+            <li><b>證據要短</b>：certificate 的長度必須是輸入長度的多項式，驗證器的時間也是。如果允許指數長的證據，什麼問題都能「驗證」，定義就沒意義了。</li>
+          </ul>
+          <h3>另一種說法：非確定性演算法</h3>
+          <p>NP 名字裡的 N 是 nondeterministic，不是 non-。另一個等價的定義是：A 可以被一個<b>多項式時間的非確定性演算法</b>解。非確定性演算法分兩階段：</p>
+          <ol>
+            <li><b>choosing phase（猜）</b>：每一步用 choice() 從幾個選項中「挑一個」，而且假設它<b>總是挑到會成功的那一個</b>（只要有的話）。挑出來的東西就是 certificate。</li>
+            <li><b>checking phase（檢查）</b>：確定性地檢查挑出來的東西是不是解，是就 SUCCESS，否則 FAILURE。</li>
+          </ol>
+          <p>兩階段都在多項式時間內完成，問題就在 NP。寫成虛擬碼證明某問題 ∈ NP 時，要清楚寫出輸入、輸出、兩個階段，並分析時間。以「有沒有大小 k 的 clique」為例：choosing phase 對每個點 choice({放, 不放})，共 O(n)；checking phase 檢查選了 k 個點、而且每一對都相鄰，O(k²) ⊆ O(n²)，所以 CLIQUE ∈ NP。</p>
+          <h3>P ⊆ NP</h3>
+          <p>如果 A ∈ P，驗證器可以<b>完全不看</b> certificate，直接用多項式演算法把答案算出來。所以 P ⊆ NP。真正沒解決的是另一個方向：NP ⊆ P 嗎？也就是「好驗證的問題，是不是都好解」？這就是 <b>P vs NP 問題</b>，目前沒有人證明 P = NP，也沒有人證明 P ≠ NP。大多數人相信 P ≠ NP，但考題問「已經被證明」的時候，這件事兩邊都不能選。</p>
+          <details class="code-fold">
+            <summary>看程式碼：verifySAT() 驗證器</summary>
+            <div class="code-block"><div class="code-head">verifySAT()：照 certificate 逐子句檢查</div><pre class="code">int litValue(int l, const int x[]) {
+  return l &gt; 0 ? x[l] : !x[-l];
+}
+
+int verifySAT(const CNF *f, const int x[]) {
+  for (int j = 0; j &lt; f-&gt;m; j++) {
+    int sat = 0;
+    for (int k = 0; k &lt; f-&gt;len[j] &amp;&amp; !sat; k++) {
+      steps++;
+      if (litValue(f-&gt;lit[j][k], x)) sat = 1;   /* 有一個字面為真，這個子句就滿足 */
+    }
+    if (!sat) return 0;                           /* 有一個子句全假：這組指派不行 */
+  }
+  return 1;                                       /* 每個子句都滿足：接受 */
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作：驗證 vs 暴力求解</h2>
+        <div class="panel prose">
+          <p>驗證和求解差多少，自己跑一次最清楚。下面的動畫對<b>同一個</b>公式做兩件事：先拿 certificate 交給 verifySAT() 逐子句檢查，再用 bruteSAT() 從 00…0 開始把 2<sup>n</sup> 組指派一組一組試，每組都要整個再驗證一次。下方會累計兩者「看過的字面數」，這是兩個做法共同的基本動作，拿來比較最公平。</p>
+          <p>公式的寫法：每個子句用括號包起來，字面寫 x1～x4，否定在前面加 <code>!</code>（或 ¬），子句內用 <code>|</code>（或 ∨）隔開，例如 <code>(x1|!x2)(!x1|x3)</code>；最多 4 個變數、6 個子句，每個子句最多 3 個字面。certificate 依序寫 x1、x2、… 的值（1 是 T、0 是 F）；留白就只跑暴力法。按「certificate 給錯」可以看到：驗證器拒絕了，暴力法卻還是找得到解；按「不可滿足」則會看到暴力法非得試完全部 8 組才能說 no。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>變數數 n</th><th>驗證：看的字面數</th><th>暴力最壞：看的字面數</th><th>倍數</th></tr></thead>
+              <tbody>
+                <tr><td>2</td><td>2</td><td>6</td><td>3 倍</td></tr>
+                <tr><td>8</td><td>8</td><td>510</td><td>約 64 倍</td></tr>
+                <tr><td>14</td><td>14</td><td>32,766</td><td>約 2,340 倍</td></tr>
+                <tr><td>20</td><td>20</td><td>2,097,150</td><td>約 10 萬倍</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>上表用的是最壞的公式 (x1)(x2)…(xn)：只有全部為 T 才滿足，而 11…1 是暴力法最後才試的那一組。驗證永遠只看 n 個字面；暴力法看了 2<sup>n+1</sup> − 2 個，n 每加 1 就翻倍。如果有人找到一種方法，能讓「找 certificate」也只花多項式時間，那就證明了 P = NP。</p>
+          <details class="code-fold">
+            <summary>看程式碼：bruteSAT() 暴力枚舉</summary>
+            <div class="code-block"><div class="code-head">bruteSAT()：試遍 2^n 組指派</div><pre class="code">int bruteSAT(const CNF *f, int x[]) {
+  for (long mask = 0; mask &lt; (1L &lt;&lt; f-&gt;n); mask++) {
+    for (int i = 1; i &lt;= f-&gt;n; i++)
+      x[i] = (mask &gt;&gt; (f-&gt;n - i)) &amp; 1;
+    if (verifySAT(f, x)) return 1;                /* 找到一組可以滿足的指派 */
+  }
+  return 0;                                       /* 2^n 組全部失敗：不可滿足 */
+}</pre></div>
+          </details>
+        </div>
+        <div class="viz" data-viz="sat-verify-vs-solve"></div>
+      </section>
+
+      <section id="co-np">
+        <h2>co-NP：答案是 no 時好驗證</h2>
+        <div class="panel prose">
+          <p>把決策問題 A 的 yes、no 對調，得到它的<b>補集</b> Ā。<span class="term">co-NP<small>（NP 的補集類別）</small></span> = { A : Ā ∈ NP }，也就是「答案是 <b>no</b> 的時候有簡短證據」的問題。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>問題</th><th>yes 時有沒有短證據</th><th>no 時有沒有短證據</th><th>已知類別</th></tr></thead>
+              <tbody>
+                <tr><td>SAT：公式可滿足嗎？</td><td>有：一組指派</td><td>不知道</td><td>NP（NP-complete）</td></tr>
+                <tr><td>UNSAT：公式不可滿足嗎？</td><td>不知道</td><td>有：一組讓它為真的指派</td><td>co-NP</td></tr>
+                <tr><td>TAUTOLOGY：公式永遠為真嗎？</td><td>不知道</td><td>有：一組讓它為假的指派</td><td>co-NP</td></tr>
+                <tr><td>COMPOSITE：n 是合數嗎？</td><td>有：一個因數</td><td>有：質數證明</td><td>P（因此也在 NP ∩ co-NP）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>要記的關係：</p>
+          <ul>
+            <li><b>P ⊆ NP ∩ co-NP</b>：A ∈ P ⇒ Ā ∈ P ⊆ NP，所以 A ∈ co-NP。</li>
+            <li><b>NP = co-NP 嗎？未知</b>。大家相信不相等。若 P = NP，因為 P 對補集封閉，會推出 NP = co-NP；但反過來不成立，NP = co-NP 不能推出 P = NP。</li>
+            <li><b>若某個 NP-complete 問題在 co-NP 裡，則 NP = co-NP</b>。理由：任何 B ∈ NP 都能歸約到它，而 co-NP 對多項式歸約封閉（B ≤p C 且 C ∈ co-NP ⇒ B ∈ co-NP），所以 NP ⊆ co-NP，兩邊取補集又得 co-NP ⊆ NP。因此「有一個 NPC 問題的補集也是 NPC」目前不能說是對的。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="reduction">
+        <h2>多項式時間歸約：比較兩個問題誰比較難</h2>
+        <div class="panel prose">
+          <div class="callout"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <span class="term">Polynomial-time Reduction<small>（多項式時間歸約）</small></span> A ≤<sub>p</sub> B：存在一個多項式時間可計算的函數 f，把 A 的每個輸入 x 轉成 B 的輸入 f(x)，而且 <b>x 是 A 的 yes ⇔ f(x) 是 B 的 yes</b>。</div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="p-np-reduction"></div>
+            <figcaption><b>圖 1</b>：有了 f，再接上任何解 B 的演算法，就組出一個解 A 的演算法。所以 B 至少和 A 一樣難；若 B 好解，A 也好解。</figcaption>
+          </figure>
+          <p>讀法：「A 歸約到 B」「A 可以化成 B」，意思是<b>A 不比 B 難</b>（最多差一個多項式的轉換成本）。記方向最好的方法是想「≤」：A 在小的那邊。從定義直接得到下面幾條推論，有的對、有的是常見的陷阱：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>已知 A ≤p B</th><th>成立嗎</th><th>理由</th></tr></thead>
+              <tbody>
+                <tr><td>B ∈ P ⇒ A ∈ P</td><td>成立</td><td>算 f(x)（多項式），再用 B 的演算法；f(x) 的長度也是多項式，代進多項式還是多項式</td></tr>
+                <tr><td>A 是 NP-hard ⇒ B 是 NP-hard</td><td>成立</td><td>任何 NP 問題 ≤p A ≤p B，歸約可以串接</td></tr>
+                <tr><td>A ∈ P ⇒ B ∈ P</td><td>不成立</td><td>簡單的問題可以歸約到很難的問題，例如任何 P 問題都能歸約到 SAT</td></tr>
+                <tr><td>B 是 NP-hard ⇒ A 是 NP-hard</td><td>不成立</td><td>同上，A 可能很簡單</td></tr>
+                <tr><td>B ∈ NP ⇒ A ∈ NP</td><td>成立</td><td>A 的驗證器：先算 f(x)，再用 B 的驗證器檢查</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><b>遞移性</b>：A ≤p B、B ≤p C ⇒ A ≤p C，因為兩個多項式函數合成還是多項式。考題常給一串 A ≤p B ≤p C ≤p D 加上幾個已知條件，要你推出誰是 NP-hard、誰在 NP；做法就是「難度往箭頭方向傳、容易往箭頭反方向傳」。</p>
+          <p>另外有一種比較寬的歸約（Turing／Cook 歸約）：「可以用解 B 的多項式演算法當副程式，在多項式時間內解 A」。有的考卷就用這種定義。對「在不在 P」的推論，兩種定義結論一樣；只是它允許呼叫很多次、也允許把答案反過來，所以碰到 NP 和 co-NP 的區別時要用上面那種（Karp）定義。</p>
+          <h3>簡單例子：Independent Set ≤p Vertex Cover</h3>
+          <p>在無向圖 G = (V, E) 中，<span class="term">Independent Set<small>（獨立集）</small></span> S 是一組兩兩不相鄰的點；<span class="term">Vertex Cover<small>（點覆蓋）</small></span> C 是一組點，讓每條邊都至少有一個端點在 C 裡。關鍵觀察：<b>S 是獨立集 ⇔ V − S 是點覆蓋</b>。因為「每條邊最多一個端點在 S」和「每條邊至少一個端點不在 S」是同一句話。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="p-np-is-vc"></div>
+            <figcaption><b>圖 2</b>：兩個三角形 abc、def 用 bd、ce 連起來。綠色的 S = {a, d} 兩兩不相鄰；剩下橘色的 4 個點蓋住了全部 8 條邊。</figcaption>
+          </figure>
+          <p>所以歸約函數 f 只要把 (G, k) 變成 (G, n − k)：「G 有大小 k 的獨立集」⇔「G 有大小 n − k 的點覆蓋」。轉換只改一個數字，O(1) 時間。以圖 2 為例，n = 6：最大獨立集大小是 2（每個三角形最多選一點），所以最小點覆蓋大小是 6 − 2 = 4；想選 {a, d, e} 當獨立集就不行，因為 d、e 相鄰。程式把 5 個點的所有 1024 張圖、每個 k 都檢查了一遍，6,144 組答案完全一致。同樣的想法反過來也成立（VC ≤p IS），再加上「G 的獨立集 = 補圖的 clique」，三個問題其實是同一個問題的三種說法。更多的歸約技巧（3-SAT → CLIQUE、VC → HAM-CYCLE 這類需要「零件」的構造）放在 NP-Completeness Reductions 這一頁（籌備中）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：獨立集、點覆蓋的檢查與歸約</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="歸約"><div class="code-head">reduceISToVC()：只改門檻</div><pre class="code">void reduceISToVC(const Graph *g, int k, Graph *h, int *k2) {
+  *h = *g;          /* 圖完全不用改 */
+  *k2 = g-&gt;n - k;   /* 只改門檻：O(1)，當然是多項式時間 */
+}</pre></div>
+              <div class="code-block" data-tab="檢查"><div class="code-head">isIndependentSet() / isVertexCover()</div><pre class="code">int isIndependentSet(const Graph *g, const int in[]) {
+  for (int u = 0; u &lt; g-&gt;n; u++)
+    for (int v = u + 1; v &lt; g-&gt;n; v++)
+      if (g-&gt;adj[u][v] &amp;&amp; in[u] &amp;&amp; in[v]) return 0;   /* 這條邊的兩端都在 S 裡 */
+  return 1;
+}
+
+int isVertexCover(const Graph *g, const int in[]) {
+  for (int u = 0; u &lt; g-&gt;n; u++)
+    for (int v = u + 1; v &lt; g-&gt;n; v++)
+      if (g-&gt;adj[u][v] &amp;&amp; !in[u] &amp;&amp; !in[v]) return 0; /* 這條邊兩端都不在 C 裡 */
+  return 1;
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="np-complete">
+        <h2>NP-hard 與 NP-complete</h2>
+        <div class="panel prose">
+          <div class="callout"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <span class="term">NP-hard<small>（NP 難）</small></span>：<b>每一個</b> NP 問題都 ≤p X。<br><span class="term">NP-complete<small>（NP 完備，NPC）</small></span>：X ∈ NP <b>而且</b> X 是 NP-hard。</div>
+          <p>NP-hard 只說「至少和 NP 裡最難的一樣難」，<b>沒有要求 X 在 NP 裡</b>。X 甚至可以不是決策問題（例如 TSP 的最佳化版本），或根本不可判定（例如停機問題：任何 NP 問題都能歸約到它，但它不在 NP，所以是 NP-hard 不是 NPC）。NPC 是 NP 和 NP-hard 的交集，是 NP 裡「最難的那一群」。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="p-np-classes"></div>
+            <figcaption><b>圖 3</b>：假設 P ≠ NP 時的關係。藍色的 P 在 NP 裡；橘色的 NPC 是 NP 和 NP-hard（灰色）的重疊部分；紅色是 NP-hard 但不在 NP 的例子。若 P = NP，P、NP、NPC 三塊會幾乎疊在一起。</figcaption>
+          </figure>
+          <h3>NPC 的核心性質</h3>
+          <ul>
+            <li><b>任何 NPC 問題都能歸約到任何 NPC 問題</b>：X 是 NPC 所以 X ∈ NP；Y 是 NPC 所以每個 NP 問題（包括 X）都 ≤p Y。所有 NPC 問題在多項式歸約下「一樣難」。</li>
+            <li><b>只要一個 NPC 問題在 P，就 P = NP</b>：任何 NP 問題 ≤p 那個 NPC 問題 ∈ P，所以都在 P。反過來，<b>只要一個 NPC 問題被證明不在 P，就 P ≠ NP</b>，而且這時所有 NPC 問題都不在 P。</li>
+            <li><b>若 P ≠ NP，P 和 NPC 不相交</b>：P 裡的問題不會是 NP-hard，否則所有 NP 問題都能多項式解。所以「已知在 P 的問題」不能再勾 NP-hard 或 NPC。</li>
+            <li>若 P ≠ NP，NP 裡<b>還有</b>既不在 P、也不是 NPC 的問題（這是一個已證明的定理）；整數分解、圖同構常被當作候選，但它們到底屬於哪一類目前未知。</li>
+          </ul>
+          <h3>怎麼證明一個問題 X 是 NP-complete</h3>
+          <ol>
+            <li><b>證明 X ∈ NP</b>：說明 certificate 是什麼、驗證器怎麼在多項式時間檢查（或寫出多項式時間的非確定性演算法）。</li>
+            <li><b>挑一個已知的 NPC 問題 Y，證明 Y ≤p X</b>：給出轉換 f，證明 f 是多項式時間，並證明「y 是 yes ⇔ f(y) 是 yes」兩個方向。</li>
+          </ol>
+          <p>第 2 步方向最容易寫反：是把<b>已知很難的</b>化成<b>新問題</b>，代表新問題至少一樣難。如果寫成 X ≤p Y，只說明 X 不比 Y 難，什麼都證明不了（連排序都能 ≤p SAT）。另外，只做第 2 步得到的是 NP-hard；少了第 1 步就不能說 NPC。</p>
+          <h3>和近似演算法的關係（簡述）</h3>
+          <p>歸約保留的是 yes/no 的答案，<b>不保留近似的好壞</b>。所以同樣是 NPC 的決策版本，最佳化時可能差很多：點覆蓋有簡單的 2 倍近似；一般（不滿足三角不等式的）TSP 若 P ≠ NP 就沒有任何常數倍近似；背包問題甚至可以近似到任意接近 1。細節在 Vertex Cover Approximation 這一頁（籌備中）。</p>
+        </div>
+      </section>
+
+      <section id="cook-levin">
+        <h2>Cook–Levin 定理與常見的 NP-complete 問題</h2>
+        <div class="panel prose">
+          <p>用「已知的 NPC 問題 ≤p X」來證明，需要有第一個 NPC 問題。<span class="term">Cook–Levin Theorem<small>（Cook–Levin 定理）</small></span>就是這個起點：<b>SAT 是 NP-complete</b>。它的證明直接從 NP 的定義下手，把「非確定性機器在多項式步內接受 x」的整個計算過程寫成一個多項式大小的布林公式，公式可滿足 ⇔ 機器接受，因此每個 NP 問題都 ≤p SAT。考研只要知道它的陳述和意義，不會要求證明。</p>
+          <p>之後的 NPC 證明都是一條歸約鏈：SAT ≤p 3-SAT ≤p CLIQUE ≤p VERTEX-COVER ≤p HAM-CYCLE ≤p TSP，3-SAT ≤p SUBSET-SUM 等等。下表是考題最常出現的 NPC 問題，旁邊放了<b>長得很像、但在 P 裡</b>的版本，因為判斷題最愛拿這些對照組出題：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>NP-complete（決策版本）</th><th>相近但在 P 的版本</th><th>差在哪裡</th></tr></thead>
+              <tbody>
+                <tr><td>3-SAT：每個子句 3 個字面</td><td>2-SAT</td><td>2 個字面的子句可以寫成兩條「蘊含」邊，用強連通分量線性時間解</td></tr>
+                <tr><td>最長簡單路徑（長度 ≥ k）</td><td>最短路徑；DAG 上的最長路徑</td><td>最長簡單路徑包含 Hamiltonian path；DAG 沒有環，可以依拓撲順序 DP</td></tr>
+                <tr><td>有負環時的最短<b>簡單</b>路徑</td><td>沒有負環時的最短路徑</td><td>權重全部取負號就變成最長簡單路徑</td></tr>
+                <tr><td>Hamiltonian cycle：每個<b>點</b>恰好一次</td><td>Euler circuit：每條<b>邊</b>恰好一次</td><td>Euler 只要檢查連通且每個點度數為偶數</td></tr>
+                <tr><td>MAX-CUT：割邊數 ≥ k</td><td>MIN-CUT</td><td>最小割可以用最大流求</td></tr>
+                <tr><td>3-COLOR：三種顏色著色</td><td>2-COLOR</td><td>2 色就是判斷二分圖，BFS 即可</td></tr>
+                <tr><td>一般圖的獨立集、clique、點覆蓋</td><td>區間圖的最大獨立集；二分圖的點覆蓋</td><td>區間圖用 greedy（活動選擇）；二分圖的點覆蓋大小 = 最大匹配</td></tr>
+                <tr><td>0/1 背包、SUBSET-SUM</td><td>fractional knapsack</td><td>可以切分時 greedy 依價值密度挑即可</td></tr>
+                <tr><td>0/1 整數規劃</td><td>線性規劃</td><td>變數可以是實數時有多項式演算法</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>還有一個陷阱：「u 到 v 有沒有長度 k 的路徑」要看路徑能不能重複走點。要求<b>簡單路徑</b>時，k = n − 1 就是 Hamiltonian path，是 NPC；如果允許重複點（walk），可以用 DP 或鄰接矩陣的次方在多項式時間判斷。</p>
+          <div class="callout"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 判斷題口訣：先問「它是決策問題嗎」，再問「已知在 P 嗎」，最後問「有沒有已知 NPC 問題能歸約到它」。已知在 P 的，在 P、NP、co-NP，<b>不是</b> NP-hard（假設 P ≠ NP）；NPC 的，在 NP、是 NP-hard，<b>不知道</b>在不在 co-NP。</div>
+        </div>
+      </section>
+
+      <section id="pseudo-polynomial">
+        <h2>偽多項式時間：背包的 O(nW) 不算多項式</h2>
+        <div class="panel prose">
+          <p>0/1 背包和 SUBSET-SUM 是 NPC，可是動態規劃可以在 O(nW)（或 O(nT)，T 是目標總和）時間解出來。這不是證明了 P = NP 嗎？不是，因為<b>W 不是輸入長度</b>。W 用二進位只要 b = ⌈log₂(W + 1)⌉ 個位元，所以 O(nW) = O(n · 2<sup>b</sup>)，對輸入長度來說是指數。這種「對數值大小是多項式、對位元數是指數」的時間叫 <span class="term">Pseudo-polynomial Time<small>（偽多項式時間）</small></span>。</p>
+          <p>以 SUBSET-SUM 的 DP 為例，can[s] 表示能不能湊出總和 s，每多考慮一個數就由大到小更新一次。集合 {5, 8, 13, 4, 7}、T = 20 時答案是 yes（13 + 7），總共更新 68 格，非常快。但如果 T 換成很大的數，輸入只多幾個位元，表格卻暴增：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>T 的位元數 b</th><th>T 最大約</th><th>表格約 n × T 格（n = 5）</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>10</td><td>1,023</td><td>5,120</td><td>一瞬間</td></tr>
+                <tr><td>20</td><td>1,048,575</td><td>約 524 萬</td><td>輸入只多 10 個位元，表格大 1024 倍</td></tr>
+                <tr><td>30</td><td>約 10.7 億</td><td>約 54 億</td><td>再多 10 個位元，又大 1024 倍</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>所以考題問「O(nW) 的 0/1 背包演算法是多項式時間演算法嗎」，答案是<b>不是</b>。反過來，如果題目保證 W ≤ n² 之類的條件，O(nW) 就真的是多項式了。這也把 NPC 問題分成兩種：背包、SUBSET-SUM 這種「數字小就好解」的叫 weakly NP-complete；TSP、3-COLOR、CLIQUE 這種就算數字都很小（甚至沒有數字）也還是 NPC 的叫 strongly NP-complete。背包問題本身的 DP 填表放在 0/1 Knapsack 這一頁（籌備中）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：subsetSum() 偽多項式時間的 DP</summary>
+            <div class="code-block"><div class="code-head">subsetSum()：O(nT) 填表</div><pre class="code">int subsetSum(const int a[], int n, int T, long *cells) {
+  char *can = calloc(T + 1, 1);
+  can[0] = 1;                                      /* 什麼都不選，總和 0 */
+  for (int i = 0; i &lt; n; i++)
+    for (int s = T; s &gt;= a[i]; s--) {              /* 由大到小，每個數只用一次 */
+      if (can[s - a[i]]) can[s] = 1;
+      (*cells)++;
+    }
+  int r = can[T];
+  free(can);
+  return r;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>給 A ≤p B（或一串歸約），判斷推論對錯</td><td>很常考</td><td>難度往箭頭方向傳（A 是 NP-hard ⇒ B 是 NP-hard）、容易往反方向傳（B ∈ P、B ∈ NP ⇒ A 也是）；反方向一律推不出</td><td><a class="q-link" href="#q-al-0066">例題</a> <a class="q-link" href="#q-al-0135">例題</a> <a class="q-link" href="#q-al-0045">例題</a> <a class="q-link" href="#q-al-0201">例題</a></td></tr>
+                <tr><td>P、NP、NP-hard、NPC 的定義與關係（「已被證明」的敘述）</td><td>很常考</td><td>對照定義逐句檢查；P vs NP、NP vs co-NP 都還沒解決，任何「已證明 P ≠ NP」都錯</td><td><a class="q-link" href="#q-al-0049">例題</a> <a class="q-link" href="#q-al-0113">例題</a> <a class="q-link" href="#q-al-0150">例題</a> <a class="q-link" href="#q-al-0151">例題</a> <a class="q-link" href="#q-al-0194">例題</a></td></tr>
+                <tr><td>NP 的定義、certificate、非確定性演算法</td><td>常考</td><td>寫出 certificate 和驗證器，或 choosing／checking 兩階段，最後分析成多項式時間</td><td><a class="q-link" href="#q-al-0160">例題</a> <a class="q-link" href="#q-al-0028">例題</a> <a class="q-link" href="#q-al-0197">例題</a></td></tr>
+                <tr><td>證明 NPC 的步驟、用定義推導</td><td>常考</td><td>(1) X ∈ NP；(2) 已知 NPC ≤p X；只做 (2) 只得到 NP-hard</td><td><a class="q-link" href="#q-al-0112">例題</a> <a class="q-link" href="#q-al-0023">例題</a> <a class="q-link" href="#q-al-0200">例題</a></td></tr>
+                <tr><td>判斷具體問題屬於哪一類（P／NPC／NP-hard）</td><td>很常考</td><td>先想有沒有已知的多項式演算法；再找它包含哪個 NPC 問題（Hamiltonian、3-SAT……）；注意對照組</td><td><a class="q-link" href="#q-al-0090">例題</a> <a class="q-link" href="#q-al-0086">例題</a> <a class="q-link" href="#q-al-0087">例題</a> <a class="q-link" href="#q-al-0088">例題</a> <a class="q-link" href="#q-al-0195">例題</a></td></tr>
+                <tr><td>NP-hard 但不是 NPC、co-NP</td><td>常考</td><td>NPC 要多一個「∈ NP」；停機問題、最佳化版本不在 NP；NPC 在 co-NP ⇒ NP = co-NP</td><td><a class="q-link" href="#q-al-0159">例題</a> <a class="q-link" href="#q-al-0120">例題</a></td></tr>
+                <tr><td>偽多項式時間</td><td>偶爾</td><td>以輸入位元數判斷：W 只占 log W 位元，O(nW) 是指數</td><td><a class="q-link" href="#q-al-0084">例題</a> <a class="q-link" href="#q-al-0199">例題</a></td></tr>
+                <tr><td>簡單的歸約（獨立集、點覆蓋、clique）</td><td>常考</td><td>寫出轉換 f、說明多項式時間、證明 yes ⇔ yes 兩個方向</td><td><a class="q-link" href="#q-al-0185">例題</a> <a class="q-link" href="#q-al-0198">例題</a></td></tr>
+                <tr><td>綜合是非題（含近似、heap 等其他章節）</td><td>偶爾</td><td>每一句獨立判斷並寫理由；近似比例不會隨歸約保留</td><td><a class="q-link" href="#q-al-0011">例題</a> <a class="q-link" href="#q-al-0025">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> NP 是 non-polynomial，NP 問題一定要指數時間</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> NP 是 nondeterministic polynomial：yes 的答案可以多項式時間驗證；P ⊆ NP，所以 NP 裡也有很簡單的問題</span> <a class="q-link" href="#q-al-0194">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 要證明 X 是 NP-hard，就把 X 歸約到某個 NPC 問題</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 方向相反：要證明「已知 NPC ≤p X」；X ≤p NPC 只說明 X 不比它難</span> <a class="q-link" href="#q-al-0112">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> A ≤p B 且 A ∈ P，所以 B ∈ P</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 容易的性質只會往箭頭反方向傳：B ∈ P ⇒ A ∈ P；A 簡單時 B 可以任意難</span> <a class="q-link" href="#q-al-0066">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> NP-hard 的問題一定在 NP 裡</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> NP-hard 不要求 ∈ NP；停機問題、最佳化版本都是 NP-hard 但不是 NPC</span> <a class="q-link" href="#q-al-0159">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 已知 NPC 問題 A ≤p B，所以 B 是 NPC</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只能推出 B 是 NP-hard；還要 B ∈ NP 才是 NPC</span> <a class="q-link" href="#q-al-0120">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> certificate 被驗證器拒絕，答案就是 no</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只代表這一個 certificate 不對；答案是 no 要所有 certificate 都被拒絕</span> <a class="q-link" href="#q-al-0197">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 2-SAT、最短路徑、最小割也是 NPC，因為 3-SAT、最長路徑、最大割是</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 這些對照組都在 P；假設 P ≠ NP 時，在 P 的問題不是 NP-hard</span> <a class="q-link" href="#q-al-0090">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 0/1 背包有 O(nW) 的 DP，所以是多項式時間</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> W 只占 log W 個位元，O(nW) 對輸入長度是指數，叫偽多項式時間</span> <a class="q-link" href="#q-al-0084">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 已經證明 NPC 問題沒有多項式演算法</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> P vs NP 還沒解決；只能說「若 P ≠ NP 則沒有」</span> <a class="q-link" href="#q-al-0025">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="p-np"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=44614248"></script>
+  <script src="../../../assets/js/viz-core.js?v=44614248"></script>
+  <script src="../../../assets/js/viz/algorithms/p-np.js?v=44614248"></script>
+</body>
+</html>

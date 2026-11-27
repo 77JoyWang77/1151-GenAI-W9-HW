@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cache Performance 快取效能 · 計算機組織 | 資工考研互動學習站</title>
+  <meta name="description" content="AMAT 與含記憶體停頓的 CPI、I/D 快取分開算、L2 的 local/global miss rate、時脈加倍與寫入策略。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=44614248">
+  <script src="../../../assets/js/theme.js?v=44614248"></script>
+</head>
+<body data-subject="computer-organization" data-chapter="memory-hierarchy" data-chno="5" data-topic="computer-organization/memory-hierarchy/cache-performance" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Computer Organization 計算機組織</a> › Ch5 Memory Hierarchy 記憶體階層 › Cache Performance 快取效能</nav>
+      <div class="topic-head">
+        <h1>Cache Performance 快取效能<small>AMAT、記憶體停頓與 CPI、多層快取</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch5 Memory Hierarchy</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">AMAT</span>
+          <span class="chip">CPI</span>
+          <span class="chip">miss penalty</span>
+          <span class="chip">L2</span>
+          <span class="chip">write buffer</span>
+        </div>
+      </div>
+
+      <section id="why-performance">
+        <h2>為什麼要算快取效能</h2>
+        <div class="panel prose">
+          <p>在 <a href="cache-mapping.html">Cache Organization and Mapping 快取組織與映射</a> 已經講過快取「怎麼放、怎麼找、滿了換誰」：直接映射與集合關聯、位址切成 tag／index／offset、LRU、3C 失誤分類、write-through 與 write-back。這一頁接著回答下一個問題：<b>快取到底讓程式快了多少？miss 又讓程式慢了多少？</b></p>
+          <p>處理器和 DRAM 的速度差距越來越大，這個現象叫 <span class="term">Memory Wall<small>（記憶體牆）</small></span>。CPU 一個 cycle 不到 1 ns，主記憶體一次存取要幾十 ns，換算下來 miss 一次就要等上百個 cycle。只要 miss rate 有幾個百分點，等記憶體的時間就可能比真正執行指令的時間還長。所以考題幾乎都在問同一件事：給你 miss rate、miss penalty、指令組成，<b>算出平均每次存取多久、每條指令平均多等幾個 cycle</b>。</p>
+          <p>先複習三個量，這頁的公式都是用它們組出來的：</p>
+          <ul>
+            <li><span class="term">Hit Time<small>（命中時間）</small></span>：資料在快取裡時，存取一次要多久（包含比對 tag 的時間）。L1 通常是 1～4 個 cycle。</li>
+            <li><span class="term">Miss Rate<small>（失誤率）</small></span>：存取中有多少比例不在快取裡。注意是「每次存取」的比例，不是「每條指令」的比例。</li>
+            <li><span class="term">Miss Penalty<small>（失誤代價）</small></span>：miss 時多付的時間，也就是從下一層把整個區塊搬上來（再交給 CPU）的時間。</li>
+          </ul>
+          <p>同一個 penalty 可能用 ns 或 cycle 表示：<b>cycle 數 = 時間 ÷ cycle time = 時間 × 時脈頻率</b>。例如 2 GHz 的 cycle time 是 0.5 ns，40 ns 的記憶體存取就是 80 cycles。題目給 ns 時，第一步一定是換算，這也是後面「時脈加倍」題型的關鍵。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 這頁所有公式只有兩條：AMAT = hit time + miss rate × miss penalty；CPI = 理想 CPI + 每條指令的記憶體停頓。多層快取、寫入策略、記憶體組織，都只是在改 miss rate 或 miss penalty 這兩個數字。</p></div>
+        </div>
+      </section>
+
+      <section id="amat">
+        <h2>AMAT：平均一次存取要多久</h2>
+        <div class="panel prose">
+          <p>衡量一個快取最直接的指標是 <span class="term">AMAT<small>（Average Memory Access Time，平均記憶體存取時間）</small></span>：</p>
+          <pre class="formula">AMAT = hit time + miss rate × miss penalty</pre>
+          <p>為什麼 hit time 前面沒有乘 hit rate？因為不管最後有沒有命中，都要先查一次快取才知道結果，<b>每一次存取都付了 hit time</b>；只有 miss 的那部分再多付 miss penalty。把機率樹畫出來就看得很清楚：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cache-perf-amat-tree"></div>
+            <figcaption><b>圖 1</b>：hit time 1 cycle、miss rate 5%、miss penalty 80 cycles。hit 的 95% 只花 1 cycle；miss 的 5% 先花 1 cycle 查快取、再等 80 cycles。加權平均後等於 1 + 0.05 × 80 = 5 cycles。</figcaption>
+          </figure>
+          <h3>例子：數字代表什麼</h3>
+          <p>上面的 5 cycles 意思是：快取命中率高達 95%，平均存取時間卻是命中時的 <b>5 倍</b>，因為那 5% 的 miss 每次都要等 80 倍的時間（0.05 × 80 = 4 cycles，佔了 AMAT 的 80%）。如果處理器是 2 GHz，AMAT = 5 × 0.5 ns = 2.5 ns。</p>
+          <p>同一台機器的 I-cache miss rate 只有 1% 的話，取指令的 AMAT = 1 + 0.01 × 80 = 1.8 cycles。miss rate 從 5% 降到 1%（降了 4 個百分點），AMAT 從 5 降到 1.8，降了 64%：miss penalty 越大，miss rate 的一點點差距影響越大。</p>
+          <h3>兩種寫法：miss 時要不要再加 hit time</h3>
+          <p>有些題目把 AMAT 寫成 hit rate × hit time + miss rate × (存取下一層的時間)，意思是 miss 時只算下一層的時間，不再加查快取的時間。兩種模型差的就是 miss rate × hit time，用上面的數字是 0.95 × 1 + 0.05 × 80 = 4.95 vs 5，差很小。考試時先看題目怎麼定義 miss penalty：如果 penalty 是「多付的時間」就用標準式；如果題目給的是「到下一層的總時間」，兩種解讀都寫出來最保險。</p>
+          <details class="code-fold">
+            <summary>看程式碼：amat() 與 amat2()</summary>
+            <div class="code-block"><div class="code-head">amat()、amat2()：一層與兩層快取的 AMAT</div><pre class="code">double amat(double hitTime, double missRate, double missPenalty) {
+  return hitTime + missRate * missPenalty;
+}
+
+double amat2(double h1, double m1, double h2, double m2Local, double memPenalty) {
+  double l1Penalty = h2 + m2Local * memPenalty;   /* 先付 L2 hit time，L2 也 miss 才到主記憶體 */
+  return h1 + m1 * l1Penalty;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="cpi-stall">
+        <h2>把記憶體停頓算進 CPI</h2>
+        <div class="panel prose">
+          <p>AMAT 只描述記憶體本身；要知道程式跑多快，還要把 miss 換算成「每條指令多等幾個 cycle」，加到 CPI 上。執行時間 = 指令數 × CPI × cycle time（這條公式在 CPU Performance（籌備中）會詳細講），快取只會改變其中的 CPI：</p>
+          <pre class="formula">CPI = 理想 CPI + memory-stall cycles per instruction
+
+memory-stall cycles per instruction
+  = 每條指令取指令的次數 × I-cache miss rate × miss penalty    ← 每條指令都要取指令
+  + 每條指令的資料存取次數 × D-cache miss rate × miss penalty  ← 只有 load/store 才存取資料</pre>
+          <p>這裡的 <span class="term">Memory-Stall Cycles<small>（記憶體停頓週期）</small></span> 是「每條指令平均」的值，所以要先把「每次存取的 miss rate」乘上「每條指令有幾次存取」：</p>
+          <ul>
+            <li><b>指令存取</b>：每條指令都要從 I-cache 取一次，次數是 1（題目若沒特別說明）。</li>
+            <li><b>資料存取</b>：只有 load/store 會存取 D-cache，次數 = load/store 佔指令的比例，例如 30% 就是每條指令平均 0.3 次。</li>
+            <li><b>理想 CPI</b>：所有存取都命中時的 CPI。管線處理器的 hit time 已經包含在管線的某個階段裡，所以 hit 不另外算停頓，只有 miss 才會讓管線停下來。這個 CPI 也可能已經包含管線危障造成的 stall（見 <a href="../processor/pipelining.html">Pipelining 管線化</a> 的「把 stall 算進效能」）。</li>
+          </ul>
+          <h3>完整例子</h3>
+          <p>理想 CPI 1.5，30% 的指令是 load/store，I-cache miss rate 1%，D-cache miss rate 5%，miss penalty 80 cycles：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>算式</th><th>結果</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>I-cache 停頓</td><td>1 × 0.01 × 80</td><td>0.8</td><td>每條指令平均因取指令 miss 多等 0.8 cycle</td></tr>
+                <tr><td>D-cache 停頓</td><td>0.3 × 0.05 × 80</td><td>1.2</td><td>D-cache miss rate 是 I-cache 的 5 倍，但只有 30% 的指令會用到，所以停頓只多 50%</td></tr>
+                <tr><td>總停頓</td><td>0.8 + 1.2</td><td>2.0</td><td>每條指令平均等記憶體 2 個 cycle，比理想 CPI 還多</td></tr>
+                <tr><td>實際 CPI</td><td>1.5 + 2.0</td><td>3.5</td><td>記憶體停頓佔 2.0 / 3.5 = 57% 的時間</td></tr>
+                <tr><td>完美快取的加速</td><td>3.5 / 1.5</td><td>2.33</td><td>如果永遠命中，同一個程式會快 2.33 倍</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>這也說明了 AMAT 和 CPI 的關係：每條指令的停頓 = Σ（每條指令的存取次數 × (AMAT − hit time)）。I-cache 的 AMAT 是 1.8，扣掉 hit time 剩 0.8；D-cache 的 AMAT 是 5，扣掉 1 剩 4，乘上 0.3 次是 1.2，和上表一樣。</p>
+          <details class="code-fold">
+            <summary>看程式碼：breakdown() 拆解 CPI</summary>
+            <div class="code-block"><div class="code-head">Config、Breakdown 與 breakdown()：L1 miss penalty、I／D 停頓、CPI</div><pre class="code">typedef struct {
+  double baseCPI;      /* 沒有任何 miss 時的 CPI（hit time 已經算在管線裡） */
+  double instrRefs;    /* 每條指令取指令的次數，通常是 1 */
+  double dataRefs;     /* 每條指令的資料存取次數 = load/store 佔的比例 */
+  double iMiss, dMiss; /* I-cache、D-cache 的 miss rate */
+  double memPenalty;   /* 到主記憶體的 miss penalty（cycle） */
+  int hasL2;           /* 有沒有 L2 */
+  double l2Hit;        /* L2 hit time（cycle） */
+  double l2LocalMiss;  /* L2 的 local miss rate */
+} Config;
+
+typedef struct { double penalty, iStall, dStall, cpi; } Breakdown;
+
+Breakdown breakdown(Config c) {
+  Breakdown b;
+  b.penalty = c.memPenalty;                          /* L1 miss 要付的代價 */
+  if (c.hasL2)                                       /* 有 L2：先問 L2，L2 也 miss 才去主記憶體 */
+    b.penalty = c.l2Hit + c.l2LocalMiss * c.memPenalty;
+  b.iStall = c.instrRefs * c.iMiss * b.penalty;      /* 取指令造成的停頓 */
+  b.dStall = c.dataRefs * c.dMiss * b.penalty;       /* load/store 造成的停頓 */
+  b.cpi = c.baseCPI + b.iStall + b.dStall;           /* 實際 CPI */
+  return b;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作：CPI 計算器</h2>
+        <div class="panel prose">
+          <p>輸入理想 CPI、每條指令取指令的次數、load/store 比例、兩個快取的 miss rate（百分比）和到主記憶體的 penalty（cycle）。要加 L2 就填「L2 hit」和「L2 local miss %」兩格，留空代表沒有 L2。動畫依序算出 L1 miss penalty、I-cache 停頓、D-cache 停頓、CPI，每一步上方用藍色標出用到的參數，最後畫出長條圖看理想 CPI 和兩種停頓各佔多少。</p>
+          <p>「和沒有 L2 比較」用同一組參數，只拿掉 L2 再算一次；「時脈加倍比較」只把 penalty（以及 L2 hit time）換算成 2 倍的 cycle，其他參數都不變，一次只改一個變因。三個快捷按鈕分別是上一節的例子、加上 L2（hit 10 cycles、local miss 20%）、時脈加倍。</p>
+        </div>
+        <div class="viz" data-viz="cache-perf-calc"></div>
+      </section>
+
+      <section id="faster-clock">
+        <h2>時脈變快，記憶體沒有跟著變快</h2>
+        <div class="panel prose">
+          <p>把處理器時脈加倍，DRAM 並不會因此變快：主記憶體存取一次還是那麼多 ns，但一個 cycle 只剩一半的時間，<b>換算成 cycle 的 miss penalty 就變成 2 倍</b>。理想 CPI 和 miss rate 都不變（同樣的程式、同樣的快取）。</p>
+          <p>延續上面的例子，原本 penalty 80 cycles，時脈加倍後變 160 cycles：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>原本</th><th>時脈加倍</th></tr></thead>
+              <tbody>
+                <tr><td>miss penalty</td><td>80 cycles</td><td>160 cycles（同樣的 ns）</td></tr>
+                <tr><td>停頓</td><td>0.8 + 1.2 = 2.0</td><td>1.6 + 2.4 = 4.0</td></tr>
+                <tr><td>CPI</td><td>3.5</td><td>5.5</td></tr>
+                <tr><td>每條指令的時間</td><td>3.5 × T</td><td>5.5 × T/2 = 2.75 T</td></tr>
+                <tr><td>停頓佔的比例</td><td>57%</td><td>73%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>加速 = 3.5T ÷ 2.75T = <b>1.27 倍</b>。時脈快了 100%，程式只快了 27%，因為多出來的速度大部分都花在等記憶體。比較兩台機器時一定要比<b>時間</b>（CPI × cycle time），不能直接比 CPI：只看 CPI 會以為時脈加倍反而變慢（3.5 → 5.5）。</p>
+          <p>反過來看，處理器越快，miss 的代價（以 cycle 計）就越大，<b>快取反而越重要</b>。同樣的道理也適用於降低理想 CPI：把理想 CPI 從 1.5 降到 0.75，停頓還是 2.0，CPI 從 3.5 只降到 2.75，只快 27%。這和 Amdahl's Law（籌備中）是同一個道理：沒改善的那部分（記憶體停頓）限制了整體的加速。</p>
+          <p>有 L2 時差別就出來了：上面的機器加上 L2（hit 10 cycles、local miss 20%，假設 L2 的 ns 時間也固定），時脈加倍的加速是 1.54 倍，比沒有 L2 的 1.27 倍好，因為停頓在 CPI 裡佔的比例變小了。</p>
+          <details class="code-fold">
+            <summary>看程式碼：clockSpeedup() 時脈變成 k 倍的加速</summary>
+            <div class="code-block"><div class="code-head">clockSpeedup()：penalty 以 ns 固定，換算成 cycle 變 k 倍</div><pre class="code">double clockSpeedup(Config c, double k) {
+  Config f = c;
+  f.memPenalty = c.memPenalty * k;
+  f.l2Hit = c.l2Hit * k;
+  double oldTime = breakdown(c).cpi * 1.0;          /* 每條指令的時間 = CPI × cycle time */
+  double newTime = breakdown(f).cpi * (1.0 / k);    /* cycle time 變成 1/k */
+  return oldTime / newTime;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="multilevel">
+        <h2>多層快取：local 與 global miss rate</h2>
+        <div class="panel prose">
+          <p>要降低 miss penalty，最有效的做法是在 L1 和主記憶體之間再加一層 L2（甚至 L3）。L1 miss 時先問 L2，L2 有就只要等 L2 的 hit time（約 10 cycles），L2 也沒有才去主記憶體。於是 L1 的 miss penalty 本身就變成「L2 的 AMAT」：</p>
+          <pre class="formula">AMAT = hit time<sub>L1</sub> + miss rate<sub>L1</sub> × (hit time<sub>L2</sub> + local miss rate<sub>L2</sub> × miss penalty<sub>L2</sub>)
+     = hit time<sub>L1</sub> + miss rate<sub>L1</sub> × hit time<sub>L2</sub> + global miss rate × miss penalty<sub>L2</sub></pre>
+          <p>L2 的 miss rate 有兩種算法，考題很愛問：</p>
+          <ul>
+            <li><span class="term">Local Miss Rate<small>（區域失誤率）</small></span>：L2 自己的 miss 次數 ÷ <b>到達 L2</b> 的存取次數（也就是 L1 miss 的次數）。</li>
+            <li><span class="term">Global Miss Rate<small>（全域失誤率）</small></span>：L2 的 miss 次數 ÷ <b>CPU 送出</b>的全部存取次數 = L1 miss rate × L2 local miss rate。它代表「CPU 的存取有多少比例真的走到主記憶體」。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cache-perf-multilevel"></div>
+            <figcaption><b>圖 2</b>：1000 次存取中，L1 擋下 950 次，剩 50 次到 L2；L2 再擋下 40 次，只有 10 次到主記憶體。L2 的 local miss rate 是 20%，看起來很高，但 global miss rate 只有 1%。</figcaption>
+          </figure>
+          <h3>例子：加上 L2 前後</h3>
+          <p>沿用圖 2 的數字（L1 hit 1 cycle、miss rate 5%，L2 hit 10 cycles、local miss 20%，主記憶體 80 cycles）：沒有 L2 時 AMAT = 1 + 0.05 × 80 = 5 cycles；加上 L2 後 L1 的 miss penalty = 10 + 0.2 × 80 = 26 cycles，AMAT = 1 + 0.05 × 26 = <b>2.3 cycles</b>，存取時間降到原本的 46%。用第二行的寫法驗算：1 + 0.05 × 10 + 0.01 × 80 = 1 + 0.5 + 0.8 = 2.3，一樣。</p>
+          <p>換成 CPI：前面的例子（I-cache miss 1%、D-cache miss 5%、30% load/store）加上這個 L2，停頓 = (1 × 0.01 + 0.3 × 0.05) × 26 = 0.025 × 26 = 0.65，CPI 從 3.5 降到 <b>2.15</b>，快了 1.63 倍。</p>
+          <h3>為什麼 L2 的 local miss rate 看起來很高</h3>
+          <p>L1 已經把容易命中的存取（迴圈變數、剛用過的資料）都擋掉了，會走到 L2 的是比較「難」的存取，所以 L2 的 local miss rate 常常是 20%～50%。這不代表 L2 沒用，要看的是 global miss rate 和最後的 AMAT。</p>
+          <h3>L1 和 L2 的設計目標不同</h3>
+          <ul>
+            <li><b>L1 追求 hit time 短</b>：每次存取都要付 L1 的 hit time，它直接影響 clock cycle，所以 L1 做得小、關聯度低、I／D 分開。</li>
+            <li><b>L2 追求 miss rate 低</b>：只有 L1 miss 才會用到 L2，hit time 稍長影響不大，所以 L2 做得大、關聯度高、區塊也可以大一點。</li>
+          </ul>
+          <p>多層快取還有內容要不要重複的問題：<span class="term">Inclusive Cache<small>（包含式快取）</small></span>保證 L1 的內容一定也在 L2，coherence 只要查 L2 就知道上層有沒有，但同一份資料存兩次；<span class="term">Exclusive Cache<small>（互斥式快取）</small></span>各層不重複，總有效容量是各層相加。這部分在 Cache Coherence（籌備中）會再細談。</p>
+        </div>
+      </section>
+
+      <section id="writes">
+        <h2>寫入策略對停頓的影響</h2>
+        <div class="panel prose">
+          <p>write-through、write-back 的定義在 <a href="cache-mapping.html">快取組織與映射</a> 的「寫入的處理」已經講過，這裡只看它們怎麼改變停頓的計算。</p>
+          <h3>write-back：dirty 區塊讓 miss penalty 變大</h3>
+          <p>write-back 的快取在 miss 時，如果被換掉的區塊是 dirty，就要先把它寫回下一層，再讀新的區塊進來（沒有額外緩衝時）。設被換掉的區塊有 d 的比例是 dirty，平均每次 miss 的代價變成：</p>
+          <pre class="formula">有效 miss penalty = penalty × (1 + dirty 比例)</pre>
+          <p>上面的例子若 D-cache 是 write-back、30% 被換掉的區塊是 dirty，D-cache 每次 miss 平均要 80 × 1.3 = 104 cycles，D 停頓從 1.2 變 0.3 × 0.05 × 104 = 1.56，CPI 從 3.5 變 3.86。I-cache 不會被寫入，不會有 dirty 區塊，停頓不變。這也是為什麼 <b>read miss 也可能造成寫入</b>：要換掉的區塊是 dirty 時，讀取也得先寫回。</p>
+          <h3>write-through：每次寫入都要等，除非有 write buffer</h3>
+          <p>write-through 的每次 store 都要寫到下一層。如果沒有緩衝，CPU 每次 store 都要等主記憶體：假設 10% 的指令是 store，每次寫入等 80 cycles，每條指令就多 0.1 × 80 = <b>8 cycles</b>，是前面所有 miss 停頓（2.0）的 4 倍。所以 write-through 幾乎一定搭配 <span class="term">Write Buffer<small>（寫入緩衝區）</small></span>：CPU 把資料丟進 buffer 就繼續執行，buffer 自己慢慢寫回記憶體，只有 buffer 滿了才需要停。</p>
+          <p>write buffer 有效的前提是 store 的頻率低於記憶體能吸收的速度。上例 CPI 約 1.5、10% store，平均每 15 個 cycle 就有一次 store，但主記憶體寫一次要 80 cycles，buffer 很快就會滿。所以實際上 write-through 多半只用在 L1，下一層是寫得夠快的 L2（通常是 write-back）。</p>
+          <h3>讀寫比例的 AMAT（write-through、沒有 write buffer）</h3>
+          <p>這是一種固定題型：讀取有 hit 有 miss，寫入不管 hit 或 miss 都要寫到主記憶體。設讀取佔 70%、讀取的 hit rate 95%、快取 1 ns、主記憶體 50 ns，miss 時只算主記憶體的時間：</p>
+          <pre class="formula">AMAT = 0.7 × (0.95 × 1 + 0.05 × 50) + 0.3 × 50
+     = 0.7 × 3.45 + 15 = 2.415 + 15 = 17.415 ns</pre>
+          <p>只佔 30% 的寫入貢獻了 15 ns，是 AMAT 的 86%，這就是沒有 write buffer 的代價。檢查答案的方向也很有用：read hit rate 越高，AMAT 一定越小，如果你的式子裡 hit rate 的係數讓 AMAT 變大，就是寫錯了。若題目認為 miss 時要先查快取再去主記憶體，讀取 miss 的時間要改成 1 + 50，寫入也可能是 1 + 50，兩種模型的結果都寫出來比較保險。</p>
+          <details class="code-fold">
+            <summary>看程式碼：writeBackPenalty() 與 amatWriteThrough()</summary>
+            <div class="code-block"><div class="code-head">writeBackPenalty()、amatWriteThrough()</div><pre class="code">double writeBackPenalty(double penalty, double dirtyFrac) {
+  return penalty * (1 + dirtyFrac);
+}
+
+double amatWriteThrough(double readFrac, double readHit, double cacheTime, double memTime) {
+  double readTime = readHit * cacheTime + (1 - readHit) * memTime;   /* miss 只算主記憶體時間 */
+  return readFrac * readTime + (1 - readFrac) * memTime;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="miss-penalty">
+        <h2>Miss penalty 從哪裡來：記憶體組織</h2>
+        <div class="panel prose">
+          <p>miss penalty 不是一個神秘的常數，它是搬一整個區塊的時間，可以拆成三段：</p>
+          <ol>
+            <li><b>送位址</b>到記憶體（例如 1 cycle）。</li>
+            <li><b>DRAM 存取</b>：記憶體找到資料（例如 12 cycles）。</li>
+            <li><b>匯流排傳送</b>：每傳一次（例如 1 word）花 1 cycle。</li>
+          </ol>
+          <p>區塊有 4 個 word 時，記憶體怎麼組織，決定了這三段要做幾次：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cache-perf-memory-org"></div>
+            <figcaption><b>圖 3</b>：同樣搬 4 個 word 的區塊。(a) 記憶體與匯流排一次只能 1 word，要存取 4 次、傳 4 次；(b) 加寬成 4 words，一次存取、一次傳完；(c) 匯流排仍是 1 word，但記憶體分成 4 個 bank，同時存取，再輪流傳。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>組織方式</th><th>miss penalty</th><th>頻寬（16 B ÷ penalty）</th><th>代價</th></tr></thead>
+              <tbody>
+                <tr><td>(a) 1 word 寬</td><td>1 + 4 × 12 + 4 × 1 = 53</td><td>0.30 B/cycle</td><td>最便宜</td></tr>
+                <tr><td>(b) 4 words 寬</td><td>1 + 12 + 1 = 14</td><td>1.14 B/cycle</td><td>匯流排、記憶體都要 4 倍寬，快取端還要 mux</td></tr>
+                <tr><td>(c) 4 bank 交錯</td><td>1 + 12 + 4 × 1 = 17</td><td>0.94 B/cycle</td><td>匯流排不用加寬，只要把記憶體分 bank</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><span class="term">Interleaving<small>（交錯）</small></span>把連續的 word 輪流放在不同 bank（位址 0 在 bank 0、位址 1 在 bank 1……），循序讀一個區塊時 4 個 bank 同時工作，12 cycles 的存取時間互相重疊。它用很少的成本得到接近寬記憶體的效果：penalty 從 53 降到 17，只比 4 倍寬的 14 多 3 個 cycle。但 bank 越多不一定越好：如果存取一直落在同一個 bank（bank conflict），平行度就沒了。</p>
+          <p>把 penalty 帶回前面的 CPI 例子：penalty 53 時 CPI = 1.5 + 0.025 × 53 = 2.825；改用 4 bank 交錯，penalty 17，CPI = 1.925，快了 1.47 倍，而快取本身一點都沒改。</p>
+          <p>還有兩個不用改記憶體、只縮短 CPU 等待時間的技巧：<span class="term">Early Restart<small>（提早重新開始）</small></span>是要的那個 word 一到就交給 CPU，不等整個區塊搬完；<span class="term">Critical Word First<small>（關鍵字優先）</small></span>更進一步，先從記憶體拿 CPU 要的那個 word，其餘的再依序補齊。區塊越大，這兩招省得越多。</p>
+          <details class="code-fold">
+            <summary>看程式碼：missPenalty() 依記憶體組織算 penalty</summary>
+            <div class="code-block"><div class="code-head">missPenalty()：送位址＋存取輪數 × DRAM 存取＋傳送次數 × 傳送</div><pre class="code">int missPenalty(int addr, int access, int xfer, int blockWords, int busWords, int banks) {
+  int transfers = blockWords / busWords;                 /* 匯流排要傳幾次 */
+  int rounds = (transfers + banks - 1) / banks;          /* 各 bank 同時存取，要存取幾輪 */
+  return addr + rounds * access + transfers * xfer;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="measure">
+        <h2>實測：用模擬器跑出 miss rate</h2>
+        <div class="panel prose">
+          <p>考題裡的 miss rate 通常直接給，但它其實是由<b>程式的存取模式</b>決定的。用一個小模擬器實際跑一段程式就能看到：同樣的快取、同樣的資料，換個走訪順序，miss rate 可以差 4 倍。</p>
+          <p>設定：int a[64][64]（每個 4 bytes，一列 256 bytes，整個陣列 16 KiB，從位址 0 開始以 row-major 存放），D-cache 是 1 KiB 的直接映射快取、區塊 16 bytes（64 個區塊，每塊放 4 個 int）。分別一列一列（a[i][j]，j 在內層）和一行一行（a[j][i]）把整個陣列讀一遍：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>走訪順序</th><th>實測 miss rate</th><th>原因</th></tr></thead>
+              <tbody>
+                <tr><td>一列一列</td><td>25%</td><td>每 4 個相鄰的 int 共用一個區塊，只有每塊的第一次是 compulsory miss，其餘 3 次命中：空間區域性用滿了</td></tr>
+                <tr><td>一行一行（直接映射）</td><td>100%</td><td>相鄰兩次存取差 256 bytes = 16 個區塊，區塊編號 16i 對 64 取餘數只會落在 4 個 set；一行 64 個區塊搶 4 格，每次都把下次要用的擠掉</td></tr>
+                <tr><td>一行一行（2-way、4-way）</td><td>100%</td><td>set 數減半，但一行還是只用到 4 格（2 個 set × 2 格、1 個 set × 4 格），問題沒解決</td></tr>
+                <tr><td>一行一行（全關聯）</td><td>25%</td><td>64 格剛好放下一整行的 64 個區塊，接下來 3 行都命中：前面的 100% 全是 conflict miss</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>把實測值帶進公式（理想 CPI 1、每條指令 0.25 次資料存取、penalty 40 cycles，迴圈很小所以 I-cache 不 miss）：</p>
+          <ul>
+            <li>一列一列：CPI = 1 + 0.25 × 0.25 × 40 = <b>3.5</b>，D-cache 的 AMAT = 1 + 0.25 × 40 = 11 cycles。</li>
+            <li>一行一行：CPI = 1 + 0.25 × 1 × 40 = <b>11</b>，AMAT = 41 cycles。同一個運算慢了 3.14 倍，91% 的時間都在等記憶體。</li>
+          </ul>
+          <p>解法通常不是買更好的快取，而是改程式：<span class="term">Loop Interchange<small>（迴圈交換）</small></span>把兩層迴圈對調，讓內層沿著記憶體連續的方向走；矩陣太大時再用 <span class="term">Blocking<small>（分塊）</small></span>，一次只處理一塊放得進快取的子矩陣，讓資料在被換掉之前多用幾次。</p>
+          <details class="code-fold">
+            <summary>看程式碼：cacheAccess() 與 traverse() 實測 miss rate</summary>
+            <div class="code-block"><div class="code-head">cacheAccess()：一次存取（LRU）；traverse()：走訪 n×n 陣列</div><pre class="code">void cacheAccess(long addr) {          /* byte 位址，LRU 替換 */
+  long block = addr / blockBytes;
+  int set = (int)(block % sets);
+  long tag = block / sets;
+  now++;
+  for (int w = 0; w &lt; ways; w++)
+    if (cache[set][w].valid &amp;&amp; cache[set][w].tag == tag) {
+      cache[set][w].lastUsed = now;
+      hits++;
+      return;
+    }
+  misses++;
+  int v = 0;
+  for (int w = 0; w &lt; ways; w++) {
+    if (!cache[set][w].valid) { v = w; break; }
+    if (cache[set][w].lastUsed &lt; cache[set][v].lastUsed) v = w;
+  }
+  cache[set][v].valid = 1;
+  cache[set][v].tag = tag;
+  cache[set][v].lastUsed = now;
+}
+
+double traverse(int n, int byRow) {
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) {
+      int r = byRow ? i : j, c = byRow ? j : i;      /* byRow = 0：一行一行往下走 */
+      cacheAccess((long)(r * n + c) * 4);
+    }
+  return (double)misses / (hits + misses);
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="improve">
+        <h2>改善快取效能的方法比較</h2>
+        <div class="panel prose">
+          <p>回到 AMAT = hit time + miss rate × miss penalty，所有改善方法都是在壓這三項之一，而且常常壓了一項、另一項就變大。考題的「下列敘述何者正確」大多出自這張表：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>方法</th><th>改善哪一項</th><th>代價、副作用</th></tr></thead>
+              <tbody>
+                <tr><td>加大區塊</td><td>miss rate ↓（利用空間區域性，減少 compulsory miss）；tag 總數 ↓</td><td>miss penalty ↑；容量固定時區塊數變少，太大時 conflict miss ↑、miss rate 反而回升</td></tr>
+                <tr><td>加大快取</td><td>miss rate ↓（capacity miss）</td><td>hit time ↑、面積與功耗 ↑；不影響 compulsory miss</td></tr>
+                <tr><td>提高關聯度</td><td>miss rate ↓（conflict miss）</td><td>hit time ↑（多個比較器＋mux），可能拖慢時脈</td></tr>
+                <tr><td>加 L2／L3</td><td>L1 的 miss penalty ↓</td><td>面積；L2 的 local miss rate 看起來很高是正常的</td></tr>
+                <tr><td>加寬記憶體、interleaving</td><td>miss penalty ↓、頻寬 ↑</td><td>匯流排或 bank 的成本；bank conflict 時沒效果</td></tr>
+                <tr><td>early restart、critical word first</td><td>CPU 等待的時間 ↓</td><td>控制邏輯較複雜；區塊小時幫助不大</td></tr>
+                <tr><td>write buffer</td><td>write-through 的寫入停頓 ↓</td><td>buffer 滿了還是要停；read miss 時要檢查 buffer 裡有沒有較新的資料</td></tr>
+                <tr><td>write-back</td><td>寫入流量 ↓</td><td>換掉 dirty 區塊時 penalty ↑；多一個 dirty bit</td></tr>
+                <tr><td>I-cache、D-cache 分開</td><td>IF 和 MEM 可以同時存取，消除 structural hazard；可各自調整</td><td>同容量下 miss rate 可能比 <span class="term">Unified Cache<small>（統一快取）</small></span>略高</td></tr>
+                <tr><td>loop interchange、blocking</td><td>miss rate ↓</td><td>要改程式（編譯器只能做一部分）</td></tr>
+                <tr><td><span class="term">Prefetching<small>（預取）</small></span></td><td>把 miss 提前到用之前，等待時間 ↓</td><td>抓錯會浪費頻寬、擠掉有用的資料</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>I／D 分開時常考的一點：指令的區域性很好，I-cache miss rate 通常很低；資料的 miss rate 較高。把兩者合成一個同樣總容量的 unified cache，整體 miss rate 會落在兩者之間（比原本的 I-cache 高、比原本的 D-cache 低），可是每個 cycle 只能服務一個存取，管線的取指令和 load/store 會互搶，所以 L1 幾乎都分開，L2 以下才 unified。</p>
+          <p>最後，快取不只影響延遲，也影響<b>頻寬</b>。運算量相對於搬移資料量很少的程式（例如矩陣乘向量、大型模型推論），瓶頸在記憶體頻寬，常用 <span class="term">Arithmetic Intensity<small>（運算強度）</small></span> = 運算次數 ÷ 搬移的 bytes 來判斷。讓資料留在快取裡、或把資料壓小（例如量化成 8 位元），搬移量減少，速度就跟著提高。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 判斷敘述對錯時，問自己三件事：它改的是 hit time、miss rate 還是 miss penalty？另外兩項有沒有變差？題目有沒有寫「always」「一定」這種絕對的字？</p></div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>算 AMAT（含 ns ↔ cycle 換算）</td><td>很常考</td><td>先把 penalty 換成 cycle（ns × GHz）；AMAT = hit time + miss rate × penalty，hit time 不能漏</td><td><a class="q-link" href="#q-co-0160">例題</a> <a class="q-link" href="#q-co-0206">例題</a></td></tr>
+                <tr><td>I／D 分開算 CPI</td><td>很常考</td><td>I 停頓 = 1 × I miss × penalty；D 停頓 = load/store 比例 × D miss × penalty；CPI = 理想 + 兩者；順便算停頓佔幾 %</td><td><a class="q-link" href="#q-co-0142">例題</a> <a class="q-link" href="#q-co-0133">例題</a> <a class="q-link" href="#q-co-0208">例題</a></td></tr>
+                <tr><td>時脈加倍、penalty 時間不變</td><td>常考</td><td>penalty cycle 數 × 2，重算 CPI；比較時間 CPI × cycle time，不要直接比 CPI</td><td><a class="q-link" href="#q-co-0142">例題</a> <a class="q-link" href="#q-co-0211">例題</a></td></tr>
+                <tr><td>多層快取：local／global miss rate、AMAT 遞迴式</td><td>常考</td><td>L1 penalty = L2 hit + L2 local miss × 主記憶體 penalty；global = L1 miss × L2 local；最後記得加理想 CPI</td><td><a class="q-link" href="#q-co-0133">例題</a> <a class="q-link" href="#q-co-0118">例題</a> <a class="q-link" href="#q-co-0209">例題</a></td></tr>
+                <tr><td>寫入策略與讀寫比例的 AMAT</td><td>常考</td><td>write-through 無 buffer：寫入一律付主記憶體時間；write-back：penalty × (1 + dirty 比例)；檢查 hit rate 變大 AMAT 要變小</td><td><a class="q-link" href="#q-co-0040">例題</a> <a class="q-link" href="#q-co-0042">例題</a> <a class="q-link" href="#q-co-0212">例題</a></td></tr>
+                <tr><td>記憶體組織算 miss penalty（寬記憶體、interleaving）</td><td>偶爾</td><td>penalty = 送位址 + 存取輪數 × 存取時間 + 傳送次數 × 傳送時間；頻寬 = 區塊 bytes ÷ penalty</td><td><a class="q-link" href="#q-co-0054">例題</a> <a class="q-link" href="#q-co-0210">例題</a></td></tr>
+                <tr><td>設計參數取捨（區塊大小、關聯度、容量、I／D 分開、inclusive）</td><td>很常考</td><td>對照「改善方法比較」表：改了哪一項、另外兩項怎麼變，注意「一定」「always」</td><td><a class="q-link" href="#q-co-0158">例題</a> <a class="q-link" href="#q-co-0173">例題</a> <a class="q-link" href="#q-co-0087">例題</a> <a class="q-link" href="#q-co-0029">例題</a> <a class="q-link" href="#q-co-0028">例題</a></td></tr>
+                <tr><td>程式的存取模式與 miss rate</td><td>常考</td><td>算相鄰兩次存取差幾 bytes、落在哪個 set；連續走 → miss rate = 元素大小 ÷ 區塊大小；跨步太大或對到同一 set → 接近 100%</td><td><a class="q-link" href="#q-co-0108">例題</a> <a class="q-link" href="#q-co-0201">例題</a> <a class="q-link" href="#q-co-0213">例題</a></td></tr>
+                <tr><td>觀念：memory wall、頻寬、運算強度</td><td>偶爾</td><td>處理器越快 miss 代價越大；memory-bound 的速度由搬移的 bytes 決定</td><td><a class="q-link" href="#q-co-0140">例題</a> <a class="q-link" href="#q-co-0056">例題</a> <a class="q-link" href="#q-co-0179">例題</a> <a class="q-link" href="#q-co-0202">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> AMAT = miss rate × miss penalty</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每次存取都要先付 hit time，AMAT = hit time + miss rate × penalty；漏掉 hit time 是最常見的陷阱選項</span> <a class="q-link" href="#q-co-0160">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 題目給 penalty 50 ns，直接當 50 cycles 用</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 先換算：cycle 數 = ns × GHz，4 GHz 時 50 ns 是 200 cycles</span> <a class="q-link" href="#q-co-0160">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> D-cache 停頓 = D miss rate × penalty，或只算其中一個快取</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> D-cache 要先乘上 load/store 比例，I-cache 每條指令都要算；兩者都要加進 CPI</span> <a class="q-link" href="#q-co-0142">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 時脈加倍，程式就快 2 倍；或看 CPI 變大就說變慢</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> penalty 的 cycle 數跟著加倍；要比時間 = CPI × cycle time，通常只快一點點</span> <a class="q-link" href="#q-co-0142">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 加了 L2 後，算出停頓就當作 CPI</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> CPI = 理想 CPI + 停頓，0.56 這種只有停頓的數字是陷阱選項</span> <a class="q-link" href="#q-co-0133">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> L1 的 miss penalty 就是下一層的 hit time</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 下一層也可能 miss，要再加上它的 local miss rate × 更下一層的 penalty</span> <a class="q-link" href="#q-co-0118">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> L2 的 local miss rate 20%，表示 L2 沒什麼用</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 到 L2 的都是 L1 擋不住的存取；要看 global miss rate 和 AMAT</span> <a class="q-link" href="#q-co-0209">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> write-through 只有寫入 miss 才要到主記憶體</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> write-through 的每次寫入都要寫到下一層，沒有 write buffer 時每次都要等</span> <a class="q-link" href="#q-co-0042">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> write-back 的 read miss 不會產生寫入</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 被換掉的區塊是 dirty 時要先寫回，有效 penalty = penalty × (1 + dirty 比例)</span> <a class="q-link" href="#q-co-0212">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 處理器越快，快取越不重要</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 剛好相反，處理器越快，miss penalty 換算成的 cycle 越多，快取越重要</span> <a class="q-link" href="#q-co-0140">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 區塊越大，miss rate 一定越低</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 容量固定時區塊太大會讓區塊數太少，miss rate 回升，而且 miss penalty 一定變大</span> <a class="q-link" href="#q-co-0158">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 一行一行走陣列一定比一列一列差</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 陣列放得進快取、而且沒有對到同一個 set 時，兩種順序的 miss rate 可以一樣；要實際算 set</span> <a class="q-link" href="#q-co-0213">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="cache-performance"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=44614248"></script>
+  <script src="../../../assets/js/viz-core.js?v=44614248"></script>
+  <script src="../../../assets/js/viz/computer-organization/cache-performance.js?v=44614248"></script>
+</body>
+</html>

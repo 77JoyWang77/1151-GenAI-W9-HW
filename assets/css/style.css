@@ -502,6 +502,11 @@ a.qsrc:hover { color: var(--accent); border-color: var(--accent); }
   /* 圖和動畫保留最小寬度，字才不會縮到看不清楚；放不下時在框內左右滑動，不讓整頁橫向捲動 */
   .viz-stage { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .viz-svg { min-width: 520px; }
+  /* 上一篇／下一篇的長英文標題可以斷行，不撐開頁面 */
+  .pager a { min-width: 0; overflow-wrap: anywhere; }
+  .pager .zh-name { white-space: normal; }
+  /* 題型地圖欄位多，手機上保留寬度、在框內左右滑，避免每一列被擠成很高 */
+  .exam-map { min-width: 600px; }
   .exam-grid th, .exam-grid td { padding: 8px 8px; }
   .exam-grid thead th small { display: none; }
   .exam-grid tbody th { width: auto; }

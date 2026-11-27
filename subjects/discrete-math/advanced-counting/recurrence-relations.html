@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linear Recurrence Relations 線性遞迴關係 · 離散數學 | 資工考研互動學習站</title>
+  <meta name="description" content="常係數線性遞迴的建模、特徵方程式、重根、非齊次特解的猜法與驗算；考研離散數學必考題型。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=44614248">
+  <script src="../../../assets/js/theme.js?v=44614248"></script>
+</head>
+<body data-subject="discrete-math" data-chapter="advanced-counting" data-chno="5" data-topic="discrete-math/advanced-counting/recurrence-relations" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Discrete Mathematics 離散數學</a> › Ch5 Advanced Counting 進階計數 › Linear Recurrence Relations 線性遞迴關係</nav>
+      <div class="topic-head">
+        <h1>Linear Recurrence Relations 線性遞迴關係<small>把「下一項怎麼來」變成「第 n 項是多少」</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch5 Advanced Counting</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">recurrence</span>
+          <span class="chip">characteristic equation</span>
+          <span class="chip">particular solution</span>
+          <span class="chip">modeling</span>
+        </div>
+      </div>
+
+      <section id="why">
+        <h2>為什麼需要遞迴關係</h2>
+        <div class="panel prose">
+          <p>很多計數問題很難一口氣寫出答案，但很容易說出「第 n 個答案和前面幾個答案的關係」。例如爬 n 階樓梯、每次走 1 階或 2 階，有幾種走法？直接列舉很快就爆炸，可是只要看<b>最後一步</b>：最後走 1 階，前面是爬 n−1 階的任何走法；最後走 2 階，前面是爬 n−2 階的任何走法。兩種情況不重疊、也沒有遺漏，所以走法數 a<sub>n</sub> = a<sub>n−1</sub> + a<sub>n−2</sub>。</p>
+          <p>像這樣用前面的項定義後面的項的式子，叫做 <span class="term">Recurrence Relation<small>（遞迴關係）</small></span>。光有遞迴式還不能決定整個數列，要再給開頭幾項，也就是 <span class="term">Initial Conditions<small>（初始條件）</small></span>：爬樓梯是 a<sub>1</sub> = 1（只有「走 1」）、a<sub>2</sub> = 2（「1+1」或「2」）。遞迴式加上初始條件，數列的每一項就唯一確定了。</p>
+          <p>遞迴式很適合「算出來」，但不適合「看出來」：想知道 a<sub>100</sub> 要先算前面 99 項，也看不出數列長多快。所以我們想把它化成 <span class="term">Closed Form<small>（閉合式）</small></span>，也就是只用 n 寫出來的公式。爬樓梯的答案其實是 a<sub>n</sub> = F<sub>n+1</sub>（Fibonacci 數），閉合式裡有 φ = (1 + √5)/2 ≈ 1.618，代表每多一階，走法大約變成 1.618 倍；樓梯從 20 階變成 30 階，走法多了約 φ<sup>10</sup> ≈ 123 倍。這種「成長率」的資訊只有閉合式才看得出來。</p>
+          <p>這一頁處理考研最常考的一類：<b>常係數線性遞迴</b>。內容分成三塊：(1) 從問題列出遞迴式與初始條件（建模）；(2) 用特徵方程式解齊次遞迴；(3) 用「齊次解 + 特解」解非齊次遞迴，最後代回前幾項驗算。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 和演算法的分治遞迴式不同：T(n) = 2T(n/2) + n 這種「n 變成 n/b」的遞迴是在估計執行時間，通常只要 Θ 等級，用 <a href="../../algorithms/divide-and-conquer/master-theorem.html">Master Theorem 主定理</a>解；這一頁的遞迴是「n 變成 n−1、n−2」，要求的是每一項的<b>精確值</b>。離散數學裡分治遞迴的精確解法放在 Divide-and-Conquer Recurrences 分治遞迴式（籌備中）。</p></div>
+        </div>
+      </section>
+
+      <section id="modeling">
+        <h2>用遞迴關係建模</h2>
+        <div class="panel prose">
+          <p>建模的固定套路：<b>把長度 n（或大小 n）的情況，依照最後一步（或第一步）分類</b>，每一類去掉那一步後，剩下的是一個「同類但比較小」的問題。分類要做到不重疊、不遺漏，再把各類的個數加起來。最後一定要<b>直接數出最小的幾項</b>當初始條件，並用它們驗算遞迴式。</p>
+          <h3>例 1：不含連續 00 的二進位字串</h3>
+          <p>令 a<sub>n</sub> 是長度 n、沒有出現 00 的 0/1 字串個數。看最後一個字元：</p>
+          <ul>
+            <li>最後是 1：前面 n−1 個字元只要自己合法就好，接上 1 不會產生 00，共 a<sub>n−1</sub> 種。</li>
+            <li>最後是 0：倒數第二個<b>一定是 1</b>（否則結尾是 00），所以字串長成「長度 n−2 的合法字串 + 10」，共 a<sub>n−2</sub> 種。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="rr-no00"></div>
+            <figcaption><b>圖 1</b>：依最後一個字元分成兩類。結尾是 0 時，前一個被迫是 1，所以剩下的長度是 n−2 而不是 n−1；結尾 00 的字串一開始就不合法。</figcaption>
+          </figure>
+          <p>所以 a<sub>n</sub> = a<sub>n−1</sub> + a<sub>n−2</sub>（n ≥ 3），初始條件直接數：長度 1 的 0、1 都合法，a<sub>1</sub> = 2；長度 2 的 01、10、11 合法，a<sub>2</sub> = 3。往下算得 5、8、13、21、…，和 Fibonacci 一樣的遞迴、但<b>初始條件不同</b>，所以 a<sub>n</sub> = F<sub>n+2</sub>。長度 12 時有 377 個合法字串，佔全部 4096 個的 9.2%，n 越大比例越小，因為合法字串的成長率是 φ ≈ 1.618，比全部字串的 2 慢。程式用暴力法數 n = 1～12 的每一個字串，結果和遞迴完全一致。</p>
+          <details class="code-fold">
+            <summary>看程式碼：暴力法 vs 遞迴（不含 00 的字串）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="遞迴"><div class="code-head">no00Rec()：a(n) = a(n−1) + a(n−2)</div><pre class="code">long long no00Rec(int n) {                      /* a(1) = 2、a(2) = 3 */
+  long long a = 2, b = 3;
+  if (n == 1) return 2;
+  for (int i = 3; i &lt;= n; i++) { long long t = a + b; a = b; b = t; }
+  return b;
+}</pre></div>
+              <div class="code-block" data-tab="暴力法"><div class="code-head">no00Brute()：逐一檢查 2^n 個字串</div><pre class="code">long long no00Brute(int n) {
+  long long cnt = 0;
+  for (long long s = 0; s &lt; (1LL &lt;&lt; n); s++) {
+    int ok = 1;
+    for (int i = 0; i + 1 &lt; n; i++)
+      if (!((s &gt;&gt; i) &amp; 1) &amp;&amp; !((s &gt;&gt; (i + 1)) &amp; 1)) { ok = 0; break; }
+    cnt += ok;
+  }
+  return cnt;
+}</pre></div>
+            </div>
+          </details>
+          <h3>例 2：河內塔</h3>
+          <p>三根柱子 A、B、C，A 上有 n 個由大到小疊好的圓盤，每次搬一個、大的不能壓在小的上面，要全部搬到 C。令 H(n) 是最少步數。最大的圓盤要搬到 C，當下 C 必須是空的、其他 n−1 個必須全疊在 B，所以：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="rr-hanoi"></div>
+            <figcaption><b>圖 2</b>：河內塔的三個階段。先把上面 n−1 個搬到 B（H(n−1) 步），再搬最大的一個（1 步），最後把 n−1 個搬到 C 疊上去（H(n−1) 步）。</figcaption>
+          </figure>
+          <p>H(n) = 2H(n−1) + 1，H(1) = 1。這是一個<b>非齊次</b>遞迴（多了常數 1），後面會解出 H(n) = 2<sup>n</sup> − 1：64 個圓盤要 2<sup>64</sup> − 1 ≈ 1.8 × 10<sup>19</sup> 步，一秒一步要搬約 5850 億年。程式實際遞迴搬一次，n = 1～10 的步數都等於 2<sup>n</sup> − 1。</p>
+          <details class="code-fold">
+            <summary>看程式碼：hanoiMoves() 實際搬一次數步數</summary>
+            <div class="code-block"><div class="code-head">hanoiMoves()：H(n) = 2H(n−1) + 1</div><pre class="code">long long hanoiMoves(int n, int from, int to, int via) {
+  if (n == 0) return 0;
+  long long m = hanoiMoves(n - 1, from, via, to);  /* 上面 n−1 個先移到中間 */
+  m += 1;                                          /* 最大的一個移到目標 */
+  return m + hanoiMoves(n - 1, via, to, from);     /* n−1 個再疊上去 */
+}</pre></div>
+          </details>
+          <h3>例 3：兔子與鋪磚</h3>
+          <ul>
+            <li><b>兔子</b>：一對剛出生的兔子第二個月起每月生一對，新生的也一樣，兔子不死。第 n 個月的對數 = 上個月的對數（全部還活著）+ 兩個月前的對數（它們這個月都已成熟、各生一對），又是 f<sub>n</sub> = f<sub>n−1</sub> + f<sub>n−2</sub>，f<sub>1</sub> = f<sub>2</sub> = 1。這就是 Fibonacci 數列的由來。</li>
+            <li><b>2 × n 鋪磚</b>：用 2×1 的磚和 2×2 的方磚鋪滿 2 × n 的長條。看最右邊：直放一塊 2×1，剩 2 × (n−1)；或是兩塊橫放、或是一塊 2×2，這兩種都佔掉寬度 2，剩 2 × (n−2)。所以 a<sub>n</sub> = a<sub>n−1</sub> + 2a<sub>n−2</sub>，a<sub>0</sub> = a<sub>1</sub> = 1。「2a<sub>n−2</sub>」的 2 代表寬度 2 的收尾有兩種不同的鋪法。</li>
+          </ul>
+          <h3>例 4：會產生非齊次項的建模</h3>
+          <p>長度 n 的三進位字串（字元是 0、1、2），含有<b>偶數個 0</b> 的有幾個？看最後一個字元：最後是 1 或 2（兩種），前面 n−1 個要有偶數個 0，共 2a<sub>n−1</sub>；最後是 0，前面要有<b>奇數</b>個 0，而奇數個 0 的字串 = 全部 3<sup>n−1</sup> 減掉偶數個的 a<sub>n−1</sub>。合起來 a<sub>n</sub> = 2a<sub>n−1</sub> + (3<sup>n−1</sup> − a<sub>n−1</sub>) = a<sub>n−1</sub> + 3<sup>n−1</sup>，a<sub>1</sub> = 2。用「全部減掉補集」來表示另一類，是這類題目的關鍵，也因此多出一個 3<sup>n−1</sup> 的非齊次項。</p>
+        </div>
+      </section>
+
+      <section id="classification">
+        <h2>線性、常係數、齊次、階數</h2>
+        <div class="panel prose">
+          <p>解法能不能用，取決於遞迴式的形式。這一頁處理的是：</p>
+          <pre class="formula">a(n) = c1·a(n−1) + c2·a(n−2) + … + ck·a(n−k) + f(n)，   ck ≠ 0</pre>
+          <ul>
+            <li><b>線性（linear）</b>：每個 a<sub>n−i</sub> 都是一次方，沒有 a<sub>n−1</sub><sup>2</sup>、a<sub>n−1</sub>·a<sub>n−2</sub> 這種項。</li>
+            <li><b>常係數（constant coefficients）</b>：c<sub>1</sub>, …, c<sub>k</sub> 是常數，不能和 n 有關（a<sub>n</sub> = n·a<sub>n−1</sub> 就不是）。</li>
+            <li><b>階數（degree / order）</b>：用到最遠的前 k 項，就是 k 階；要有 k 個初始條件才能決定數列。注意 c<sub>k</sub> ≠ 0，a<sub>n</sub> = a<sub>n−1</sub> + 0·a<sub>n−2</sub> 只是 1 階。</li>
+            <li><b>齊次（homogeneous）</b>：f(n) = 0，每一項都含 a；有 f(n) ≠ 0（常數、多項式、指數）就是<b>非齊次</b>。</li>
+          </ul>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>遞迴式</th><th>線性常係數？</th><th>齊次？</th><th>階數</th></tr></thead>
+              <tbody>
+                <tr><td>a<sub>n</sub> = a<sub>n−1</sub> + 2a<sub>n−2</sub></td><td>是</td><td>是</td><td>2</td></tr>
+                <tr><td>H<sub>n</sub> = 2H<sub>n−1</sub> + 1</td><td>是</td><td>否（多了常數 1）</td><td>1</td></tr>
+                <tr><td>a<sub>n</sub> = a<sub>n−1</sub> + 3<sup>n−1</sup></td><td>是</td><td>否（多了 3<sup>n−1</sup>）</td><td>1</td></tr>
+                <tr><td>a<sub>n</sub> = 2a<sub>n−1</sub> − a<sub>n−3</sub></td><td>是</td><td>是</td><td>3（中間的 a<sub>n−2</sub> 係數是 0）</td></tr>
+                <tr><td>a<sub>n</sub> = n·a<sub>n−1</sub></td><td>否（係數和 n 有關）</td><td>—</td><td>—</td></tr>
+                <tr><td>a<sub>n</sub> = a<sub>n−1</sub><sup>2</sup> + 1</td><td>否（平方，非線性）</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>「線性」最重要的後果是<b>疊加原理</b>：如果 s<sub>n</sub>、t<sub>n</sub> 都滿足齊次遞迴，那麼任何線性組合 A·s<sub>n</sub> + B·t<sub>n</sub> 也滿足，因為把兩條等式分別乘 A、B 相加就得到了。所以只要找到 k 個「夠不一樣」的基本解，所有解都是它們的線性組合，剩下的只是用 k 個初始條件決定 k 個係數。整套解法就建立在這件事上；遇到非線性的遞迴（例如 Josephus 問題那種依奇偶分段的式子），這套方法就不能直接用，要回到歸納或觀察規律。</p>
+          <p>題目給的式子不一定長成標準形：a<sub>n+2</sub> − 5a<sub>n+1</sub> + 6a<sub>n</sub> = 2 只是把下標整體平移 2，等價於 a<sub>n</sub> = 5a<sub>n−1</sub> − 6a<sub>n−2</sub> + 2；2a<sub>n</sub> = 7a<sub>n−1</sub> − 6a<sub>n−2</sub> 要先同除 2，首項係數變成 1 再寫特徵方程式（或直接寫 2r<sup>2</sup> − 7r + 6 = 0，根一樣）。</p>
+        </div>
+      </section>
+
+      <section id="characteristic">
+        <h2>特徵方程式：相異根</h2>
+        <div class="panel prose">
+          <p>1 階齊次 a<sub>n</sub> = c·a<sub>n−1</sub> 是等比數列，解是 a<sub>n</sub> = a<sub>0</sub>·c<sup>n</sup>。受到啟發，對 k 階齊次遞迴也猜 a<sub>n</sub> = r<sup>n</sup>（r ≠ 0）代進去：</p>
+          <pre class="formula">r^n = c1·r^(n−1) + c2·r^(n−2)        兩邊同除 r^(n−2)
+r^2 − c1·r − c2 = 0                   ← 特徵方程式（characteristic equation）</pre>
+          <p>這條方程式叫 <span class="term">Characteristic Equation<small>（特徵方程式）</small></span>，它的根叫 <span class="term">Characteristic Root<small>（特徵根）</small></span>。r 是特徵根 ⟺ r<sup>n</sup> 滿足齊次遞迴。寫特徵方程式的口訣：把 a<sub>n−i</sub> 換成 r<sup>k−i</sup>，<b>全部移到同一邊</b>，所以遞迴式裡的 +c 會變成 −c。</p>
+          <h3>定理：兩個相異根</h3>
+          <p>若 r<sup>2</sup> − c<sub>1</sub>r − c<sub>2</sub> = 0 有兩個相異根 r<sub>1</sub> ≠ r<sub>2</sub>，則所有解都是</p>
+          <pre class="formula">a(n) = A·r1^n + B·r2^n</pre>
+          <p>A、B 由初始條件決定：代 n = 0、1 得 A + B = a<sub>0</sub>、A·r<sub>1</sub> + B·r<sub>2</sub> = a<sub>1</sub>。因為 r<sub>1</sub> ≠ r<sub>2</sub>，這組聯立一定有唯一解：A = (a<sub>1</sub> − r<sub>2</sub>a<sub>0</sub>)/(r<sub>1</sub> − r<sub>2</sub>)、B = (r<sub>1</sub>a<sub>0</sub> − a<sub>1</sub>)/(r<sub>1</sub> − r<sub>2</sub>)。考題有時不給數字，只寫 a<sub>0</sub> = A、a<sub>1</sub> = B，要你寫出一般式，就是這兩條公式。</p>
+          <h3>完整例子：2 × n 鋪磚</h3>
+          <p>解 a<sub>n</sub> = a<sub>n−1</sub> + 2a<sub>n−2</sub>，a<sub>0</sub> = a<sub>1</sub> = 1：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>做什麼</th><th>結果</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>寫特徵方程式（全部移到同一邊）</td><td>r<sup>2</sup> − r − 2 = 0</td></tr>
+                <tr><td>2</td><td>求根：判別式 D = 1 + 8 = 9 = 3<sup>2</sup></td><td>r = (1 ± 3)/2 = 2、−1（相異）</td></tr>
+                <tr><td>3</td><td>寫通解</td><td>a<sub>n</sub> = A·2<sup>n</sup> + B·(−1)<sup>n</sup></td></tr>
+                <tr><td>4</td><td>代初始條件</td><td>n = 0：A + B = 1；n = 1：2A − B = 1</td></tr>
+                <tr><td>5</td><td>解聯立</td><td>A = 2/3、B = 1/3</td></tr>
+                <tr><td>6</td><td>閉合式</td><td>a<sub>n</sub> = (2<sup>n+1</sup> + (−1)<sup>n</sup>)/3</td></tr>
+                <tr><td>7</td><td>驗算 n = 2、3（不是初始條件的項）</td><td>遞迴 1 + 2 = 3、3 + 2 = 5；公式 (8 + 1)/3 = 3、(16 − 1)/3 = 5</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>係數 2/3、1/3 是分數，但每一項 a<sub>n</sub> 都是整數：2<sup>n+1</sup> 除以 3 的餘數是 2 或 1，剛好被 (−1)<sup>n</sup> 補成 3 的倍數。這是一個好的檢查點：<b>計數問題的閉合式代任何 n 都要是非負整數</b>。從閉合式也看得出成長率：(−1)<sup>n</sup>/3 的絕對值不超過 1/3，a<sub>n</sub> 基本上就是 2<sup>n+1</sup>/3，寬度每加 1，鋪法約變 2 倍。2 × 10 的長條有 (2<sup>11</sup> + 1)/3 = 683 種鋪法。</p>
+          <h3>無理根也一樣：Fibonacci</h3>
+          <p>F<sub>n</sub> = F<sub>n−1</sub> + F<sub>n−2</sub>，F<sub>0</sub> = 0、F<sub>1</sub> = 1。特徵方程式 r<sup>2</sup> − r − 1 = 0，D = 5 不是完全平方數，根是 φ = (1 + √5)/2 ≈ 1.618 和 ψ = (1 − √5)/2 ≈ −0.618。步驟完全一樣，代公式得 A = 1/√5、B = −1/√5：</p>
+          <pre class="formula">F(n) = (φ^n − ψ^n) / √5        （Binet 公式）</pre>
+          <p>|ψ| &lt; 1，所以 ψ<sup>n</sup>/√5 的絕對值永遠小於 0.5 而且越來越小：F<sub>n</sub> 就是 φ<sup>n</sup>/√5 四捨五入。這就是「主導根」的觀念：<b>絕對值最大的特徵根決定數列的成長率</b>，其他根只貢獻越來越不重要的修正。</p>
+          <details class="code-fold">
+            <summary>看程式碼：roots2() 求 2 階特徵根、recurTerms() 直接算前 N 項</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="求根"><div class="code-head">roots2()：判別式判斷相異、重根、非整數根</div><pre class="code">int roots2(long long c1, long long c2, long long r[2]) {
+  long long D = c1 * c1 + 4 * c2;             /* 判別式 */
+  if (D &lt; 0) return 0;                         /* 共軛複根 */
+  long long s = (long long)sqrt((double)D);
+  while (s * s &gt; D) s--;
+  while ((s + 1) * (s + 1) &lt;= D) s++;
+  if (s * s != D) return 0;                    /* D 不是完全平方數：無理根 */
+  r[0] = (c1 + s) / 2;                         /* D 和 c1² 同奇偶，所以一定整除 */
+  r[1] = (c1 - s) / 2;
+  return D == 0 ? 1 : 2;
+}</pre></div>
+              <div class="code-block" data-tab="直接算"><div class="code-head">recurTerms()：照遞迴關係算前 N 項</div><pre class="code">void recurTerms(const Rec *R, long long a[], int N) {
+  for (int n = 0; n &lt; N; n++) {
+    if (n &lt; R-&gt;k) { a[n] = R-&gt;init[n]; continue; }   /* 前 k 項是初始條件 */
+    long long v = fval(R, n);
+    for (int i = 1; i &lt;= R-&gt;k; i++) v += R-&gt;c[i] * a[n - i];
+    a[n] = v;
+  }
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="repeated-roots">
+        <h2>重根、高階與共軛複根</h2>
+        <div class="panel prose">
+          <h3>重根：要補 n·r<sup>n</sup></h3>
+          <p>如果特徵方程式是重根 r<sub>0</sub>（D = 0），只得到一個基本解 r<sub>0</sub><sup>n</sup>。寫成 A·r<sub>0</sub><sup>n</sup> + B·r<sub>0</sub><sup>n</sup> = (A + B)r<sub>0</sub><sup>n</sup> 其實只有一個自由度，兩個初始條件通常湊不出來。少掉的那個解是 n·r<sub>0</sub><sup>n</sup>：</p>
+          <pre class="formula">重根 r0：a(n) = (A + B·n)·r0^n</pre>
+          <p>為什麼 n·r<sub>0</sub><sup>n</sup> 是解？重根代表 r<sup>2</sup> − c<sub>1</sub>r − c<sub>2</sub> = (r − r<sub>0</sub>)<sup>2</sup>，比較係數得 c<sub>1</sub> = 2r<sub>0</sub>、c<sub>2</sub> = −r<sub>0</sub><sup>2</sup>。代進右邊：c<sub>1</sub>(n−1)r<sub>0</sub><sup>n−1</sup> + c<sub>2</sub>(n−2)r<sub>0</sub><sup>n−2</sup> = 2(n−1)r<sub>0</sub><sup>n</sup> − (n−2)r<sub>0</sub><sup>n</sup> = n·r<sub>0</sub><sup>n</sup>，正好等於左邊。</p>
+          <p><b>例</b>：a<sub>n</sub> = 4a<sub>n−1</sub> − 4a<sub>n−2</sub>，a<sub>0</sub> = 3、a<sub>1</sub> = 4。特徵方程式 r<sup>2</sup> − 4r + 4 = (r − 2)<sup>2</sup>，重根 2。a<sub>n</sub> = (A + Bn)2<sup>n</sup>；n = 0 得 A = 3，n = 1 得 2(3 + B) = 4，B = −1。所以 a<sub>n</sub> = (3 − n)·2<sup>n</sup>：3、4、4、0、−16、−64、…。n = 3 時剛好是 0，之後變負數，這是 (3 − n) 這個因子造成的，單看 2<sup>n</sup> 想不到；用遞迴驗算 a<sub>3</sub> = 4·4 − 4·4 = 0，一致。</p>
+          <h3>一般規則與 3 階</h3>
+          <p>k 階遞迴的特徵方程式是 k 次：r<sup>k</sup> − c<sub>1</sub>r<sup>k−1</sup> − … − c<sub>k</sub> = 0。每個 <b>m 重根 r</b> 提供 m 個基本解 r<sup>n</sup>、n·r<sup>n</sup>、…、n<sup>m−1</sup>·r<sup>n</sup>，所有根的重數加起來剛好 k，所以基本解剛好 k 個、對應 k 個初始條件。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="rr-root-basis"></div>
+            <figcaption><b>圖 3</b>：特徵根的三種情況和對應的齊次通解。不管哪一種，2 階都剛好有 2 個待定係數 A、B；重根的第二個基本解要乘 n。</figcaption>
+          </figure>
+          <p>3 次方程式沒有好用的公式，考題的根幾乎都是整數，用<b>有理根定理</b>找：首項係數是 1 時，整數根一定整除常數項。找到一個根 t 就用綜合除法除掉 (r − t)，降成 2 次再用公式解；同一個 r 能連續除兩次就是重根。例：a<sub>n</sub> = 2a<sub>n−1</sub> + a<sub>n−2</sub> − 2a<sub>n−3</sub>，特徵方程式 r<sup>3</sup> − 2r<sup>2</sup> − r + 2 = 0，候選 ±1、±2，代入發現 1、−1、2 都是根，所以 a<sub>n</sub> = A + B(−1)<sup>n</sup> + C·2<sup>n</sup>。若 a<sub>0</sub>, a<sub>1</sub>, a<sub>2</sub> = 3, 2, 6，三元聯立 A + B + C = 3、A − B + 2C = 2、A + B + 4C = 6，解得 A = B = C = 1，a<sub>n</sub> = 1 + (−1)<sup>n</sup> + 2<sup>n</sup>。</p>
+          <p>重根和 3 階混在一起時，例如特徵方程式 (r − 1)(r − 2)<sup>2</sup> = 0，通解是 A + (B + Cn)·2<sup>n</sup>：1 是單根給 1 個，2 是 2 重根給 2 個，合計 3 個。</p>
+          <h3>共軛複根（了解即可）</h3>
+          <p>D &lt; 0 時兩根是共軛複數 ρe<sup>±iθ</sup>。公式 A·r<sub>1</sub><sup>n</sup> + B·r<sub>2</sub><sup>n</sup> 仍然成立，只是 A、B 是複數；用 Euler 公式重新組合，可以寫成全部是實數的形式 ρ<sup>n</sup>(A cos nθ + B sin nθ)。例：a<sub>n</sub> = 2a<sub>n−1</sub> − 2a<sub>n−2</sub>，a<sub>0</sub> = 1、a<sub>1</sub> = 2。r<sup>2</sup> − 2r + 2 = 0，根 1 ± i，ρ = √2、θ = 45°；代初始條件得 A = 1、B = 1，a<sub>n</sub> = (√2)<sup>n</sup>(cos 45°n + sin 45°n)。數列是 1、2、2、0、−4、−8、−8、0、16、…：cos、sin 讓正負號每 8 項繞一圈，(√2)<sup>n</sup> 讓絕對值每 8 項乘 16。考研很少要求寫到這一步，知道「複根會讓數列振盪」就夠。</p>
+          <details class="code-fold">
+            <summary>看程式碼：charRoots() 求特徵根與重數</summary>
+            <div class="code-block"><div class="code-head">charRoots()：2 階用判別式，3 階用有理根定理加綜合除法</div><pre class="code">int charRoots(Rec *R) {
+  R-&gt;nr = 0;
+  if (R-&gt;k == 2) {
+    long long r[2];
+    int t = roots2(R-&gt;c[1], R-&gt;c[2], r);
+    if (t == 0) return 0;
+    R-&gt;root[0] = r[0]; R-&gt;mult[0] = t == 1 ? 2 : 1;
+    if (t == 2) { R-&gt;root[1] = r[1]; R-&gt;mult[1] = 1; }
+    R-&gt;nr = t;
+    return 1;
+  }
+  long long poly[4], deg = R-&gt;k, ck = R-&gt;c[R-&gt;k] &lt; 0 ? -R-&gt;c[R-&gt;k] : R-&gt;c[R-&gt;k];
+  poly[0] = 1;                                 /* poly[i] 是 r^(deg-i) 的係數 */
+  for (int i = 1; i &lt;= R-&gt;k; i++) poly[i] = -R-&gt;c[i];
+  for (long long r = -ck; r &lt;= ck &amp;&amp; deg &gt; 0; r++) {
+    if (r == 0 || ck % r != 0) continue;
+    int m = 0;
+    for (;;) {
+      long long b[4], acc = 0;                 /* 綜合除法：餘數 acc = poly(r) */
+      for (int i = 0; i &lt;= deg; i++) { acc = acc * r + poly[i]; b[i] = acc; }
+      if (acc != 0) break;
+      for (int i = 0; i &lt; deg; i++) poly[i] = b[i];
+      deg--; m++;
+      if (deg == 0) break;
+    }
+    if (m) { R-&gt;root[R-&gt;nr] = r; R-&gt;mult[R-&gt;nr] = m; R-&gt;nr++; }
+  }
+  return deg == 0;                             /* 全部降完才表示根都是整數 */
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="nonhomogeneous">
+        <h2>非齊次：齊次解加特解</h2>
+        <div class="panel prose">
+          <p>非齊次遞迴 a<sub>n</sub> = c<sub>1</sub>a<sub>n−1</sub> + … + c<sub>k</sub>a<sub>n−k</sub> + f(n) 去掉 f(n) 後的式子叫<b>對應的齊次遞迴</b>。關鍵定理：</p>
+          <pre class="formula">通解 = 對應齊次遞迴的通解 a(n)^(h)  +  任意一個特解 a(n)^(p)</pre>
+          <p>證明只要一行：如果 p<sub>n</sub>、q<sub>n</sub> 都滿足非齊次遞迴，兩式相減時 f(n) 消掉，所以 q<sub>n</sub> − p<sub>n</sub> 滿足齊次遞迴，也就是 q<sub>n</sub> = p<sub>n</sub> + （某個齊次解）。所以只要找到<b>一個</b> <span class="term">Particular Solution<small>（特解）</small></span>，其他所有解都是「它 + 齊次解」。</p>
+          <h3>特解怎麼猜</h3>
+          <p>特解用 <span class="term">Method of Undetermined Coefficients<small>（待定係數法）</small></span>：照 f(n) 的樣子猜一個帶未知係數的形式，代進遞迴比較兩邊，解出係數。設 f(n) = P(n)·s<sup>n</sup>，P(n) 是 d 次多項式（純多項式就是 s = 1）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>f(n)</th><th>s 不是特徵根</th><th>s 是 m 重特徵根</th></tr></thead>
+              <tbody>
+                <tr><td>常數 C（s = 1、d = 0）</td><td>u</td><td>u·n<sup>m</sup></td></tr>
+                <tr><td>d 次多項式（s = 1）</td><td>u<sub>0</sub> + u<sub>1</sub>n + … + u<sub>d</sub>n<sup>d</sup></td><td>n<sup>m</sup>(u<sub>0</sub> + … + u<sub>d</sub>n<sup>d</sup>)</td></tr>
+                <tr><td>C·s<sup>n</sup></td><td>u·s<sup>n</sup></td><td>u·n<sup>m</sup>·s<sup>n</sup></td></tr>
+                <tr><td>(d 次多項式)·s<sup>n</sup></td><td>(u<sub>0</sub> + … + u<sub>d</sub>n<sup>d</sup>)·s<sup>n</sup></td><td>n<sup>m</sup>(u<sub>0</sub> + … + u<sub>d</sub>n<sup>d</sup>)·s<sup>n</sup></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><b>多項式要猜「完整的」同次多項式</b>：f(n) = 3n 也要猜 u<sub>0</sub> + u<sub>1</sub>n，不能只猜 u<sub>1</sub>n，因為代進去常數項會跑出來。</li>
+            <li><b>為什麼重複時要乘 n<sup>m</sup></b>：如果 s 是特徵根，u·s<sup>n</sup> 本身就是齊次解，代進去左邊是 0，永遠等不到 f(n)。乘一次 n 還不夠時（重根）就再乘，直到不再是齊次解，次數剛好是重數 m。常數的情況也一樣：特徵根有 1 時，「常數」其實是 1<sup>n</sup>，要乘 n。</li>
+            <li><b>f(n) 有好幾項</b>，例如 2<sup>n</sup> + 3<sup>n</sup>：依底數分開，每一項各猜一個特解再相加（疊加），每一項各自檢查要不要乘 n<sup>m</sup>。</li>
+          </ul>
+          <h3>例 1：多項式，沒有重複</h3>
+          <p>a<sub>n</sub> = 5a<sub>n−1</sub> − 6a<sub>n−2</sub> + 2n + 7，a<sub>0</sub> = 10、a<sub>1</sub> = 15。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>做什麼</th><th>結果</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>齊次部分的特徵方程式</td><td>r<sup>2</sup> − 5r + 6 = 0，r = 3、2</td></tr>
+                <tr><td>2</td><td>齊次通解</td><td>A·3<sup>n</sup> + B·2<sup>n</sup></td></tr>
+                <tr><td>3</td><td>f(n) = 2n + 7 是 1 次多項式，s = 1 不是根</td><td>猜 p<sub>n</sub> = u + vn</td></tr>
+                <tr><td>4</td><td>代入：u + vn = 5(u + v(n−1)) − 6(u + v(n−2)) + 2n + 7</td><td>n 的係數：v = −v + 2，v = 1；常數項：u = −u + 7v + 7，u = 7</td></tr>
+                <tr><td>5</td><td>通解 = 齊次 + 特解</td><td>a<sub>n</sub> = A·3<sup>n</sup> + B·2<sup>n</sup> + n + 7</td></tr>
+                <tr><td>6</td><td>代初始條件（<b>特解要一起代</b>）</td><td>A + B + 7 = 10；3A + 2B + 8 = 15 → A = 1、B = 2</td></tr>
+                <tr><td>7</td><td>閉合式並驗算 n = 2</td><td>a<sub>n</sub> = 3<sup>n</sup> + 2<sup>n+1</sup> + n + 7；9 + 8 + 9 = 26，遞迴 5·15 − 6·10 + 11 = 26</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>步驟 4 的常數項細算：右邊常數 = 5(u − v) − 6(u − 2v) + 7 = −u + 7v + 7，令它等於左邊的 u，得 2u = 7v + 7 = 14，u = 7。另一個直覺的檢查：f(n) 是 2n + 7，特解 n + 7 也是 1 次，次數對得上。</p>
+          <h3>例 2：指數，和特徵根重複</h3>
+          <p>a<sub>n</sub> = 3a<sub>n−1</sub> + 4a<sub>n−2</sub> + 5·4<sup>n</sup>，a<sub>0</sub> = 3、a<sub>1</sub> = 23。特徵方程式 r<sup>2</sup> − 3r − 4 = (r − 4)(r + 1)，根 4、−1。f(n) 的底數 4 <b>剛好是 1 重根</b>，所以猜 u·n·4<sup>n</sup> 而不是 u·4<sup>n</sup>。代入並同除 4<sup>n−2</sup>：</p>
+          <pre class="formula">16u·n = 12u·(n−1) + 4u·(n−2) + 80
+16u·n = 16u·n − 20u + 80      → n 的項兩邊抵消，剩 20u = 80，u = 4</pre>
+          <p>n 的項兩邊剛好抵消，正是「4<sup>n</sup> 是齊次解」造成的；如果當初猜 u·4<sup>n</sup>，代進去會得到 0 = 80，無解，這就是忘記乘 n 時會看到的訊號。特解 4n·4<sup>n</sup>，通解 A·4<sup>n</sup> + B(−1)<sup>n</sup> + 4n·4<sup>n</sup>；代 a<sub>0</sub>：A + B = 3，代 a<sub>1</sub>：4A − B + 16 = 23，得 A = 2、B = 1：</p>
+          <pre class="formula">a(n) = (2 + 4n)·4^n + (−1)^n</pre>
+          <p>驗算 n = 2：(2 + 8)·16 + 1 = 161，遞迴 3·23 + 4·3 + 80 = 161，一致。河內塔 H(n) = 2H(n−1) + 1 也是同一套：根 2，常數項的底數 1 不是根，猜常數 u，u = 2u + 1 得 u = −1，H(n) = A·2<sup>n</sup> − 1，H(1) = 1 得 A = 1，H(n) = 2<sup>n</sup> − 1。反過來，如果特徵根有 1（例如 a<sub>n</sub> = 4a<sub>n−1</sub> − 3a<sub>n−2</sub> + 常數，根 3、1），常數項就要猜 u·n。</p>
+          <details class="code-fold">
+            <summary>看程式碼：particular() 猜特解、solveCoef() 解係數</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="特解"><div class="code-head">particular()：猜 n^m (q0 + q1 n + …) s^n 並解出 q</div><pre class="code">void particular(Rec *R, int t) {
+  Term *T = &amp;R-&gt;f[t];
+  int m = multiplicity(R, T-&gt;s), d = T-&gt;d, k = R-&gt;k;
+  Frac M[MAXV][MAXV], v[MAXV];
+  for (int e = 0; e &lt;= d; e++) {              /* 代 n = k, k+1, ..., k+d，得到 d+1 條方程式 */
+    long long n = k + e;
+    for (int j = 0; j &lt;= d; j++) {            /* q_j 的係數：s^k n^(m+j) − Σ c_i s^(k−i) (n−i)^(m+j) */
+      long long coef = ipow(T-&gt;s, k) * ipow(n, m + j);
+      for (int i = 1; i &lt;= k; i++) coef -= R-&gt;c[i] * ipow(T-&gt;s, k - i) * ipow(n - i, m + j);
+      M[e][j] = F(coef, 1);
+    }
+    v[e] = F(ipow(T-&gt;s, k) * polyAt(T, n), 1);   /* 兩邊同除 s^(n−k) */
+  }
+  R-&gt;pm[t] = m;
+  gauss(d + 1, M, v, R-&gt;q[t]);
+}</pre></div>
+              <div class="code-block" data-tab="解係數"><div class="code-head">solveCoef()：初始條件扣掉特解，解 k 元聯立</div><pre class="code">void solveCoef(Rec *R) {
+  Frac M[MAXV][MAXV], v[MAXV];
+  for (int n = 0; n &lt; R-&gt;k; n++) {
+    int col = 0;
+    for (int i = 0; i &lt; R-&gt;nr; i++)
+      for (int e = 0; e &lt; R-&gt;mult[i]; e++)    /* m 重根 r 提供 r^n, n r^n, ..., n^(m-1) r^n */
+        M[n][col++] = F(ipow(n, e) * ipow(R-&gt;root[i], n), 1);
+    v[n] = fsub(F(R-&gt;init[n], 1), partAt(R, n));
+  }
+  gauss(R-&gt;k, M, v, R-&gt;A);
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>在上方輸入係數 c<sub>1</sub>, c<sub>2</sub>（3 階再加 c<sub>3</sub>）、非齊次項 f(n)（例如 <code>2n+7</code>、<code>5*4^n</code>、<code>n*2^n</code>、<code>2^n+3^n</code>，齊次填 0）和初始條件 a<sub>0</sub>, a<sub>1</sub>（, a<sub>2</sub>），按「求解」。動畫依序列出特徵方程式、根（藍色是相異根、紫色是重根、青色是無理或複數根）、齊次通解、特解（和特徵根重複時會用紅字標出要乘幾次 n）、通解、聯立方程式與閉合式，最後把遞迴算出的前 8 項和閉合式逐項比對，綠色表示一致。3 階只處理整數根；2 階的無理根和共軛複根會用浮點數比對。</p>
+        </div>
+        <div class="viz" data-viz="rr-solve"></div>
+      </section>
+
+      <section id="verify">
+        <h2>驗證答案與估計大小</h2>
+        <div class="panel prose">
+          <h3>代回前幾項</h3>
+          <p>解遞迴的步驟多、符號多，任何一步錯了最後都會得到一個「看起來很合理」的錯答案。最便宜的檢查是：<b>用遞迴算出 a<sub>k</sub>、a<sub>k+1</sub>，再用閉合式算一次，兩邊要相等</b>。只代 n = 0、1 沒有用，因為係數本來就是照它們解的，一定對；有檢查力的是初始條件以外的項。在考場上代一項通常只要 30 秒，卻能抓到大部分的錯，例如特徵方程式的正負號寫反、特解忘記乘 n、解聯立時漏了特解。</p>
+          <p>另外兩個快速檢查：(1) <b>特解單獨代回非齊次遞迴</b>要成立（不用管初始條件）；(2) 計數題的閉合式代任何 n 都要是<b>非負整數</b>，算出分數或負數就一定有錯。</p>
+          <details class="code-fold">
+            <summary>看程式碼：solve() 串起所有步驟、verify() 逐項比對</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="驗證"><div class="code-head">verify()：遞迴值和閉合式逐項相等</div><pre class="code">int verify(const Rec *R, int N) {
+  long long a[40];
+  recurTerms(R, a, N);
+  for (int n = 0; n &lt; N; n++) {
+    Frac c = closedAt(R, n);
+    if (c.q != 1 || c.p != a[n]) return 0;
+  }
+  return 1;
+}</pre></div>
+              <div class="code-block" data-tab="串起步驟"><div class="code-head">solve()：求根 → 特解 → 係數</div><pre class="code">int solve(Rec *R) {
+  if (!charRoots(R)) return 0;                 /* 1. 特徵方程式的根與重數 */
+  for (int t = 0; t &lt; R-&gt;nf; t++)              /* 2. 每一種 s^n 各猜一個特解（疊加） */
+    particular(R, t);
+  solveCoef(R);                                /* 3. 用初始條件解齊次解的係數 */
+  return 1;
+}</pre></div>
+            </div>
+          </details>
+          <h3>浮點數的陷阱</h3>
+          <p>根是無理數時，用程式代閉合式會有誤差。用 double 算 Binet 公式 (φ<sup>n</sup> − ψ<sup>n</sup>)/√5 再四捨五入，n = 71 開始就和真正的 Fibonacci 數不同；換成 long double 撐到 n = 89，n = 90 也出錯了。原因是 double 只有約 16 位有效數字，φ 本身就帶著相對誤差，φ<sup>n</sup> 把誤差放大到約 n 倍，F<sub>71</sub> ≈ 3.1 × 10<sup>14</sup> 時絕對誤差已經超過 0.5。所以<b>要精確值就用整數照遞迴算</b>（unsigned long long 可以精確算到 F<sub>93</sub>），閉合式拿來分析成長率、估計大小。</p>
+          <details class="code-fold">
+            <summary>看程式碼：Binet 公式用浮點數算到第幾項開始錯</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="double"><div class="code-head">binetFailDouble()：double 版本</div><pre class="code">int binetFailDouble(void) {
+  unsigned long long a = 0, b = 1;              /* 精確的 F(n)、F(n+1) */
+  double phi = (1 + sqrt(5.0)) / 2, psi = (1 - sqrt(5.0)) / 2;
+  for (int n = 0; n &lt;= 92; n++) {
+    double v = (pow(phi, n) - pow(psi, n)) / sqrt(5.0);
+    if ((unsigned long long)llround(v) != a) return n;
+    unsigned long long t = a + b; a = b; b = t;
+  }
+  return -1;
+}</pre></div>
+              <div class="code-block" data-tab="long double"><div class="code-head">binetFailLong()：long double 版本</div><pre class="code">int binetFailLong(void) {
+  unsigned long long a = 0, b = 1;
+  long double r5 = sqrtl(5.0L), phi = (1 + r5) / 2, psi = (1 - r5) / 2;
+  for (int n = 0; n &lt;= 92; n++) {
+    long double v = (powl(phi, n) - powl(psi, n)) / r5;
+    if ((unsigned long long)llroundl(v) != a) return n;
+    unsigned long long t = a + b; a = b; b = t;
+  }
+  return -1;
+}</pre></div>
+            </div>
+          </details>
+          <h3>估計「第一個超過某值的 n」</h3>
+          <p>有了閉合式，就能回答「a<sub>n</sub> 什麼時候超過 10<sup>6</sup>」這類問題。做法是先抓<b>主導項</b>，用對數估出大概的 n，再用精確值確認邊界附近的兩項。以 a<sub>n</sub> = (2 + 4n)·4<sup>n</sup> + (−1)<sup>n</sup> 為例：(−1)<sup>n</sup> 只是 ±1 可以忽略，(2 + 4n) 是多項式、成長得比 4<sup>n</sup> 慢很多。估 4n·4<sup>n</sup> ≈ 10<sup>6</sup>：n = 7 時 30·4<sup>7</sup> = 491,520，還差約一半；n = 8 時 34·4<sup>8</sup> = 2,228,224，已經超過。精確值 a<sub>7</sub> = 491,519、a<sub>8</sub> = 2,228,225，所以答案是 n = 8。注意多項式因子不能直接丟掉：只看 4<sup>n</sup> ≈ 10<sup>6</sup> 會估出 n ≈ 10，差了兩項。</p>
+        </div>
+      </section>
+
+      <section id="related">
+        <h2>和其他方法的關係</h2>
+        <div class="panel prose">
+          <ul>
+            <li><b>Generating Functions 生成函數（籌備中）</b>：令 G(x) = Σ a<sub>n</sub>x<sup>n</sup>，把遞迴式乘 x<sup>n</sup> 加總，可以解出 G(x) 是一個有理函數，分母正好是 1 − c<sub>1</sub>x − c<sub>2</sub>x<sup>2</sup> = (1 − r<sub>1</sub>x)(1 − r<sub>2</sub>x)，r<sub>1</sub>、r<sub>2</sub> 就是特徵根。部分分式 A/(1 − r<sub>1</sub>x) + B/(1 − r<sub>2</sub>x) 展開後第 n 項係數就是 A·r<sub>1</sub><sup>n</sup> + B·r<sub>2</sub><sup>n</sup>，和特徵方程式法的 A、B 完全相同。考題常把兩種方法放在連續兩小題，用這個對應可以互相驗算：分母的根是特徵根的<b>倒數</b>。</li>
+            <li><b>Mathematical Induction 數學歸納法（籌備中）</b>：題目只要求「證明 a<sub>n</sub> = 某公式」時，不必從頭解，用強歸納法：檢查前 k 項，再假設 n−1、…、n−k 成立，代進遞迴推出 n 成立。代回前幾項驗算，其實就是歸納法的基底。</li>
+            <li><b>分治遞迴式</b>：T(n) = aT(n/b) + f(n) 不是這一頁的形式（n 是除的不是減的）。令 n = b<sup>m</sup>、t<sub>m</sub> = T(b<sup>m</sup>)，就會變成 t<sub>m</sub> = a·t<sub>m−1</sub> + f(b<sup>m</sup>)，可以用這一頁的方法解精確值；只要漸近等級時用 <a href="../../algorithms/divide-and-conquer/master-theorem.html">Master Theorem 主定理</a>比較快。</li>
+            <li><b>聯立遞迴</b>：好幾個數列互相定義（例如 x<sub>n</sub>、y<sub>n</sub> 互相引用）時，先消去其他數列，得到其中一個數列自己的高階線性遞迴，再用特徵方程式解。</li>
+          </ul>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 一句話記住整套流程：<b>建模列式 → 特徵方程式求根 → 寫齊次通解（重根乘 n）→ 照 f(n) 猜特解（和根重複乘 n<sup>m</sup>）→ 齊次 + 特解一起代初始條件 → 代 n = k 驗算</b>。</p></div>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>從計數問題列遞迴式與初始條件（樓梯、字串、排隊、河內塔）</td><td>很常考</td><td>依最後一步分類，各類去掉那一步變成較小的同類問題；初始條件直接數，並用小的 n 驗算</td><td><a class="q-link" href="#q-dm-0051">例題</a> <a class="q-link" href="#q-dm-0152">例題</a> <a class="q-link" href="#q-dm-0127">例題</a> <a class="q-link" href="#q-dm-0075">例題</a> <a class="q-link" href="#q-dm-0186">例題</a></td></tr>
+                <tr><td>建模時出現非齊次項（偶數個 0 等）</td><td>常考</td><td>另一類用「全部 − 補集」表示，整理後多出指數項</td><td><a class="q-link" href="#q-dm-0144">例題</a> <a class="q-link" href="#q-dm-0183">例題</a></td></tr>
+                <tr><td>2 階齊次、相異根（含用 a<sub>0</sub> = A、a<sub>1</sub> = B 的一般式）</td><td>很常考</td><td>特徵方程式（移項變號）→ 求根 → A·r<sub>1</sub><sup>n</sup> + B·r<sub>2</sub><sup>n</sup> → 代 n = 0、1 解聯立</td><td><a class="q-link" href="#q-dm-0166">例題</a> <a class="q-link" href="#q-dm-0171">例題</a> <a class="q-link" href="#q-dm-0058">例題</a> <a class="q-link" href="#q-dm-0138">例題</a></td></tr>
+                <tr><td>重根、3 階</td><td>常考</td><td>有理根定理找整數根、綜合除法降次；m 重根給 r<sup>n</sup>, …, n<sup>m−1</sup>r<sup>n</sup></td><td><a class="q-link" href="#q-dm-0176">例題</a> <a class="q-link" href="#q-dm-0074">例題</a> <a class="q-link" href="#q-dm-0181">例題</a> <a class="q-link" href="#q-dm-0184">例題</a></td></tr>
+                <tr><td>非齊次：常數、多項式、指數（含與特徵根重複）</td><td>很常考</td><td>照 f(n) 猜特解，底數是 m 重根就乘 n<sup>m</sup>；通解 = 齊次 + 特解，再代初始條件</td><td><a class="q-link" href="#q-dm-0030">例題</a> <a class="q-link" href="#q-dm-0032">例題</a> <a class="q-link" href="#q-dm-0158">例題</a> <a class="q-link" href="#q-dm-0182">例題</a></td></tr>
+                <tr><td>閉合式估計大小（第一個超過某值的 n）</td><td>偶爾</td><td>找主導項取對數估 n，再用精確值確認邊界兩項</td><td><a class="q-link" href="#q-dm-0042">例題</a></td></tr>
+                <tr><td>用生成函數解、寫出部分分式</td><td>常考</td><td>分母 1 − c<sub>1</sub>x − c<sub>2</sub>x<sup>2</sup> 的根是特徵根的倒數；部分分式的分子就是 A、B</td><td><a class="q-link" href="#q-dm-0172">例題</a> <a class="q-link" href="#q-dm-0149">例題</a></td></tr>
+                <tr><td>判斷形式、特解的猜法</td><td>常考</td><td>檢查線性、常係數、齊次、階數；列出 f(n) 每一項的底數並比對特徵根</td><td><a class="q-link" href="#q-dm-0179">例題</a> <a class="q-link" href="#q-dm-0185">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 特徵方程式照抄係數：a<sub>n</sub> = −a<sub>n−1</sub> + 6a<sub>n−2</sub> 寫成 r<sup>2</sup> − r + 6 = 0</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要全部移到同一邊：r<sup>2</sup> + r − 6 = 0，根 2、−3；遞迴式的 +c 在特徵方程式變 −c</span> <a class="q-link" href="#q-dm-0062">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 首項係數不是 1 也直接寫 r<sup>2</sup> − 7r + 6</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 2a<sub>n</sub> = 7a<sub>n−1</sub> − 6a<sub>n−2</sub> 的特徵方程式是 2r<sup>2</sup> − 7r + 6 = 0（或先同除 2）</span> <a class="q-link" href="#q-dm-0138">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 重根寫成 A·r<sup>n</sup> + B·r<sup>n</sup></span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那只有一個自由度；重根要寫 (A + Bn)·r<sup>n</sup>，m 重根到 n<sup>m−1</sup></span> <a class="q-link" href="#q-dm-0181">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> f(n) = C·s<sup>n</sup> 一律猜 u·s<sup>n</sup></span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> s 是特徵根時 u·s<sup>n</sup> 會被齊次部分消掉，要乘 n；常數項遇到特徵根 1 也一樣</span> <a class="q-link" href="#q-dm-0158">例題</a> <a class="q-link" href="#q-dm-0032">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 和重根重複時只乘一次 n</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 乘 n<sup>m</sup>，m 是重數；2<sup>n</sup> 遇到 2 重根 2 要猜 u·n<sup>2</sup>·2<sup>n</sup></span> <a class="q-link" href="#q-dm-0042">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 先用初始條件解出齊次解的 A、B，再把特解加上去</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 初始條件是整個解要滿足的；要先寫好「齊次 + 特解」，再一起代入解 A、B</span> <a class="q-link" href="#q-dm-0030">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 多項式 f(n) = 3n 只猜 un</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要猜完整的同次多項式 u + vn，代入後常數項也要對得上</span> <a class="q-link" href="#q-dm-0185">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 初始條件隨便寫成 Fibonacci 的 1、1</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 同一個遞迴、不同初始條件就是不同數列；一定要直接數最小的幾項（例如不相鄰的排法 a<sub>1</sub> = 2、a<sub>2</sub> = 3）</span> <a class="q-link" href="#q-dm-0152">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 代 n = 0、1 檢查閉合式，對了就交卷</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 係數本來就是照 n = 0、1 解的，一定對；要代初始條件以外的 n = k、k+1 才有檢查力</span> <a class="q-link" href="#q-dm-0184">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="recurrence-relations"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=44614248"></script>
+  <script src="../../../assets/js/viz-core.js?v=44614248"></script>
+  <script src="../../../assets/js/viz/discrete-math/recurrence-relations.js?v=44614248"></script>
+</body>
+</html>

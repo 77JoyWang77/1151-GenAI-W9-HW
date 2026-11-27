@@ -238,8 +238,18 @@
           "en": "Cache Performance",
           "zh": "快取效能",
           "book": "5.4",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "AMAT",
+            "CPI",
+            "miss penalty",
+            "L2",
+            "write buffer"
+          ],
+          "updated": "2026-11-27"
         },
         {
           "id": "virtual-memory",

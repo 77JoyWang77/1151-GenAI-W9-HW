@@ -363,9 +363,18 @@
           "en": "Minimum Cost Spanning Tree",
           "zh": "最小成本生成樹",
           "book": "6.3",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": true
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "MST",
+            "Kruskal",
+            "Prim",
+            "union-find",
+            "cut property"
+          ],
+          "updated": "2026-11-27"
         },
         {
           "id": "shortest-path",

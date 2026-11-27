@@ -197,8 +197,18 @@
           "en": "Paging and TLB",
           "zh": "分頁與 TLB",
           "book": "9.3–9.4",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "page table",
+            "TLB",
+            "EAT",
+            "multi-level paging",
+            "inverted page table"
+          ],
+          "updated": "2026-11-27"
         },
         {
           "id": "segmentation",

@@ -172,8 +172,17 @@
           "en": "Linear Recurrence Relations",
           "zh": "線性遞迴關係",
           "book": "8.1–8.2",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "recurrence",
+            "characteristic equation",
+            "particular solution",
+            "modeling"
+          ],
+          "updated": "2026-11-27"
         },
         {
           "id": "divide-and-conquer-recurrences",

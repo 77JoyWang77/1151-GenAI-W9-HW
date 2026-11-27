@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eigenvalues and Eigenvectors 特徵值與特徵向量 · 線性代數 | 資工考研互動學習站</title>
+  <meta name="description" content="特徵值與特徵向量的幾何意義、特徵多項式、代數與幾何重數、trace/det 性質與 Cayley–Hamilton。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=44614248">
+  <script src="../../../assets/js/theme.js?v=44614248"></script>
+</head>
+<body data-subject="linear-algebra" data-chapter="eigenvalues" data-chno="6" data-topic="linear-algebra/eigenvalues/eigenvalues-eigenvectors" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Linear Algebra 線性代數</a> › Ch6 Eigenvalues 特徵值 › Eigenvalues and Eigenvectors 特徵值與特徵向量</nav>
+      <div class="topic-head">
+        <h1>Eigenvalues and Eigenvectors 特徵值與特徵向量<small>找出被矩陣只拉伸、不轉向的方向：det(A − λI) = 0 求特徵值，Null(A − λI) 求特徵向量</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch6 Eigenvalues</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">eigenvalue</span>
+          <span class="chip">eigenvector</span>
+          <span class="chip">characteristic polynomial</span>
+          <span class="chip">multiplicity</span>
+          <span class="chip">Cayley–Hamilton</span>
+        </div>
+      </div>
+
+      <section id="motivation">
+        <h2>為什麼需要特徵值</h2>
+        <div class="panel prose">
+          <p>把矩陣 A 想成一台「變形機器」：丟進一個向量 x，吐出另一個向量 Ax。一般來說 Ax 和 x 的<b>長度和方向都不一樣</b>，A 同時做了旋轉、拉伸、剪切，很難一眼看出它到底在做什麼。</p>
+          <p>但大多數矩陣都藏著幾個「特別的方向」：沿著這些方向的向量被 A 作用後<b>方向不變，只被拉長或縮短</b>（也可能反向）。只要找到這些方向，A 的行為就被拆成幾個最簡單的動作：「這個方向放大 5 倍、那個方向放大 2 倍」。這些方向上的向量叫 <span class="term">Eigenvector<small>（特徵向量）</small></span>，放大的倍數叫 <span class="term">Eigenvalue<small>（特徵值）</small></span>。</p>
+          <p>為什麼值得花力氣找它們？因為很多問題只有在特徵向量的方向上才好算：</p>
+          <ul>
+            <li><b>矩陣的高次方</b>：A<sup>100</sup> 直接乘要 99 次矩陣乘法；但若 Av = λv，則 A<sup>100</sup>v = λ<sup>100</sup>v，一次就算完。這是之後 Diagonalization 對角化（籌備中）的核心。</li>
+            <li><b>動態系統與馬可夫鏈</b>：x<sub>k+1</sub> = Ax<sub>k</sub> 長期會往哪裡跑，由絕對值最大的特徵值決定。</li>
+            <li><b>判斷可逆、算行列式</b>：0 是不是特徵值直接決定 A 可不可逆，特徵值的乘積就是 det A。</li>
+            <li><b>資工應用</b>：PageRank 是某個矩陣在特徵值 1 的特徵向量；PCA 降維取的是共變異數矩陣最大特徵值的方向；圖的鄰接矩陣特徵值（spectral graph theory）可以拿來分群。</li>
+          </ul>
+          <p>這一頁講四件事：特徵值和特徵向量的<b>定義與幾何意義</b>、用<b>特徵多項式</b>求特徵值、用<b>列運算</b>求特徵空間，以及考試最愛出的一長串<b>性質</b>（trace、det、A<sup>k</sup>、A<sup>−1</sup>、Cayley–Hamilton）。</p>
+        </div>
+      </section>
+
+      <section id="definition">
+        <h2>定義與幾何意義</h2>
+        <div class="panel prose">
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>定義</b>：A 是 n×n 矩陣。如果存在<b>非零</b>向量 v 和純量 λ 使得 <b>Av = λv</b>，就說 λ 是 A 的特徵值，v 是 A 對應於 λ 的特徵向量。</p></div>
+          <p>先用一個 2×2 例子看看這個定義在講什麼。取 A = [4 1; 2 3]（第一列 4 1、第二列 2 3）：</p>
+          <ul>
+            <li>v<sub>1</sub> = (1, 1)：Av<sub>1</sub> = (4 + 1, 2 + 3) = (5, 5) = 5v<sub>1</sub>，方向沒變、長度變 5 倍，所以 λ<sub>1</sub> = 5。</li>
+            <li>v<sub>2</sub> = (1, −2)：Av<sub>2</sub> = (4 − 2, 2 − 6) = (2, −4) = 2v<sub>2</sub>，所以 λ<sub>2</sub> = 2。</li>
+            <li>x = (1, 0)：Ax = (4, 2)，不是 (1, 0) 的倍數，方向轉了大約 27°，所以 x <b>不是</b>特徵向量。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="eigen-geometry"></div>
+            <figcaption><b>圖 1</b>：A = [4 1; 2 3] 作用在三個向量上。藍色是特徵向量 v<sub>1</sub>、v<sub>2</sub>，綠色是它們被 A 映射後的結果，仍然落在同一條虛線上（只被拉長 5 倍、2 倍）；青色的 x = (1, 0) 被映到橘色的 (4, 2)，方向改變了。</figcaption>
+          </figure>
+          <h3>定義裡容易誤解的地方</h3>
+          <ul>
+            <li><b>特徵向量一定不是零向量</b>。因為 A0 = λ0 對每個 λ 都成立，若允許 v = 0，每個數都會變成特徵值，定義就沒有意義。</li>
+            <li><b>特徵值可以是 0</b>。λ = 0 代表 Av = 0 有非零解，也就是 A 會把某個方向「壓扁」成零向量，這時 A 不可逆（後面會用到）。</li>
+            <li><b>特徵向量不唯一</b>。若 Av = λv，則對任何 c ≠ 0，A(cv) = cAv = λ(cv)，所以 cv 也是特徵向量，<b>特徵值不變</b>。圖 1 虛線上任何非零向量都是特徵向量。題目問「求特徵向量」時，答一個代表（例如 (1, 1)）並說明「及其非零倍數」即可。</li>
+            <li><b>只有方陣才有特徵值</b>：Av 和 v 要能比較，A 必須把 ℝ<sup>n</sup> 映到 ℝ<sup>n</sup>。</li>
+            <li><b>實矩陣也可能沒有實特徵值</b>。旋轉 90° 的矩陣 [0 −1; 1 0] 會把每個非零向量都轉 90°，沒有任何方向保持不變，它的特徵值是複數 ±i。</li>
+          </ul>
+          <h3>特徵空間</h3>
+          <p>固定一個特徵值 λ，把所有滿足 Av = λv 的向量（<b>加上零向量</b>）收集起來，叫做 λ 的 <span class="term">Eigenspace<small>（特徵空間）</small></span>，記作 E<sub>λ</sub>：</p>
+          <pre class="formula">E_λ = { v : Av = λv } = { v : (A − λI)v = 0 } = Null(A − λI)</pre>
+          <p>因為它是一個齊次方程組的解集合，也就是 A − λI 的 <span class="term">Null Space<small>（零空間）</small></span>，所以 E<sub>λ</sub> 一定是 ℝ<sup>n</sup> 的子空間：兩個特徵向量相加、乘上倍數，還在 E<sub>λ</sub> 裡（只要結果不是 0，就還是特徵向量）。注意<b>特徵空間包含零向量，但零向量不是特徵向量</b>，這兩句話不衝突。E<sub>λ</sub> 的維度之後會叫做「幾何重數」。</p>
+        </div>
+      </section>
+
+      <section id="characteristic-polynomial">
+        <h2>特徵多項式：det(A − λI) = 0</h2>
+        <div class="panel prose">
+          <h3>從定義推出求法</h3>
+          <p>Av = λv 可以移項成 Av − λIv = 0，也就是 <b>(A − λI)v = 0</b>。這是一個齊次方程組，我們要它有<b>非零解</b>。由 <a href="../linear-systems/matrix-inverse.html#invertible-theorem">可逆的等價條件</a>，「齊次方程組有非零解」⟺「係數矩陣不可逆」⟺「行列式為 0」。所以：</p>
+          <pre class="formula">λ 是 A 的特徵值  ⟺  A − λI 不可逆  ⟺  det(A − λI) = 0</pre>
+          <p>把 λ 當成未知數，det(A − λI) 展開後是 λ 的 n 次多項式，叫做 <span class="term">Characteristic Polynomial<small>（特徵多項式）</small></span>；det(A − λI) = 0 叫做 <span class="term">Characteristic Equation<small>（特徵方程式）</small></span>。求特徵值就是解這個方程式，n×n 矩陣（含重根、複數根）恰好有 n 個特徵值。</p>
+          <p>有些書寫成 det(λI − A)，它和 det(A − λI) 差一個 (−1)<sup>n</sup>：n 是偶數時完全一樣，n 是奇數時差一個負號。<b>根完全相同</b>，寫哪一種都可以，但比較係數時要注意。</p>
+          <h3>2×2 公式</h3>
+          <p>A = [a b; c d] 時，det(A − λI) = (a − λ)(d − λ) − bc = λ<sup>2</sup> − (a + d)λ + (ad − bc)。a + d 是對角線的和，叫 <span class="term">Trace<small>（跡）</small></span>，記作 tr A：</p>
+          <pre class="formula">2×2：  det(A − λI) = λ² − (tr A)λ + det A</pre>
+          <p>例如 A = [4 1; 2 3]：tr A = 7、det A = 12 − 2 = 10，特徵方程式 λ<sup>2</sup> − 7λ + 10 = (λ − 5)(λ − 2) = 0，得 λ = 5、2，和圖 1 一致。這個公式讓 2×2 幾乎可以心算。</p>
+          <h3>3×3：餘因子展開</h3>
+          <p>3×3 通常沿第 1 列（或 0 比較多的那一列、那一行）做餘因子展開，符號照 + − + 排。整理後一定是</p>
+          <pre class="formula">3×3：  det(A − λI) = −λ³ + (tr A)λ² − (M₁₁ + M₂₂ + M₃₃)λ + det A</pre>
+          <p>其中 M<sub>ii</sub> 是刪掉第 i 列、第 i 行剩下的 2×2 行列式（主子式）。這個形式可以拿來驗算：λ<sup>2</sup> 係數一定是 trace，常數項（代 λ = 0）一定是 det A。</p>
+          <p><b>例子</b>：A = [−1 1 2; −2 2 2; −5 1 6]。A − λI 的對角線是 −1−λ、2−λ、6−λ，沿第 1 列展開：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>項</th><th>係數 × 子式</th><th>子式的行列式</th></tr></thead>
+              <tbody>
+                <tr><td>+ (1, 1)</td><td>(−1−λ) × [(2−λ)(6−λ) − (2)(1)]</td><td>λ<sup>2</sup> − 8λ + 10</td></tr>
+                <tr><td>− (1, 2)</td><td>1 × [(−2)(6−λ) − (2)(−5)]</td><td>2λ − 2</td></tr>
+                <tr><td>+ (1, 3)</td><td>2 × [(−2)(1) − (2−λ)(−5)]</td><td>8 − 5λ</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>三項相加：(−1−λ)(λ<sup>2</sup> − 8λ + 10) − (2λ − 2) + 2(8 − 5λ) = <b>−λ<sup>3</sup> + 7λ<sup>2</sup> − 14λ + 8</b>。驗算：λ<sup>2</sup> 係數 7 = −1 + 2 + 6 = tr A；常數項 8 就是 det A；三個主子式 (−1)(2) − (1)(−2) = 0、(−1)(6) − (2)(−5) = 4、(2)(6) − (2)(1) = 10，和 14 也對得上（已用程式驗證）。</p>
+          <h3>怎麼解三次方程式：有理根定理</h3>
+          <p>考試的矩陣幾乎都設計成特徵值是整數或簡單分數，這時用 <span class="term">Rational Root Theorem<small>（有理根定理）</small></span>：整數係數多項式若有最簡分數根 p/q，p 一定整除常數項、q 一定整除首項係數。上例乘 −1 得 λ<sup>3</sup> − 7λ<sup>2</sup> + 14λ − 8，首項係數 1，所以有理根只可能是 8 的因數 ±1、±2、±4、±8。</p>
+          <ol>
+            <li>試 λ = 1：1 − 7 + 14 − 8 = 0，是根。用 <span class="term">Synthetic Division<small>（綜合除法）</small></span> 除以 (λ − 1)，得 λ<sup>2</sup> − 6λ + 8。</li>
+            <li>λ<sup>2</sup> − 6λ + 8 = (λ − 2)(λ − 4)。</li>
+            <li>所以特徵值是 <b>1、2、4</b>。驗算：1 + 2 + 4 = 7 = tr A，1·2·4 = 8 = det A。</li>
+          </ol>
+          <p>如果所有候選值都不是根，代表剩下的因式沒有有理根，特徵值是無理數或複數（例如 [1 2; 3 1] 的 λ<sup>2</sup> − 2λ − 5，根是 1 ± √6）。這時仍可以用公式解寫出來，只是後面求特徵向量會比較麻煩。</p>
+          <details class="code-fold">
+            <summary>看程式碼：charPoly()：展開 det(A − λI)</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="charPoly()">
+                <div class="code-head">charPoly()：2×2 直接展開、3×3 沿第 1 列餘因子展開</div>
+                <pre class="code">Poly entry(Frac A[MAXN][MAXN], int i, int j) {   /* A − λI 的 (i, j) 元素：對角線是 a_ii − λ */
+  Poly p = pzero();
+  p.c[0] = A[i][j];
+  if (i == j) { p.deg = 1; p.c[1] = frac(-1, 1); }
+  return p;
+}
+
+Poly charPoly(Frac A[MAXN][MAXN]) {           /* 回傳 det(A − λI) */
+  if (n == 2)                                  /* (a − λ)(d − λ) − bc */
+    return psub(pmul(entry(A, 0, 0), entry(A, 1, 1)), pmul(entry(A, 0, 1), entry(A, 1, 0)));
+  Poly p = pzero();
+  for (int j = 0; j &lt; 3; j++) {                /* 沿第 1 列餘因子展開，符號 + − + */
+    int c1 = (j == 0) ? 1 : 0, c2 = (j == 2) ? 1 : 2;   /* 刪掉第 1 列、第 j 行後剩下的兩行 */
+    Poly minor = psub(pmul(entry(A, 1, c1), entry(A, 2, c2)), pmul(entry(A, 1, c2), entry(A, 2, c1)));
+    Poly term = pmul(entry(A, 0, j), minor);
+    p = (j == 1) ? psub(p, term) : padd(p, term);
+  }
+  return p;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="多項式運算">
+                <div class="code-head">Poly：係數是精確分數的多項式</div>
+                <pre class="code">typedef struct { int deg; Frac c[MAXN + 1]; } Poly;
+
+Poly pzero(void) {
+  Poly p; p.deg = 0;
+  for (int k = 0; k &lt;= MAXN; k++) p.c[k] = frac(0, 1);
+  return p;
+}
+
+Poly ptrim(Poly p) {                           /* 去掉最高次的 0 係數 */
+  while (p.deg &gt; 0 &amp;&amp; isZero(p.c[p.deg])) p.deg--;
+  return p;
+}
+
+Poly padd(Poly a, Poly b) {
+  Poly r = pzero(); r.deg = a.deg &gt; b.deg ? a.deg : b.deg;
+  for (int k = 0; k &lt;= r.deg; k++) r.c[k] = fadd(k &lt;= a.deg ? a.c[k] : frac(0, 1), k &lt;= b.deg ? b.c[k] : frac(0, 1));
+  return ptrim(r);
+}
+
+Poly psub(Poly a, Poly b) {
+  for (int k = 0; k &lt;= b.deg; k++) b.c[k] = fneg(b.c[k]);
+  return padd(a, b);
+}
+
+Poly pmul(Poly a, Poly b) {
+  Poly r = pzero(); r.deg = a.deg + b.deg;
+  for (int i = 0; i &lt;= a.deg; i++)
+    for (int j = 0; j &lt;= b.deg; j++) r.c[i + j] = fadd(r.c[i + j], fmul(a.c[i], b.c[j]));
+  return ptrim(r);
+}
+
+Frac peval(Poly p, Frac x) {                   /* Horner 法代入 λ = x */
+  Frac s = frac(0, 1);
+  for (int k = p.deg; k &gt;= 0; k--) s = fadd(fmul(s, x), p.c[k]);
+  return s;
+}</pre>
+              </div>
+            </div>
+          </details>
+          <details class="code-fold">
+            <summary>看程式碼：有理根定理＋綜合除法求特徵值</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="rationalRoot()">
+                <div class="code-head">rationalRoot()：試所有 ±p/q</div>
+                <pre class="code">int rationalRoot(Poly p, Frac *root) {         /* 找到回傳 1，找不到（剩下無理根或複數根）回傳 0 */
+  long long L = 1, a[MAXN + 1];
+  for (int k = 0; k &lt;= p.deg; k++) L = L / gcdll(L, p.c[k].d) * p.c[k].d;   /* 分母的最小公倍數 */
+  for (int k = 0; k &lt;= p.deg; k++) a[k] = p.c[k].n * (L / p.c[k].d);         /* 通分成整數係數 */
+  if (a[0] == 0) { *root = frac(0, 1); return 1; }                            /* 常數項是 0：λ = 0 是根 */
+  long long a0 = llabs(a[0]), an = llabs(a[p.deg]);
+  for (long long q = 1; q &lt;= an; q++) {
+    if (an % q) continue;
+    for (long long pp = 1; pp &lt;= a0; pp++) {
+      if (a0 % pp) continue;
+      for (int s = 1; s &gt;= -1; s -= 2) {       /* 先試 +p/q 再試 −p/q */
+        Frac r = frac(s * pp, q);
+        if (isZero(peval(p, r))) { *root = r; return 1; }
+      }
+    }
+  }
+  return 0;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="deflate() / eigenvalues()">
+                <div class="code-head">deflate() / eigenvalues()：找到一個根就除掉，重根累加代數重數</div>
+                <pre class="code">Poly deflate(Poly p, Frac r) {                 /* 綜合除法：p(λ) = (λ − r)·q(λ)，回傳 q */
+  Poly q = pzero(); q.deg = p.deg - 1;
+  Frac carry = frac(0, 1);
+  for (int k = p.deg; k &gt;= 1; k--) {
+    carry = fadd(fmul(carry, r), p.c[k]);
+    q.c[k - 1] = carry;
+  }
+  return q;
+}
+
+int eigenvalues(Poly p, Frac lam[], int alg[], Poly *rest) {   /* 回傳相異特徵值個數 */
+  int k = 0;
+  Frac r;
+  while (p.deg &gt; 0 &amp;&amp; rationalRoot(p, &amp;r)) {
+    if (k &gt; 0 &amp;&amp; feq(lam[k - 1], r)) alg[k - 1]++;   /* 同一個根再出現：代數重數 +1 */
+    else { lam[k] = r; alg[k] = 1; k++; }
+    p = deflate(p, r);
+  }
+  *rest = p;                                   /* rest.deg &gt; 0：剩下的因式沒有有理根 */
+  return k;
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="eigenspace">
+        <h2>求特徵向量：解 (A − λI)x = 0</h2>
+        <div class="panel prose">
+          <p>知道特徵值之後，每個 λ 各自解一次齊次方程組 (A − λI)x = 0。這就是 <a href="../linear-systems/gaussian-elimination.html#solution-types">從 RREF 判斷解的情況</a> 講過的做法：化成 RREF，沒有 pivot 的行是<b>自由變數</b>，每個自由變數輪流設成 1、其他自由變數設成 0，就得到零空間的一組基底。這裡只整理和特徵值有關的重點：</p>
+          <ul>
+            <li>λ 真的是特徵值時，A − λI 不可逆，RREF <b>一定至少有一個零列</b>、至少一個自由變數。如果化完發現只有零解，代表特徵值算錯了，回頭檢查特徵多項式。</li>
+            <li>自由變數的個數 = n − rank(A − λI) = dim E<sub>λ</sub>。</li>
+            <li>求出來的向量可以乘上任何非零倍數，習慣上化成互質的整數，方便驗算。</li>
+          </ul>
+          <p><b>例子（續）</b>：A = [−1 1 2; −2 2 2; −5 1 6]，特徵值 1、2、4。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>λ</th><th>A − λI</th><th>RREF</th><th>自由變數 → 基底</th><th>驗算 Av</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>[−2 1 2; −2 1 2; −5 1 5]</td><td>[1 0 −1; 0 1 0; 0 0 0]</td><td>x<sub>3</sub> 自由：x<sub>1</sub> = x<sub>3</sub>、x<sub>2</sub> = 0 → (1, 0, 1)</td><td>(1, 0, 1) = 1·v</td></tr>
+                <tr><td>2</td><td>[−3 1 2; −2 0 2; −5 1 4]</td><td>[1 0 −1; 0 1 −1; 0 0 0]</td><td>x<sub>3</sub> 自由：x<sub>1</sub> = x<sub>2</sub> = x<sub>3</sub> → (1, 1, 1)</td><td>(2, 2, 2) = 2·v</td></tr>
+                <tr><td>4</td><td>[−5 1 2; −2 −2 2; −5 1 2]</td><td>[1 0 −1/2; 0 1 −1/2; 0 0 0]</td><td>x<sub>3</sub> 自由：x<sub>1</sub> = x<sub>2</sub> = x<sub>3</sub>/2 → 取 x<sub>3</sub> = 2 得 (1, 1, 2)</td><td>(4, 4, 8) = 4·v</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>三個特徵空間都是 1 維（一條通過原點的直線）。λ = 4 那一列的 RREF 有分數，算出 (1/2, 1/2, 1) 後乘 2 化成整數，方向不變。每一列最後都做了驗算：<b>Av = λv 只要一次矩陣乘向量</b>，花 10 秒就能抓到前面算錯的地方，考試一定要做。</p>
+          <details class="code-fold">
+            <summary>看程式碼：eigenspace()：Null(A − λI) 的基底</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="eigenspace()">
+                <div class="code-head">eigenspace()：RREF 後每個自由變數給一個基底向量</div>
+                <pre class="code">int eigenspace(Frac A[MAXN][MAXN], Frac lam, Frac basis[MAXN][MAXN]) {   /* 回傳幾何重數 dim E_λ */
+  Frac B[MAXN][MAXN];
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) B[i][j] = (i == j) ? fsub(A[i][j], lam) : A[i][j];   /* B = A − λI */
+  int pivcol[MAXN], isPiv[MAXN] = { 0 };
+  int r = rref(B, pivcol);
+  for (int i = 0; i &lt; r; i++) isPiv[pivcol[i]] = 1;
+  int dim = 0;
+  for (int f = 0; f &lt; n; f++) {
+    if (isPiv[f]) continue;                    /* 只有自由變數那一行會產生基底向量 */
+    for (int j = 0; j &lt; n; j++) basis[dim][j] = frac(j == f, 1);   /* x_f = 1，其他自由變數 = 0 */
+    for (int i = 0; i &lt; r; i++) basis[dim][pivcol[i]] = fneg(B[i][f]);   /* pivot 變數 = −(那一列在第 f 行的數) */
+    toInteger(basis[dim]);
+    dim++;
+  }
+  return dim;                                  /* = n − rank(A − λI) */
+}</pre>
+              </div>
+              <div class="code-block" data-tab="rref()">
+                <div class="code-head">rref()：化成簡化列梯形，記下 pivot 所在的行</div>
+                <pre class="code">int rref(Frac B[MAXN][MAXN], int pivcol[]) {   /* 化成 RREF，回傳 rank；pivcol[i] 是第 i 個 pivot 所在的行 */
+  int r = 0;
+  for (int c = 0; c &lt; n &amp;&amp; r &lt; n; c++) {
+    int p = r;
+    while (p &lt; n &amp;&amp; isZero(B[p][c])) p++;
+    if (p == n) continue;                      /* 這一行沒有 pivot：對應自由變數 */
+    for (int j = 0; j &lt; n; j++) { Frac t = B[r][j]; B[r][j] = B[p][j]; B[p][j] = t; }
+    Frac piv = B[r][c];
+    for (int j = 0; j &lt; n; j++) B[r][j] = fdiv(B[r][j], piv);
+    for (int i = 0; i &lt; n; i++)
+      if (i != r &amp;&amp; !isZero(B[i][c])) {
+        Frac f = B[i][c];
+        for (int j = 0; j &lt; n; j++) B[i][j] = fsub(B[i][j], fmul(f, B[r][j]));
+      }
+    pivcol[r++] = c;
+  }
+  return r;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="驗算">
+                <div class="code-head">checkEigen() / toInteger()：驗證 Av = λv、把向量化成整數</div>
+                <pre class="code">int checkEigen(Frac A[MAXN][MAXN], Frac lam, Frac v[MAXN]) {   /* 驗證 Av = λv */
+  for (int i = 0; i &lt; n; i++) {
+    Frac s = frac(0, 1);
+    for (int j = 0; j &lt; n; j++) s = fadd(s, fmul(A[i][j], v[j]));
+    if (!feq(s, fmul(lam, v[i]))) return 0;
+  }
+  return 1;
+}
+
+void toInteger(Frac v[MAXN]) {                 /* 把向量乘上正數倍，化成互質的整數（方向不變） */
+  long long L = 1, g = 0;
+  for (int j = 0; j &lt; n; j++) L = L / gcdll(L, v[j].d) * v[j].d;
+  for (int j = 0; j &lt; n; j++) { v[j] = fmul(v[j], frac(L, 1)); g = g ? gcdll(g, v[j].n) : llabs(v[j].n); }
+  if (g &gt; 1) for (int j = 0; j &lt; n; j++) v[j] = frac(v[j].n, g);
+}</pre>
+              </div>
+            </div>
+          </details>
+          <p>下面的動畫把整個流程串起來：輸入 2×2 或 3×3 矩陣，它會寫出 A − λI、展開行列式、用有理根定理找根，再對每個 λ 做 RREF 讀出特徵空間，最後驗算 Av = λv 與 trace、det。底部的方塊記錄每個特徵值的代數重數和幾何重數；遇到無理根或複數根時會說明原因，停在特徵多項式。</p>
+        </div>
+        <div class="viz" data-viz="eigen-solve"></div>
+      </section>
+
+      <section id="multiplicity">
+        <h2>代數重數與幾何重數</h2>
+        <div class="panel prose">
+          <p>特徵值重複出現時，要分清楚兩種「重數」：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>名稱</th><th>定義</th><th>怎麼算</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Algebraic Multiplicity<small>（代數重數）</small></span></td><td>(λ − λ<sub>0</sub>) 在特徵多項式中出現的次數</td><td>因式分解特徵多項式</td></tr>
+                <tr><td><span class="term">Geometric Multiplicity<small>（幾何重數）</small></span></td><td>特徵空間 E<sub>λ<sub>0</sub></sub> 的維度</td><td>n − rank(A − λ<sub>0</sub>I)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 對每個特徵值都有 <b>1 ≤ 幾何重數 ≤ 代數重數</b>。所有代數重數加起來是 n；幾何重數加起來 ≤ n。</p></div>
+          <p>下界 1 是因為 λ<sub>0</sub> 是特徵值就至少有一個非零特徵向量。上界的想法：若 dim E<sub>λ<sub>0</sub></sub> = g，取 E<sub>λ<sub>0</sub></sub> 的基底 v<sub>1</sub>…v<sub>g</sub> 擴充成 ℝ<sup>n</sup> 的基底，在這組基底下 A 的矩陣左上角是 λ<sub>0</sub>I<sub>g</sub>、左下角是 0，它和 A 相似（Similarity 相似矩陣，籌備中），特徵多項式相同，而這個區塊矩陣的特徵多項式明顯含有 (λ<sub>0</sub> − λ)<sup>g</sup>，所以代數重數至少是 g。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="eigen-multiplicity"></div>
+            <figcaption><b>圖 2</b>：A = [2 1; 0 2] 和 B = [2 0; 0 2] 的特徵多項式都是 (λ − 2)<sup>2</sup>，代數重數都是 2。但 A − 2I 的 rank 是 1（橘色的 1），特徵空間只有一條直線；B − 2I 是零矩陣，整個平面都是特徵空間。</figcaption>
+          </figure>
+          <h3>同一個特徵多項式，不同的特徵空間</h3>
+          <p>3×3 也一樣。下面兩個矩陣的特徵多項式都是 −(λ − 3)<sup>2</sup>(λ − 1)（tr = 7、det = 9），但 λ = 3 的特徵空間大小不同：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>矩陣</th><th>A − 3I 的 RREF</th><th>rank</th><th>dim E<sub>3</sub></th><th>E<sub>3</sub> 的基底</th></tr></thead>
+              <tbody>
+                <tr><td>[1 2 −1; −2 5 −1; −2 2 1]</td><td>[1 −1 0; 0 0 1; 0 0 0]</td><td>2</td><td>1（&lt; 代數重數 2）</td><td>(1, 1, 0)</td></tr>
+                <tr><td>[2 1 −1; −1 4 −1; −2 2 1]</td><td>[1 −1 1; 0 0 0; 0 0 0]</td><td>1</td><td>2（= 代數重數 2）</td><td>(1, 1, 0)、(−1, 0, 1)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩者 λ = 1 的特徵空間都是 span{(1, 1, 2)}。第一個矩陣的幾何重數總和只有 1 + 1 = 2 &lt; 3，湊不出 3 個線性獨立的特徵向量，叫 <span class="term">Defective Matrix<small>（缺陷矩陣）</small></span>；第二個總和是 2 + 1 = 3，可以湊出 ℝ<sup>3</sup> 的一組特徵向量基底。這正是 Diagonalization 對角化（籌備中）的判準：<b>每個特徵值的幾何重數都等於代數重數，矩陣才能對角化</b>。動畫的「缺陷矩陣」「重根 2 維特徵空間」兩個按鈕就是這兩個矩陣，可以對照看 RREF 的差別。</p>
+          <p>重點是：<b>只看特徵多項式分不出這兩種情況</b>，一定要算 rank(A − λI)。也因此「有重根就不能對角化」是錯的（反例：第二個矩陣，或單位矩陣 I）。</p>
+        </div>
+      </section>
+
+      <section id="properties">
+        <h2>常考性質</h2>
+        <div class="panel prose">
+          <h3>trace 與 det</h3>
+          <p>設 A 的 n 個特徵值（照代數重數重複列出，可能是複數）是 λ<sub>1</sub>, …, λ<sub>n</sub>。特徵多項式可以寫成 det(A − λI) = (λ<sub>1</sub> − λ)(λ<sub>2</sub> − λ)⋯(λ<sub>n</sub> − λ)：</p>
+          <ul>
+            <li><b>代 λ = 0</b>：det A = λ<sub>1</sub>λ<sub>2</sub>⋯λ<sub>n</sub>，行列式是特徵值的<b>積</b>。</li>
+            <li><b>比較 λ<sup>n−1</sup> 的係數</b>：右邊是 (−1)<sup>n−1</sup>(λ<sub>1</sub> + ⋯ + λ<sub>n</sub>)；左邊只有對角線乘積 (a<sub>11</sub> − λ)⋯(a<sub>nn</sub> − λ) 會產生 λ<sup>n−1</sup>，係數是 (−1)<sup>n−1</sup>(a<sub>11</sub> + ⋯ + a<sub>nn</sub>)。所以 tr A = λ<sub>1</sub> + ⋯ + λ<sub>n</sub>，trace 是特徵值的<b>和</b>。</li>
+          </ul>
+          <p>一定要<b>照重數</b>算：特徵多項式 (λ + 1)(λ − 2)<sup>2</sup> 的 det 是 (−1)·2·2 = −4，不是 (−1)·2 = −2。</p>
+          <h3>由 Av = λv 推出的性質</h3>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="eigen-properties"></div>
+            <figcaption><b>圖 3</b>：若 Av = λv，這些矩陣的特徵值都可以直接寫出來，而且除了 A<sup>T</sup>（橘色）之外，特徵向量仍然是同一個 v。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>矩陣</th><th>特徵值</th><th>為什麼（設 Av = λv）</th></tr></thead>
+              <tbody>
+                <tr><td>A<sup>k</sup>（k 為正整數）</td><td>λ<sup>k</sup></td><td>A<sup>2</sup>v = A(λv) = λAv = λ<sup>2</sup>v，重複 k 次</td></tr>
+                <tr><td>A<sup>−1</sup>（A 可逆）</td><td>1/λ</td><td>A 可逆 ⇒ λ ≠ 0；Av = λv 兩邊左乘 A<sup>−1</sup> 再除以 λ：A<sup>−1</sup>v = (1/λ)v</td></tr>
+                <tr><td>A + cI</td><td>λ + c</td><td>(A + cI)v = λv + cv</td></tr>
+                <tr><td>cA</td><td>cλ</td><td>(cA)v = c(λv)</td></tr>
+                <tr><td>p(A) = a<sub>m</sub>A<sup>m</sup> + ⋯ + a<sub>0</sub>I</td><td>p(λ)</td><td>每一項用 A<sup>k</sup>v = λ<sup>k</sup>v，再相加</td></tr>
+                <tr><td>A<sup>T</sup></td><td>λ（相同）</td><td>det(A<sup>T</sup> − λI) = det((A − λI)<sup>T</sup>) = det(A − λI)，特徵多項式相同；但特徵向量一般不同</td></tr>
+                <tr><td>三角矩陣（上或下）</td><td>對角線元素</td><td>A − λI 還是三角矩陣，行列式 = 對角線乘積 (a<sub>11</sub> − λ)⋯(a<sub>nn</sub> − λ)</td></tr>
+                <tr><td>P<sup>−1</sup>AP（相似）</td><td>λ（相同）</td><td>det(P<sup>−1</sup>AP − λI) = det(P<sup>−1</sup>(A − λI)P) = det(A − λI)；特徵向量變成 P<sup>−1</sup>v</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><b>例子</b>：前面的 A = [−1 1 2; −2 2 2; −5 1 6] 特徵值是 1、2、4。不用算任何矩陣乘法就知道：A<sup>−1</sup> 的特徵值是 1、1/2、1/4；A<sup>2</sup> + I 的特徵值是 1 + 1 = 2、4 + 1 = 5、16 + 1 = 17，所以 det(A<sup>2</sup> + I) = 2·5·17 = 170、tr(A<sup>2</sup> + I) = 2 + 5 + 17 = 24（已用程式直接算矩陣驗證）。反過來 A − 2I 的特徵值有一個是 2 − 2 = 0，所以 A − 2I 不可逆。</p>
+          <p>A<sup>T</sup> 的特徵向量為什麼會變？取 A = [1 1; 0 2]，特徵向量是 (1, 0)（λ = 1）和 (1, 1)（λ = 2）；A<sup>T</sup> = [1 0; 1 2] 的特徵值一樣是 1、2，但特徵向量是 (1, −1) 和 (0, 1)，完全不同。</p>
+          <h3>0 是特徵值 ⟺ A 不可逆</h3>
+          <p>λ = 0 是特徵值 ⟺ det(A − 0I) = det A = 0 ⟺ A 不可逆。這可以加進 <a href="../linear-systems/matrix-inverse.html#invertible-theorem">可逆的等價條件</a> 那張表：「A 可逆 ⟺ 0 不是 A 的特徵值」。也和「det A = 特徵值的積」一致：有一個是 0，乘起來就是 0。</p>
+          <h3>不能隨便推廣的地方</h3>
+          <ul>
+            <li><b>A + B、AB 的特徵值</b>一般<b>不是</b> λ<sub>A</sub> + λ<sub>B</sub>、λ<sub>A</sub>λ<sub>B</sub>，因為 A、B 的特徵向量通常不一樣。只有 A、B 有共同的特徵向量時才成立。</li>
+            <li><b>列運算會改變特徵值</b>。A = [4 1; 2 3] 做 R<sub>2</sub> ← R<sub>2</sub> − (1/2)R<sub>1</sub> 得 [4 1; 0 5/2]，對角線是 4、5/2，但 A 的特徵值是 5、2。第 3 型列運算保持行列式（4·5/2 = 10 = 5·2），但不保持 trace，所以「化成上三角再讀對角線」是錯的；pivot 不是特徵值。</li>
+            <li><b>AB 與 BA</b>：兩者的特徵值相同（A、B 都是 n×n）。若 B 可逆，BA = B(AB)B<sup>−1</sup> 和 AB 相似，直接得證；一般情況：若 ABv = λv 且 λ ≠ 0，則 Bv ≠ 0 而且 BA(Bv) = B(ABv) = λ(Bv)，所以 λ 也是 BA 的特徵值；λ = 0 則用 det(AB) = det(BA)。但特徵向量從 v 變成 Bv，<b>一般不相同</b>。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：traceDetCheck()：驗證 trace = 特徵值和、det = 特徵值積</summary>
+            <div class="code-block">
+              <div class="code-head">traceDetCheck()：重根照代數重數重複計算</div>
+              <pre class="code">void traceDetCheck(Frac A[MAXN][MAXN], Frac lam[], int alg[], int k, Frac *tr, Frac *sum, Frac *det, Frac *prod) {
+  *tr = frac(0, 1); *sum = frac(0, 1); *prod = frac(1, 1);
+  for (int i = 0; i &lt; n; i++) *tr = fadd(*tr, A[i][i]);
+  for (int i = 0; i &lt; k; i++)
+    for (int t = 0; t &lt; alg[i]; t++) { *sum = fadd(*sum, lam[i]); *prod = fmul(*prod, lam[i]); }
+  *det = charPoly(A).c[0];                     /* det(A − 0·I) = det A：特徵多項式的常數項 */
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="independence">
+        <h2>相異特徵值的特徵向量線性獨立</h2>
+        <div class="panel prose">
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>定理</b>：若 v<sub>1</sub>, …, v<sub>k</sub> 是 A 對應於<b>兩兩相異</b>特徵值 λ<sub>1</sub>, …, λ<sub>k</sub> 的特徵向量，則 {v<sub>1</sub>, …, v<sub>k</sub>} 線性獨立。這裡 k 可以小於 n。</p></div>
+          <p>這是證明題的常客，標準證法是對 k 做數學歸納法：</p>
+          <ol>
+            <li><b>k = 1</b>：特徵向量不是零向量，單一非零向量線性獨立。</li>
+            <li><b>假設 k − 1 個時成立</b>。設 c<sub>1</sub>v<sub>1</sub> + ⋯ + c<sub>k</sub>v<sub>k</sub> = 0 ……(1)。</li>
+            <li>兩邊左乘 A：c<sub>1</sub>λ<sub>1</sub>v<sub>1</sub> + ⋯ + c<sub>k</sub>λ<sub>k</sub>v<sub>k</sub> = 0 ……(2)。</li>
+            <li>(1) 乘 λ<sub>k</sub> 再和 (2) 相減，最後一項消掉：c<sub>1</sub>(λ<sub>1</sub> − λ<sub>k</sub>)v<sub>1</sub> + ⋯ + c<sub>k−1</sub>(λ<sub>k−1</sub> − λ<sub>k</sub>)v<sub>k−1</sub> = 0。</li>
+            <li>由歸納假設 v<sub>1</sub>…v<sub>k−1</sub> 線性獨立，所以每個 c<sub>i</sub>(λ<sub>i</sub> − λ<sub>k</sub>) = 0；特徵值相異，λ<sub>i</sub> − λ<sub>k</sub> ≠ 0，得 c<sub>1</sub> = ⋯ = c<sub>k−1</sub> = 0。</li>
+            <li>代回 (1)：c<sub>k</sub>v<sub>k</sub> = 0，v<sub>k</sub> ≠ 0，所以 c<sub>k</sub> = 0。全部係數為 0，得證。</li>
+          </ol>
+          <p>關鍵技巧是「左乘 A − λ<sub>k</sub>I」把最後一項消掉（第 3、4 步合起來就是這件事），因為 (A − λ<sub>k</sub>I)v<sub>i</sub> = (λ<sub>i</sub> − λ<sub>k</sub>)v<sub>i</sub>，只有 v<sub>k</sub> 會被消成 0。</p>
+          <p>推論：<b>n×n 矩陣有 n 個相異特徵值，就一定有 n 個線性獨立的特徵向量</b>，一定能對角化。反過來不對：有重根也可能有 n 個獨立特徵向量（例如上一節的第二個矩陣）。更一般地，把每個特徵空間各自的基底合在一起，整組仍然線性獨立，所以「幾何重數總和 = n」就等於「有 n 個獨立特徵向量」。</p>
+        </div>
+      </section>
+
+      <section id="cayley-hamilton">
+        <h2>Cayley–Hamilton 定理</h2>
+        <div class="panel prose">
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <span class="term">Cayley–Hamilton Theorem<small>（凱萊–漢彌爾頓定理）</small></span>：設 p(λ) = det(A − λI) 是 A 的特徵多項式，則 <b>p(A) = 0</b>（零矩陣）。也就是說，每個方陣都滿足自己的特徵方程式。</p></div>
+          <p>例：A = [4 1; 2 3]，p(λ) = λ<sup>2</sup> − 7λ + 10，所以 A<sup>2</sup> − 7A + 10I = 0。直接驗算：A<sup>2</sup> = [18 7; 14 11]，7A = [28 7; 14 21]，18 − 28 + 10 = 0、7 − 7 + 0 = 0……四個位置全是 0。</p>
+          <p>這個定理的完整證明（用伴隨矩陣或 Jordan 形式）會在 Cayley–Hamilton Theorem 專頁（籌備中）說明。這裡要先知道一個<b>錯誤證法</b>：「把 λ 換成 A，det(A − A·I) = det(0) = 0」。這不成立，因為 p(A) 是一個<b>矩陣</b>，而 det(A − AI) 是一個<b>數</b>；λ 在 det 裡面是純量，不能直接換成矩陣再拿出來。</p>
+          <h3>用法 1：求 A<sup>−1</sup></h3>
+          <p>把 p(A) = 0 中的常數項移到一邊，剩下的提出一個 A。上例：A<sup>2</sup> − 7A = −10I ⇒ A(A − 7I) = −10I ⇒ <b>A<sup>−1</sup> = (7I − A)/10</b> = [3/10 −1/10; −1/5 2/5]。一般地，常數項就是 det A，它不是 0 時才能除，正好對應「A 可逆」。</p>
+          <h3>用法 2：化簡 A<sup>n</sup> 或高次多項式</h3>
+          <p>要算 f(A)（f 次數很高）時，用特徵多項式 p 去除 f：f(λ) = q(λ)p(λ) + r(λ)，r 的次數 &lt; n。因為 p(A) = 0，所以 <b>f(A) = r(A)</b>，只要算一個低次多項式。</p>
+          <p>例：A = [4 1; 2 3] 求 A<sup>5</sup>。設 λ<sup>5</sup> = q(λ)(λ − 5)(λ − 2) + aλ + b，代入兩個根：λ = 5 得 3125 = 5a + b，λ = 2 得 32 = 2a + b，解出 a = 1031、b = −2030。所以 A<sup>5</sup> = 1031A − 2030I = [2094 1031; 2062 1063]（已用程式直接乘 5 次驗證）。這個「代根求餘式」的技巧需要特徵值相異；有重根時要多用一次微分條件。</p>
+          <p>考題常見的變形是「B = A<sup>3</sup> − 20A<sup>2</sup> + ⋯，求 det B 或 rank B」：先用特徵值算 B 的特徵值 f(λ<sub>i</sub>)，乘起來就是 det B；或先用 p(A) = 0 把 B 化成低次。</p>
+          <details class="code-fold">
+            <summary>看程式碼：polyOfMatrix() / inverseByCH()：p(A) 與用 Cayley–Hamilton 求反矩陣</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="polyOfMatrix()">
+                <div class="code-head">polyOfMatrix()：Horner 法算 p(A)，用來驗證 p(A) = 0</div>
+                <pre class="code">void polyOfMatrix(Poly p, Frac A[MAXN][MAXN], Frac R[MAXN][MAXN]) {   /* Horner 法算 p(A) */
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) R[i][j] = frac(0, 1);
+  for (int k = p.deg; k &gt;= 0; k--) {
+    matMul(R, A, R);                           /* R ← R·A */
+    for (int i = 0; i &lt; n; i++) R[i][i] = fadd(R[i][i], p.c[k]);   /* R ← R + c_k I */
+  }
+}</pre>
+              </div>
+              <div class="code-block" data-tab="inverseByCH()">
+                <div class="code-head">inverseByCH()：A⁻¹ = −q(A)/c₀</div>
+                <pre class="code">int inverseByCH(Frac A[MAXN][MAXN], Frac inv[MAXN][MAXN]) {   /* 用 Cayley–Hamilton 求 A⁻¹，不可逆回傳 0 */
+  Poly p = charPoly(A);                        /* p(A) = c_n A^n + ⋯ + c_1 A + c_0 I = 0 */
+  if (isZero(p.c[0])) return 0;                /* c_0 = det A = 0：不可逆 */
+  Poly q = pzero(); q.deg = p.deg - 1;         /* q(λ) = (p(λ) − c_0)/λ，所以 A·q(A) = −c_0 I */
+  for (int k = 1; k &lt;= p.deg; k++) q.c[k - 1] = p.c[k];
+  polyOfMatrix(q, A, inv);
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) inv[i][j] = fdiv(inv[i][j], fneg(p.c[0]));   /* A⁻¹ = −q(A)/c_0 */
+  return 1;
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="shortcuts">
+        <h2>看結構直接讀出特徵值</h2>
+        <div class="panel prose">
+          <p>考試的大矩陣（4×4、5×5）幾乎都不是要你硬展開行列式，而是藏了結構。先花 10 秒找下面這幾種：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>結構</th><th>結論</th><th>例子</th></tr></thead>
+              <tbody>
+                <tr><td>三角矩陣、對角矩陣</td><td>特徵值就是對角線</td><td>[4 1 −2; 0 −1 3; 0 0 2] 的特徵值是 4、−1、2</td></tr>
+                <tr><td>區塊三角 [B C; 0 D]（B、D 是方陣）</td><td>B 的特徵值和 D 的特徵值合起來；det(A − λI) = det(B − λI)·det(D − λI)</td><td>[1 2 0; 3 2 0; 5 −1 3]：左上 [1 2; 3 2] 給 4、−1，右下給 3</td></tr>
+                <tr><td>每一列的和都是 s</td><td>s 是特徵值，特徵向量 (1, 1, …, 1)</td><td>[1 2 3; 3 1 2; 2 3 1] 每列和 6，所以 λ = 6</td></tr>
+                <tr><td>rank 1 矩陣 uv<sup>T</sup></td><td>特徵值 v<sup>T</sup>u（向量 u）和 0（n − 1 重）</td><td>3×3 全 1 矩陣：3、0、0</td></tr>
+                <tr><td>已知一個特徵值、trace、det</td><td>用和與積解出剩下的</td><td>3×3 已知 λ<sub>1</sub>，用 tr 和 det 解另兩個的和與積</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>區塊三角的理由：A − λI 也是區塊三角，而區塊三角矩陣的行列式等於對角區塊行列式的乘積。注意要的是<b>左下（或右上）整塊為 0</b>，而且對角區塊是方陣；只有零星的 0 不能這樣拆。每列和為 s 的理由：A(1, …, 1)<sup>T</sup> 的第 i 個分量就是第 i 列的和，所以等於 s(1, …, 1)<sup>T</sup>。若是「每一<b>行</b>的和都是 s」，則 s 是 A<sup>T</sup> 的特徵值，也就是 A 的特徵值，但特徵向量不一定是 (1, …, 1)。</p>
+          <p>rank 1 的理由：(uv<sup>T</sup>)u = u(v<sup>T</sup>u) = (v<sup>T</sup>u)u；而和 v 垂直的向量 x 都滿足 (uv<sup>T</sup>)x = u(v<sup>T</sup>x) = 0，這些向量構成 n − 1 維的空間，所以 0 的幾何重數是 n − 1。配合「A + cI 的特徵值是 λ + c」，I + uv<sup>T</sup>、aI + bJ 這類矩陣都可以秒解。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>求 2×2、3×3 的特徵值與特徵向量</td><td>很常考</td><td>det(A − λI) = 0 → 有理根定理＋綜合除法 → 每個 λ 化 RREF 讀自由變數 → 驗算 Av = λv、tr、det</td><td><a class="q-link" href="#q-la-0092">例題</a> <a class="q-link" href="#q-la-0038">例題</a> <a class="q-link" href="#q-la-0169">例題</a></td></tr>
+                <tr><td>三角、區塊三角的大矩陣</td><td>很常考</td><td>找左下（或右上）整塊為 0 的切法，特徵值 = 各對角區塊特徵值的聯集；2×2 區塊用 λ<sup>2</sup> − (tr)λ + det</td><td><a class="q-link" href="#q-la-0054">例題</a> <a class="q-link" href="#q-la-0061">例題</a></td></tr>
+                <tr><td>由特徵值求 det、trace、f(A) 的特徵值</td><td>很常考</td><td>det = 積、trace = 和（照重數）；f(A) 的特徵值是 f(λ<sub>i</sub>)，A<sup>−1</sup> 是 1/λ<sub>i</sub></td><td><a class="q-link" href="#q-la-0028">例題</a> <a class="q-link" href="#q-la-0162">例題</a> <a class="q-link" href="#q-la-0170">例題</a></td></tr>
+                <tr><td>Cayley–Hamilton 化簡矩陣多項式</td><td>常考</td><td>p(A) = 0；f(A) 除以 p 取餘式；求 A<sup>−1</sup> 把常數項移項；或直接用 f(λ<sub>i</sub>) 算 det、rank</td><td><a class="q-link" href="#q-la-0129">例題</a> <a class="q-link" href="#q-la-0157">例題</a> <a class="q-link" href="#q-la-0173">例題</a></td></tr>
+                <tr><td>特徵空間維度、代數與幾何重數</td><td>常考</td><td>幾何重數 = n − rank(A − λI)；1 ≤ 幾何 ≤ 代數；幾何總和 &lt; n 就是缺陷矩陣</td><td><a class="q-link" href="#q-la-0128">例題</a> <a class="q-link" href="#q-la-0171">例題</a></td></tr>
+                <tr><td>性質是非題（複選）</td><td>很常考</td><td>逐項用表格的性質判斷；錯的找 2×2 反例（[0 −1; 1 0]、[1 1; 0 1]、A ≠ A<sup>T</sup>）</td><td><a class="q-link" href="#q-la-0110">例題</a> <a class="q-link" href="#q-la-0116">例題</a> <a class="q-link" href="#q-la-0137">例題</a></td></tr>
+                <tr><td>證明題</td><td>常考</td><td>相異特徵值獨立：歸納＋左乘 (A − λ<sub>k</sub>I)；AB 與 BA：相似或 Bv 技巧；特殊矩陣（A<sup>2</sup> = A、反對稱）：從 Av = λv 出發推 λ 的限制</td><td><a class="q-link" href="#q-la-0076">例題</a> <a class="q-link" href="#q-la-0032">例題</a> <a class="q-link" href="#q-la-0086">例題</a> <a class="q-link" href="#q-la-0174">例題</a></td></tr>
+                <tr><td>特殊結構：rank 1、循環矩陣、線性算子</td><td>偶爾</td><td>uv<sup>T</sup> 特徵值 v<sup>T</sup>u 與 0；循環矩陣用題目給的特徵向量直接乘；算子先寫成矩陣</td><td><a class="q-link" href="#q-la-0175">例題</a> <a class="q-link" href="#q-la-0020">例題</a> <a class="q-link" href="#q-la-0056">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 零向量也是特徵向量，0 不能當特徵值</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 剛好相反：特徵向量必須非零，特徵值可以是 0（此時 A 不可逆）；特徵空間包含零向量，但零向量不是特徵向量</span> <a class="q-link" href="#q-la-0168">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 有重複的特徵值就不能對角化</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要看幾何重數：每個特徵值的 dim E<sub>λ</sub> 都等於代數重數就可以（例如 I、或本頁 λ = 3 有 2 維特徵空間的例子）</span> <a class="q-link" href="#q-la-0110">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 特徵空間的維度就是代數重數</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 維度是 n − rank(A − λI)，只保證 1 ≤ 維度 ≤ 代數重數；上三角且對角線全相同的矩陣常常只有 1 維</span> <a class="q-link" href="#q-la-0128">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 先用列運算把 A 化成上三角，再讀對角線當特徵值</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 列運算會改變特徵值（只有第 3 型保持 det），pivot 不是特徵值；只有 A 本身是三角矩陣才能直接讀</span> <a class="q-link" href="#q-la-0172">例題</a> <a class="q-link" href="#q-la-0116">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> λ<sub>A</sub>λ<sub>B</sub> 是 AB 的特徵值、AB 和 BA 的特徵向量相同</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 一般都不對；正確的是 AB 和 BA 的特徵值相同，特徵向量從 v 變成 Bv</span> <a class="q-link" href="#q-la-0137">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 由特徵多項式求 det 時，重根只算一次</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> det = 特徵值照代數重數的乘積；det(A<sup>−1</sup>) = 1/det A，次方 (λ − 2)<sup>2</sup> 要乘兩次</span> <a class="q-link" href="#q-la-0028">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> A 和 A<sup>T</sup> 有相同的特徵向量</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只有特徵值（特徵多項式）相同；[1 1; 0 2] 和它的轉置特徵向量完全不同</span> <a class="q-link" href="#q-la-0168">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Cayley–Hamilton 的證明：把 λ 換成 A，det(A − AI) = 0</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> p(A) 是矩陣、det(⋯) 是數，不能這樣代；用的時候只能用 p(A) = 0 這個結論做移項與多項式除法</span> <a class="q-link" href="#q-la-0173">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="eigenvalues-eigenvectors"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=44614248"></script>
+  <script src="../../../assets/js/viz-core.js?v=44614248"></script>
+  <script src="../../../assets/js/viz/linear-algebra/eigenvalues-eigenvectors.js?v=44614248"></script>
+</body>
+</html>

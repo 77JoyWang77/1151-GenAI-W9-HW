@@ -229,8 +229,18 @@
           "en": "Eigenvalues and Eigenvectors",
           "zh": "特徵值與特徵向量",
           "book": "6.1",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "eigenvalue",
+            "eigenvector",
+            "characteristic polynomial",
+            "multiplicity",
+            "Cayley–Hamilton"
+          ],
+          "updated": "2026-11-27"
         },
         {
           "id": "diagonalization",
