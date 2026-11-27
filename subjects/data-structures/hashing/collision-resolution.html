@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Collision Resolution 碰撞處理 · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="雜湊碰撞處理：chaining、linear／quadratic probing、double hashing 與 tombstone 刪除">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=329bbb96">
+  <script src="../../../assets/js/theme.js?v=329bbb96"></script>
+</head>
+<body data-subject="data-structures" data-chapter="hashing" data-chno="8" data-topic="data-structures/hashing/collision-resolution" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures 資料結構</a> › Ch8 Hashing 雜湊 › Collision Resolution 碰撞處理</nav>
+      <div class="topic-head">
+        <h1>Collision Resolution 碰撞處理<small>撞了之後怎麼辦：chaining、各種 probing 與刪除</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch8 Hashing</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">chaining</span>
+          <span class="chip">linear probing</span>
+          <span class="chip">quadratic probing</span>
+          <span class="chip">double hashing</span>
+          <span class="chip">tombstone</span>
+        </div>
+      </div>
+
+      <section id="why-collision">
+        <h2>為什麼一定會碰撞</h2>
+        <div class="panel prose">
+          <p><span class="term">Hashing<small>（雜湊）</small></span>的想法是：用一個 <span class="term">Hash Function<small>（雜湊函數）</small></span> h 把 key 直接算成陣列索引，<code>h(k)</code> 算出來是幾就放第幾格，搜尋時再算一次就知道去哪裡找。理想情況下插入、搜尋、刪除都是 <code>O(1)</code>，比 BST 的 <code>O(log n)</code> 還快，也不用像排序陣列一樣搬資料。</p>
+          <p>問題是 key 的可能值（例如所有 32 位元整數、所有字串）遠比表的格子多。把一個大集合映到 m 格，依鴿籠原理，只要 key 的個數超過 m，就<b>一定</b>有兩個 key 算出同一格；就算 key 很少也可能剛好撞在一起。兩個不同的 key 有相同的 h 值，就叫 <span class="term">Collision<small>（碰撞）</small></span>。碰撞無法完全避免，所以每個雜湊表都要有一套 <span class="term">Collision Resolution<small>（碰撞處理）</small></span>的規則，這就是這一頁的主題。</p>
+          <p>雜湊函數本身怎麼設計（除法、乘法、折疊、字串雜湊、為什麼 m 最好取質數）屬於 Hash Functions 雜湊函數（籌備中）的內容，這裡一律用最常見的除法 <code>h(k) = k mod m</code>，把注意力放在「撞了之後怎麼辦」。</p>
+          <h3>Load factor</h3>
+          <p>衡量雜湊表有多擠的指標是 <span class="term">Load Factor<small>（負載因子）</small></span>：</p>
+          <pre class="formula">α = n / m        n：目前存了幾個 key，m：表有幾格（slot / bucket）
+例：m = 11 存了 6 個 key，α = 6/11 ≈ 0.55，平均每格 0.55 個 key</pre>
+          <p>α 是「平均」，不是保證：α 很低時照樣可能碰撞（只放兩個 key 也可能撞在同一格），但 α 越高，碰撞越頻繁、處理碰撞的成本越高。後面所有的效能公式都是 α 的函數。</p>
+          <h3>兩大類做法</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>類別</th><th>撞了怎麼辦</th><th>代表做法</th><th>α 的範圍</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Separate Chaining<small>（鏈結法）</small></span></td><td>同一格的 key 串成一條鏈結串列，大家都放在自己的 h(k)</td><td>chaining</td><td>可以大於 1</td></tr>
+                <tr><td><span class="term">Open Addressing<small>（開放定址）</small></span></td><td>每格只放一個 key，撞了就照規則在<b>同一張表</b>裡找別的空格</td><td>linear probing、quadratic probing、double hashing</td><td>一定 ≤ 1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 一句話分辨：chaining 的 key 永遠待在自己的 h(k)，只是那一格可以掛很多個；open addressing 的 key 可能被「擠」到別格，所以搜尋、刪除都要沿著同一條探測路徑走。</p></div>
+        </div>
+      </section>
+
+      <section id="chaining">
+        <h2>Separate Chaining 鏈結法</h2>
+        <div class="panel prose">
+          <p>chaining 把表的每一格當成一條鏈結串列的開頭（bucket），h(k) 相同的 key 全部掛在同一條串列上。串列的操作和 <a href="../lists/singly-linked-list.html">Singly Linked List 單向鏈結串列</a>一樣，這裡只講和雜湊有關的部分：</p>
+          <ul>
+            <li><b>插入</b>：算 b = h(k)，沿著 bucket[b] 的串列檢查 k 是否已存在，不存在就接上一個新節點。接在頭或尾都可以，考題通常照插入順序接在尾端；如果確定不會有重複的 key，接在頭是 <code>O(1)</code>。</li>
+            <li><b>搜尋</b>：算 b = h(k)，只需要走 bucket[b] 這一條串列，其他 bucket 完全不用看。</li>
+            <li><b>刪除</b>：在 bucket[b] 的串列裡找到節點，改前一個節點的 next（或 bucket[b] 本身）跳過它，再 free。key 不會被搬到別格，所以刪除不會影響別的 key 的搜尋。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cr-chaining"></div>
+            <figcaption><b>圖 1</b>：m = 7，依序插入 15、8、22、4、11、13。15、8、22 的 h 值都是 1，接成一條長度 3 的串列；搜尋 22 要比較 3 個節點，搜尋 1（不存在、h = 1）也要比較 3 個節點才能確定找不到。</figcaption>
+          </figure>
+          <p>效能完全取決於串列多長。假設雜湊函數把 key 均勻分到 m 格（simple uniform hashing），每條串列的平均長度就是 α：</p>
+          <ul>
+            <li><b>失敗搜尋</b>要把一整條串列看完，平均比較 α 個節點，加上算 h 的時間是 <code>Θ(1 + α)</code>。</li>
+            <li><b>成功搜尋</b>平均只走到串列的一半左右，約比較 1 + α/2 個節點。例如 α = 2（每串平均 2 個），成功搜尋約 2 次比較，失敗搜尋約 2 次。</li>
+            <li><b>最差情況</b>：所有 key 都落在同一格，串列長度是 n，搜尋退化成 <code>O(n)</code>。所以「chaining 只要 α ≤ 1 每格最多一個 key」是錯的，α 只是平均。</li>
+          </ul>
+          <p>chaining 的優點是實作直覺、α 可以超過 1（表永遠插得進去）、刪除簡單；缺點是每個節點多一個指標、每次插入要 malloc，而且節點散在記憶體各處，快取效果比陣列差。作業系統的 Hashed Page Table（雜湊頁表）就是用 chaining 處理碰撞，見 <a href="../../operating-systems/main-memory/paging.html">Paging 分頁</a>。</p>
+          <details class="code-fold">
+            <summary>看程式碼：chainInsert / chainSearch / chainDelete</summary>
+            <div class="code-block">
+              <div class="code-head">separate chaining 的插入、搜尋、刪除</div>
+              <pre class="code">typedef struct Node { int key; struct Node *next; } Node;
+Node *bucket[MAXM];
+
+void chainInsert(int k) {                      /* 接在串列尾端；已經存在就不放 */
+  int b = h(k);
+  Node *cur = bucket[b], *prev = NULL;
+  while (cur != NULL) {
+    if (cur-&gt;key == k) return;
+    prev = cur;
+    cur = cur-&gt;next;
+  }
+  Node *x = malloc(sizeof(Node));
+  x-&gt;key = k;
+  x-&gt;next = NULL;
+  if (prev == NULL) bucket[b] = x;             /* 串列原本是空的 */
+  else prev-&gt;next = x;
+}
+
+Node *chainSearch(int k) {
+  for (Node *p = bucket[h(k)]; p != NULL; p = p-&gt;next)
+    if (p-&gt;key == k) return p;
+  return NULL;                                 /* 整條串列都看完了 */
+}
+
+int chainDelete(int k) {
+  int b = h(k);
+  Node *cur = bucket[b], *prev = NULL;
+  while (cur != NULL &amp;&amp; cur-&gt;key != k) { prev = cur; cur = cur-&gt;next; }
+  if (cur == NULL) return 0;                   /* 不在表裡 */
+  if (prev == NULL) bucket[b] = cur-&gt;next;     /* 刪的是串列的第一個 */
+  else prev-&gt;next = cur-&gt;next;
+  free(cur);
+  return 1;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="open-addressing">
+        <h2>Open Addressing 開放定址的共同規則</h2>
+        <div class="panel prose">
+          <p>open addressing 不另外開串列，所有 key 都放在表本身的 m 格裡，每格最多一個。撞了就依照一條事先定好的 <span class="term">Probe Sequence<small>（探測序列）</small></span>去找下一格：</p>
+          <pre class="formula">h(k, 0), h(k, 1), h(k, 2), …, h(k, m − 1)      第 i 次探測看 h(k, i) 這一格</pre>
+          <p>h(k, 0) 就是 h(k)，叫做 k 的 <b>home</b>（原本該在的位置）。三種常見做法的差別只在 h(k, i) 怎麼算，後面三節一一介紹。好的探測序列應該是 {0, 1, …, m − 1} 的一個<b>排列</b>：m 次探測剛好把每一格都看過一次，這樣只要表沒滿就一定找得到空格。</p>
+          <h3>插入與搜尋必須走同一條路</h3>
+          <ol>
+            <li><b>插入 k</b>：i 從 0 開始，看 h(k, i)。是空的就放進去；被別的 key 占了就是碰撞，i 加 1 再看下一格。</li>
+            <li><b>搜尋 k</b>：用<b>完全相同</b>的序列走。看到 k 就是找到；看到別的 key 就繼續；看到 <b>EMPTY 就停</b>，回報找不到。</li>
+          </ol>
+          <p>為什麼碰到空格就能斷定找不到？因為當初插入 k 的時候也是沿著這條路走，會停在<b>第一個</b>空格。如果 k 在表裡，它一定在路上第一個空格之前；現在路上出現了空格，代表 k 從沒被放進來。這個推論是 open addressing 的核心，也是刪除為什麼不能直接清空格子的原因（後面「刪除」一節）。</p>
+          <p>另外兩點常被忽略：(1) 搜尋要用和插入一樣的探測法，插入用 quadratic、搜尋用 linear 就會找錯格；(2) open addressing 每格一個 key，α = n/m 最大就是 1，到了 1 表就滿了，再插入一定失敗。</p>
+          <details class="code-fold">
+            <summary>看程式碼：insert / search（open addressing）</summary>
+            <div class="code-block">
+              <div class="code-head">insert / search：probe(k, i) 是目前使用的探測法</div>
+              <pre class="code">#define MAXM 17                                /* 陣列最多開 17 格 */
+#define EMPTY   -1                             /* 從來沒放過東西的空格 */
+#define DELETED -2                             /* tombstone：這格的 key 被刪掉了 */
+
+int M = 11;                                    /* 表的大小（slot 數） */
+int table[MAXM];
+
+int h(int k)  { return k % M; }                /* 雜湊函數：除法 */
+int (*probe)(int, int) = probeLinear;          /* 目前用哪一種探測法 */
+
+int insert(int k) {                            /* 回傳放入的位置；放不進去回傳 -1 */
+  int tomb = -1;                               /* 路上遇到的第一個 tombstone */
+  for (int i = 0; i &lt; M; i++) {
+    int idx = probe(k, i);
+    if (table[idx] == k) return idx;           /* 已經在表裡，不重複放 */
+    if (table[idx] == DELETED) {
+      if (tomb == -1) tomb = idx;              /* 先記下來，之後可以重複利用 */
+    } else if (table[idx] == EMPTY) {
+      if (tomb != -1) idx = tomb;              /* 確定 k 不在表裡：放到最早遇到的 tombstone */
+      table[idx] = k;
+      return idx;
+    }
+  }
+  if (tomb != -1) { table[tomb] = k; return tomb; }
+  return -1;                                   /* 探測 M 次都沒有位置 */
+}
+
+int search(int k) {                            /* 回傳位置；找不到回傳 -1 */
+  for (int i = 0; i &lt; M; i++) {
+    int idx = probe(k, i);
+    if (table[idx] == EMPTY) return -1;        /* 碰到真正的空格：k 一定不在表裡 */
+    if (table[idx] == k) return idx;           /* 找到了 */
+    /* 別的 key 或 DELETED：繼續探測下一格 */
+  }
+  return -1;
+}</pre>
+            </div>
+          </details>
+          <p>程式裡 <code>probe</code> 是一個函式指標，指向下面四種探測序列之一；insert、search 本身完全不用改，這也說明了三種 open addressing 的差別真的只有 h(k, i)。insert 裡處理 DELETED 的部分在「刪除」一節說明。</p>
+          <details class="code-fold">
+            <summary>看程式碼：四種探測序列</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="linear"><div class="code-head">probeLinear：(h + i) % M</div><pre class="code">int probeLinear(int k, int i)    { return (h(k) + i) % M; }</pre></div>
+              <div class="code-block" data-tab="quadratic"><div class="code-head">probeQuadratic：(h + i²) % M</div><pre class="code">int probeQuadratic(int k, int i) { return (h(k) + i * i) % M; }</pre></div>
+              <div class="code-block" data-tab="quadratic ±"><div class="code-head">probeQuadPM：h, h+1, h−1, h+4, h−4, …</div><pre class="code">int probeQuadPM(int k, int i) {                /* 正負交替：h, h+1, h-1, h+4, h-4, ... */
+  int j = (i + 1) / 2, d = j * j % M;
+  return i % 2 == 1 ? (h(k) + d) % M : (h(k) - d + M) % M;
+}</pre></div>
+              <div class="code-block" data-tab="double"><div class="code-head">probeDouble：(h + i·h2) % M</div><pre class="code">int h2(int k) { return 1 + k % (M - 2); }      /* double hashing 的步長，範圍 1～M-2，不會是 0 */
+int probeDouble(int k, int i)    { return (h(k) + i * h2(k)) % M; }</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="linear-probing">
+        <h2>Linear Probing 線性探測</h2>
+        <div class="panel prose">
+          <p>最簡單的做法：撞了就往下一格看，到表尾就繞回第 0 格。</p>
+          <pre class="formula">h(k, i) = (h(k) + i) mod m        探測順序：h, h+1, h+2, …（環狀）</pre>
+          <p>以 m = 11、h(k) = k mod 11 為例，依序插入 18、29、7、40、8、51：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>key</th><th>home</th><th>探測的格子</th><th>放在</th><th>探測次數</th></tr></thead>
+              <tbody>
+                <tr><td>18</td><td>7</td><td>7</td><td>7</td><td>1</td></tr>
+                <tr><td>29</td><td>7</td><td>7 → 8</td><td>8</td><td>2</td></tr>
+                <tr><td>7</td><td>7</td><td>7 → 8 → 9</td><td>9</td><td>3</td></tr>
+                <tr><td>40</td><td>7</td><td>7 → 8 → 9 → 10</td><td>10</td><td>4</td></tr>
+                <tr><td>8</td><td>8</td><td>8 → 9 → 10 → 0</td><td>0</td><td>4（繞回表頭）</td></tr>
+                <tr><td>51</td><td>7</td><td>7 → 8 → 9 → 10 → 0 → 1</td><td>1</td><td>6</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>6 個 key 共探測 20 次，平均每個 3.3 次。注意 8 的 home 是 8，和 18、29 那群 home 7 的 key 本來無關，卻因為第 8～10 格已經被它們占走，被拖進同一串，最後繞回第 0 格。這種「被占的格子連成一長串，串越長越容易被撞到、撞到後又讓串更長」的現象叫 <span class="term">Primary Clustering<small>（一次叢集）</small></span>，是 linear probing 最大的缺點。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cr-clustering"></div>
+            <figcaption><b>圖 2</b>：同樣 m = 11、同樣依序插入 16、27、38、49、6。linear probing 讓 5～9 連成一串，home 是 6 的 key 6 也要探測 4 次；double hashing 每個 key 跳的步長不同，6 只探測 2 次就放進第 2 格，被占的格子是分散的。</figcaption>
+          </figure>
+          <p>為什麼串會越滾越大？一個長度為 L 的串，只要新 key 的 home 落在串裡任何一格（或串後面那一格），它就會被接到串尾，所以被「吸進來」的機率約是 (L + 1)/m，串越長越容易再長。考題常見的陷阱：</p>
+          <ul>
+            <li><b>環狀</b>：探到第 m − 1 格之後要繞回第 0 格，很多人在表尾就停了。</li>
+            <li><b>表的大小和 mod 的數不一定一樣</b>：例如表有 10 格但 h(k) = k mod 9，第 9 格只能靠探測填到，繞回時是 9 的下一格才是 0。</li>
+            <li><b>給最終表反推插入順序</b>：先算每個 key 的 home，在 home 上的 key 不必早於誰，被擠走的 key 進來時，它從 home 到現在位置之間的每一格都必須已經被占。</li>
+          </ul>
+          <p>linear probing 的優點是探測位置連續、對快取非常友善，實務上在 α 不高時跑得很快；它的期望探測次數公式見最後「效能」一節，α 接近 1 時會比其他做法差很多。</p>
+        </div>
+      </section>
+
+      <section id="quadratic-probing">
+        <h2>Quadratic Probing 平方探測</h2>
+        <div class="panel prose">
+          <p>為了打散 primary clustering，讓探測的步伐越跳越大：</p>
+          <pre class="formula">常見版本 1：h(k, i) = (h(k) + i²) mod m                 順序：h, h+1, h+4, h+9, …
+常見版本 2：正負交替  h, h+1², h−1², h+2², h−2², …（mod m）
+一般式：    h(k, i) = (h(k) + c₁·i + c₂·i²) mod m      例：c₁ = c₂ = 1 時增量是 0, 2, 6, 12, …</pre>
+          <p><b>考試一定要先看題目用哪一種</b>。陽明交大、成大的題目多寫成 h + i²；中央的題目常寫成 (h(k) + i²) 與 (h(k) − i²) 交替（正負交替），兩種版本在第 3 次探測就不同了（h + 4 還是 h − 1）。同一組資料，兩個版本放出來的表可能完全不一樣。</p>
+          <p>延續上一節的資料（m = 11，依序插入 18、29、7、40、8、51）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>key</th><th>home</th><th>+i² 的探測</th><th>放在</th><th>±i² 的探測</th><th>放在</th></tr></thead>
+              <tbody>
+                <tr><td>18</td><td>7</td><td>7</td><td>7</td><td>7</td><td>7</td></tr>
+                <tr><td>29</td><td>7</td><td>7 → 8</td><td>8</td><td>7 → 8</td><td>8</td></tr>
+                <tr><td>7</td><td>7</td><td>7 → 8 → 0</td><td>0</td><td>7 → 8 → 6</td><td>6</td></tr>
+                <tr><td>40</td><td>7</td><td>7 → 8 → 0 → 5</td><td>5</td><td>7 → 8 → 6 → 0</td><td>0</td></tr>
+                <tr><td>8</td><td>8</td><td>8 → 9</td><td>9</td><td>8 → 9</td><td>9</td></tr>
+                <tr><td>51</td><td>7</td><td>7 → 8 → 0 → 5 → 1</td><td>1</td><td>7 → 8 → 6 → 0 → 3</td><td>3</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩個版本都是共探測 17 次（linear 是 20 次），而且 8 只探測 2 次就放好了，沒有被 home 7 那群拖走。但 home 同樣是 7 的 29、7、40、51 走的路完全一樣：<b>h 值相同的 key，探測序列就相同</b>，它們彼此還是會一路撞下去。這叫 <span class="term">Secondary Clustering<small>（二次叢集）</small></span>，比 primary clustering 輕微，但仍然存在。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cr-probe-paths"></div>
+            <figcaption><b>圖 3</b>：同一個 key 14（m = 11，home 3）前 4 次探測會看哪些格子。linear 是連續的 3、4、5、6；quadratic 跳成 3、4、7、1；double hashing 用 h2(14) = 6 當步長，跳成 3、9、4、10。</figcaption>
+          </figure>
+          <h3>表沒滿也可能放不進去</h3>
+          <p>quadratic probing 的探測序列<b>不一定</b>是全表的排列。i² mod m 能產生的值有限：m = 7 時 i² mod 7 只有 0、1、2、4 四種，所以 h + i² 只會看 4 個不同的格子；這 4 格都被占時，就算還有 3 格空著也插不進去（動畫的「例：平方探測失敗」）。m 不是質數時更糟，m = 8 時 i² mod 8 只有 0、1、4 三種。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 保證：m 是質數時，i = 0, 1, …, ⌊m/2⌋ 這 ⌈m/2⌉ 次探測的位置兩兩不同（證明：若 i² ≡ j²，則 m 整除 (j − i)(j + i)，但兩個因數都介於 1 和 m − 1，不可能）。所以只要表至少一半是空的（α &lt; 1/2），插入一定成功。正負交替的版本如果 m 是形如 4j + 3 的質數（例如 7、11、19、23），可以走遍全部 m 格。</p></div>
+        </div>
+      </section>
+
+      <section id="double-hashing">
+        <h2>Double Hashing 雙重雜湊</h2>
+        <div class="panel prose">
+          <p>secondary clustering 的根源是「步長只和 i 有關」。<span class="term">Double Hashing<small>（雙重雜湊）</small></span>讓步長也由 key 決定：用第二個雜湊函數 h2 算出每個 key 自己的跳躍距離。</p>
+          <pre class="formula">h(k, i) = (h1(k) + i · h2(k)) mod m        順序：h1, h1 + h2, h1 + 2·h2, …
+本頁的動畫與程式：h1(k) = k mod m，h2(k) = 1 + (k mod (m − 2))，範圍 1～m − 2</pre>
+          <p>兩個 home 相同的 key，只要 h2 不同，第二步就分道揚鑣，primary 和 secondary clustering 都大幅減少。延續同一組資料（m = 11）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>key</th><th>h1</th><th>h2 = 1 + k mod 9</th><th>探測的格子</th><th>放在</th></tr></thead>
+              <tbody>
+                <tr><td>18</td><td>7</td><td>1</td><td>7</td><td>7</td></tr>
+                <tr><td>29</td><td>7</td><td>3</td><td>7 → 10</td><td>10</td></tr>
+                <tr><td>7</td><td>7</td><td>8</td><td>7 → (7 + 8) mod 11 = 4</td><td>4</td></tr>
+                <tr><td>40</td><td>7</td><td>5</td><td>7 → (7 + 5) mod 11 = 1</td><td>1</td></tr>
+                <tr><td>8</td><td>8</td><td>9</td><td>8</td><td>8</td></tr>
+                <tr><td>51</td><td>7</td><td>7</td><td>7 → (7 + 7) mod 11 = 3</td><td>3</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>共探測 10 次，是 linear probing 20 次的一半、quadratic 17 次的六成，每個 key 最多 2 次。h2 的設計有兩條規則：</p>
+          <ol>
+            <li><b>h2(k) 不能是 0</b>，否則 h(k, i) 永遠停在 h1(k)。所以常寫成 1 + (k mod m′) 或 R − (k mod R)（R 是比 m 小的質數）。</li>
+            <li><b>h2(k) 要和 m 互質</b>。i·h2 mod m 能走到的位置個數是 m / gcd(h2(k), m)，要走遍全部 m 格的充要條件是 gcd(h2(k), m) = 1。最常見的保證方式是讓 m 是質數（h2 介於 1～m − 1 就一定互質），或讓 m 是 2 的冪、h2 永遠是奇數。例如 m = 9、h2 = 3 時只會走 3 格。</li>
+          </ol>
+          <p>相關名詞：有些題目說的 <b>rehashing</b> 是指準備一串雜湊函數 h1、h2、h3…，前一個位置被占就換下一個函數算新位置，double hashing 可以看成它的代表，仍屬於 open addressing；另一種意思是表太滿時開一張更大的表、把所有 key 重新插入，見最後「效能」一節。<b>random probing</b> 則是用一個虛擬亂數序列決定下一格（例如 i = (i + 5) mod 7），只要步長和 m 互質，同樣會走遍全表。Dynamic Hashing 動態雜湊（籌備中）讓表的大小隨資料成長，解決的是另一個問題，不屬於 open addressing。</p>
+        </div>
+      </section>
+
+      <section id="deletion">
+        <h2>刪除：tombstone 與搬移補位</h2>
+        <div class="panel prose">
+          <p>chaining 的刪除就是串列刪除，很單純。open addressing 的刪除卻有陷阱：搜尋靠「碰到 EMPTY 就停」來判斷找不到，如果把被刪的格子直接清成 EMPTY，原本因為那格被占而被擠到後面的 key 就會「斷線」。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cr-tombstone"></div>
+            <figcaption><b>圖 4</b>：27、38、49 的 home 都是 5，依序排在 5、6、7。(b) 刪除 38 時把第 6 格清成 EMPTY，之後 search(49) 走到第 6 格就停下，誤判 49 不存在；(c) 改成標記 DEL，搜尋經過時繼續往下，在第 7 格找到 49。</figcaption>
+          </figure>
+          <h3>做法一：tombstone（通用）</h3>
+          <p>刪除時把格子標成特殊值 DELETED，也叫 <span class="term">Tombstone<small>（墓碑）</small></span>，意思是「這裡曾經有人」。三個操作對它的態度不同，這是考題最愛問的地方：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>操作</th><th>碰到 EMPTY</th><th>碰到 DELETED</th></tr></thead>
+              <tbody>
+                <tr><td>search</td><td>停，回報找不到</td><td><b>繼續</b>探測（key 可能在後面）</td></tr>
+                <tr><td>insert</td><td>停；放到路上第一個 DELETED，沒有就放這格</td><td>記下位置，<b>繼續</b>走到 EMPTY 確認 key 不存在</td></tr>
+                <tr><td>delete</td><td>（先 search）找不到就不用刪</td><td>（search 會越過它）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>insert 為什麼不能看到 DELETED 就直接放？因為 k 可能已經在後面，直接放會存成兩份；先走到 EMPTY 確認不存在，再回頭放到第一個 tombstone，才能重複利用空間又不重複。如果確定不會插入重複的 key，就可以直接放進第一個 EMPTY 或 DELETED。</p>
+          <p>tombstone 的代價是它不會讓搜尋停下：刪掉很多 key 之後，表裡 n 很小、搜尋卻還是很慢，因為路上全是 DEL。實務上 tombstone 太多時會整張表重新插入（rehash）一次，把它們清掉。</p>
+          <h3>做法二：搬移補位（只限 linear probing）</h3>
+          <p>linear probing 的探測路徑是「往後一格」，所以可以精確知道誰的路徑經過了被刪的格子，把它們往前搬，完全不需要 tombstone。做法（也叫 backward shift deletion）：</p>
+          <ol>
+            <li>把被刪的格子清成 EMPTY，這一格叫做「洞」（hole）。</li>
+            <li>從洞的下一格往後檢查，直到碰到 EMPTY 為止（記得環狀繞回表頭）。</li>
+            <li>對第 j 格的 key，看它的 home：如果 home <b>落在環狀區間 (hole, j]</b> 裡，它從 home 走到 j 的路上沒經過洞，不動；否則它的路徑經過洞，把它搬進洞裡，洞移到 j。</li>
+          </ol>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cr-shift-delete"></div>
+            <figcaption><b>圖 5</b>：m = 10，依序插入 12、22、3、32、6 後刪除 22。3（home 3）和 32（home 2）的路徑都經過第 3 格，依序往前補；6 的 home 就是 6，落在 (5, 6] 裡，不動。結果和「從沒插入過 22」的表一模一樣。</figcaption>
+          </figure>
+          <p>最常見的錯誤是只檢查到表尾就停，忘了這一串可能繞回第 0 格繼續；另一個錯誤是以為同一串的每個 key 都要往前搬，其實待在自己 home 上、或 home 在洞之後的 key 不動。quadratic probing 和 double hashing 的路徑是跳著走的，無法用這個方法判斷，只能用 tombstone。</p>
+          <details class="code-fold">
+            <summary>看程式碼：刪除（tombstone／搬移補位）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="tombstone"><div class="code-head">removeKey()：標成 DELETED</div><pre class="code">int removeKey(int k) {                         /* 刪除成功回傳 1 */
+  int idx = search(k);
+  if (idx == -1) return 0;
+  table[idx] = DELETED;                        /* 不能設回 EMPTY，否則後面的 key 會找不到 */
+  return 1;
+}</pre></div>
+              <div class="code-block" data-tab="搬移補位"><div class="code-head">removeShift()：只適用 linear probing</div><pre class="code">int between(int a, int x, int b) {             /* x 是否落在環狀區間 (a, b] 裡 */
+  return a &lt;= b ? (a &lt; x &amp;&amp; x &lt;= b) : (a &lt; x || x &lt;= b);
+}
+
+int removeShift(int k) {
+  int hole = search(k);
+  if (hole == -1) return 0;
+  table[hole] = EMPTY;                         /* 先挖出一個洞 */
+  for (int j = (hole + 1) % M; table[j] != EMPTY; j = (j + 1) % M) {
+    if (!between(hole, h(table[j]), j)) {      /* home 不在 (hole, j]：它的探測路徑經過洞 */
+      table[hole] = table[j];                  /* 往前補進洞裡 */
+      table[j] = EMPTY;
+      hole = j;                                /* 洞移到它原本的位置 */
+    }
+  }
+  return 1;
+}</pre></div>
+            </div>
+          </details>
+          <p>下面的動畫可以自己輸入 key 做 insert、search、delete。預設是 linear probing＋tombstone；「做法」按鈕依序切換 linear、quadratic（+i²）、quadratic（±i²）、double hashing、chaining，切換時會把目前的 key 依原順序重新插入，方便比較同一組資料在不同做法下的位置；linear probing 時可以把刪除切成搬移補位。也可以用「設定 m」改表的大小（5～17），或按四個例子直接看經典情境。</p>
+        </div>
+        <div class="viz" data-viz="cr-hash"></div>
+      </section>
+
+      <section id="performance">
+        <h2>效能、擴容與做法比較</h2>
+        <div class="panel prose">
+          <p>假設雜湊函數夠均勻，期望的探測次數（chaining 算比較的節點數）只和 α 有關。open addressing 的理想模型叫 uniform hashing（每個 key 的探測序列是隨機的排列），double hashing 的表現很接近它：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>做法</th><th>成功搜尋</th><th>失敗搜尋（＝插入）</th></tr></thead>
+              <tbody>
+                <tr><td>separate chaining</td><td>1 + α/2</td><td>α（再加上算 h 的 1 次）</td></tr>
+                <tr><td>linear probing</td><td>½ (1 + 1/(1 − α))</td><td>½ (1 + 1/(1 − α)²)</td></tr>
+                <tr><td>uniform hashing（≈ double hashing）</td><td>(1/α) ln (1/(1 − α))</td><td>1/(1 − α)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>代入幾個 α 看看數字的意義：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>α</th><th>chaining 成功／失敗</th><th>linear 成功／失敗</th><th>uniform 成功／失敗</th></tr></thead>
+              <tbody>
+                <tr><td>0.5</td><td>1.25 ／ 0.5</td><td>1.5 ／ 2.5</td><td>1.39 ／ 2</td></tr>
+                <tr><td>0.75</td><td>1.375 ／ 0.75</td><td>2.5 ／ 8.5</td><td>1.85 ／ 4</td></tr>
+                <tr><td>0.9</td><td>1.45 ／ 0.9</td><td>5.5 ／ 50.5</td><td>2.56 ／ 10</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li>α = 0.5 時三種做法都只要 1～3 次，差別不大，這也是 open addressing 常把 α 控制在 0.5 左右的原因。</li>
+            <li>α 從 0.75 升到 0.9，linear probing 的失敗搜尋從 8.5 次暴增到 50.5 次（約 6 倍），uniform hashing 只從 4 次變 10 次（2.5 倍）。分母的 (1 − α)² 就是 primary clustering 的代價。</li>
+            <li>chaining 的數字隨 α 線性成長，α = 0.9 時成功搜尋仍不到 1.5 次；而且 α 可以超過 1，α = 3 時失敗搜尋也只比較 3 個節點。</li>
+          </ul>
+          <h3>擴容與 rehash</h3>
+          <p>不管哪種做法，α 太大都會變慢，所以實作上會設一個門檻（例如 Java HashMap 的 0.75）：超過就開一張大約兩倍大的新表，把所有 key 用新的 m 重新算 h、重新插入，這個動作也叫 rehash。對 chaining 而言，擴容的目的不是「表滿了放不下」（串列永遠接得上去），而是避免平均串列長度 α 隨 n 線性成長，讓平均存取維持 <code>O(1)</code>。單次擴容要 <code>O(n)</code>，但表大小每次加倍時，均攤到每次插入仍是 <code>O(1)</code>。擴容之後碰撞還是可能發生，它只降低碰撞的頻率，不會消除碰撞。</p>
+          <h3>總比較</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>chaining</th><th>linear probing</th><th>quadratic probing</th><th>double hashing</th></tr></thead>
+              <tbody>
+                <tr><td>叢集</td><td>無（只有串列變長）</td><td>primary clustering</td><td>secondary clustering</td><td>幾乎沒有</td></tr>
+                <tr><td>α 上限</td><td>可 &gt; 1</td><td>1</td><td>保證成功要 &lt; 1/2（m 質數）</td><td>1（h2 與 m 互質時）</td></tr>
+                <tr><td>刪除</td><td>串列刪除</td><td>tombstone 或搬移補位</td><td>tombstone</td><td>tombstone</td></tr>
+                <tr><td>額外空間</td><td>每個 key 一個指標</td><td>無</td><td>無</td><td>無（多算一個 h2）</td></tr>
+                <tr><td>快取</td><td>差（節點分散）</td><td>最好（連續存取）</td><td>中</td><td>差（跳躍存取）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>最差情況下所有做法的搜尋都是 <code>O(n)</code>（所有 key 撞在一起）。只有 key 集合事先固定時，才能用 perfect hashing 做到最差 <code>O(1)</code>。另外雜湊表不維持 key 的順序，找最大值、找後繼（successor）都要把整張表掃一遍，是 <code>O(m)</code>，這類需求應該用 BST。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>linear probing 插入追蹤、填表</td><td>很常考</td><td>先列每個 key 的 home，再依序模擬；被占就往下一格，記得環狀繞回 0，注意表的大小和 mod 的數是否相同</td><td><a class="q-link" href="#q-ds-0137">例題</a> <a class="q-link" href="#q-ds-0180">例題</a> <a class="q-link" href="#q-ds-0213">例題</a></td></tr>
+                <tr><td>給最終表，反推可能的插入順序</td><td>常考</td><td>找出被擠走的 key，檢查它進來時從 home 到現位置的每一格是否都已被占、目前位置是否還空；有疑問就整串模擬</td><td><a class="q-link" href="#q-ds-0146">例題</a> <a class="q-link" href="#q-ds-0259">例題</a></td></tr>
+                <tr><td>quadratic probing 追蹤</td><td>常考</td><td>先確認是 h + i²、正負交替還是 h + i + i²，列出前幾個位置的增量再模擬</td><td><a class="q-link" href="#q-ds-0220">例題</a> <a class="q-link" href="#q-ds-0280">例題</a> <a class="q-link" href="#q-ds-0267">例題</a></td></tr>
+                <tr><td>double hashing、random probing 追蹤</td><td>常考</td><td>表格列出 h1、h2，第 i 次位置 (h1 + i·h2) mod m；random probing 照題目給的下一格公式走</td><td><a class="q-link" href="#q-ds-0292">例題</a> <a class="q-link" href="#q-ds-0294">例題</a> <a class="q-link" href="#q-ds-0178">例題</a></td></tr>
+                <tr><td>探測序列能否走遍全表</td><td>偶爾</td><td>double hashing：gcd(h2, m) = 1；quadratic：m 質數時前 ⌈m/2⌉ 次不重複</td><td><a class="q-link" href="#q-ds-0307">例題</a> <a class="q-link" href="#q-ds-0371">例題</a></td></tr>
+                <tr><td>刪除與 tombstone、搜尋的停止條件</td><td>常考</td><td>search 碰到 EMPTY 停、碰到 DELETED 繼續；探測法要和 insert 相同</td><td><a class="q-link" href="#q-ds-0250">例題</a> <a class="q-link" href="#q-ds-0366">例題</a></td></tr>
+                <tr><td>linear probing 刪除後哪些 key 要搬</td><td>常考</td><td>從洞往後到 EMPTY（含繞回），home 不在 (hole, j] 的就補進洞</td><td><a class="q-link" href="#q-ds-0155">例題</a> <a class="q-link" href="#q-ds-0163">例題</a> <a class="q-link" href="#q-ds-0372">例題</a></td></tr>
+                <tr><td>chaining 的分布與比較次數</td><td>常考</td><td>每個 key 放 h(k)，不搬家；成功搜尋看它在串列第幾個，失敗搜尋看整條長度</td><td><a class="q-link" href="#q-ds-0227">例題</a> <a class="q-link" href="#q-ds-0369">例題</a></td></tr>
+                <tr><td>碰撞次數</td><td>常考</td><td>算出每個 key 的位置，數「插入時 home 已被占」的次數；先確認題目怎麼定義一次碰撞</td><td><a class="q-link" href="#q-ds-0199">例題</a> <a class="q-link" href="#q-ds-0179">例題</a> <a class="q-link" href="#q-ds-0128">例題</a></td></tr>
+                <tr><td>觀念：分類、α、擴容、期望探測次數</td><td>常考</td><td>chaining α 可 &gt; 1、open addressing ≤ 1；代公式時先算 α</td><td><a class="q-link" href="#q-ds-0168">例題</a> <a class="q-link" href="#q-ds-0262">例題</a> <a class="q-link" href="#q-ds-0306">例題</a> <a class="q-link" href="#q-ds-0370">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> quadratic probing 就是 h + 1、h + 4、h + 9……</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 也有正負交替（h + 1、h − 1、h + 4、h − 4……）和 h + i + i² 等版本，先看題目定義</span> <a class="q-link" href="#q-ds-0267">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> open addressing 刪除就把格子清成空的</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要標成 DELETED；search 碰到 DELETED 要繼續，只有碰到 EMPTY 才能停</span> <a class="q-link" href="#q-ds-0250">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> insert 碰到 tombstone 就直接放</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要先走到 EMPTY 確認 key 不存在，再放回路上第一個 tombstone</span> <a class="q-link" href="#q-ds-0366">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 搬移補位只要檢查被刪位置到表尾</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 這一串可能繞回第 0 格，要一路檢查到 EMPTY；home 在 (hole, j] 的 key 不動</span> <a class="q-link" href="#q-ds-0155">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> quadratic probing 只要表沒滿就放得進去</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> i² mod m 的值有限，表沒滿也可能失敗；m 為質數且 α &lt; 1/2 才保證成功</span> <a class="q-link" href="#q-ds-0367">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> double hashing 的 h2 隨便選都會走遍全表</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 充要條件是 gcd(h2(k), m) = 1，且 h2 不能為 0</span> <a class="q-link" href="#q-ds-0307">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> load factor 夠低就不會碰撞</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 兩個 key 的 h 值相同就會碰撞，α 只是平均擁擠程度</span> <a class="q-link" href="#q-ds-0213">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> chaining 擴容是因為表快滿了放不下</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> chaining 的 α 可以大於 1；擴容是為了讓平均串列長度維持常數</span> <a class="q-link" href="#q-ds-0306">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 表有幾格，h(k) 就 mod 幾</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 題目可能是 10 格配 mod 9，探測時繞回要看表的實際大小</span> <a class="q-link" href="#q-ds-0180">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 碰撞次數 = 所有被占格子的探測次數總和</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 多數題目算的是「發生碰撞的插入」有幾次，對照選項判斷題目的定義</span> <a class="q-link" href="#q-ds-0199">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="collision-resolution"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=329bbb96"></script>
+  <script src="../../../assets/js/viz-core.js?v=329bbb96"></script>
+  <script src="../../../assets/js/viz/data-structures/collision-resolution.js?v=329bbb96"></script>
+</body>
+</html>

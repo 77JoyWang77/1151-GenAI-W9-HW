@@ -22,8 +22,18 @@
           "en": "CPU Time and CPI",
           "zh": "CPU 時間與 CPI",
           "book": "1.6",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "CPU time",
+            "CPI",
+            "MIPS",
+            "clock rate",
+            "roofline"
+          ],
+          "updated": "2026-11-27"
         },
         {
           "id": "amdahls-law",

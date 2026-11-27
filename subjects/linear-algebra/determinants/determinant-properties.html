@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Determinants and Their Properties 行列式與其性質 · 線性代數 | 資工考研互動學習站</title>
+  <meta name="description" content="行列式的定義、餘因子展開、列運算的影響、det(AB) 等常考性質與特殊結構速算。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=329bbb96">
+  <script src="../../../assets/js/theme.js?v=329bbb96"></script>
+</head>
+<body data-subject="linear-algebra" data-chapter="determinants" data-chno="2" data-topic="linear-algebra/determinants/determinant-properties" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Linear Algebra 線性代數</a> › Ch2 Determinants 行列式 › Determinants and Their Properties 行列式與其性質</nav>
+      <div class="topic-head">
+        <h1>Determinants and Their Properties 行列式與其性質<small>排列展開、餘因子展開與列運算：一個數字判斷可逆、量出體積縮放</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch2 Determinants</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">determinant</span>
+          <span class="chip">cofactor expansion</span>
+          <span class="chip">row operations</span>
+          <span class="chip">multilinear</span>
+        </div>
+      </div>
+
+      <section id="motivation">
+        <h2>為什麼需要行列式</h2>
+        <div class="panel prose">
+          <p>在 <a href="../linear-systems/matrix-inverse.html#invertible-theorem">可逆的等價條件</a> 裡，判斷一個方陣可不可逆要做一整輪消去，看 pivot 夠不夠。能不能只算<b>一個數字</b>就知道答案？這個數字就是 <span class="term">Determinant<small>（行列式）</small></span>，記作 det A 或 |A|。</p>
+          <p>行列式同時回答三件事：</p>
+          <ul>
+            <li><b>可不可逆</b>：det A ≠ 0 ⇔ A 可逆 ⇔ Ax = 0 只有零解。考題裡「齊次方程組何時有非零解」「哪個參數讓矩陣奇異」都是在解 det = 0。</li>
+            <li><b>體積縮放倍率</b>：|det A| 是 A 把單位正方形（正方體）變形後的面積（體積）。det A = 0 表示空間被壓扁到更低的維度，所以資訊回不去，也就不可逆。</li>
+            <li><b>方向</b>：det A 的正負號代表有沒有「翻面」（鏡射）。正交矩陣的 det 只能是 ±1，+1 是旋轉、−1 含鏡射。</li>
+          </ul>
+          <p>考研對這一章的要求很明確：<b>大矩陣要能快速算出 det</b>（挑零多的列展開、先做列運算），<b>一長串性質要分得清哪些對、哪些是陷阱</b>（det(cA)、det(A + B)、列等價），以及<b>看到特殊結構能直接寫出答案</b>（三角、區塊、Vandermonde、全 1 矩陣）。用行列式解方程組的 Cramer 法則和伴隨矩陣放在 Cramer's Rule and Adjugate Cramer 法則與伴隨矩陣（籌備中）。</p>
+        </div>
+      </section>
+
+      <section id="definition">
+        <h2>定義：從 2×2 到排列展開</h2>
+        <div class="panel prose">
+          <h3>2×2 與幾何意義</h3>
+          <pre class="formula">det [ a  b ] = ad − bc
+    [ c  d ]</pre>
+          <p>把 A 的兩個行向量 (a, c)、(b, d) 當成平行四邊形的兩邊，ad − bc 的絕對值就是它的面積。例如 A = [3 1; 1 2]，兩行是 (3, 1) 和 (1, 2)，det A = 3·2 − 1·1 = 5，代表單位正方形被 A 變成面積 5 的平行四邊形。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="determinant-properties-area"></div>
+            <figcaption><b>圖 1</b>：A = [3 1; 1 2] 把 e<sub>1</sub>、e<sub>2</sub> 張成的單位正方形（藍）送到 (3, 1)、(1, 2) 張成的平行四邊形（橘），面積從 1 變成 |det A| = 5。如果兩行共線，平行四邊形會壓成一條線，面積和 det 都是 0。</figcaption>
+          </figure>
+          <h3>3×3 與 Sarrus 法則</h3>
+          <p>3×3 可以用 <span class="term">Sarrus Rule<small>（對角線法則）</small></span>：右下方向三條對角線的乘積相加，減去左下方向三條。以 A = [2 −1 3; 1 0 4; −2 5 1] 為例：</p>
+          <pre class="formula">正項：2·0·1 + (−1)·4·(−2) + 3·1·5 = 0 + 8 + 15 = 23
+負項：3·0·(−2) + 2·4·5 + (−1)·1·1 = 0 + 40 − 1 = 39
+det A = 23 − 39 = −16</pre>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> Sarrus 法則<b>只適用 3×3</b>。4×4 照抄「對角線」只會得到 8 項，但真正的展開有 4! = 24 項，答案一定錯。</p></div>
+          <h3>一般定義：排列展開</h3>
+          <p>n×n 的行列式定義成 n! 項的和，每一項是「<b>每一列選一個元素、而且各在不同行</b>」的乘積：</p>
+          <pre class="formula">det A = Σ  sgn(σ) · a_{1σ(1)} · a_{2σ(2)} ⋯ a_{nσ(n)}
+        σ
+σ 走遍 1..n 的所有排列（共 n! 個）；sgn(σ) = (−1)^(σ 的逆序數)</pre>
+          <p><span class="term">Inversion<small>（逆序）</small></span>是排列中前面比後面大的數對。例如 σ = (2, 1, 3) 只有 (2, 1) 一個逆序，sgn = −1，所以 a<sub>12</sub>a<sub>21</sub>a<sub>33</sub> 這一項帶負號。2×2 的 ad − bc 就是 σ = (1, 2)（0 個逆序，+）和 σ = (2, 1)（1 個逆序，−）兩項。</p>
+          <p>這個定義平常不拿來算數字（10×10 有 3,628,800 項），但有三個用途：(1) 證明性質（例如 det A<sup>T</sup> = det A）；(2) 數「非零項有幾個」：每列選一個非零元素、各在不同行的選法數；(3) 問某個 x 次方的係數時，只要找出含那麼多個 x 的排列。程式窮舉驗證：4×4 全非零時恰好 24 項，4×4 三對角矩陣只有 5 個非零項。</p>
+          <details class="code-fold">
+            <summary>看程式碼：countNonzeroTerms()：數排列展開的非零項</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="非零項個數">
+                <div class="code-head">enumerate() / countNonzeroTerms()：每列選一個非零、各在不同行</div>
+                <pre class="code">int perm[MAXN], used[MAXN];
+long long termCount;
+
+void enumerate(const int *pattern, int size, int row) {   /* pattern[i*size+j] != 0 表示該位置非零 */
+  if (row == size) { termCount++; return; }
+  for (int c = 0; c &lt; size; c++) {
+    if (used[c] || !pattern[row * size + c]) continue;   /* 每列選一個非零、各在不同行 */
+    used[c] = 1; perm[row] = c;
+    enumerate(pattern, size, row + 1);
+    used[c] = 0;
+  }
+}
+
+long long countNonzeroTerms(const int *pattern, int size) {
+  termCount = 0;
+  memset(used, 0, sizeof used);
+  enumerate(pattern, size, 0);
+  return termCount;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="逆序數">
+                <div class="code-head">inversions()：決定每一項的正負號</div>
+                <pre class="code">int inversions(const int *p, int size) {        /* 逆序數：奇數 → 該項取負號 */
+  int inv = 0;
+  for (int i = 0; i &lt; size; i++)
+    for (int j = i + 1; j &lt; size; j++)
+      if (p[i] &gt; p[j]) inv++;
+  return inv;
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="cofactor-expansion">
+        <h2>餘因子展開</h2>
+        <div class="panel prose">
+          <p>把排列展開依「第 i 列選了哪一行」分組，就得到 <span class="term">Cofactor Expansion<small>（餘因子展開，又稱 Laplace 展開）</small></span>，把 n 階拆成 n 個 n − 1 階：</p>
+          <ul>
+            <li><span class="term">Minor<small>（子行列式）</small></span> M<sub>ij</sub>：刪掉第 i 列、第 j 行剩下的 (n − 1) 階行列式。</li>
+            <li><span class="term">Cofactor<small>（餘因子）</small></span> C<sub>ij</sub> = (−1)<sup>i+j</sup> M<sub>ij</sub>。符號是棋盤格：左上角 +，往右往下交錯。</li>
+          </ul>
+          <pre class="formula">沿第 i 列：det A = a_i1·C_i1 + a_i2·C_i2 + ⋯ + a_in·C_in
+沿第 j 行：det A = a_1j·C_1j + a_2j·C_2j + ⋯ + a_nj·C_nj</pre>
+          <p><b>沿任何一列或一行展開，答案都一樣</b>，所以要挑 0 最多的那一列（行）：a<sub>ij</sub> = 0 的那一項整個不用算。用上一節的 A = [2 −1 3; 1 0 4; −2 5 1]，第 2 列 (1, 0, 4) 有一個 0：</p>
+          <pre class="formula">C21 = (−1)^(2+1) · det[−1 3; 5 1] = −(−1 − 15) = 16
+C23 = (−1)^(2+3) · det[ 2 −1; −2 5] = −(10 − 2) = −8
+det A = 1·16 + 0·C22 + 4·(−8) = 16 − 32 = −16</pre>
+          <p>和 Sarrus 的結果一樣（程式沿每一列都展開過一次，三列都得 −16）。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="determinant-properties-cofactor"></div>
+            <figcaption><b>圖 2</b>：左邊是 4×4 的餘因子符號棋盤（藍色是負號位置）。右邊的 A 第 3 列只有 a<sub>33</sub> = 5 不是 0，沿第 3 列展開只剩一項；刪掉第 3 列、第 3 行（灰色）得到 3×3，再展開一次，det A = −10。</figcaption>
+          </figure>
+          <p>考題常見的 5×5、6×6 數字矩陣（例如某一行只有一個非零）就是這樣一層一層剝：每次挑只剩一兩個非零的列或行，<b>注意每一層的符號 (−1)<sup>i+j</sup> 是用「當下這個子矩陣」的列號、行號算</b>，不是原矩陣的位置。</p>
+          <details class="code-fold">
+            <summary>看程式碼：detCofactor()：餘因子展開（遞迴）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="沿第 1 列（遞迴）">
+                <div class="code-head">minorOf() / detCofactor()：沿第 1 列展開</div>
+                <pre class="code">void minorOf(Frac A[MAXN][MAXN], int size, int r, int c, Frac M[MAXN][MAXN]) {
+  for (int i = 0, mi = 0; i &lt; size; i++) {     /* 刪掉第 r 列、第 c 行 */
+    if (i == r) continue;
+    for (int j = 0, mj = 0; j &lt; size; j++) {
+      if (j == c) continue;
+      M[mi][mj++] = A[i][j];
+    }
+    mi++;
+  }
+}
+
+Frac detCofactor(Frac A[MAXN][MAXN], int size) {     /* 沿第 1 列餘因子展開（遞迴） */
+  if (size == 1) return A[0][0];
+  Frac d = frac(0, 1);
+  for (int c = 0; c &lt; size; c++) {
+    if (isZero(A[0][c])) continue;               /* 0 的那一項不用算 */
+    Frac M[MAXN][MAXN];
+    minorOf(A, size, 0, c, M);                   /* 刪掉第 1 列、第 c+1 行 */
+    Frac term = fmul(A[0][c], detCofactor(M, size - 1));
+    d = (c % 2 == 0) ? fadd(d, term) : fsub(d, term);   /* 符號 (−1)^(1+j) */
+  }
+  return d;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="沿任意一列">
+                <div class="code-head">expandAlongRow()：沿第 r+1 列展開，用來驗證每一列結果相同</div>
+                <pre class="code">Frac expandAlongRow(Frac A[MAXN][MAXN], int size, int r) {   /* 沿第 r+1 列展開 */
+  Frac d = frac(0, 1);
+  for (int c = 0; c &lt; size; c++) {
+    if (isZero(A[r][c])) continue;
+    Frac M[MAXN][MAXN];
+    minorOf(A, size, r, c, M);
+    Frac cof = detCofactor(M, size - 1);         /* 子行列式 M_rc */
+    if ((r + c) % 2 == 1) cof = fmul(cof, frac(-1, 1));   /* 餘因子 C_rc = (−1)^(r+c) M_rc */
+    d = fadd(d, fmul(A[r][c], cof));
+  }
+  return d;
+}</pre>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="row-operations">
+        <h2>列運算對行列式的影響</h2>
+        <div class="panel prose">
+          <p>餘因子展開對沒有 0 的矩陣很慢。真正好用的是：<b>先用列運算製造 0 或化成上三角</b>。三種基本列運算（見 <a href="../linear-systems/gaussian-elimination.html#augmented-matrix">增廣矩陣與三種列運算</a>）對 det 的影響各不相同：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>列運算</th><th>det 變成</th><th>為什麼</th></tr></thead>
+              <tbody>
+                <tr><td>R<sub>i</sub> ↔ R<sub>j</sub>（交換）</td><td><b>−det A</b></td><td>排列展開中每一項的逆序數奇偶都改變；推論：兩列相同時 det A = −det A，所以 det = 0</td></tr>
+                <tr><td>R<sub>i</sub> ← cR<sub>i</sub>（倍乘，c ≠ 0）</td><td><b>c · det A</b></td><td>每一項剛好含第 i 列的一個元素，可以提出 c</td></tr>
+                <tr><td>R<sub>i</sub> ← R<sub>i</sub> + cR<sub>j</sub>（加倍數）</td><td><b>det A（不變）</b></td><td>拆成 det A + c·det(第 i 列換成 R<sub>j</sub> 的矩陣)，後者有兩列相同，等於 0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="determinant-properties-row-ops"></div>
+            <figcaption><b>圖 3</b>：從 det A = 5 的 A 出發，各做一次列運算。交換讓 det 變號（−5）、R<sub>1</sub> 乘 2 讓 det 也乘 2（10）、R<sub>2</sub> 加上 2 倍 R<sub>1</sub> 完全不影響 det（還是 5）。</figcaption>
+          </figure>
+          <p>用基本矩陣的語言：三型基本矩陣的 det 分別是 −1、c、1（見 <a href="../linear-systems/matrix-inverse.html#elementary-matrices">基本矩陣</a>），上表就是 <b>det(EA) = det(E)·det(A)</b>。<b>行運算</b>的效果完全一樣，因為 det A<sup>T</sup> = det A（下一節），所以手算時列、行運算可以混用。</p>
+          <h3>化成上三角求 det</h3>
+          <p>上三角矩陣沿第一行一路展開，只剩對角線乘積。所以只用「交換」和「加倍數」把 A 化成上三角 U，就有</p>
+          <pre class="formula">det A = (−1)^(交換次數) × (U 的對角線乘積)</pre>
+          <p>例：A = [0 2 1 3; 1 1 0 2; 2 4 1 5; 1 3 2 2]（下方動畫的預設例子）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>列運算</th><th>det 的影響</th><th>結果</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>R<sub>1</sub> ↔ R<sub>2</sub>（a<sub>11</sub> = 0 不能當 pivot）</td><td>× (−1)</td><td>R<sub>1</sub> = (1, 1, 0, 2)</td></tr>
+                <tr><td>2</td><td>R<sub>3</sub> − 2R<sub>1</sub>、R<sub>4</sub> − R<sub>1</sub></td><td>不變</td><td>R<sub>3</sub> = (0, 2, 1, 1)、R<sub>4</sub> = (0, 2, 2, 0)</td></tr>
+                <tr><td>3</td><td>R<sub>3</sub> − R<sub>2</sub>、R<sub>4</sub> − R<sub>2</sub></td><td>不變</td><td>R<sub>3</sub> = (0, 0, 0, −2)、R<sub>4</sub> = (0, 0, 1, −3)</td></tr>
+                <tr><td>4</td><td>R<sub>3</sub> ↔ R<sub>4</sub>（第 3 行 pivot 是 0）</td><td>× (−1)</td><td>對角線 1, 2, 1, −2</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>交換了 2 次，正負號 (−1)<sup>2</sup> = +1，det A = 1 × 2 × 1 × (−2) = <b>−4</b>（程式用餘因子展開、兩種 pivot 規則的消去都得到 −4）。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> 如果中途為了好算做了倍乘（例如把一列除以 3），要記得最後<b>乘回</b> 3；方向搞反（除錯成乘）是最常見的失分。最穩的做法是：除了交換以外，只用「加倍數」。</p></div>
+          <details class="code-fold">
+            <summary>看程式碼：detElim()：化成上三角求 det</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="detElim()">
+                <div class="code-head">detElim()：只用交換與加倍數，det = 正負號 × 對角線乘積</div>
+                <pre class="code">void swapRows(Frac U[MAXN][MAXN], int size, int a, int b) {
+  for (int j = 0; j &lt; size; j++) { Frac t = U[a][j]; U[a][j] = U[b][j]; U[b][j] = t; }
+}
+
+Frac detElim(Frac A[MAXN][MAXN], int size, int pickMax) {   /* 化成上三角，det = 正負號 × 對角線乘積 */
+  Frac U[MAXN][MAXN];
+  copyMat(A, U, size);
+  int sign = 1;                                  /* 每交換一次列就變號 */
+  for (int c = 0; c &lt; size; c++) {
+    int p = c;                                   /* 在第 c 行、第 c 列以下找 pivot */
+    for (int i = c; i &lt; size; i++) {
+      if (isZero(U[p][c]) &amp;&amp; !isZero(U[i][c])) p = i;    /* 預設：第一個非零 */
+      if (pickMax &amp;&amp; absGreater(U[i][c], U[p][c])) p = i;   /* 選項：絕對值最大 */
+    }
+    if (isZero(U[p][c])) return frac(0, 1);      /* 這一行往下全是 0：det = 0 */
+    if (p != c) { swapRows(U, size, p, c); sign = -sign; }   /* 列交換：det 變號 */
+    for (int i = c + 1; i &lt; size; i++) {         /* 列加上倍數：det 不變 */
+      if (isZero(U[i][c])) continue;
+      Frac f = fdiv(U[i][c], U[c][c]);
+      for (int j = c; j &lt; size; j++) U[i][j] = fsub(U[i][j], fmul(f, U[c][j]));
+    }
+  }
+  Frac d = frac(sign, 1);
+  for (int i = 0; i &lt; size; i++) d = fmul(d, U[i][i]);   /* 上三角：det = 對角線乘積 */
+  return d;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="三種列運算">
+                <div class="code-head">opSwap() / opScale() / opAdd()：追蹤 det(新) = factor × det(原)</div>
+                <pre class="code">/* 對 A 做一次列運算；factor 記錄 det(新矩陣) = factor × det(原矩陣) */
+void opSwap(Frac A[MAXN][MAXN], int size, int i, int j, Frac *factor) {
+  swapRows(A, size, i, j);                       /* R_i ↔ R_j：det 乘 −1 */
+  *factor = fmul(*factor, frac(-1, 1));
+}
+void opScale(Frac A[MAXN][MAXN], int size, int i, Frac c, Frac *factor) {
+  for (int k = 0; k &lt; size; k++) A[i][k] = fmul(c, A[i][k]);   /* R_i ← cR_i：det 乘 c */
+  *factor = fmul(*factor, c);
+}
+void opAdd(Frac A[MAXN][MAXN], int size, int i, int j, Frac c, Frac *factor) {
+  for (int k = 0; k &lt; size; k++) A[i][k] = fadd(A[i][k], fmul(c, A[j][k]));   /* R_i ← R_i + cR_j：det 不變 */
+  (void)factor;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="分數運算">
+                <div class="code-head">Frac：分子分母都是整數，隨時約分</div>
+                <pre class="code">typedef struct { long long n, d; } Frac;
+
+long long gcdll(long long a, long long b) {
+  if (a &lt; 0) a = -a;
+  if (b &lt; 0) b = -b;
+  while (b) { long long t = a % b; a = b; b = t; }
+  return a ? a : 1;
+}
+
+Frac frac(long long n, long long d) {          /* 建立分數並約分 */
+  if (d &lt; 0) { n = -n; d = -d; }
+  long long g = gcdll(n, d);
+  Frac f = { n / g, d / g };
+  return f;
+}
+Frac fadd(Frac x, Frac y) { return frac(x.n * y.d + y.n * x.d, x.d * y.d); }
+Frac fsub(Frac x, Frac y) { return frac(x.n * y.d - y.n * x.d, x.d * y.d); }
+Frac fmul(Frac x, Frac y) { return frac(x.n * y.n, x.d * y.d); }
+Frac fdiv(Frac x, Frac y) { return frac(x.n * y.d, x.d * y.n); }   /* 呼叫前要確定 y 不是 0 */
+int isZero(Frac x) { return x.n == 0; }
+int absGreater(Frac x, Frac y) {               /* |x| &gt; |y| ? */
+  long long a = x.n &lt; 0 ? -x.n : x.n, b = y.n &lt; 0 ? -y.n : y.n;
+  return a * y.d &gt; b * x.d;
+}</pre>
+              </div>
+            </div>
+          </details>
+          <p>下面的動畫有兩種用法：(1) 按「化上三角求 det」跑 detElim()，右邊追蹤目前的正負號和每一步的影響，可以切換 pivot 規則（手算用「第一個非零」，數值計算用「絕對值最大」，交換次數不同但答案一樣）；(2) 在第二個輸入框寫自己的列運算，按「做列運算」看 det 每一步乘上多少。</p>
+        </div>
+        <div class="viz" data-viz="det-rowops"></div>
+      </section>
+
+      <section id="properties">
+        <h2>常考性質</h2>
+        <div class="panel prose">
+          <p>A、B 是 n×n，c 是純量。是非題幾乎都從這張表出：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>性質</th><th>為什麼 / 注意</th></tr></thead>
+              <tbody>
+                <tr><td>det A<sup>T</sup> = det A</td><td>排列 σ 和它的反排列逆序數相同；所以對列成立的性質，對行也成立</td></tr>
+                <tr><td>det(AB) = det A · det B</td><td>A 不可逆時兩邊都是 0；A 可逆時寫成基本矩陣乘積，一個一個用 det(EB) = det E·det B</td></tr>
+                <tr><td>det(A<sup>−1</sup>) = 1 / det A</td><td>det A · det A<sup>−1</sup> = det I = 1</td></tr>
+                <tr><td>det(A<sup>k</sup>) = (det A)<sup>k</sup></td><td>det(AB) 重複用</td></tr>
+                <tr><td>det(cA) = <b>c<sup>n</sup></b> det A</td><td>每一列都乘 c，提出 n 次；<b>不是</b> c·det A</td></tr>
+                <tr><td>det(A + B) ≠ det A + det B（一般）</td><td>行列式不是線性函數；反例 A = B = I（2×2）：det(2I) = 4，但 1 + 1 = 2</td></tr>
+                <tr><td>只差一列時可以相加</td><td>A、B 只有第 i 列不同，C 的第 i 列 = 兩者之和、其餘相同 ⇒ det C = det A + det B（<span class="term">Multilinear<small>（多線性）</small></span>：對每一列各自線性）</td></tr>
+                <tr><td>det(P<sup>−1</sup>AP) = det A</td><td>相似矩陣 det 相同，所以線性變換的 det 和選哪組基底無關</td></tr>
+                <tr><td>Q 正交 ⇒ det Q = ±1</td><td>Q<sup>T</sup>Q = I 兩邊取 det：(det Q)<sup>2</sup> = 1</td></tr>
+                <tr><td>det A = 特徵值乘積（含重數）</td><td>代 λ = 0 進特徵多項式，見 <a href="../eigenvalues/eigenvalues-eigenvectors.html#properties">特徵值的常考性質</a></td></tr>
+                <tr><td>列等價 ⇏ det 相等</td><td>I 和 2I 列等價，det 是 1 和 2<sup>n</sup>；列等價只保證「是不是 0」一致</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>用數字感受一下（程式驗算）：P = [1 2 0; 3 1 1; 0 2 4]、Q = [2 0 1; 1 1 0; 3 2 1]，det P = −22、det Q = 1。det(PQ) = −22 = (−22)·1，符合乘法；但 det(P + Q) = −6，不是 −22 + 1 = −21；det(2P) = −176 = 2<sup>3</sup>·(−22)，不是 2·(−22) = −44。</p>
+          <h3>多線性怎麼用</h3>
+          <p>把行列式看成「各列的函數」det(r<sub>1</sub>, r<sub>2</sub>, …, r<sub>n</sub>)，它對每一列<b>各自</b>是線性的，而且兩列相同就是 0。所以像 det[a + 2b; b; 3c − a] 這種題目，不用知道 a、b、c 是什麼：先把第 1 列的 2b 用「減去 2 倍第 2 列」消掉、第 3 列的 −a 用「加上第 1 列」消掉，剩下 det[a; b; 3c] = 3·det[a; b; c]。同樣的想法也能處理「把行向量換成別的線性組合」的題目：如果某一行 d = −a + 3b，那 det[d b c] = −det[a b c] + 3·det[b b c] = −det[a b c]。</p>
+        </div>
+      </section>
+
+      <section id="zero-determinant">
+        <h2>一眼看出 det = 0</h2>
+        <div class="panel prose">
+          <p>det A = 0 ⇔ A 不可逆 ⇔ 列（行）向量線性相依 ⇔ rank A &lt; n ⇔ Ax = 0 有非零解。考試的數字矩陣如果亂得很、又不准用計算機，通常就藏著下面其中一種：</p>
+          <ul>
+            <li><b>有一列（行）全是 0，或兩列（行）相同、成比例</b>。注意要每個位置都成比例，差一個數字就不是（例如 (3, 6, 9, 12) 不是 (1, 2, 3, 6) 的 3 倍）。</li>
+            <li><b>某一列是其他列的線性組合</b>：A = [1 2 3; 4 5 6; 5 7 9] 的 R<sub>3</sub> = R<sub>1</sub> + R<sub>2</sub>，det = 0。看不出來時，試試 R<sub>1</sub> ± R<sub>2</sub>、R<sub>1</sub> − 2R<sub>2</sub> + R<sub>3</sub> 這類小係數組合。</li>
+            <li><b>每一列加起來都是 0</b>：取 x = (1, 1, …, 1) 就有 Ax = 0。</li>
+            <li><b>奇數階反對稱矩陣</b>（A<sup>T</sup> = −A，n 奇數）：det A = det A<sup>T</sup> = det(−A) = (−1)<sup>n</sup> det A = −det A，所以 det A = 0。</li>
+            <li><b>乘積裡有一個奇異</b>：det(PQ) = det P · det Q，只要 P 或 Q 的 det 是 0 就是 0，不用真的乘開。</li>
+          </ul>
+          <h3>含參數：齊次方程組何時有非零解</h3>
+          <p>Ax = 0 有非零解 ⇔ det A = 0，把 det 展開成參數的多項式再解方程。例如 det [x 1 1; 1 x 1; 1 1 x] = x<sup>3</sup> − 3x + 2 = (x − 1)<sup>2</sup>(x + 2)，所以 x = 1 或 x = −2 時不可逆（程式代 x = −3～3 逐一驗算）。這種「對角線是 x、其他相同」的矩陣也可以用下一節 aI + bJ 的公式直接寫出。</p>
+        </div>
+      </section>
+
+      <section id="special-matrices">
+        <h2>特殊結構的行列式</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>結構</th><th>det</th><th>怎麼來</th></tr></thead>
+              <tbody>
+                <tr><td>上（下）三角、對角</td><td>對角線乘積</td><td>沿第一行（列）一路展開</td></tr>
+                <tr><td>區塊三角 [A B; 0 D]（A、D 方陣）</td><td>det A · det D</td><td>對 A、D 分別化上三角，整個矩陣就是上三角；區塊對角是特例</td></tr>
+                <tr><td>Vandermonde [1 x<sub>i</sub> x<sub>i</sub><sup>2</sup> ⋯]</td><td>∏<sub>i&lt;j</sub> (x<sub>j</sub> − x<sub>i</sub>)</td><td>x<sub>i</sub> = x<sub>j</sub> 時兩列相同 ⇒ (x<sub>j</sub> − x<sub>i</sub>) 是因式；比較次數與係數</td></tr>
+                <tr><td>aI + bJ（對角 a + b、其他 b；J 是全 1）</td><td>(a + nb)·a<sup>n−1</sup></td><td>J 的特徵值是 n（一個）和 0（n − 1 個）；或把所有列加到第一列再提出公因數</td></tr>
+                <tr><td>三對角（對角 a、上 b、下 c，全部相同）</td><td>D<sub>n</sub> = a·D<sub>n−1</sub> − bc·D<sub>n−2</sub></td><td>沿第一列展開，第二項再沿第一行展開一次</td></tr>
+                <tr><td>A<sub>ij</sub> = r<sup>|i−j|</sup> 這類「每列是上一列的倍數再修正」</td><td>先做 R<sub>k</sub> − rR<sub>k−1</sub></td><td>由下往上做，對角線以下會全部消成 0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="determinant-properties-block"></div>
+            <figcaption><b>圖 4</b>：區塊上三角矩陣。左下的 2×2 全是 0（灰），det 只由左上 A（藍）和右下 D（青）決定，右上的 B 不影響：det M = 5 × 10 = 50（程式驗算）。</figcaption>
+          </figure>
+          <p>幾個數字例子（都用程式驗算過）：</p>
+          <ul>
+            <li>Vandermonde：x = (2, 3, 5) 時 det [1 2 4; 1 3 9; 1 5 25] = (3 − 2)(5 − 2)(5 − 3) = 1·3·2 = 6。只要 x<sub>i</sub> 兩兩相異就可逆，和 x<sub>i</sub> 是不是 0 無關。</li>
+            <li>J − I（對角 0、其他 1）：a = −1、b = 1，det = (n − 1)(−1)<sup>n−1</sup>；n = 5 時是 4·1 = 4。</li>
+            <li>三對角 2、−1、−1：D<sub>n</sub> = 2D<sub>n−1</sub> − D<sub>n−2</sub>，D<sub>1</sub> = 2、D<sub>2</sub> = 3，所以 D<sub>n</sub> = n + 1。這類遞迴先算 D<sub>1</sub>、D<sub>2</sub>、D<sub>3</sub> 猜規律，再用遞迴式驗證。</li>
+          </ul>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 區塊公式只對<b>區塊三角</b>成立。一般的 [A B; C D] 沒有 det A·det D − det B·det C 這種公式；左下、右上兩塊都不是 0 時，要先用區塊列運算消掉一塊，或乾脆化成上三角。</p></div>
+        </div>
+      </section>
+
+      <section id="cost">
+        <h2>運算量：為什麼不用定義硬算</h2>
+        <div class="panel prose">
+          <p>沿第一列餘因子展開，n 階要算 n 個 (n − 1) 階，乘法次數 T(n) = n·(T(n − 1) + 1)，大約是 e·n!（考慮所有元素都非零的最差情況）。化上三角每一步要更新 (n − k)×(n − k) 個位置，總共約 n<sup>3</sup>/3。程式逐一計數：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>n</th><th>餘因子展開（乘法）</th><th>化上三角（乘除）</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>3</td><td>9</td><td>10</td><td>3×3 差不多，Sarrus 或展開都可以</td></tr>
+                <tr><td>4</td><td>40</td><td>23</td><td>從 4×4 開始，列運算就比較快</td></tr>
+                <tr><td>6</td><td>1,236</td><td>75</td><td>差了約 16 倍，所以 6×6 的考題一定有很多 0 讓你展開</td></tr>
+                <tr><td>10</td><td>6,235,300</td><td>339</td><td>差了約 1.8 萬倍；電腦算 det 一律用消去（LU 分解）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>手算策略：<b>某一列（行）只剩一兩個非零 → 展開；否則 → 先做列運算製造 0，再展開</b>。兩者混用最快。考題裡的程式碼若是遞迴呼叫「刪掉第 0 列第 c 行」的子矩陣，它就是在做餘因子展開，算的是 det。</p>
+          <details class="code-fold">
+            <summary>看程式碼：cofactorMults() / elimMults()：乘法次數</summary>
+            <div class="code-block">
+              <div class="code-head">兩種算法的乘除法次數</div>
+              <pre class="code">long long cofactorMults(int size) {             /* T(n) = n·(T(n−1) + 1)，T(1) = 0 */
+  if (size == 1) return 0;
+  return size * (cofactorMults(size - 1) + 1);
+}
+long long elimMults(int size) {                 /* 第 k 步：n−k 列 × (1 次除法 + n−k 次乘法)，最後 n−1 次乘對角線 */
+  long long cnt = 0;
+  for (int k = 1; k &lt; size; k++) cnt += (long long)(size - k) * (size - k + 1);
+  return cnt + (size - 1);
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>性質是非題（cA、A + B、A<sup>T</sup>、AB、A<sup>−1</sup>、列等價、三角）</td><td>很常考</td><td>對照性質表；錯的找反例，最常用 A = B = I 或 A = I、B = 2I</td><td><a class="q-link" href="#q-la-0142">例題</a> <a class="q-link" href="#q-la-0029">例題</a> <a class="q-link" href="#q-la-0176">例題</a> <a class="q-link" href="#q-la-0099">例題</a></td></tr>
+                <tr><td>4×4～6×6 數字矩陣求 det</td><td>很常考</td><td>找只剩一兩個非零的列或行展開；沒有就先做列（行）運算製造 0；每層符號用當下子矩陣的 (−1)<sup>i+j</sup></td><td><a class="q-link" href="#q-la-0101">例題</a> <a class="q-link" href="#q-la-0075">例題</a> <a class="q-link" href="#q-la-0080">例題</a> <a class="q-link" href="#q-la-0179">例題</a> <a class="q-link" href="#q-la-0108">例題</a></td></tr>
+                <tr><td>判斷哪些矩陣 det = 0</td><td>很常考</td><td>找兩列成比例、列的線性組合、奇數階反對稱、乘積中有奇異因子</td><td><a class="q-link" href="#q-la-0149">例題</a> <a class="q-link" href="#q-la-0141">例題</a> <a class="q-link" href="#q-la-0050">例題</a></td></tr>
+                <tr><td>列運算／多線性：給 det A 求變形後的 det</td><td>常考</td><td>交換 × (−1)、倍乘 × c、加倍數不變；一列寫成兩個向量之和可以拆開</td><td><a class="q-link" href="#q-la-0177">例題</a> <a class="q-link" href="#q-la-0181">例題</a> <a class="q-link" href="#q-la-0056">例題</a> <a class="q-link" href="#q-la-0140">例題</a></td></tr>
+                <tr><td>特殊結構：全 1 矩陣、三對角遞迴、Vandermonde、區塊</td><td>常考</td><td>aI + bJ 用 (a + nb)a<sup>n−1</sup>；三對角列遞迴式；區塊三角相乘；區塊反對角注意換列的正負號</td><td><a class="q-link" href="#q-la-0031">例題</a> <a class="q-link" href="#q-la-0118">例題</a> <a class="q-link" href="#q-la-0105">例題</a> <a class="q-link" href="#q-la-0036">例題</a> <a class="q-link" href="#q-la-0054">例題</a> <a class="q-link" href="#q-la-0182">例題</a> <a class="q-link" href="#q-la-0183">例題</a></td></tr>
+                <tr><td>det 與特徵值</td><td>常考</td><td>det = 特徵值乘積（含重數）；det(A<sup>−1</sup>)、det(f(A)) 先換成特徵值再乘</td><td><a class="q-link" href="#q-la-0028">例題</a> <a class="q-link" href="#q-la-0065">例題</a> <a class="q-link" href="#q-la-0161">例題</a> <a class="q-link" href="#q-la-0106">例題</a> <a class="q-link" href="#q-la-0162">例題</a></td></tr>
+                <tr><td>含參數：何時有非零解／不可逆</td><td>常考</td><td>令 det = 0 解參數；可以先做列運算讓參數集中在一個位置</td><td><a class="q-link" href="#q-la-0163">例題</a> <a class="q-link" href="#q-la-0180">例題</a></td></tr>
+                <tr><td>排列展開：非零項個數、某次方的係數</td><td>偶爾</td><td>每列選一個非零、各在不同行；係數題只找含足夠多 x 的排列，符號看逆序數</td><td><a class="q-link" href="#q-la-0096">例題</a> <a class="q-link" href="#q-la-0184">例題</a></td></tr>
+                <tr><td>小證明：正交矩陣 det = ±1、奇數階反對稱 det = 0</td><td>偶爾</td><td>對定義式兩邊取 det，再用 det A<sup>T</sup> = det A、det(cA) = c<sup>n</sup>det A</td><td><a class="q-link" href="#q-la-0080">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> det(cA) = c·det A</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每一列都乘了 c，要提出 n 次：det(cA) = c<sup>n</sup> det A；det(−A) = (−1)<sup>n</sup> det A</span> <a class="q-link" href="#q-la-0142">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> det(A + B) = det A + det B、det(A − B) = det A − det B</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 行列式不是線性函數；只有「只差一列」時才能把那一列拆開相加</span> <a class="q-link" href="#q-la-0034">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 列等價的矩陣行列式相等</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 交換、倍乘都會改 det；列等價只保證 det 同為 0 或同不為 0（I 和 2I 是反例）</span> <a class="q-link" href="#q-la-0037">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 化簡時把一列除以 3，最後忘了補，或補成除以 3</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> det(新) = factor × det(原)，要求原矩陣就除以 factor；交換一次就乘 −1</span> <a class="q-link" href="#q-la-0177">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 4×4 也能用 Sarrus 的對角線法則</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 對角線法則只適用 3×3；4×4 有 24 項，只畫對角線只有 8 項</span> <a class="q-link" href="#q-la-0178">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 餘因子展開的符號照原矩陣的位置算</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每展開一層，(−1)<sup>i+j</sup> 都用當下子矩陣的列號、行號</span> <a class="q-link" href="#q-la-0101">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> det [A B; C D] = det A·det D − det B·det C</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只有區塊三角才是 det A·det D；區塊反對角 [0 A; B 0] 要數換列次數決定正負號</span> <a class="q-link" href="#q-la-0183">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 兩列「幾乎」成比例就說 det = 0</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每個位置都要成比例才行，差一個數字就可能不為 0</span> <a class="q-link" href="#q-la-0050">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> det A 是相異特徵值的乘積</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要照代數重數重複相乘</span> <a class="q-link" href="#q-la-0028">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="determinant-properties"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=329bbb96"></script>
+  <script src="../../../assets/js/viz-core.js?v=329bbb96"></script>
+  <script src="../../../assets/js/viz/linear-algebra/determinant-properties.js?v=329bbb96"></script>
+</body>
+</html>

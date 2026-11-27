@@ -8,12 +8,12 @@
 
 | 科目 | 狀態 | 參考書（僅供 AI 查閱） |
 |---|---|---|
-| Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 9 個 | Horowitz《Fundamentals of Data Structures in C》 |
+| Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 10 個 | Horowitz《Fundamentals of Data Structures in C》 |
 | Algorithms（演算法） | 進行中：13 章、36 個主題（高頻 19 個），已完成 3 個 | Cormen 等《Introduction to Algorithms》 |
-| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 3 個 | Patterson & Hennessy《Computer Organization and Design》 |
+| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 4 個 | Patterson & Hennessy《Computer Organization and Design》 |
 | Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 3 個 | Silberschatz《Operating System Concepts》 |
 | Discrete Mathematics（離散數學） | 進行中：12 章、38 個主題（高頻 18 個），已完成 3 個 | Rosen《Discrete Mathematics and Its Applications》 |
-| Linear Algebra（線性代數） | 進行中：8 章、30 個主題（高頻 18 個），已完成 3 個 | Leon《Linear Algebra with Applications》 |
+| Linear Algebra（線性代數） | 進行中：8 章、30 個主題（高頻 18 個），已完成 4 個 | Leon《Linear Algebra with Applications》 |
 
 ### 資料結構已完成的主題
 
@@ -28,6 +28,7 @@
 | Binary Search Tree（二元搜尋樹） | insert / search / delete（三種情況，可切換左子樹最大 / 右子樹最小）、中序走訪 |
 | BFS & DFS（廣度與深度優先搜尋） | 自己輸入邊與起點，切換 BFS／DFS（遞迴、stack），看 queue／stack、visited、走訪順序與生成樹 |
 | Minimum Cost Spanning Tree（最小成本生成樹） | 輸入帶權邊，切換 Kruskal／Prim，看邊被考慮、收下或因成環略過，顯示 union-find 集合或 cut 與 key |
+| Collision Resolution（碰撞處理） | 輸入 key 逐步 insert / search / delete，切換 linear／quadratic（+i²、±i²）／double hashing／separate chaining，刪除可選 tombstone 或搬移補位，看探測序列與群聚 |
 
 ### 演算法已完成的主題
 
@@ -51,12 +52,14 @@
 |---|---|
 | Gaussian Elimination（高斯消去法與列梯形） | 自己輸入增廣矩陣（可用分數），逐步列運算化成 RREF，判斷唯一解／無限多解／無解並寫出通解 |
 | Elementary Matrices and Inverses（基本矩陣與反矩陣） | 輸入 2×2～4×4 矩陣（可用分數），對 [A \| I] 逐步列運算並畫出對應的基本矩陣，得到 A⁻¹ 或判定不可逆 |
+| Determinants and Their Properties（行列式與其性質） | 輸入 2×2～5×5 矩陣（可用分數），逐步化上三角追蹤正負號與交換次數（可切換 pivot 選法）；也可自己寫列運算序列，看每一步讓 det 乘上多少 |
 | Eigenvalues and Eigenvectors（特徵值與特徵向量） | 輸入 2×2／3×3 矩陣（可用分數），逐步展開特徵多項式、求有理根、化簡 A − λI 求特徵空間並驗算 |
 
 ### 計算機組織已完成的主題
 
 | 主題 | 互動動畫 |
 |---|---|
+| CPU Time and CPI（CPU 時間與 CPI） | 輸入各類指令的 CPI、比例、指令數與時脈，逐步算出平均 CPI、CPU 時間與 MIPS；比較兩部機器（含 MIPS 陷阱），以及只改良一類指令的加速與上限 |
 | Cache Organization and Mapping（快取組織與映射） | 自己輸入位址序列、區塊數與區塊大小，切換直接映射／2-way／全關聯，逐步看每個位址落在哪個 set、命中或失誤、LRU 換掉誰 |
 | Pipelining（管線化） | 輸入 2～6 行 MIPS 指令，逐個時脈畫管線時序圖，切換有／無 forwarding，算出總週期、stall 數與 CPI |
 | Cache Performance（快取效能） | 輸入 CPI、存取比例、miss rate、penalty（可加 L2），逐步展開 AMAT 與 CPI，長條圖比較各部分停頓 |

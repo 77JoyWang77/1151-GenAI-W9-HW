@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CPU Time and CPI CPU 時間與 CPI · 計算機組織 | 資工考研互動學習站</title>
+  <meta name="description" content="CPU time = IC × CPI × cycle time、加權平均 CPI、MIPS 陷阱、只改一類的上限與 roofline。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=329bbb96">
+  <script src="../../../assets/js/theme.js?v=329bbb96"></script>
+</head>
+<body data-subject="computer-organization" data-chapter="performance" data-chno="1" data-topic="computer-organization/performance/cpu-performance" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Computer Organization 計算機組織</a> › Ch1 Computer Abstractions and Performance 計算機概論與效能 › CPU Time and CPI CPU 時間與 CPI</nav>
+      <div class="topic-head">
+        <h1>CPU Time and CPI CPU 時間與 CPI<small>效能的唯一標準是執行時間：IC × CPI × cycle time</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch1 Computer Abstractions and Performance</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">CPU time</span>
+          <span class="chip">CPI</span>
+          <span class="chip">MIPS</span>
+          <span class="chip">clock rate</span>
+          <span class="chip">roofline</span>
+        </div>
+      </div>
+
+      <section id="why-measure">
+        <h2>效能怎麼定義</h2>
+        <div class="panel prose">
+          <p>買電腦時大家會比 GHz、比核心數；考試則一定會問：「A 比 B 快幾倍？」「換了編譯器之後快多少？」要回答這些問題，先要有一個大家都同意的「快」的定義，不然一個人看時脈、一個人看每秒指令數，結論可能剛好相反。</p>
+          <h3>Response time 與 throughput</h3>
+          <ul>
+            <li><span class="term">Response Time<small>（回應時間，又叫 execution time 執行時間）</small></span>：<b>一個</b>工作從開始到完成花多久。使用者等一個程式跑完，在意的是它。</li>
+            <li><span class="term">Throughput<small>（產出率）</small></span>：<b>每單位時間</b>完成多少工作。伺服器一秒處理幾個請求，在意的是它。</li>
+          </ul>
+          <p>兩者不一定一起變。換一顆更快的 CPU，每個工作都變快，兩者一起改善；但如果是<b>多加一顆 CPU</b>，同時跑好幾個互不相關的程式，每個程式自己並沒有變快（response time 不變），只是每秒完成的程式變多（throughput 提高）。只有把<b>同一個</b>工作切成可以同時做的子工作，多核心才會縮短 response time。</p>
+          <h3>「X 比 Y 快 n 倍」</h3>
+          <p>這一頁講的「效能」都指 response time 的倒數：</p>
+          <pre class="formula">Performance<sub>X</sub> = 1 ÷ Execution time<sub>X</sub>
+
+X 比 Y 快 n 倍：Performance<sub>X</sub> ÷ Performance<sub>Y</sub> = Execution time<sub>Y</sub> ÷ Execution time<sub>X</sub> = n</pre>
+          <p>例如 X 跑一個程式要 10 秒、Y 要 15 秒，X 比 Y 快 15 ÷ 10 = 1.5 倍。注意分子分母：快的那台時間<b>比較小</b>，所以是「慢的時間 ÷ 快的時間」。題目說「快 50%」也是指這個 1.5 倍；反過來說 Y 的時間是 X 的 1.5 倍，但不要說成「Y 慢 50%」又「X 快 33%」混著用，同一題裡固定一種講法。</p>
+          <h3>Elapsed time 與 CPU time</h3>
+          <p>用碼表量到的時間叫 <span class="term">Elapsed Time<small>（經過時間，wall-clock time）</small></span>，它包含等 I/O、等作業系統把 CPU 分給別的程式的時間。只算 CPU 真正在為這個程式工作的時間，叫 <span class="term">CPU Time<small>（CPU 時間）</small></span>，又可以再分成執行程式本身的 user CPU time 和替它執行系統呼叫的 system CPU time。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>情況</th><th>Elapsed time</th><th>CPU time</th><th>說明</th></tr></thead>
+              <tbody>
+                <tr><td>單執行緒、常常等磁碟</td><td>10 s</td><td>3 s</td><td>70% 的時間 CPU 在等 I/O 或跑別人的程式</td></tr>
+                <tr><td>單執行緒、純計算、機器只跑它</td><td>3 s</td><td>3 s</td><td>兩者幾乎相等</td></tr>
+                <tr><td>4 個 thread 同時在 4 核上跑</td><td>1 s</td><td>4 s</td><td>CPU time 是所有核心的時間加總，可以<b>大於</b> elapsed time</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>談「處理器的效能」時，我們關心的是 CPU time，因為它只和處理器、程式、編譯器有關，不受 I/O 裝置和其他程式干擾。接下來的公式算的都是 CPU time。</p>
+        </div>
+      </section>
+
+      <section id="cpu-time">
+        <h2>CPU time 公式：三個因素相乘</h2>
+        <div class="panel prose">
+          <h3>時脈：硬體的節拍</h3>
+          <p>處理器內部所有動作都跟著一個固定頻率的時脈訊號走。一個節拍叫一個 <span class="term">Clock Cycle<small>（時脈週期）</small></span>，它的長度叫 <span class="term">Clock Cycle Time<small>（時脈週期時間）</small></span>，倒數就是 <span class="term">Clock Rate<small>（時脈頻率）</small></span>：</p>
+          <pre class="formula">clock rate = 1 ÷ clock cycle time
+4 GHz = 4 × 10<sup>9</sup> cycles/s  ⇔  cycle time = 1 ÷ (4 × 10<sup>9</sup>) s = 0.25 ns = 250 ps</pre>
+          <p>程式跑了多少個 cycle，乘上每個 cycle 多長，就是 CPU time：</p>
+          <pre class="formula">CPU time = CPU clock cycles × clock cycle time = CPU clock cycles ÷ clock rate</pre>
+          <h3>把 cycle 數拆成指令數 × CPI</h3>
+          <p>程式是由一條條指令組成的。程式總共執行了幾條指令叫 <span class="term">Instruction Count<small>（指令數，IC）</small></span>；這裡指的是<b>執行時</b>真正跑過的指令數（dynamic instruction count），迴圈跑 100 次，裡面的指令就算 100 次，不是程式碼有幾行。每條指令平均花幾個 cycle 叫 <span class="term">CPI<small>（Clock cycles Per Instruction，每指令週期數）</small></span>。於是得到這一頁最重要的公式：</p>
+          <pre class="formula">CPU time = IC × CPI × clock cycle time
+         = IC × CPI ÷ clock rate
+
+單位：(秒/程式) = (指令/程式) × (cycle/指令) × (秒/cycle)</pre>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cpu-perf-equation"></div>
+            <figcaption><b>圖 1</b>：CPU time 由三個因素相乘，單位一路約掉剩下「秒/程式」。下面列出主要影響每一項的東西：同一個設計改變常常同時動到兩項，所以要三項一起看。</figcaption>
+          </figure>
+          <p>例子：一個程式在 3 GHz 的處理器上執行 1.2 × 10<sup>9</sup> 條指令，平均 CPI 1.8，CPU time = 1.2 × 10<sup>9</sup> × 1.8 ÷ (3 × 10<sup>9</sup>) = <b>0.72 秒</b>。總 cycle 數是 2.16 × 10<sup>9</sup>，比指令數多 80%，代表平均每條指令要等將近 2 個節拍才完成。</p>
+          <p>公式也可以倒過來用：量到時間、知道指令數和時脈，就能反推 CPI = CPU time ÷ (IC × cycle time)。這是考題很愛的「比較兩個編譯器」題型：兩個編譯器產生的指令數不同，量到的時間也不同，先各自反推 CPI，再分析差別是來自指令數還是 CPI。</p>
+          <h3>CPI 與 IPC</h3>
+          <ul>
+            <li>CPI 是<b>平均值</b>，不需要是整數，1.8、2.15 都很正常；它也和時脈是不是整數無關。</li>
+            <li>能同時發出多條指令的處理器 CPI 可以小於 1，這時習慣改用倒數 <span class="term">IPC<small>（Instructions Per Clock cycle）</small></span>，例如 IPC = 2 代表每個 cycle 平均完成兩條。</li>
+            <li>CPI 和程式有關：同一台機器跑不同程式，指令組成不同，平均 CPI 也不同。題目給的 CPI 都是「這個程式在這台機器上」的值。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：cpuTime() 與 cpiFromTime()</summary>
+            <div class="code-block"><div class="code-head">cpuTime()、cpiFromTime()：正著算時間、反著推 CPI</div><pre class="code">/* CPU time = IC × CPI × cycle time = IC × CPI ÷ clock rate */
+double cpuTime(double ic, double cpi, double clockHz) {
+  return ic * cpi / clockHz;
+}
+
+/* 由量到的時間反推平均 CPI */
+double cpiFromTime(double seconds, double ic, double cycleTime) {
+  return seconds / (ic * cycleTime);
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="average-cpi">
+        <h2>平均 CPI：依指令類別加權</h2>
+        <div class="panel prose">
+          <p>不同種類的指令花的 cycle 數不一樣：加法可能 1 個 cycle，load 要存取記憶體可能 3 個，浮點除法可能十幾個。題目通常把指令分成幾個 <b>class（類別）</b>，給每類的 CPI 和它佔的比例（或指令數），平均 CPI 就是<b>以指令數為權重的加權平均</b>：</p>
+          <pre class="formula">總 cycle 數 = Σ (CPI<sub>i</sub> × IC<sub>i</sub>)
+平均 CPI = 總 cycle 數 ÷ IC = Σ (CPI<sub>i</sub> × F<sub>i</sub>)      F<sub>i</sub> = IC<sub>i</sub> ÷ IC（第 i 類佔的比例）</pre>
+          <p>完整例子：時脈 2.5 GHz，程式執行 2 × 10<sup>9</sup> 條指令，指令組成如下：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>類別</th><th>比例 F<sub>i</sub></th><th>CPI<sub>i</sub></th><th>CPI<sub>i</sub> × F<sub>i</sub></th><th>佔總 cycle 的比例</th></tr></thead>
+              <tbody>
+                <tr><td>ALU</td><td>40%</td><td>1</td><td>0.40</td><td>18.6%</td></tr>
+                <tr><td>Load/Store</td><td>35%</td><td>3</td><td>1.05</td><td>48.8%</td></tr>
+                <tr><td>Branch</td><td>20%</td><td>2</td><td>0.40</td><td>18.6%</td></tr>
+                <tr><td>FP</td><td>5%</td><td>6</td><td>0.30</td><td>14.0%</td></tr>
+                <tr><td><b>合計</b></td><td>100%</td><td></td><td><b>2.15</b></td><td>100%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li>平均 CPI = <b>2.15</b>：每條指令平均要 2.15 個 cycle。</li>
+            <li>總 cycle 數 = 2 × 10<sup>9</sup> × 2.15 = 4.3 × 10<sup>9</sup>；CPU time = 4.3 × 10<sup>9</sup> ÷ 2.5 × 10<sup>9</sup> = <b>1.72 秒</b>。</li>
+            <li>最後一欄最重要：Load/Store 只佔 35% 的<b>指令</b>，卻佔了將近一半（48.8%）的<b>時間</b>；FP 只有 5% 的指令，也吃掉 14% 的時間。想加速，要看的是時間佔比，不是指令佔比。</li>
+          </ul>
+          <p>如果題目給的是各類的「指令數」而不是比例，直接算 Σ CPI<sub>i</sub> × IC<sub>i</sub> 得到總 cycle 數，再除以時脈就是時間，不必先換成比例。</p>
+          <details class="code-fold">
+            <summary>看程式碼：InstClass、Perf 與 evaluate()</summary>
+            <div class="code-block"><div class="code-head">evaluate()：平均 CPI、cycle 數、CPU time、MIPS 一次算完</div><pre class="code">typedef struct {
+  const char *name;   /* 指令類別名稱，例如 INT、L/S */
+  double cpi;         /* 這類指令每條要幾個 clock cycle */
+  double count;       /* 這類指令的數量（或比例，evaluate 會自己正規化） */
+} InstClass;
+
+typedef struct {
+  double ic;          /* instruction count：總指令數 */
+  double cpi;         /* 平均 CPI */
+  double cycles;      /* 總 clock cycle 數 */
+  double seconds;     /* CPU time */
+  double mips;        /* 每秒執行幾百萬條指令 */
+} Perf;
+
+Perf evaluate(const InstClass cls[], int n, double clockHz) {
+  Perf p = {0, 0, 0, 0, 0};
+  for (int i = 0; i &lt; n; i++) p.ic += cls[i].count;      /* 總指令數 IC */
+  for (int i = 0; i &lt; n; i++) {
+    double frac = cls[i].count / p.ic;                    /* 這類指令佔的比例 */
+    p.cpi += frac * cls[i].cpi;                           /* 加權平均 CPI */
+  }
+  p.cycles = p.ic * p.cpi;                                /* 總 clock cycles */
+  p.seconds = p.cycles / clockHz;                         /* CPU time = cycles ÷ clock rate */
+  p.mips = clockHz / (p.cpi * 1e6);                       /* MIPS = clock rate ÷ (CPI × 10^6) */
+  return p;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作：CPU 效能計算器</h2>
+        <div class="panel prose">
+          <p>在上方輸入各類指令的名稱、CPI、比例（或指令數），以及總指令數和時脈，按「計算」逐步看平均 CPI、CPU time、MIPS 怎麼來。數字用逗號隔開，最多 6 類。</p>
+          <ul>
+            <li><b>總 IC</b> 的單位是 10<sup>6</sup> 條：填 2000 代表 2 × 10<sup>9</sup>。這一格<b>清空</b>時，「比例或指令數」那一格就當成各類的指令數（單位 10<sup>6</sup>），加總就是 IC。</li>
+            <li><b>比較 A 與 B</b>：B 的 CPI 可以填和 A 一樣多個（同一個程式、同樣的指令比例、換一台機器），也可以只填 1 個（直接給 B 的平均 CPI）。B 的 IC 空白表示和 A 相同；填不同的值就是不同 ISA 或不同編譯器。長條代表 CPU time。</li>
+            <li><b>只改一類</b>：輸入類別名稱（或第幾類）和新的 CPI，看整體加速多少，以及這一類 CPI 降到 0 時的上限。</li>
+            <li>快捷例子：「教學例」是上一節的表格；「MIPS 陷阱」是 MIPS 比較高、卻比較慢的兩台機器；「能快 2 倍嗎」把 L/S 的 CPI 直接改成 0，看上限夠不夠 2 倍。</li>
+          </ul>
+        </div>
+        <div class="viz" data-viz="cpu-perf-calc"></div>
+      </section>
+
+      <section id="three-factors">
+        <h2>誰影響 IC、CPI 與時脈</h2>
+        <div class="panel prose">
+          <p>CPU time 的三個因素各自受不同層次的設計影響。考題最常出的是「某個改變會讓哪一項變大、哪一項變小」，所以要熟悉這張表：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>影響來源</th><th>IC</th><th>CPI</th><th>Clock cycle time</th><th>說明</th></tr></thead>
+              <tbody>
+                <tr><td>演算法</td><td>會</td><td>可能</td><td>不會</td><td>決定要做幾次運算；用不同種類的運算（例如多用除法）也會改變 CPI</td></tr>
+                <tr><td>程式語言</td><td>會</td><td>可能</td><td>不會</td><td>直譯式語言每個高階動作要執行更多機器指令</td></tr>
+                <tr><td>編譯器</td><td>會</td><td>會</td><td>不會</td><td>選用哪些指令決定了 IC 和指令組成，也就影響平均 CPI</td></tr>
+                <tr><td>ISA（指令集）</td><td>會</td><td>會</td><td>會</td><td>指令能做多少事、硬體能做多簡單，三項都牽動</td></tr>
+                <tr><td>微架構（管線、快取）</td><td>不會</td><td>會</td><td>會</td><td>同一個 ISA、同一個執行檔，IC 不變</td></tr>
+                <tr><td>製程</td><td>不會</td><td>不會</td><td>會</td><td>電晶體變快，同樣的電路可以跑更高時脈</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>常見的取捨</h3>
+          <ul>
+            <li><b>加入功能更強的指令</b>（例如算術指令可以直接用記憶體運算元、複雜定址模式）：一條做更多事，IC 下降；但這種指令要好幾個 cycle，或讓 datapath 的關鍵路徑變長，CPI 或 cycle time 上升。用不到新指令的程式只會受害。</li>
+            <li><b>減少暫存器數量</b>：變數放不下要 spill 到記憶體，多出 load/store，IC 上升。反過來，暫存器多可以減少 spill，但指令裡的暫存器欄位要更多 bit、暫存器檔也會變慢。</li>
+            <li><b>管線切得更深</b>：每一級更短，主要是縮短 <b>cycle time</b>；分支猜錯、load-use 要停的 cycle 變多，CPI 通常<b>上升</b>。</li>
+            <li><b>時脈提高但 CPI 也增加</b>：只看 CPI ÷ clock rate。時脈快 20%、CPI 多 25% 時，時間變成 1.25 ÷ 1.2 ≈ 1.042 倍，反而慢了約 4%。</li>
+            <li><b>改善快取</b>：IC 不變、時脈通常不變，減少的是記憶體停頓的 cycle，也就是 CPI。停頓怎麼算進 CPI，見 <a href="../memory-hierarchy/cache-performance.html">Cache Performance 快取效能</a> 的「把記憶體停頓算進 CPI」；那一頁也算過「時脈加倍、記憶體沒變快」只快一點點的例子。</li>
+          </ul>
+          <h3>單週期、多週期、管線：同一個 ISA 的三種實作</h3>
+          <p>同一組指令用不同方式實作，IC 完全一樣，差別只在 CPI 和 cycle time 的取捨。假設各階段延遲 IF 250、ID 150、EX 200、MEM 300、WB 100 ps，指令組成 lw 25%、sw 10%、R 型 50%、beq 15%：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>實作</th><th>Cycle time</th><th>CPI</th><th>每條指令平均時間</th><th>說明</th></tr></thead>
+              <tbody>
+                <tr><td>單週期</td><td>1000 ps（五階段加總）</td><td>1</td><td>1000 ps</td><td>每條都要配合最慢的 lw</td></tr>
+                <tr><td>多週期（lw 5、sw 4、R 4、beq 3 個 cycle）</td><td>300 ps（最慢的階段）</td><td>0.25×5 + 0.1×4 + 0.5×4 + 0.15×3 = 4.1</td><td>4.1 × 300 = 1230 ps</td><td>階段不平衡，每個 cycle 都要湊到 300 ps，這個例子反而比單週期慢</td></tr>
+                <tr><td>五級管線（暫存器延遲 20 ps、stall 讓 CPI = 1.2）</td><td>320 ps</td><td>1.2</td><td>384 ps</td><td>指令重疊執行，CPI 接近 1，cycle time 又短</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>只比 CPI 會以為單週期最好，只比時脈會以為多週期和管線一樣好，三者都要乘起來才知道。管線的時脈與 stall 怎麼算，見 <a href="../processor/pipelining.html">Pipelining 管線化</a>；單週期與多週期的 datapath 在 Single-Cycle Datapath 單一週期資料路徑（籌備中）介紹。</p>
+        </div>
+      </section>
+
+      <section id="comparing">
+        <h2>比較兩部機器與 MIPS 的陷阱</h2>
+        <div class="panel prose">
+          <h3>比較的步驟</h3>
+          <ol>
+            <li>確認 IC 是不是一樣：同一個 ISA、同一個執行檔，IC 相同，只要比 CPI × cycle time（每條指令的平均時間）；不同 ISA 或不同編譯器，IC 不同，一定要算到總時間。</li>
+            <li>各自算平均 CPI（有類別表就加權平均）。</li>
+            <li>算 CPU time = IC × CPI ÷ clock rate。</li>
+            <li>快幾倍 = 慢的時間 ÷ 快的時間。</li>
+          </ol>
+          <p>例子：P 和 Q 實作同一個 ISA，P 時脈 2.5 GHz，Q 只有 2 GHz。跑上一節的程式，P 的各類 CPI 是 1、3、2、6（平均 2.15），Q 的 load/store 和 FP 比較快，各類 CPI 是 1、2、2、4（平均 1.7）。每條指令平均時間：P = 2.15 × 0.4 ns = 0.86 ns，Q = 1.7 × 0.5 ns = 0.85 ns，<b>時脈慢 20% 的 Q 反而稍快</b>（約 1.012 倍）。動畫裡按「比較 A 與 B」就是這組數字。</p>
+          <h3>MIPS：看起來直覺，其實不能比效能</h3>
+          <p><span class="term">MIPS<small>（Million Instructions Per Second，每秒百萬指令數）</small></span>的定義是：</p>
+          <pre class="formula">MIPS = IC ÷ (CPU time × 10<sup>6</sup>) = clock rate ÷ (CPI × 10<sup>6</sup>)</pre>
+          <p>它的問題在於公式裡沒有 IC 的影響：MIPS 只看「每秒執行幾條指令」，不管完成這個工作<b>需要</b>幾條指令。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cpu-perf-mips-trap"></div>
+            <figcaption><b>圖 2</b>：同樣 3 GHz，A 的 CPI 比較低所以 MIPS 比較高（3000 對 2500），但 A 完成同一個工作要多執行 25% 的指令，CPU time 1.667 s 反而比 B 的 1.6 s 長。長條越短越快。</figcaption>
+          </figure>
+          <p>MIPS 不適合比較效能的三個原因：</p>
+          <ul>
+            <li><b>不同 ISA 的一條指令做的事不一樣</b>：簡單指令集 CPI 低、MIPS 漂亮，但完成同一件事要更多指令。一台機器時間比較短、MIPS 卻比較低，通常代表它每條指令做的事比較多（較像 CISC）。</li>
+            <li><b>同一台機器跑不同程式，MIPS 也不同</b>：CPI 隨程式的指令組成改變，沒有「一台機器的 MIPS」這種單一數字。</li>
+            <li><b>MIPS 甚至可以和效能反向</b>：編譯器把一條複雜指令換成幾條簡單指令，MIPS 上升，程式卻變慢。</li>
+          </ul>
+          <p>同理，<b>只看時脈</b>也不行：1.5 GHz 的新微架構 CPI 低，可能比 2 GHz 的舊款快；大小核（big.LITTLE）處理器各核心跑不同的工作，把 4 GHz 和 2 GHz 平均成「3 GHz」也沒有意義。唯一可靠的指標是<b>執行真實程式的時間</b>，所以業界用一組代表性的程式（benchmark，例如 SPEC CPU）量時間，再把各程式相對於參考機器的時間比取幾何平均，作為綜合分數。</p>
+          <details class="code-fold">
+            <summary>看程式碼：speedup()</summary>
+            <div class="code-block"><div class="code-head">speedup()：快幾倍 = 時間的反比</div><pre class="code">/* 效能 = 1 / 執行時間，所以「快幾倍」= 時間的反比 */
+double speedup(Perf before, Perf after) {
+  return before.seconds / after.seconds;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="improve-one-class">
+        <h2>只改良一類指令：加速與上限</h2>
+        <div class="panel prose">
+          <p>常見考法：「把某類指令的 CPI 從 x 降到 y，整個程式快幾倍？」「只改這一類，有沒有可能快 2 倍？」IC 和時脈不變時，加速就是 CPI 的比：</p>
+          <pre class="formula">加速 = 舊 CPI ÷ 新 CPI = 舊的總 cycle 數 ÷ 新的總 cycle 數
+新 CPI = 舊 CPI − F<sub>k</sub> × (舊 CPI<sub>k</sub> − 新 CPI<sub>k</sub>)</pre>
+          <p>延續上一節的程式，把 Load/Store 的 CPI 從 3 降到 1.5（Load/Store 本身快 2 倍）：</p>
+          <ul>
+            <li>新 CPI = 0.40 + 0.35 × 1.5 + 0.40 + 0.30 = 1.625，整體加速 2.15 ÷ 1.625 ≈ <b>1.323 倍</b>。</li>
+            <li>Load/Store 快了 2 倍，整體只快 32%，因為另外 1.1 個 cycle（ALU、Branch、FP 的貢獻）一點都沒少。</li>
+            <li><b>上限</b>：就算 Load/Store 完全不花時間（CPI = 0），CPI 也還有 1.1，最多快 2.15 ÷ 1.1 ≈ <b>1.955 倍</b>，所以「只改 Load/Store 快 2 倍」不可能。</li>
+            <li>反過來問「要快 1.5 倍，Load/Store 的 CPI 要降到多少」：目標 CPI = 2.15 ÷ 1.5 ≈ 1.433，扣掉其他類的 1.1，留給 Load/Store 的只剩 0.333，CPI<sub>L/S</sub> ≤ 0.333 ÷ 0.35 ≈ <b>0.952</b>。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cpu-perf-improve-limit"></div>
+            <figcaption><b>圖 3</b>：每一段是該類指令對平均 CPI 的貢獻。改良 L/S（紫色）只會縮短它自己那一段，其他三段（1.1 個 cycle）怎樣都在，所以只改 L/S 最多快 1.955 倍。</figcaption>
+          </figure>
+          <p>判斷「能不能快 n 倍」的步驟：先算其他類別的貢獻總和，若它已經大於「舊 CPI ÷ n」，就算改良的那類 CPI 變 0 也做不到；否則把剩下的額度除以那一類的比例，就是它最多可以有的 CPI。</p>
+          <p>這正是 <b>Amdahl's Law（Amdahl 定律）</b>的想法：整體的改善受限於「沒被改善的那部分」。要注意 Amdahl's Law 裡的比例是<b>執行時間</b>的比例（上例 L/S 佔 48.8%），不是指令數的比例（35%）；拿指令比例代入是最常見的錯誤。公式本身的推導與各種變化，在 Amdahl's Law Amdahl 定律主題（籌備中）詳細介紹。</p>
+          <details class="code-fold">
+            <summary>看程式碼：improveClass() 與 cpiNeeded()</summary>
+            <div class="code-block"><div class="code-head">improveClass()、cpiNeeded()：只改一類的效果、要快 n 倍需要的 CPI</div><pre class="code">/* 只把第 k 類的 CPI 改成 newCPI，其他不變 */
+Perf improveClass(const InstClass cls[], int n, int k, double newCPI, double clockHz) {
+  InstClass tmp[MAXC];
+  for (int i = 0; i &lt; n; i++) tmp[i] = cls[i];
+  tmp[k].cpi = newCPI;
+  return evaluate(tmp, n, clockHz);
+}
+
+/* 只改第 k 類，要快 target 倍時它的 CPI 最多是多少；做不到回傳 -1 */
+double cpiNeeded(const InstClass cls[], int n, int k, double target) {
+  double total = 0;
+  for (int i = 0; i &lt; n; i++) total += cls[i].count * cls[i].cpi;
+  double others = total - cls[k].count * cls[k].cpi;      /* 其他類別的 cycle 不會變 */
+  double left = total / target - others;                  /* 留給第 k 類的 cycle 數 */
+  if (left &lt;= 0) return -1;                               /* 就算第 k 類變成 0 也不夠 */
+  return left / cls[k].count;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="roofline">
+        <h2>Roofline：卡在運算還是卡在記憶體</h2>
+        <div class="panel prose">
+          <p>CPI 模型把記憶體的影響藏在「停頓的 cycle」裡。對於大量資料、規則運算的程式（矩陣運算、影像處理、AI 模型推論），常用另一種更直觀的模型：比較「每秒能算多少」和「每秒能搬多少資料」，看哪一個先到極限。近年考題很常結合 LLM、GPU、加速器出這類題。</p>
+          <p>關鍵是程式的 <span class="term">Arithmetic Intensity<small>（運算強度，又叫 operational intensity）</small></span>：</p>
+          <pre class="formula">arithmetic intensity = 浮點運算次數 ÷ 和主記憶體之間搬移的 bytes 數     （FLOP/byte）
+
+可達效能 = min( 峰值運算效能,  記憶體頻寬 × arithmetic intensity )
+轉折點（ridge point）= 峰值運算效能 ÷ 記憶體頻寬</pre>
+          <p>把可達效能對 intensity 畫出來，是一條先斜後平的線，像屋頂，所以叫 <span class="term">Roofline Model<small>（屋頂線模型）</small></span>：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="cpu-perf-roofline"></div>
+            <figcaption><b>圖 4</b>：峰值 100 GFLOP/s、頻寬 20 GB/s 的處理器，轉折點在 5 FLOP/byte。程式 1（intensity 1）落在斜線上，只能跑到 20 GFLOP/s，加運算單元只會抬高屋頂、它碰不到；程式 2（intensity 8）已經頂到屋頂。圖為線性刻度，實際的 roofline 圖多半畫成對數刻度。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>位置</th><th>名稱</th><th>瓶頸</th><th>有用的改善</th><th>沒用的改善</th></tr></thead>
+              <tbody>
+                <tr><td>intensity &lt; 轉折點（斜線）</td><td>memory-bound</td><td>記憶體頻寬</td><td>加大頻寬；提高 intensity（blocking 讓資料在 cache 裡重複使用、量化讓參數變小）</td><td>加運算單元、提高時脈</td></tr>
+                <tr><td>intensity ≥ 轉折點（屋頂）</td><td>compute-bound</td><td>運算能力</td><td>加運算單元、SIMD、提高時脈</td><td>加大頻寬</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>算 intensity 時，分母是「真的和主記憶體搬的量」：資料已經在 cache 裡、可以重複使用的部分不算，所以同一個程式在 cache 放得下或放不下時，intensity 可以差好幾倍。例如矩陣乘向量，每個矩陣元素只用一次，intensity 是常數（約每個 word 一次乘法）；矩陣乘矩陣每個元素可以重複用 N 次，intensity 隨 N 成長，N 夠大就變成 compute-bound。LLM 產生 token 時每個參數只用一次，intensity 很低，是典型的 memory-bound；把參數從 16 bit 壓到 8 bit，搬的 bytes 減半，速度大約快 2 倍。多處理器、GPU 與加速器的架構在 Multiprocessors and GPUs 多處理器與 GPU 主題（籌備中）介紹。</p>
+          <details class="code-fold">
+            <summary>看程式碼：attainable()</summary>
+            <div class="code-block"><div class="code-head">attainable()：roofline 的可達效能</div><pre class="code">/* roofline：可達效能 = min(峰值運算, 記憶體頻寬 × arithmetic intensity) */
+double attainable(double peakFlops, double bandwidth, double intensity) {
+  double memRoof = bandwidth * intensity;
+  return memRoof &lt; peakFlops ? memRoof : peakFlops;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="power-energy">
+        <h2>時脈不能無限提高：功耗與能量</h2>
+        <div class="panel prose">
+          <p>既然 CPU time 和時脈成反比，為什麼這十幾年處理器時脈停在 3～5 GHz？因為 CMOS 的動態功耗大約是</p>
+          <pre class="formula">動態功耗 ≈ α × C × V<sup>2</sup> × f        （α：切換比例、C：電容負載、V：電壓、f：時脈）
+能量 = 功耗 × 時間</pre>
+          <p>時脈越高，功耗越高，晶片散熱有上限；要跑更高時脈通常還得加電壓，功耗隨 V<sup>2</sup> 上升得更快。反過來，把電壓和時脈都降 15%，動態功耗變成 0.85<sup>3</sup> ≈ 61%；同一個工作的時間變成 1 ÷ 0.85 倍，能量是 0.85<sup>2</sup> ≈ 72%：慢了一點，但省下 28% 的能量。這就是動態電壓頻率調整（DVFS）的原理，也是業界轉向多核心的原因（Power Wall and Multicore 功耗牆與多核心，籌備中）。</p>
+          <p>對效能分析的提醒：比較「能源效率」時要算能量（功耗 × 時間），不能只比功耗；功耗高但跑得快的處理器，總能量不一定比較多。memory-bound 的程式大部分時間在等記憶體，降低時脈幾乎不影響時間，卻能明顯省電。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>指令類別表算平均 CPI、CPU time</td><td>很常考</td><td>CPI = Σ CPI<sub>i</sub> × F<sub>i</sub>（或總 cycle = Σ CPI<sub>i</sub> × IC<sub>i</sub>）；time = cycles ÷ clock rate，GHz 記得乘 10<sup>9</sup></td><td><a class="q-link" href="#q-co-0141">例題</a> <a class="q-link" href="#q-co-0217">例題</a></td></tr>
+                <tr><td>兩部機器比快慢</td><td>很常考</td><td>IC 相同只比 CPI × cycle time；IC 不同算到總時間；快幾倍 = 慢的時間 ÷ 快的時間</td><td><a class="q-link" href="#q-co-0149">例題</a> <a class="q-link" href="#q-co-0218">例題</a></td></tr>
+                <tr><td>由時間反推 CPI、比較編譯器</td><td>常考</td><td>CPI = time ÷ (IC × cycle time)；分析差距來自 IC 還是 CPI</td><td><a class="q-link" href="#q-co-0075">例題</a> <a class="q-link" href="#q-co-0192">例題</a> <a class="q-link" href="#q-co-0219">例題</a></td></tr>
+                <tr><td>只改一類 CPI：加速、能不能快 n 倍</td><td>很常考</td><td>加速 = 舊 CPI ÷ 新 CPI；先算其他類的貢獻，CPI<sub>k</sub> → 0 的上限不到 n 就不可能；cycle time 改變要乘進去</td><td><a class="q-link" href="#q-co-0080">例題</a> <a class="q-link" href="#q-co-0021">例題</a> <a class="q-link" href="#q-co-0221">例題</a></td></tr>
+                <tr><td>MIPS、時脈不能代表效能</td><td>很常考</td><td>MIPS = clock rate ÷ (CPI × 10<sup>6</sup>) 沒算到 IC；舉一個 MIPS 高但時間長的例子</td><td><a class="q-link" href="#q-co-0098">例題</a> <a class="q-link" href="#q-co-0111">例題</a> <a class="q-link" href="#q-co-0152">例題</a></td></tr>
+                <tr><td>設計變更影響 IC、CPI、cycle time 哪一項</td><td>常考</td><td>對照「誰影響三因素」表；指令變強 → IC 降、CPI/T 升；管線加深 → T 降、CPI 升；快取 → CPI</td><td><a class="q-link" href="#q-co-0200">例題</a> <a class="q-link" href="#q-co-0087">例題</a> <a class="q-link" href="#q-co-0220">例題</a></td></tr>
+                <tr><td>單週期、多週期、管線的時間比較</td><td>常考</td><td>單週期 T = 各階段總和、CPI 1；多週期 T = 最慢階段、CPI 依指令類別加權；管線 T = 最慢階段 + 暫存器延遲、CPI ≈ 1 + stall</td><td><a class="q-link" href="#q-co-0017">例題</a> <a class="q-link" href="#q-co-0026">例題</a></td></tr>
+                <tr><td>效能定義觀念判斷</td><td>常考</td><td>response time 與 throughput 分清楚；CPI 不必是整數；多執行緒 CPU time 可以大於 elapsed time</td><td><a class="q-link" href="#q-co-0033">例題</a> <a class="q-link" href="#q-co-0215">例題</a></td></tr>
+                <tr><td>Roofline：memory-bound 或 compute-bound</td><td>常考（近年）</td><td>算 intensity = FLOP ÷ 搬移 bytes；和轉折點比；可達 = min(峰值, 頻寬 × intensity)；memory-bound 時只有頻寬或 intensity 有用</td><td><a class="q-link" href="#q-co-0179">例題</a> <a class="q-link" href="#q-co-0094">例題</a> <a class="q-link" href="#q-co-0176">例題</a> <a class="q-link" href="#q-co-0222">例題</a></td></tr>
+                <tr><td>結合記憶體停頓或功耗</td><td>偶爾</td><td>CPI = 理想 CPI + 停頓；能量 = 功耗 × 時間，先算時間再算能量</td><td><a class="q-link" href="#q-co-0160">例題</a> <a class="q-link" href="#q-co-0205">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> MIPS 比較高的機器比較快</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> MIPS 沒算到 IC，指令數不同時 MIPS 高的可能比較慢；只有執行時間可靠</span> <a class="q-link" href="#q-co-0098">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> CPI 比較小的 CPU 一定比較快</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 還要乘上 IC 和 cycle time；不同 ISA 的 IC 不同，時脈也可能不同</span> <a class="q-link" href="#q-co-0111">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> CPU time = IC × CPI</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是 cycle 數，還要除以 clock rate；2 GHz 要除以 2 × 10<sup>9</sup>，不是當成 1 GHz</span> <a class="q-link" href="#q-co-0141">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 用 Amdahl's Law 時，被加速部分的比例就是它佔的指令比例</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要用執行時間的比例：CPI<sub>k</sub> × F<sub>k</sub> ÷ 平均 CPI</span> <a class="q-link" href="#q-co-0021">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 只要某類 CPI 降得夠低，整體就能快任意倍</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 其他類的 cycle 不會變，CPI<sub>k</sub> = 0 時就是上限</span> <a class="q-link" href="#q-co-0080">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> CPI 一定是整數；CPU time 一定不超過 elapsed time</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> CPI 是平均值；多執行緒時 CPU time 是各核心加總，可以大於 elapsed time</span> <a class="q-link" href="#q-co-0033">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 管線加深主要是降低 CPI</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 主要是縮短 cycle time，CPI 通常反而上升</span> <a class="q-link" href="#q-co-0200">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 兩台機器時間相同時，指令少的那台時脈比較快</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 時間相同時，時脈比 = 所需 cycle 數（IC × CPI）的比，要把 CPI 一起算</span> <a class="q-link" href="#q-co-0192">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 改編譯器讓 IC 變少，CPI 不會跟著變</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 拿掉的指令 CPI 和平均不同，平均 CPI 會跟著變；要直接算總 cycle 數</span> <a class="q-link" href="#q-co-0221">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 加更多運算單元、提高時脈一定能加速</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> memory-bound 的程式碰不到運算屋頂，只有加大頻寬或提高 arithmetic intensity 有用</span> <a class="q-link" href="#q-co-0094">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="cpu-performance"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=329bbb96"></script>
+  <script src="../../../assets/js/viz-core.js?v=329bbb96"></script>
+  <script src="../../../assets/js/viz/computer-organization/cpu-performance.js?v=329bbb96"></script>
+</body>
+</html>

@@ -8749,6 +8749,151 @@
       "question": "<p>無向加權圖 G 有頂點 0～5，邊與權重如下：</p><div class=\"table-scroll\"><table><tr><th>邊</th><td>(0,1)</td><td>(0,2)</td><td>(1,2)</td><td>(1,3)</td><td>(2,3)</td><td>(2,4)</td><td>(3,4)</td><td>(3,5)</td><td>(4,5)</td><td>(1,5)</td></tr><tr><th>權重</th><td>7</td><td>2</td><td>5</td><td>4</td><td>8</td><td>3</td><td>6</td><td>9</td><td>10</td><td>11</td></tr></table></div><p>已知 G 的 MST T = {(0,2), (2,4), (1,3), (1,2), (3,5)}，成本 23。以下三小題各自獨立（都從原圖出發）：(a) 把非樹邊 (4,5) 的權重從 10 改成 6，新的 MST 成本是多少？(b) 把樹邊 (1,2) 的權重從 5 改成 9，新的 MST 成本是多少？(c) 原圖的第二小生成樹（成本嚴格大於 23 的生成樹中最小者）成本是多少？</p>",
       "answer": "(a) 20　(b) 24　(c) 24",
       "explanation": "<p><b>(a)</b> 非樹邊變輕：把 (4,5) 6 加進 T，形成環 4-2-1-3-5-4，環上的樹邊是 (2,4) 3、(1,2) 5、(1,3) 4、(3,5) 9。最重的 (3,5) 9 &gt; 6，換掉它：23 − 9 + 6 = <b>20</b>。</p><p><b>(b)</b> 樹邊變重：拿掉 (1,2)，T 分成 {0,2,4} 和 {1,3,5}。跨越這個 cut 的邊有 (0,1) 7、(1,2) 9、(2,3) 8、(3,4) 6、(4,5) 10，最輕的是 (3,4) 6 &lt; 9，換上：23 − 5 + 6 = <b>24</b>。</p><p><b>(c)</b> 第二小生成樹由 T 換一條邊得到。對每條非樹邊，算「加入它、拿掉環上最大樹邊」的增加量：(0,1) 7：環 0-2-1，最大樹邊 5，+2；(2,3) 8：環 2-1-3，最大 5，+3；(3,4) 6：環 3-1-2-4，最大 5，+1；(4,5) 10：最大 9，+1；(1,5) 11：環 1-3-5，最大 9，+2。最小增加量是 1，成本 <b>24</b>（有兩棵）。</p><p>(a)(b)(c) 都已用程式列舉全部 114 棵生成樹驗算。常見錯誤：(a) 以為「非樹邊變輕不影響 MST」；(b) 拿掉 (1,2) 後直接換回原本第二輕的跨越邊卻沒比較全部跨越邊。</p>"
+    },
+    {
+      "id": "ds-0364",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>設雜湊表有 m 個 slot、存了 n 個 key，load factor α = n / m。下列關於 α 的敘述何者<b>錯誤</b>？</p>",
+      "choices": [
+        "(A) 用 separate chaining 時，α 可以大於 1",
+        "(B) 用 open addressing 時，α 一定 ≤ 1",
+        "(C) α 越小碰撞機率越低，但 α = 0.1 時仍可能發生碰撞",
+        "(D) 用 separate chaining 時，只要 α ≤ 1，每個 bucket 最多只會有一個 key"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>α 是「平均」每個 slot 放幾個 key，不是上限。</p><ul><li>(A) 對：chaining 的 key 放在串列裡，串列可以無限加長，n 可以大於 m。</li><li>(B) 對：open addressing 每格只放一個 key，最多放 m 個，所以 α ≤ 1。</li><li>(C) 對：只要兩個 key 的 h 值相同就會碰撞，和表滿不滿無關。例如 m = 10、h(k) = k mod 10，只放 3 和 13 兩個 key，α = 0.2 就已經碰撞。</li><li>(D) <b>錯</b>：α ≤ 1 只代表平均不到 1 個，最壞情況 n 個 key 全落在同一個 bucket，那條串列長度就是 n。</li></ul>"
+    },
+    {
+      "id": "ds-0365",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>open addressing 刪除 key 時，把那一格標成 DELETED（tombstone），而不是改回 EMPTY。下列敘述何者正確？</p>",
+      "choices": [
+        "(A) 搜尋時遇到 DELETED 就可以停下來，回報找不到",
+        "(B) 搜尋時遇到 DELETED 要繼續探測；插入時可以把新 key 放進 DELETED 的格子",
+        "(C) 直接改回 EMPTY 也不影響之後搜尋的正確性",
+        "(D) tombstone 越多，搜尋越快"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>tombstone 的意思是「這裡曾經有人」。某個 key x 插入時可能因為這格被占而被擠到後面，如果刪除後把這格改回 EMPTY，之後搜尋 x 會在這格停下、誤判 x 不存在，所以 (C) 錯；同理搜尋遇到 DELETED 不能停，(A) 錯。</p><p>插入時 DELETED 的格子可以重複利用（先確認 key 不在表中，再放到路上第一個 tombstone），(B) 對。tombstone 不會讓搜尋停下，越多代表探測路徑越長，搜尋越慢，(D) 錯；tombstone 累積太多時通常要整張表 rehash 清掉。</p>"
+    },
+    {
+      "id": "ds-0366",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>雜湊表 m = 11、h(k) = k mod 11，用 linear probing，刪除用 tombstone。依序執行：insert 27、38、49、16、60，然後 delete 38。接著：</p><p>(1) search(49) 共探測幾格？<br>(2) 再 insert(71)，71 放在哪一格？（插入時先確認 key 不存在，再放到路上第一個 tombstone）<br>(3) 之後 search(82)（不存在）共探測幾格才確定找不到？</p>",
+      "answer": "(1) 3 格；(2) 第 6 格；(3) 6 格",
+      "explanation": "<p>五個 key 的 home 都是 5（27、38、49、16、60 mod 11 都等於 5），所以依序被擠到 5、6、7、8、9，形成一整串 cluster。delete 38 把第 6 格標成 DELETED。</p><div class=\"table-scroll\"><table><tr><th>操作</th><th>探測的格子</th><th>結果</th></tr><tr><td>search(49)</td><td>5（27）→ 6（DELETED，繼續）→ 7（49）</td><td>找到，<b>3 格</b></td></tr><tr><td>insert(71)</td><td>5 → 6（DELETED，記下）→ 7 → 8 → 9 → 10（EMPTY）</td><td>確定 71 不在表中，放進第一個 tombstone：<b>第 6 格</b></td></tr><tr><td>search(82)</td><td>5 → 6 → 7 → 8 → 9 → 10（EMPTY）</td><td><b>6 格</b>，碰到 EMPTY 才停</td></tr></table></div><p>(1) 如果刪除時把第 6 格改回 EMPTY，search(49) 會在第 6 格停下而誤判找不到。(2) insert 不能看到 tombstone 就直接放，要先走到 EMPTY 確認 71 不存在，否則可能存兩份同樣的 key。(3) 失敗搜尋要走完整串 cluster，這就是 linear probing 在 cluster 變長時失敗搜尋特別慢的原因。（已用程式模擬。）</p>"
+    },
+    {
+      "id": "ds-0367",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>雜湊表 m = 7、h(k) = k mod 7，用 quadratic probing：第 i 次探測 (h(k) + i²) mod 7，i = 0, 1, …, 6。表中已放了 0、1、2、4（分別在第 0、1、2、4 格），第 3、5、6 格是空的。現在 insert(7)，請列出探測的格子，並說明結果。</p>",
+      "answer": "探測 0、1、4、2、2、4、1，全部被占，插入失敗（表還有 3 格空位）",
+      "explanation": "<p>h(7) = 0，i = 0～6 的 i² mod 7 = 0、1、4、2、2、4、1，所以探測位置是 <b>0、1、4、2、2、4、1</b>，只會看 4 個不同的格子，而這 4 格剛好都被占了，插入失敗，雖然第 3、5、6 格是空的。</p><p>原因：i² mod 7 只有 0、1、2、4 四種值（quadratic residue 只有 ⌊7/2⌋ + 1 = 4 種），探測序列不是全表的排列。這是 quadratic probing 的代價；實務上保證能插入的條件是 m 為質數且 α ≤ 1/2（表至少一半空著），此時前 ⌈m/2⌉ 次探測位置都不同，一定碰得到空格。這題放了 4 個 key，α = 4/7 > 1/2，已經超過保證範圍。（已用程式模擬。）</p>"
+    },
+    {
+      "id": "ds-0368",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>雜湊表 m = 11，用 double hashing：h₁(k) = k mod 11、h₂(k) = 1 + (k mod 9)，第 i 次探測 (h₁(k) + i·h₂(k)) mod 11。依序插入 14、25、36、47、58。</p><p>(1) 寫出每個 key 的最終位置。<br>(2) 如果改用 linear probing，58 要探測幾格才放得進去？</p>",
+      "answer": "(1) 14→3、25→0、36→4、47→6、58→8；(2) 5 格",
+      "explanation": "<p>五個 key 的 h₁ 都是 3，但 h₂ 不同，所以碰撞後跳的步長不同：</p><div class=\"table-scroll\"><table><tr><th>key</th><th>h₁</th><th>h₂</th><th>探測過程</th><th>位置</th></tr><tr><td>14</td><td>3</td><td>6</td><td>3 空</td><td>3</td></tr><tr><td>25</td><td>3</td><td>8</td><td>3 滿 → (3 + 8) mod 11 = 0 空</td><td>0</td></tr><tr><td>36</td><td>3</td><td>1</td><td>3 滿 → 4 空</td><td>4</td></tr><tr><td>47</td><td>3</td><td>3</td><td>3 滿 → 6 空</td><td>6</td></tr><tr><td>58</td><td>3</td><td>5</td><td>3 滿 → 8 空</td><td>8</td></tr></table></div><p>(2) linear probing 時五個 key 會排成 3、4、5、6、7 一整串，58 要看 3、4、5、6、7 共 <b>5 格</b>；double hashing 每個 key 只看了 1～2 格。這就是 double hashing 的優點：h₁ 相同的 key 走不同的探測序列，不會形成 cluster。m = 11 是質數，h₂ 介於 1～9，和 11 一定互質，每個 key 的探測序列都會走遍全表。（已用程式模擬。）</p>"
+    },
+    {
+      "id": "ds-0369",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>雜湊表 m = 7、h(k) = k mod 7，用 separate chaining，新 key 接在串列尾端。依序插入 14、21、9、16、30、5、12、26。假設每個 key 被搜尋的機率相同，失敗搜尋時 h 值均勻落在 7 個 bucket：</p><p>(1) 成功搜尋平均要比較幾個節點？<br>(2) 失敗搜尋平均要比較幾個節點？</p>",
+      "answer": "(1) 15/8 = 1.875 個；(2) 8/7 ≈ 1.14 個",
+      "explanation": "<p>h 值：14、21 → 0；9、16、30 → 2；5、12、26 → 5。串列：bucket 0：14 → 21；bucket 2：9 → 16 → 30；bucket 5：5 → 12 → 26；其他 bucket 是空的。</p><p>(1) 找第 j 個節點要比較 j 次：bucket 0 是 1 + 2，bucket 2 是 1 + 2 + 3，bucket 5 是 1 + 2 + 3，總共 15 次，平均 15 / 8 = <b>1.875</b>。</p><p>(2) 失敗搜尋要把整條串列看完，比較次數 = 串列長度。7 個 bucket 長度是 2、0、3、0、0、3、0，平均 8 / 7 ≈ <b>1.14</b>，正好等於 α = n / m = 8/7，和「失敗搜尋平均比較 α 個節點」的公式一致。成功搜尋 1.875 比理論值 1 + α/2 ≈ 1.57 大，是因為這組 key 只落在 3 個 bucket，分布不均勻。（已用程式計算。）</p>"
+    },
+    {
+      "id": "ds-0370",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>雜湊表 m = 1000，已存 n = 750 個 key。假設雜湊函數夠均勻，請估計下列做法的<b>期望探測次數</b>，並說明哪一種在失敗搜尋最吃虧、為什麼：</p><p>(1) linear probing 的成功搜尋與失敗搜尋；<br>(2) uniform hashing（double hashing 可視為近似）的成功搜尋與失敗搜尋；<br>(3) separate chaining 的成功搜尋（含找到的那個節點）與失敗搜尋（比較的節點數）。</p>",
+      "answer": "α = 0.75。(1) 成功 ≈ 2.5、失敗 ≈ 8.5；(2) 成功 ≈ 1.85、失敗 ≈ 4；(3) 成功 ≈ 1.375、失敗 ≈ 0.75。失敗搜尋最吃虧的是 linear probing",
+      "explanation": "<p>α = 750 / 1000 = 0.75。</p><div class=\"table-scroll\"><table><tr><th>做法</th><th>成功搜尋</th><th>失敗搜尋</th></tr><tr><td>linear probing</td><td>½(1 + 1/(1−α)) = ½(1 + 4) = <b>2.5</b></td><td>½(1 + 1/(1−α)²) = ½(1 + 16) = <b>8.5</b></td></tr><tr><td>uniform hashing</td><td>(1/α)·ln(1/(1−α)) = (4/3)·ln 4 ≈ <b>1.85</b></td><td>1/(1−α) = <b>4</b></td></tr><tr><td>separate chaining</td><td>1 + α/2 = <b>1.375</b></td><td>α = <b>0.75</b></td></tr></table></div><p>linear probing 的失敗搜尋 8.5 次是 uniform hashing 4 次的兩倍多，因為 primary clustering：被占的格子會連成長串，失敗搜尋要一路走到串尾的空格，而且串越長、新的 key 落進串裡的機率越大，串又變得更長。它的失敗公式有 1/(1−α)²，α 接近 1 時成長得比 uniform hashing 的 1/(1−α) 快很多（α = 0.9 時是 50.5 對 10）。</p><p>chaining 的探測次數只和平均串列長度 α 有關，α 甚至可以大於 1；open addressing 的公式在 α → 1 時都會爆掉，所以 open addressing 通常把 α 控制在 0.5～0.75 以下，超過就擴容 rehash。（數值已用程式計算。）</p>"
+    },
+    {
+      "id": "ds-0371",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>雜湊表大小 m 為奇質數，使用 quadratic probing：第 i 次探測 (h(k) + i²) mod m。證明：</p><p>(1) i = 0, 1, …, ⌊m/2⌋ 這 ⌈m/2⌉ 次探測的位置兩兩不同；<br>(2) 因此只要表中 key 的個數 n ≤ ⌊m/2⌋（α &lt; 1/2），插入一定成功。</p>",
+      "answer": "反證：若兩次探測位置相同，則 m 整除 (j − i)(j + i)，但兩個因數都介於 1 和 m − 1，矛盾",
+      "explanation": "<p><b>(1)</b> 假設存在 0 ≤ i &lt; j ≤ ⌊m/2⌋，使 (h + i²) ≡ (h + j²) (mod m)。消去 h 得 j² − i² ≡ 0，也就是 m 整除 (j − i)(j + i)。</p><p>m 是質數，所以 m 整除 j − i 或 m 整除 j + i。但：</p><ul><li>0 &lt; j − i ≤ ⌊m/2⌋ &lt; m；</li><li>0 &lt; j + i ≤ ⌊m/2⌋ + (⌊m/2⌋ − 1) = m − 2 &lt; m（m 為奇數時 2⌊m/2⌋ = m − 1）。</li></ul><p>兩者都是 1～m − 1 之間的整數，不可能被 m 整除，矛盾。所以這 ⌊m/2⌋ + 1 = ⌈m/2⌉ 次探測位置兩兩不同。</p><p><b>(2)</b> 插入前表中有 n ≤ ⌊m/2⌋ 個 key，最多占掉 ⌊m/2⌋ 格，而前 ⌈m/2⌉ = ⌊m/2⌋ + 1 次探測看的是 ⌈m/2⌉ 個不同的格子，至少有一格是空的，所以插入一定成功。</p><p>注意 m 不是質數時 (1) 不成立，例如 m = 8：1² 和 3² mod 8 都是 1。另外 m = 7 時，表已有 4 個 key（超過 ⌊7/2⌋ = 3）就可能插不進去，見上一題的例子。（質數 m = 5～23 已用程式驗證 (1)。）</p>"
+    },
+    {
+      "id": "ds-0372",
+      "topics": [
+        "collision-resolution"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>（複選）雜湊表 m = 10、h(k) = k mod 10，用 linear probing。依序插入 18、28、9、38、21、19、34 後，刪除 28。若刪除時<b>不用 tombstone</b>，而是把同一串中受影響的 key 往前搬，讓表和「從沒插入過 28」時的結果一樣，哪些 key 要移動位置？</p>",
+      "choices": [
+        "(A) 9",
+        "(B) 38",
+        "(C) 21",
+        "(D) 19",
+        "(E) 34"
+      ],
+      "answer": "(A)(B)(C)(D)",
+      "explanation": "<p>插入後的表：</p><div class=\"table-scroll\"><table><tr><th>位置</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th></tr><tr><td>key</td><td>9</td><td>38</td><td>21</td><td>19</td><td>34</td><td></td><td></td><td></td><td>18</td><td>28</td></tr></table></div><p>28 在第 9 格，挖出一個洞（hole = 9），從下一格往後檢查，直到碰到 EMPTY。規則：如果某個 key 的 home <b>不在</b>（洞, 它目前的位置］這個環狀區間內，表示它的探測路徑經過洞，要補進洞裡，洞移到它原本的位置。</p><ul><li>第 0 格 9（home 9）：home 不在 (9, 0]，搬到 9，洞變 0。</li><li>第 1 格 38（home 8）：不在 (0, 1]，搬到 0，洞變 1。</li><li>第 2 格 21（home 1）：不在 (1, 2]，搬到 1（回到自己的 home），洞變 2。</li><li>第 3 格 19（home 9）：不在 (2, 3]，搬到 2，洞變 3。</li><li>第 4 格 34（home 4）：在 (3, 4] 內，它從沒經過洞，<b>不動</b>。</li><li>第 5 格 EMPTY，結束。</li></ul><p>最終表：0:38、1:21、2:19、4:34、8:18、9:9，和不插入 28、重新插入其他 6 個 key 的結果完全相同（已用程式驗算）。常見錯誤：只檢查第 9 格之後到表尾，忘了繞回第 0 格；或以為 34 也在同一串所以要動，其實它待在自己的 home。</p>"
     }
   ]
 }

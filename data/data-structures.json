@@ -515,9 +515,18 @@
           "en": "Collision Resolution",
           "zh": "碰撞處理",
           "book": "8.2",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": true
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "chaining",
+            "linear probing",
+            "quadratic probing",
+            "double hashing",
+            "tombstone"
+          ],
+          "updated": "2026-11-27"
         },
         {
           "id": "dynamic-hashing",

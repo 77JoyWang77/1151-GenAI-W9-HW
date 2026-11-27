@@ -3833,7 +3833,7 @@
         "(d) For the processor that has longer execution time, it is possible to improve <u>only one</u> of its instruction classes so that it becomes faster."
       ],
       "answer": "(a)(b)(c)(d)（(c) 待確認）",
-      "explanation": "<p>P1 平均 CPI = 0.3×1 + 0.25×1 + 0.2×4 + 0.25×3 = 0.3 + 0.25 + 0.8 + 0.75 = <b>2.1</b>；P2 = <b>2</b>。</p>\n<p><b>(a) 對</b>：2.1 &gt; 2。<br>\n<b>(b) 對</b>：每條指令平均時間 P1 = 2.1 × 1 = 2.1 ns，P2 = 2 × 0.8 = 1.6 ns，P1 慢了約 31%。<br>\n<b>(c) 對</b>：在這個模型裡 CPI 由各類指令的 cycle 數與指令比例決定，只改時脈不影響（實際上若記憶體延遲固定，時脈改變會讓 stall 的 cycle 數改變，所以待確認）。<br>\n<b>(d) 對</b>：P1 要追上 1.6，平均 CPI 要降 0.5 以上。只改 class C：它貢獻 0.2 × 4 = 0.8，把 C 的 CPI 降到 1.4 以下，貢獻降到 0.28，總 CPI 1.58 &lt; 1.6，就比 P2 快了。</p>"
+      "explanation": "<p>P1 平均 CPI = 0.3×1 + 0.25×1 + 0.2×4 + 0.25×3 = 0.3 + 0.25 + 0.8 + 0.75 = <b>2.1</b>；P2 = <b>2</b>。</p>\n<p><b>(a) 對</b>：2.1 &gt; 2。<br>\n<b>(b) 對</b>：每條指令平均時間 P1 = 2.1 × 1 = 2.1 ns，P2 = 2 × 0.8 = 1.6 ns，P1 慢了約 31%。<br>\n<b>(c) 對</b>：在這個模型裡 CPI 由各類指令的 cycle 數與指令比例決定，只改時脈不影響（實際上若記憶體延遲固定，時脈改變會讓 stall 的 cycle 數改變，所以待確認）。<br>\n<b>(d) 對</b>：兩台時脈不同，比的是「CPI × cycle time」：P1 要比 P2 快，需要 CPI × 1 ns &lt; 1.6 ns，也就是平均 CPI 從 2.1 降到 1.6 以下，降幅超過 0.5。只改 class C：它目前貢獻 0.2 × 4 = 0.8，要讓總 CPI = 1.3 + 0.2 × CPI<sub>C</sub> &lt; 1.6，得 CPI<sub>C</sub> &lt; 1.5（CPI<sub>C</sub> = 1.5 時總 CPI 剛好 1.6，兩台一樣快）。例如降到 1.4，貢獻 0.28，總 CPI 1.58 &lt; 1.6，就比 P2 快了。</p>"
     },
     {
       "id": "co-0150",
@@ -5465,6 +5465,165 @@
       "question": "D-cache 是 1 KiB 的直接映射快取，區塊 32 bytes，一開始是空的。int 為 4 bytes，二維陣列 int a[N][N] 從位址 0 開始以 row-major 存放（區塊對齊）。考慮兩種走訪：<pre class=\"code\">/* 列優先 */ for (i = 0; i &lt; N; i++) for (j = 0; j &lt; N; j++) sum += a[i][j];\n/* 行優先 */ for (i = 0; i &lt; N; i++) for (j = 0; j &lt; N; j++) sum += a[j][i];</pre>只考慮陣列的存取（sum、i、j 在暫存器）。<br>(a) N = 16 時，兩種走訪的 miss rate 各是多少？<br>(b) N = 32 時，兩種走訪的 miss rate 各是多少？<br>(c) N = 32，理想 CPI 1，每條指令平均 0.25 次陣列存取，miss penalty 50 cycles，I-cache 不 miss。兩種走訪的 CPI 各是多少？",
       "answer": "(a) 都是 12.5%　(b) 列優先 12.5%、行優先 100%　(c) 2.5625 與 13.5",
       "explanation": "<p>快取有 1024 / 32 = 32 個區塊，每個區塊放 8 個 int。a[r][c] 的位址 = (rN + c) × 4，區塊編號 = (rN + c) / 8，set = 區塊編號 mod 32。</p><p><b>列優先</b>：連續存取，每 8 個 int 只有第一個 miss（compulsory），miss rate = 1/8 = <b>12.5%</b>，N = 16 和 32 都一樣。</p><p><b>(a) N = 16 行優先</b>：一列 16 個 int 是 2 個區塊，a[r][c] 的區塊是 2r + c/8。整個陣列 16 × 16 × 4 = 1 KiB，正好 32 個區塊，而且編號 0～31 分別落在 32 個不同的 set，<b>沒有衝突</b>。走第 0 行時把 16 個區塊（2r，r = 0～15）都搬進來，第 1～7 行全部命中；第 8 行再搬另外 16 個區塊（2r + 1），第 9～15 行命中。共 32 次 miss / 256 次存取 = <b>12.5%</b>，和列優先一樣。</p><p><b>(b) N = 32 行優先</b>：一列 32 個 int 是 4 個區塊，a[r][c] 的區塊是 4r + c/8，set = (4r + c/8) mod 32。r、r+8、r+16、r+24 落在同一個 set，一行 32 個區塊只用到 8 個 set，每個 set 輪流被 4 個區塊搶。等到下一行（同一批區塊）回來時早就被擠掉了，<b>每次都 miss，miss rate 100%</b>（全是 conflict miss）。</p><p><b>(c)</b> 列優先：CPI = 1 + 0.25 × 0.125 × 50 = <b>2.5625</b>；行優先：CPI = 1 + 0.25 × 1 × 50 = <b>13.5</b>，慢了約 5.27 倍。</p><p>重點：「行優先一定比較差」不是絕對的，(a) 中陣列放得進快取又沒有衝突，兩種順序一樣好；陣列變大、跨步讓很多列對到同一個 set 時才會崩潰。（已用 C 模擬器實際跑過兩種走訪驗算。）</p>"
+    },
+    {
+      "id": "co-0214",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "時脈 2 GHz 的處理器執行一個程式，總指令數 IC = 3 × 10<sup>9</sup>，平均 CPI = 1.5。這個程式的 CPU time 是多少？",
+      "choices": [
+        "(A) 1.125 s",
+        "(B) 2.25 s",
+        "(C) 4.5 s",
+        "(D) 9 s"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>CPU time = IC × CPI ÷ clock rate = 3 × 10<sup>9</sup> × 1.5 ÷ (2 × 10<sup>9</sup>) = 4.5 × 10<sup>9</sup> cycles ÷ 2 × 10<sup>9</sup> cycles/s = <b>2.25 s</b>。</p><p>(A) 1.125 s 是把 CPI 和時脈都放到分母（÷1.5 ÷2）；(C) 4.5 s 是忘了除以時脈的 2（當成 1 GHz）；(D) 9 s 是乘上時脈而不是除。順便：MIPS = 2000 ÷ 1.5 ≈ 1333，每秒約 13 億條指令。</p>"
+    },
+    {
+      "id": "co-0215",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）下列關於效能的敘述，哪些正確？",
+      "choices": [
+        "(A) X 跑某程式要 10 s，Y 要 15 s，則 X 比 Y 快 1.5 倍",
+        "(B) 時脈是整數 GHz 時，平均 CPI 也一定是整數",
+        "(C) 時脈 4 GHz 代表 clock cycle time 是 0.25 ns",
+        "(D) 把單核心換成多核心、同時跑多個互不相關的程式，主要改善的是 throughput，不是單一程式的 response time",
+        "(E) 一個程式的 CPU time 永遠不會超過它的 elapsed time"
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<ul><li><b>(A) 對</b>：效能 = 1 ÷ 執行時間，Perf<sub>X</sub> ÷ Perf<sub>Y</sub> = Time<sub>Y</sub> ÷ Time<sub>X</sub> = 15 ÷ 10 = 1.5。</li><li><b>(B) 錯</b>：CPI 是所有指令的平均值，例如 30% 的指令 CPI 2、70% CPI 1，平均就是 1.3，和時脈是不是整數無關。</li><li><b>(C) 對</b>：cycle time = 1 ÷ 4 × 10<sup>9</sup> = 0.25 × 10<sup>−9</sup> s = 0.25 ns。</li><li><b>(D) 對</b>：每個程式本身沒有變快（response time 不變），但每單位時間完成的程式變多，改善的是 throughput。</li><li><b>(E) 錯</b>：CPU time 是所有核心花在這個程式上的時間加總，4 個 thread 在 4 核上同時跑 1 秒，elapsed time 1 秒、CPU time 卻是 4 秒。單執行緒時才一定 ≤ elapsed time（elapsed 還包含 I/O 與等待其他程式的時間）。</li></ul>"
+    },
+    {
+      "id": "co-0216",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個程式執行了 4 × 10<sup>8</sup> 條指令，在 2.5 GHz 的處理器上量到 CPU time 0.6 s。它的平均 CPI = ____，IPC = ____。",
+      "answer": "CPI = 3.75，IPC ≈ 0.267",
+      "explanation": "<p>先算總 cycle 數：cycles = CPU time × clock rate = 0.6 × 2.5 × 10<sup>9</sup> = 1.5 × 10<sup>9</sup>。</p><p>CPI = cycles ÷ IC = 1.5 × 10<sup>9</sup> ÷ 4 × 10<sup>8</sup> = <b>3.75</b>；IPC = 1 ÷ CPI = <b>0.267</b>，平均每個 cycle 完成不到三分之一條指令。也可以一步寫成 CPI = time ÷ (IC × cycle time) = 0.6 ÷ (4 × 10<sup>8</sup> × 0.4 ns)。常見錯誤是把 2.5 GHz 換成 cycle time 時寫成 2.5 ns（應該是 0.4 ns）。</p>"
+    },
+    {
+      "id": "co-0217",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某程式的指令組成如下，處理器時脈 3 GHz，總指令數 6 × 10<sup>9</sup>。<div class=\"table-scroll\"><table><tr><th>類別</th><th>ALU</th><th>Load</th><th>Store</th><th>Branch</th></tr><tr><td>比例</td><td>45%</td><td>25%</td><td>10%</td><td>20%</td></tr><tr><td>CPI</td><td>1</td><td>4</td><td>3</td><td>2</td></tr></table></div>(a) 平均 CPI？(b) CPU time？(c) MIPS？(d) 只改良 Load，要讓整個程式快 1.5 倍，Load 的 CPI 至少要降到多少？",
+      "answer": "(a) 2.15　(b) 4.3 s　(c) 約 1395　(d) Load CPI ≤ 1.133",
+      "explanation": "<p><b>(a)</b> 加權平均：0.45 × 1 + 0.25 × 4 + 0.10 × 3 + 0.20 × 2 = 0.45 + 1.00 + 0.30 + 0.40 = <b>2.15</b>。Load 只佔 25% 的指令，卻貢獻 1.00 / 2.15 ≈ 47% 的 cycle。</p><p><b>(b)</b> 6 × 10<sup>9</sup> × 2.15 ÷ 3 × 10<sup>9</sup> = <b>4.3 s</b>。</p><p><b>(c)</b> MIPS = 3000 ÷ 2.15 ≈ <b>1395</b>。</p><p><b>(d)</b> IC、時脈不變，快 1.5 倍就是 CPI 要降到 2.15 ÷ 1.5 ≈ 1.4333。其他類別的貢獻 0.45 + 0.30 + 0.40 = 1.15 不會變，所以 Load 的貢獻最多 1.4333 − 1.15 = 0.2833，Load CPI ≤ 0.2833 ÷ 0.25 ≈ <b>1.133</b>（從 4 降到 1.13，Load 本身要快約 3.5 倍）。只改 Load 的上限是 2.15 ÷ 1.15 ≈ 1.87 倍，所以 1.5 倍做得到，2 倍做不到。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "co-0218",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "M1、M2 實作同一個 ISA，執行同一個執行檔。M1 時脈 2 GHz、這個程式的平均 CPI 1.6；M2 時脈 2.5 GHz、平均 CPI 2.2。下列何者正確？",
+      "choices": [
+        "(A) M2 比 M1 快 1.25 倍",
+        "(B) M1 比 M2 快 1.1 倍",
+        "(C) M2 比 M1 快 1.1 倍",
+        "(D) 兩者一樣快"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>同一個執行檔，IC 相同，只要比「每條指令平均花多少時間」= CPI × cycle time：</p><ul><li>M1：1.6 × 0.5 ns = 0.8 ns</li><li>M2：2.2 × 0.4 ns = 0.88 ns</li></ul><p>M1 比較快，快 0.88 ÷ 0.8 = <b>1.1 倍</b>，答案 (B)。(A) 只看時脈比 2.5 ÷ 2 = 1.25；M2 時脈快 25%，但 CPI 多了 37.5%，抵銷之後反而慢。也可以比 MIPS：M1 = 2000 ÷ 1.6 = 1250、M2 = 2500 ÷ 2.2 ≈ 1136，<b>指令數相同時</b> MIPS 的比較結論和時間一致。</p>"
+    },
+    {
+      "id": "co-0219",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "同一個原始程式用兩個編譯器編譯，在同一台 2 GHz 的機器上執行。指令分成 A、B、C 三類，CPI 分別是 1、2、3。<div class=\"table-scroll\"><table><tr><th>編譯器</th><th>總指令數</th><th>A</th><th>B</th><th>C</th></tr><tr><td>X</td><td>2.0 × 10<sup>9</sup></td><td>60%</td><td>30%</td><td>10%</td></tr><tr><td>Y</td><td>1.6 × 10<sup>9</sup></td><td>40%</td><td>40%</td><td>20%</td></tr></table></div>(a) 兩者的平均 CPI？(b) 兩者的 CPU time？(c) 哪一個 MIPS 比較高？(d) 哪一個比較快？這說明了什麼？",
+      "answer": "(a) X 1.5、Y 1.8　(b) X 1.5 s、Y 1.44 s　(c) X（約 1333 對 1111）　(d) Y 快約 1.042 倍：MIPS 高的反而比較慢",
+      "explanation": "<p><b>(a)</b> X：0.6 × 1 + 0.3 × 2 + 0.1 × 3 = <b>1.5</b>；Y：0.4 × 1 + 0.4 × 2 + 0.2 × 3 = <b>1.8</b>。</p><p><b>(b)</b> X：2.0 × 10<sup>9</sup> × 1.5 ÷ 2 × 10<sup>9</sup> = <b>1.5 s</b>；Y：1.6 × 10<sup>9</sup> × 1.8 ÷ 2 × 10<sup>9</sup> = <b>1.44 s</b>。</p><p><b>(c)</b> MIPS = 2000 ÷ CPI：X ≈ 1333、Y ≈ 1111，<b>X 比較高</b>。</p><p><b>(d)</b> Y 快 1.5 ÷ 1.44 ≈ <b>1.042 倍</b>。Y 用了比較複雜的指令（C 類變多），平均 CPI 上升 20%，但指令數少了 20%，總 cycle 數 2.88 × 10<sup>9</sup> 比 X 的 3.0 × 10<sup>9</sup> 少。MIPS 只看「每秒幾條指令」，沒算到 Y 每條指令做的事比較多，所以 MIPS 不能拿來比較指令數不同的情況。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "co-0220",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）以 CPU time = IC × CPI × clock cycle time 分析下列設計變更，哪些敘述正確？",
+      "choices": [
+        "(A) 管線切得更深，主要是靠降低 CPI 來提升效能",
+        "(B) ISA 加入可以直接用記憶體運算元的算術指令，通常會降低 IC，但可能提高 CPI 或 clock cycle time",
+        "(C) 換一個比較好的編譯器只會改變 IC，不會改變 CPI",
+        "(D) 時脈提高 20%，但同一程式的平均 CPI 因此增加 25%（IC 不變），程式會變慢",
+        "(E) 同一個程式，只要 MIPS 提高，執行時間就一定縮短"
+      ],
+      "answer": "(B)(D)",
+      "explanation": "<ul><li><b>(A) 錯</b>：管線加深是把每一級切短，主要縮短 <b>clock cycle time</b>；分支猜錯與 load-use 要停的 cycle 變多，CPI 通常反而上升。</li><li><b>(B) 對</b>：一條指令可以「讀記憶體＋運算」，省下 load，IC 下降；但這種指令要好幾個 cycle 才做完，或讓 datapath 變長，CPI 或 cycle time 可能上升，最後快不快要看三者相乘。</li><li><b>(C) 錯</b>：編譯器決定用哪些指令，也就改變了指令組成，CPI 會跟著變（例如把乘法換成 shift 和 add）。</li><li><b>(D) 對</b>：時間 ∝ CPI ÷ 時脈 = 1.25 ÷ 1.2 ≈ 1.042，慢了約 4%。</li><li><b>(E) 錯</b>：MIPS 沒有考慮 IC；換成很多簡單指令的寫法可以讓 MIPS 變高，總時間卻變長。</li></ul>"
+    },
+    {
+      "id": "co-0221",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個程式的指令組成為 INT 50%（CPI 1）、FP 20%（CPI 4）、L/S 30%（CPI 3），處理器時脈 2 GHz。有兩個改良方案：<br>方案 1：加入新的 FP 單元，FP 的 CPI 降為 2，但 clock cycle time 增加 5%。<br>方案 2：改良編譯器，移除 20% 的 L/S 指令，其他指令不變，硬體不變。<br>(a) 各方案相對原本的加速？哪一個比較好？(b) 方案 2 之後的平均 CPI 是變大還是變小？(c) 兩個方案一起用的加速？(d) 只改 FP，最多能快幾倍？",
+      "answer": "(a) 方案 1 約 1.164 倍、方案 2 約 1.089 倍，方案 1 較好　(b) 變小：2.2 → 約 2.149　(c) 約 1.293 倍　(d) 約 1.571 倍",
+      "explanation": "<p>以原本的 100 條指令為單位計算 cycle 數，原本：50 × 1 + 20 × 4 + 30 × 3 = 220 cycles（CPI 2.2），cycle time 0.5 ns，共 110 ns。</p><p><b>(a)</b> 方案 1：50 + 20 × 2 + 90 = 180 cycles，cycle time 0.5 × 1.05 = 0.525 ns，共 94.5 ns，加速 110 ÷ 94.5 ≈ <b>1.164</b>。方案 2：L/S 剩 24 條，50 + 80 + 72 = 202 cycles × 0.5 ns = 101 ns，加速 110 ÷ 101 ≈ <b>1.089</b>。<b>方案 1 比較好</b>：cycle time 變長 5% 影響的是所有指令，但 FP 省下的 40 個 cycle（佔原本的 18%）足以抵銷。</p><p><b>(b)</b> 方案 2 的 IC 變成 94，平均 CPI = 202 ÷ 94 ≈ <b>2.149</b>，比 2.2 略小：拿掉的是 CPI 3 的指令，比平均 2.2 還高，平均值會被拉低。注意 CPI 的變化很小，加速主要來自 IC 減少了 6%。</p><p><b>(c)</b> 50 + 40 + 72 = 162 cycles × 0.525 ns = 85.05 ns，加速 110 ÷ 85.05 ≈ <b>1.293</b>。</p><p><b>(d)</b> FP 的 CPI 降到 0（且不改 cycle time），剩 140 cycles，最多快 220 ÷ 140 ≈ <b>1.571</b> 倍；FP 只佔 20% 的指令，卻佔 80 ÷ 220 ≈ 36% 的時間，這個比例才決定上限。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "co-0222",
+      "topics": [
+        "cpu-performance"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）某處理器峰值運算 200 GFLOP/s，記憶體頻寬 25 GB/s。程式 K1 的 arithmetic intensity 為 2 FLOP/byte，K2 為 16 FLOP/byte。依 roofline model，下列哪些正確？",
+      "choices": [
+        "(A) 這台處理器的轉折點在 8 FLOP/byte",
+        "(B) K1 最多只能達到 50 GFLOP/s，屬於 memory-bound",
+        "(C) 把記憶體頻寬加倍，K2 的效能會跟著提高",
+        "(D) 把峰值運算加倍到 400 GFLOP/s，K1 的效能會跟著提高",
+        "(E) 若用 blocking 讓 K1 的 intensity 提高到 6 FLOP/byte，K1 最多可達 150 GFLOP/s"
+      ],
+      "answer": "(A)(B)(E)",
+      "explanation": "<p>可達效能 = min(峰值, 頻寬 × intensity)。</p><ul><li><b>(A) 對</b>：轉折點（ridge point）在 200 ÷ 25 = <b>8</b> FLOP/byte，intensity 小於 8 落在斜線區。</li><li><b>(B) 對</b>：K1：min(200, 25 × 2) = <b>50</b> GFLOP/s，只用到峰值的 25%，受記憶體頻寬限制。</li><li><b>(C) 錯</b>：K2：min(200, 25 × 16 = 400) = 200，已經在屋頂上（compute-bound）。頻寬加倍後斜線變成 50 × 16 = 800，可達效能仍是 200，不會變快。</li><li><b>(D) 錯</b>：K1 卡在斜線，峰值加倍只把屋頂抬高，min(400, 50) 仍是 50。</li><li><b>(E) 對</b>：intensity 6 &lt; 8，仍在斜線區：25 × 6 = <b>150</b> GFLOP/s，是原本的 3 倍。提高 intensity（重複使用已搬進 cache 的資料）是 memory-bound 程式最有效的優化之一。</li></ul>"
     }
   ]
 }

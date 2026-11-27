@@ -4061,6 +4061,138 @@
       "source": {
         "kind": "original"
       }
+    },
+    {
+      "id": "la-0176",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "question": "A 是 3×3 矩陣，det A = 3。求 (a) det(2A)　(b) det(−A)　(c) det(A<sup>−1</sup>)　(d) det(A<sup>T</sup>A)　(e) det(2A<sup>−1</sup>)。",
+      "answer": "(a) 24　(b) −3　(c) 1/3　(d) 9　(e) 8/3",
+      "explanation": "<ul><li>(a) det(cA) = c<sup>n</sup> det A，n = 3：2<sup>3</sup> × 3 = 24。寫成 2 × 3 = 6 是最常見的錯。</li><li>(b) (−1)<sup>3</sup> × 3 = −3。n 是奇數，負號留下來；若 A 是 4×4，det(−A) 就等於 det A。</li><li>(c) det(A<sup>−1</sup>) = 1/det A = 1/3。</li><li>(d) det(A<sup>T</sup>A) = det A<sup>T</sup> · det A = 3 × 3 = 9。</li><li>(e) 2<sup>3</sup> × (1/3) = 8/3：純量的 n 次方和反矩陣的倒數要分開處理。</li></ul><p>程式取 A = diag(1, 1, 3) 逐一驗算。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0177",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "basic",
+      "type": "計算",
+      "question": "3×3 矩陣 A 的 det A = 2。依序對 A 做三個列運算得到 B：(1) R<sub>1</sub> ↔ R<sub>3</sub>　(2) R<sub>2</sub> ← R<sub>2</sub> − 4R<sub>1</sub>　(3) R<sub>3</sub> ← 5R<sub>3</sub>。求 det B。",
+      "answer": "det B = −10",
+      "explanation": "<p>逐步追蹤 factor（det(新) = factor × det(原)）：</p><ul><li>(1) 交換兩列：factor × (−1) → −1。</li><li>(2) 列加上另一列的倍數：det 不變，factor 仍是 −1。</li><li>(3) 一列乘以 5：factor × 5 → −5。</li></ul><p>det B = −5 × det A = −5 × 2 = <b>−10</b>。</p><p>常見錯誤：把 (2) 的 −4 也乘進去（得 40），或忘了交換要變號（得 10）。反過來若題目給 det B 求 det A，要<b>除以</b> factor。程式取 det A = 2 的矩陣實際做三步，算出 det B = −10。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0178",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "question": "關於行列式的計算方法，下列何者正確？",
+      "choices": [
+        "(A) 4×4 的行列式可以用「右下對角線乘積相加、左下對角線乘積相減」的 Sarrus 法則計算",
+        "(B) 餘因子展開必須沿第一列展開，沿其他列會得到不同的值",
+        "(C) 上三角矩陣的行列式等於對角線元素的乘積",
+        "(D) 化簡時把某一列乘以 3，行列式不變"
+      ],
+      "answer": "(C)",
+      "explanation": "<ul><li>(A) 錯：Sarrus 法則只適用 3×3。4×4 的排列展開有 4! = 24 項，對角線法則只有 8 項，漏掉大部分。</li><li>(B) 錯：沿任何一列或一行展開結果都相同，所以才要挑 0 最多的那一列（行）。</li><li>(C) 對：沿第一行展開，每次只剩對角線上的元素，一路得到 a<sub>11</sub>a<sub>22</sub>⋯a<sub>nn</sub>。</li><li>(D) 錯：一列乘以 3，行列式也乘以 3；不變的是「某列加上另一列的倍數」。</li></ul>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0179",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "question": "用列運算化成上三角，求 det A，A = [[0, 1, 2, 1], [1, 2, 1, 0], [2, 5, 3, 1], [1, 3, 4, 3]]（依列列出）。",
+      "answer": "det A = 2",
+      "explanation": "<p>a<sub>11</sub> = 0 不能當 pivot，先 R<sub>1</sub> ↔ R<sub>2</sub>（det × (−1)）：R<sub>1</sub> = (1, 2, 1, 0)、R<sub>2</sub> = (0, 1, 2, 1)。</p><ul><li>R<sub>3</sub> − 2R<sub>1</sub> = (0, 1, 1, 1)，R<sub>4</sub> − R<sub>1</sub> = (0, 1, 3, 3)（det 不變）。</li><li>R<sub>3</sub> − R<sub>2</sub> = (0, 0, −1, 0)，R<sub>4</sub> − R<sub>2</sub> = (0, 0, 1, 2)。</li><li>R<sub>4</sub> + R<sub>3</sub> = (0, 0, 0, 2)。</li></ul><p>上三角的對角線是 1, 1, −1, 2，乘積 −2；交換過 1 次，所以 det A = (−1) × (−2) = <b>2</b>。程式用餘因子展開與消去兩種方法都得 2。忘了交換變號會得到 −2。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0180",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "question": "求所有實數 x，使 A = [[x, 1, 1], [1, x, 1], [1, 1, x]] 不可逆。",
+      "answer": "x = 1 或 x = −2",
+      "explanation": "<p>A 不可逆 ⇔ det A = 0。把第 2、3 列都加到第 1 列（det 不變），第 1 列變成 (x + 2, x + 2, x + 2)，提出 x + 2：</p><pre class=\"formula\">det A = (x + 2) · det [1 1 1; 1 x 1; 1 1 x]</pre><p>再做 R<sub>2</sub> − R<sub>1</sub>、R<sub>3</sub> − R<sub>1</sub> 得上三角 [1 1 1; 0 x−1 0; 0 0 x−1]，所以 det A = (x + 2)(x − 1)<sup>2</sup>。</p><p>令它為 0：<b>x = 1</b>（三列全相同）或 <b>x = −2</b>（三列加起來是零向量）。也可以用 aI + bJ 公式：a = x − 1、b = 1，det = (a + 3b)a<sup>2</sup> = (x + 2)(x − 1)<sup>2</sup>。程式代 x = −3～3 驗算，只有 x = 1、−2 為 0。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0181",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "question": "a、b、c 是 ℝ<sup>3</sup> 的列向量，以它們為列的 3×3 矩陣 det[a; b; c] = 5。求 det[a + 2b; b; 3c − a]。",
+      "answer": "15",
+      "explanation": "<p>用列運算化回原來的列（加倍數不改變 det）：</p><ul><li>第 1 列 a + 2b 減去 2 倍第 2 列 b → a：det[a; b; 3c − a]。</li><li>第 3 列 3c − a 加上第 1 列 a → 3c：det[a; b; 3c]。</li><li>第 3 列提出 3：3·det[a; b; c] = 3 × 5 = <b>15</b>。</li></ul><p>也可以直接用多線性把每一列拆開：含兩列相同的項都是 0，只剩 det[a; b; 3c] 那一項。常見錯誤是以為 a + 2b 那一列會讓 det 乘 1 + 2 = 3、再乘 3c 的 3 得 45。程式取一組 det[a; b; c] = 8 的向量驗算，新行列式恰為 3 倍（24）。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0182",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "question": "D<sub>n</sub> 是 n×n 三對角矩陣的行列式：主對角線全是 3，主對角線正上方與正下方全是 1，其他位置是 0。(a) 寫出 D<sub>n</sub> 的遞迴式與初始值　(b) 求 D<sub>5</sub>　(c) 說明 D<sub>n</sub> 和 Fibonacci 數列（F<sub>1</sub> = F<sub>2</sub> = 1）的關係。",
+      "answer": "(a) D<sub>n</sub> = 3D<sub>n−1</sub> − D<sub>n−2</sub>，D<sub>1</sub> = 3、D<sub>2</sub> = 8　(b) D<sub>5</sub> = 144　(c) D<sub>n</sub> = F<sub>2n+2</sub>",
+      "explanation": "<p><b>(a)</b> 沿第一列展開：第一項是 3 × D<sub>n−1</sub>；第二項是 a<sub>12</sub> = 1 乘上餘因子 −M<sub>12</sub>，而 M<sub>12</sub> 的第一行只剩左上角的 1，再展開一次得 D<sub>n−2</sub>。所以 D<sub>n</sub> = 3D<sub>n−1</sub> − 1·1·D<sub>n−2</sub>。初始值 D<sub>1</sub> = 3，D<sub>2</sub> = 9 − 1 = 8。</p><p><b>(b)</b> D<sub>3</sub> = 24 − 3 = 21，D<sub>4</sub> = 63 − 8 = 55，D<sub>5</sub> = 165 − 21 = <b>144</b>。</p><p><b>(c)</b> 3, 8, 21, 55, 144 正好是 F<sub>4</sub>, F<sub>6</sub>, F<sub>8</sub>, F<sub>10</sub>, F<sub>12</sub>。Fibonacci 的偶數項滿足 F<sub>2k+2</sub> = 3F<sub>2k</sub> − F<sub>2k−2</sub>（由 F<sub>m+2</sub> = F<sub>m+1</sub> + F<sub>m</sub> 連用兩次可得），遞迴式和初始值都一樣，所以 D<sub>n</sub> = F<sub>2n+2</sub>。</p><p>程式算 n = 1～7 的行列式，和 F<sub>2n+2</sub> 全部吻合。常見錯誤：第二項的符號寫成 +，得到 D<sub>n</sub> = 3D<sub>n−1</sub> + D<sub>n−2</sub>。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0183",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "question": "A、B 都是 n×n 矩陣，det A = 2、det B = 5，M = [[0, A], [B, 0]] 是 2n×2n 的區塊矩陣（0 是 n×n 零矩陣）。(a) 證明 det M = (−1)<sup>n</sup> det A · det B　(b) 分別求 n = 2 與 n = 3 時的 det M　(c) 有人用「det A·det D − det B·det C」的公式算，得到什麼？哪裡錯？",
+      "answer": "(a) 見詳解　(b) n = 2：10；n = 3：−10　(c) 0·0 − 2·5 = −10，對 n = 2 錯誤，因為一般區塊矩陣沒有這個公式",
+      "explanation": "<p><b>(a)</b> 把下半的 n 列（B 所在的列）一列一列往上搬到最上面：第 n + 1 列要和上面 n 列逐一交換才到第 1 列（n 次交換），第 n + 2 列搬到第 2 列也是 n 次……共 n·n = n<sup>2</sup> 次交換，得到區塊上三角 [B 0; 0 A]，det = det B · det A。所以 det M = (−1)<sup>n<sup>2</sup></sup> det A det B = (−1)<sup>n</sup> det A det B（n<sup>2</sup> 和 n 同奇偶）。</p><p><b>(b)</b> n = 2：(+1) × 2 × 5 = <b>10</b>；n = 3：(−1) × 2 × 5 = <b>−10</b>。程式取 det A = 2、det B = 5 的具體 2×2、3×3 矩陣組成 4×4、6×6 驗算，結果分別是 10 和 −10。</p><p><b>(c)</b> 套「det A·det D − det B·det C」（這裡左上、右下是 0）會得到 0 − 2·5 = −10。n = 3 時碰巧對，n = 2 時就錯了。這個公式根本不存在；只有<b>區塊三角</b>才能把對角區塊的 det 相乘，其他情況要先換列或做區塊列運算。</p>",
+      "source": {
+        "kind": "original"
+      }
+    },
+    {
+      "id": "la-0184",
+      "topics": [
+        "determinant-properties"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "question": "f(x) = det [[2x, x, 1, 2], [1, x, 1, −1], [3, 2, x, 1], [1, 1, 1, x]]（依列列出）。不展開整個行列式，求 f(x) 中 x<sup>4</sup> 與 x<sup>3</sup> 的係數。",
+      "answer": "x<sup>4</sup> 的係數是 2，x<sup>3</sup> 的係數是 −1",
+      "explanation": "<p>用排列展開：每一項是從每列各選一個元素（各在不同行）的乘積。含 x 的位置是 (1,1) 的 2x、(1,2) 的 x、(2,2)、(3,3)、(4,4) 的 x。</p><ul><li><b>x<sup>4</sup></b>：四列都要選到 x。第 3、4 列只有對角線有 x，必須選 (3,3)、(4,4)；剩下第 1、2 列選第 1、2 行，要兩個都是 x 只能 (1,1)(2,2)。唯一一項 2x·x·x·x，排列 (1,2,3,4) 沒有逆序，係數 <b>2</b>。</li><li><b>x<sup>3</sup></b>：每列最多貢獻一個 x，所以要剛好有 3 列選到 x、1 列沒有。逐一看是哪一列沒選 x：<ul><li>第 1 列沒選：第 2、3、4 列選 (2,2)(3,3)(4,4)，第 1 列只剩第 1 行，偏偏 (1,1) 是 2x，矛盾。</li><li>第 3 列沒選：其他三列都要選 x，第 2 列只能選 (2,2)、第 4 列選 (4,4)，第 1 列只剩 (1,1)；於是第 3 列只剩第 3 行可選，又是 x，矛盾。第 4 列沒選的情況同理。</li><li>第 2 列沒選：第 3、4 列選對角線，第 1 列選 (1,1) 或 (1,2)。選 (1,1) 時第 2 列只能選 (2,2)，又是 x；所以第 1 列選 (1,2) = x、第 2 列選 (2,1) = 1。這一項是 x·1·x·x，排列 (2,1,3,4) 有 1 個逆序，取負號。</li></ul>只有這一項，係數 <b>−1</b>。</li></ul><p>程式算出 f(x) = 2x<sup>4</sup> − x<sup>3</sup> − 7x<sup>2</sup> + 12x − 8，兩個係數都吻合。</p>",
+      "source": {
+        "kind": "original"
+      }
     }
   ]
 }

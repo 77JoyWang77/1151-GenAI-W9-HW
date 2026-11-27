@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cache Performance 快取效能 · 計算機組織 | 資工考研互動學習站</title>
   <meta name="description" content="AMAT 與含記憶體停頓的 CPI、I/D 快取分開算、L2 的 local/global miss rate、時脈加倍與寫入策略。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=44614248">
-  <script src="../../../assets/js/theme.js?v=44614248"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=329bbb96">
+  <script src="../../../assets/js/theme.js?v=329bbb96"></script>
 </head>
 <body data-subject="computer-organization" data-chapter="memory-hierarchy" data-chno="5" data-topic="computer-organization/memory-hierarchy/cache-performance" data-root="../../../">
   <header class="site-header">
@@ -84,7 +84,7 @@ double amat2(double h1, double m1, double h2, double m2Local, double memPenalty)
       <section id="cpi-stall">
         <h2>把記憶體停頓算進 CPI</h2>
         <div class="panel prose">
-          <p>AMAT 只描述記憶體本身；要知道程式跑多快，還要把 miss 換算成「每條指令多等幾個 cycle」，加到 CPI 上。執行時間 = 指令數 × CPI × cycle time（這條公式在 CPU Performance（籌備中）會詳細講），快取只會改變其中的 CPI：</p>
+          <p>AMAT 只描述記憶體本身；要知道程式跑多快，還要把 miss 換算成「每條指令多等幾個 cycle」，加到 CPI 上。執行時間 = 指令數 × CPI × cycle time（這條公式在 <a href="../performance/cpu-performance.html">CPU Time and CPI（CPU 時間與 CPI）</a> 有詳細講解），快取只會改變其中的 CPI：</p>
           <pre class="formula">CPI = 理想 CPI + memory-stall cycles per instruction
 
 memory-stall cycles per instruction
@@ -424,8 +424,8 @@ double traverse(int n, int byRow) {
   <footer class="site-footer">
     <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=44614248"></script>
-  <script src="../../../assets/js/viz-core.js?v=44614248"></script>
-  <script src="../../../assets/js/viz/computer-organization/cache-performance.js?v=44614248"></script>
+  <script src="../../../assets/js/site.js?v=329bbb96"></script>
+  <script src="../../../assets/js/viz-core.js?v=329bbb96"></script>
+  <script src="../../../assets/js/viz/computer-organization/cache-performance.js?v=329bbb96"></script>
 </body>
 </html>

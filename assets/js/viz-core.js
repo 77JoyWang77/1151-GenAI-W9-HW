@@ -459,7 +459,8 @@
     },
     /** 讀取整數輸入，失敗回傳 null 並讓輸入框閃紅 */
     int(input, { min = -999, max = 999 } = {}) {
-      const v = Number(input.value.trim());
+      const s = input.value.trim();
+      const v = s === "" ? NaN : Number(s); // Number("") 是 0，空白要當成非法輸入
       if (!Number.isInteger(v) || v < min || v > max) {
         input.classList.add("is-error");
         setTimeout(() => input.classList.remove("is-error"), 700);

@@ -81,8 +81,17 @@
           "en": "Determinants and Their Properties",
           "zh": "行列式與其性質",
           "book": "2.1–2.2",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "determinant",
+            "cofactor expansion",
+            "row operations",
+            "multilinear"
+          ],
+          "updated": "2026-11-27"
         },
         {
           "id": "cramer-adjugate",
