@@ -6304,6 +6304,159 @@
       "question": "32 位元虛擬位址、頁 4 KB、PTE 4 B，實體記憶體 1 GB。系統中有 50 個行程，每個行程只使用虛擬位址最低的 8 MB（程式碼與資料）和最高的 4 MB（stack）。<br>(1) 若每個行程使用單層頁表，所有頁表共需多少記憶體？<br>(2) 若改用兩層頁表（10 | 10 | 12，未使用的內層表不配置），所有頁表共需多少記憶體？<br>(3) 若改用全系統一張的反向頁表，每格 8 B，需要多少記憶體？說明它和 (2) 相比的主要缺點。",
       "answer": "(1) 200 MB　(2) 800 KB　(3) 2 MB；查詢要用 (pid, 頁號) 搜尋整張表（需雜湊輔助），且共享頁難以表示",
       "explanation": "<p>(1) 頁號 20 位元，單層頁表 2<sup>20</sup> × 4 B = 4 MB，不管用了多少都要整張配置。50 個行程 × 4 MB = <b>200 MB</b>，是實體記憶體的 19.5%。</p><p>(2) 一張內層表 1024 格 × 4 KB = 涵蓋 4 MB。最低 8 MB 要 2 張、最高 4 MB 要 1 張，加上外層 1 張，每個行程 4 頁 = 16 KB；50 個行程共 <b>800 KB</b>，只有單層的 0.4%。</p><p>(3) frame 數 = 1 GB / 4 KB = 2<sup>18</sup>，反向頁表 2<sup>18</sup> × 8 B = <b>2 MB</b>，和行程數無關。這裡反而比 (2) 大，因為每個行程用得很少；行程數一多或用量變大，反向頁表就有優勢。缺點：表是依 frame 排列的，要找 (pid, p) 只能搜尋（最壞比對 2<sup>18</sup> 格），實務上要再加雜湊表和 TLB；每個 frame 只能記一組 (pid, p)，多個行程共享同一個 frame 不好表示。</p><p>常見錯誤：以為兩層頁表一定要配置全部 1024 張內層表。稀疏空間只配置用到的部分，這是多層頁表省空間的關鍵。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "os-0251",
+      "topics": [
+        "threads"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）同一個 process 裡的多個 thread，下列哪些是<b>每個 thread 各自擁有</b>的？",
+      "choices": [
+        "(A) program counter",
+        "(B) heap",
+        "(C) stack",
+        "(D) global 變數",
+        "(E) register set",
+        "(F) 開啟的檔案"
+      ],
+      "answer": "(A)(C)(E)",
+      "explanation": "<p>thread 是「CPU 排程的基本單位」，要能各自執行到不同的位置、呼叫不同的函式，所以每個 thread 有自己的 <b>thread ID、PC、register set、stack</b>。</p><p>(B) heap、(D) global 變數（在 data section）、(F) 開啟的檔案都屬於 process，所有 thread 共用；這也是 thread 之間溝通方便、卻需要同步的原因。最常見的錯誤是以為 stack 也共用：如果共用，兩個 thread 同時呼叫函式就會把彼此的區域變數和返回位址蓋掉。</p>"
+    },
+    {
+      "id": "os-0252",
+      "topics": [
+        "threads"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個程式用 <b>many-to-one</b> 模型建立了 8 個 user thread，在 4 核心的機器上執行。同一時刻最多有幾個 user thread 真的在 CPU 上執行？",
+      "choices": [
+        "(A) 1",
+        "(B) 4",
+        "(C) 8",
+        "(D) 由 thread library 決定，最多 8"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>CPU 只能執行 kernel 排程的單位，也就是 kernel thread。many-to-one 整個 process 只有 <b>1 個 kernel thread</b>，kernel 一次只能把它排到一顆核心上，所以同時最多只有 1 個 user thread 在跑，另外 3 顆核心對這個程式毫無幫助。</p><p>這就是 many-to-one 的兩個缺點：沒有 <b>parallelism</b>（只有 concurrency，靠 thread library 輪流切換），而且一個 thread 做 blocking system call 時整個 process 都會停住。要用到 4 顆核心，至少要有 4 個 kernel thread（one-to-one，或 LWP ≥ 4 的 many-to-many）。</p>"
+    },
+    {
+      "id": "os-0253",
+      "topics": [
+        "threads"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）下列關於 thread pool 與 thread cancellation 的敘述，哪些正確？",
+      "choices": [
+        "(A) thread pool 事先建立一批 thread，request 來時交給現成的 thread 處理，省下每次建立 thread 的時間",
+        "(B) thread pool 的好處之一是同時存在的 thread 數不受限制",
+        "(C) Pthreads 預設的取消方式是 deferred cancellation：目標 thread 執行到 cancellation point 才結束",
+        "(D) asynchronous cancellation 比較安全，因為目標 thread 有機會先釋放手上的資源"
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<p>(A) 對：這正是 thread pool 的第一個好處，用現成的 thread 比臨時建立快。<br>(B) 錯：說反了，thread pool <b>限制</b>同時存在的 thread 數（pool 的大小），避免 request 暴增時建立太多 thread 把記憶體和 CPU 耗盡。<br>(C) 對：deferred 是 Pthreads 的預設，目標 thread 自己在安全的位置（cancellation point，例如 <code>pthread_testcancel()</code>、許多會 block 的呼叫）檢查有沒有取消要求。<br>(D) 錯：asynchronous cancellation 是<b>立刻</b>終止，目標 thread 可能正在更新共享資料或拿著鎖，來不及釋放資源，所以比較危險。</p>"
+    },
+    {
+      "id": "os-0254",
+      "topics": [
+        "threads"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "假設 fork() 與 pthread_create() 都成功，下列程式的輸出是什麼？\n<pre class=\"code\">int x = 1;\nvoid *f(void *a) { x *= 3; return NULL; }\n\nint main(void) {\n  pthread_t t;\n  pid_t pid = fork();\n  if (pid == 0) {\n    pthread_create(&amp;t, NULL, f, NULL);\n    pthread_join(t, NULL);\n    x += 1;\n    printf(\"C %d\\n\", x);\n    exit(0);\n  }\n  wait(NULL);\n  pthread_create(&amp;t, NULL, f, NULL);\n  pthread_join(t, NULL);\n  printf(\"P %d\\n\", x);\n  return 0;\n}</pre>",
+      "answer": "先印 <code>C 4</code>，再印 <code>P 3</code>",
+      "explanation": "<p>關鍵是分清楚「誰跟誰共用 x」：</p><ul><li><b>fork</b> 之後 child 拿到 x 的<b>複本</b>（值 1），之後兩邊各改各的。</li><li><b>同一個 process 裡的 thread</b> 共用 global 變數。</li></ul><p>child：建立的 thread 把 child 的 x 改成 1 × 3 = 3，join 等它結束後 x += 1 → 4，印出 <code>C 4</code>。parent 先 <code>wait()</code> 等 child 結束，所以 C 一定先印；parent 自己的 x 仍是 1（child 改的是複本），它的 thread 把 x 改成 3，印出 <code>P 3</code>。</p><p>常見錯誤：以為 parent 會看到 child 改的值而算成 4 × 3 = 12。（已用程式實際執行驗證。）</p>"
+    },
+    {
+      "id": "os-0255",
+      "topics": [
+        "threads"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個程式有 80% 的執行時間可以完全平行化，其餘 20% 只能序列執行。忽略 thread 建立與同步的成本，依 Amdahl's Law：<br>(1) 在 4 核心上的 speedup 是多少？<br>(2) 在 8 核心上呢？核心數加倍，speedup 提升了多少？<br>(3) 核心數趨近無限大時，speedup 的上限是多少？",
+      "answer": "(1) 2.5　(2) 約 3.33，只提升約 33%　(3) 5",
+      "explanation": "<pre class=\"formula\">speedup ≤ 1 / (S + (1 − S) / N)，S = 序列部分的比例 = 0.2</pre><p>(1) N = 4：1 / (0.2 + 0.8 / 4) = 1 / 0.4 = <b>2.5</b>，4 顆核心只換到 2.5 倍。<br>(2) N = 8：1 / (0.2 + 0.1) = 1 / 0.3 ≈ <b>3.33</b>。核心數加倍，speedup 只從 2.5 增加到 3.33，約多 33%，因為序列的 0.2 一點都沒縮短，佔總時間的比例越來越高。<br>(3) N → ∞：平行部分趨近 0，speedup → 1 / 0.2 = <b>5</b>。不管加多少核心都不會超過 5 倍。</p><p>常見錯誤：把 80% 直接乘上核心數，或以為「核心加倍、時間減半」。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "os-0256",
+      "topics": [
+        "threads"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個程式有 6 個 user thread（T0～T5），在 4 核心的機器上執行。thread library 每次都挑編號最小的 ready user thread，且 LWP 數固定（不考慮 scheduler activation）。T0、T1、T2 依序各做一次 blocking system call（每次都是在它正在執行時呼叫，且 I/O 都還沒完成）。分別在下面兩種模型下，寫出一開始、以及每次 block 之後，同時在 CPU 上執行的 user thread 有幾個：<br>(1) many-to-many，3 個 LWP<br>(2) one-to-one",
+      "answer": "(1) 3 → 2 → 1 → 0　(2) 4 → 4 → 4 → 3",
+      "explanation": "<p>同時在跑的數量 = min(CPU 數, <b>沒被卡住</b>的 kernel thread 數, ready 的 user thread 數)。</p><div class=\"table-scroll\"><table><thead><tr><th>時刻</th><th>(1) M:M，3 LWP</th><th>(2) 1:1</th></tr></thead><tbody><tr><td>一開始</td><td>3 個（T0、T1、T2）：只有 3 個 LWP，第 4 顆核心閒著</td><td>4 個（T0～T3）：6 個 kernel thread，卡在 4 顆核心</td></tr><tr><td>T0 block</td><td>2 個（T1、T2）：T0 把自己的 LWP 一起卡在 kernel</td><td>4 個（T1～T4）：只有 T0 的 kernel thread 被卡，T4 補上</td></tr><tr><td>T1 block</td><td>1 個（T2）</td><td>4 個（T2～T5）</td></tr><tr><td>T2 block</td><td>0 個：3 個 LWP 全被卡住，T3～T5 雖然 ready 也只能等</td><td>3 個（T3～T5）：ready 的只剩 3 個</td></tr></tbody></table></div><p>這說明 many-to-many 的 LWP 數要夠多：至少要比「核心數 + 同時會 block 的 thread 數」多，否則核心會閒置。真實系統可以用 scheduler activation 的 upcall 要求 kernel 再配一個 LWP。（已用程式模擬驗算，和本頁動畫的「LWP 用完」例子同一套規則。）</p>"
+    },
+    {
+      "id": "os-0257",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "假設所有呼叫都成功，下列程式執行完（包含原本的 process）總共有幾個 process？<code>M</code> 和 <code>T</code> 各被印出幾次？if 區塊裡、<code>pthread_join</code> 後面那個 <code>fork()</code> 建立出的 child，在 fork 剛完成時有幾個 thread？\n<pre class=\"code\">void *run(void *arg) { printf(\"T\\n\"); return NULL; }\nint main(void) {\n  pthread_t t;\n  if (fork() == 0) {\n    pthread_create(&amp;t, NULL, run, NULL);\n    pthread_join(t, NULL);\n    fork();\n  }\n  fork();\n  printf(\"M\\n\");\n  return 0;\n}</pre>",
+      "answer": "6 個 process；M 印 6 次、T 印 1 次；if 區塊裡的 fork 建出的 child 只有 1 個 thread",
+      "explanation": "<p>把 process 一個一個追：</p><ol><li>P0 執行第一個 <code>fork()</code>，產生 P1。P0 拿到 child 的 pid（≠ 0），跳過 if；P1 拿到 0，進入 if。</li><li>P1 建立一個 thread，它印出 <b>T</b>（只有這一次），P1 join 等它結束。</li><li>P1 執行 if 裡的 <code>fork()</code>，產生 P2。此時 P1 只剩 main thread（印 T 的 thread 已經結束），而且 POSIX fork 本來就只複製呼叫 fork 的那個 thread，所以 P2 只有 <b>1 個 thread</b>。</li><li>P0、P1、P2 都會執行最後的 <code>fork()</code>，各多一個：P3、P4、P5。</li><li>P0～P5 共 <b>6 個 process</b>，每個都印一次 <b>M</b>，所以 M 印 6 次。</li></ol><p>常見錯誤：(1) 把 thread 也算成 process；(2) 以為 fork 會連同其他 thread 一起複製，於是讓 T 多印幾次。T 只在 P1 的那個 thread 印，任何 fork 都不會重新執行 <code>run()</code>。（已用程式實際執行，統計輸出行數驗證。）</p>"
+    },
+    {
+      "id": "os-0258",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某個多執行緒程式在 1 核心上執行要 100 秒，在 2 核心上量到 62.5 秒。假設程式只分成「完全序列」與「完全平行」兩部分，且忽略同步成本：<br>(1) 序列部分佔原本執行時間的比例是多少？<br>(2) 在 8 核心上預計要幾秒？speedup 是多少？<br>(3) 想在 8 核心上達到 4 倍 speedup，序列部分的比例最多只能是多少？",
+      "answer": "(1) 25%　(2) 約 34.4 秒，speedup 約 2.91　(3) 1/7 ≈ 14.3%",
+      "explanation": "<p>(1) speedup = 100 / 62.5 = 1.6。代入 Amdahl's Law：1 / (S + (1 − S)/2) = 1.6 → S + (1 − S)/2 = 0.625 → (1 + S)/2 = 0.625 → <b>S = 0.25</b>。也可以直接用時間看：序列 25 秒、平行 75 秒，2 核心時 25 + 37.5 = 62.5 秒，吻合。</p><p>(2) 8 核心：25 + 75/8 = 34.375 秒，speedup = 100 / 34.375 ≈ <b>2.91</b>。8 顆核心連 3 倍都不到，因為序列的 25 秒完全沒變，佔了新總時間的 73%。</p><p>(3) 1 / (S + (1 − S)/8) = 4 → S + (1 − S)/8 = 0.25 → 8S + 1 − S = 2 → <b>S = 1/7 ≈ 14.3%</b>。序列部分要從 25% 壓到 14.3% 以下，也就是序列時間要減少超過四成。</p><p>常見錯誤：用「2 核心快了 37.5%」直接外推到 8 核心。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "os-0259",
+      "topics": [
+        "threads"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）關於多執行緒程式的問題，下列哪些正確？",
+      "choices": [
+        "(A) 某個 thread 存取非法位址而產生的 SIGSEGV 屬於 synchronous signal，會送給造成它的那個 thread",
+        "(B) 在 POSIX 系統中，若 child 在 fork() 之後立刻呼叫 exec()，fork() 複製所有 thread 才不會浪費",
+        "(C) 用 kill() 送給整個 process 的 asynchronous signal，可以交給任何一個沒有 block 該 signal 的 thread 處理",
+        "(D) 在多核心機器上，用 many-to-one 模型把 CPU-bound 的工作拆成 4 個 user thread，可以得到接近 4 倍的 speedup",
+        "(E) Thread-local storage（TLS）和區域變數一樣，函式返回後就消失"
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<p>(A) 對：synchronous signal（非法存取、除以 0）是某個 thread 自己的動作造成的，就送給那個 thread。<br>(B) 錯：說反了。立刻 exec 的話，整個位址空間（包括所有 thread）都會被新程式取代，複製其他 thread 完全是浪費；POSIX 的 fork 本來就只複製呼叫者。<br>(C) 對：asynchronous signal（例如 kill、Ctrl-C）不是某個 thread 造成的，POSIX 規定送給 process 的 signal 交給任一個沒有 block 它的 thread；程式也可以用 <code>pthread_sigmask()</code> 安排一個專門處理 signal 的 thread。<br>(D) 錯：many-to-one 只有 1 個 kernel thread，同時只能用 1 顆核心，speedup 約 1。<br>(E) 錯：TLS 是「每個 thread 一份的 global 資料」，在該 thread 的所有函式之間都看得到，存在到 thread 結束為止；只有一個函式看得到、返回就消失的是區域變數。</p>"
     }
   ]
 }

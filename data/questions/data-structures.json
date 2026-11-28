@@ -9053,6 +9053,227 @@
       ],
       "answer": "(A)(B)(D)",
       "explanation": "<p><b>用前驅 15</b>：把 15 複製到根，改成刪除原本的 15。它是黑色葉子 → double black。x = 15 是 10 的右子，兄弟 s = 5（黑），遠姪是 s 的左子 1（紅）→ <b>case 4</b>：s 取父 10 的顏色（紅），10 塗黑、1 塗黑，對 10 右旋：</p><pre>15B( 5R(1B, 10B), 30B(25R, -) )</pre><p><b>用後繼 25</b>：把 25 複製到根，改成刪除原本的 25，它是紅色葉子，直接拿掉，不用任何調整：</p><pre>25B( 10R(5B(1R, -), 15B), 30B )</pre><ul><li>(A) 對：根是 15。</li><li>(B) 對：case 4 旋轉 1 次。</li><li>(C) 錯：刪的是紅色葉子，不旋轉。</li><li>(D) 對：兩棵的黑高度（含根）都是 2，例如 15 → 5 → 1 經過 15、1；25 → 10 → 5 經過 25、5。</li><li>(E) 錯：30 還是黑色，只是少了紅色的子節點。</li></ul><p>這題說明刪除兩個子節點的節點時，前驅、後繼兩種做法都正確，但修正的過程和結果不同，作答時要照題目指定的方式。（已用程式驗算兩種做法。）</p>"
+    },
+    {
+      "id": "ds-0383",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "以除法 h(k) = k mod m 建雜湊表，m = 16。下列敘述何者正確？",
+      "choices": [
+        "(A) h(k) 只由 k 的最低 4 個位元決定",
+        "(B) 16 是 2 的冪，計算快、分布也最均勻",
+        "(C) 0x35 與 0x135 會落在不同的格子",
+        "(D) 把 m 改成 15 就不會有任何碰撞"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>16 = 2<sup>4</sup>，k mod 16 就是 k 的<b>最低 4 個位元</b>，高位元完全不影響結果，所以 (A) 對。</p><ul><li>(B) 錯：2 的冪正是除法最不該選的 m，低位相同的 key 全撞。</li><li>(C) 錯：0x35 和 0x135 的最低 4 位都是 0101，都算出 5，會撞在一起。</li><li>(D) 錯：任何 m 都可能碰撞（鴿籠原理），換成 15 只是讓高位元也參與計算；而且 15 = 3 × 5 有小因數，也不是好的選擇，應該選質數。</li></ul>"
+    },
+    {
+      "id": "ds-0384",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）關於標準的 Bloom filter（m 個 bit、k 個雜湊函數），下列敘述哪些正確？",
+      "choices": [
+        "(A) 查詢回答「不在」時，x 一定沒有插入過",
+        "(B) 查詢回答「可能在」時，x 一定插入過",
+        "(C) 可以把 x 的 k 個 bit 清成 0 來刪除 x",
+        "(D) m、k 固定時，插入的 key 越多，false positive 機率越高",
+        "(E) 為了回答查詢，Bloom filter 必須同時存下 key 本身"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<ul><li>(A) 對：x 插入過的話，它的 k 個 bit 一定都是 1；只要有一個是 0，就一定沒插入過，所以<b>不會有 false negative</b>。</li><li>(B) 錯：k 個 bit 都是 1 可能是別的 key 設的，這就是 false positive，只能說「可能在」。</li><li>(C) 錯：bit 會被多個 key 共用，清成 0 會讓別的 key 查不到（false negative）。要刪除得用 counting Bloom filter。</li><li>(D) 對：m、k 固定時，插入越多 key，越多 bit 變成 1，false positive 機率 (1 − e<sup>−kn/m</sup>)<sup>k</sup> 隨 n 增加。</li><li>(E) 錯：Bloom filter 只存 bit，不存 key，這正是它省空間的原因。</li></ul>"
+    },
+    {
+      "id": "ds-0385",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列哪一項<b>不是</b>雜湊表所用的雜湊函數需要具備的性質？",
+      "choices": [
+        "(A) 同一個 key 每次都算出相同的位址",
+        "(B) 計算時間短，最好是 O(1)",
+        "(C) 把 key 盡量平均地分散到各格",
+        "(D) 若 k₁ &lt; k₂，則 h(k₁) ≤ h(k₂)"
+      ],
+      "answer": "(D)",
+      "explanation": "<p>雜湊函數要：(A) 決定性，否則插入和搜尋算出不同位址；(B) 計算快，否則失去雜湊表的優勢；(C) 均勻，碰撞才少。</p><p>(D) 保持順序不是要求，反而和「打散」的目標衝突：保序代表相鄰的 key 會擠在相鄰甚至同一格。也因為雜湊不保序，雜湊表找最小值、前驅、後繼都要掃整張表。答案 (D)。</p>"
+    },
+    {
+      "id": "ds-0386",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>用乘法 h(k) = ⌊m · frac(kA)⌋，A = 0.6180339887，m = 16。</p><p>(1) 求 h(2024)。</p><p>(2) 改用整數版本：字組 w = 32 位元、m = 2<sup>4</sup>、s = ⌊A · 2<sup>32</sup>⌋ = 2654435769。已知 2024 × s = 5372577996456，寫成 r1 · 2<sup>32</sup> + r0，求 r1、r0（16 進位）與 h(2024)。</p>",
+      "answer": "(1) 14；(2) r1 = 1250，r0 = 0xE69A5EA8，h = 14",
+      "explanation": "<p><b>(1)</b> 2024 × 0.6180339887 = 1250.900793…，小數部分 0.900793…；乘 16 = 14.4127…，取 floor 得 <b>14</b>。順序是「先取小數、再乘 m」，先乘 m 再取小數會得到完全不同的數。</p><p><b>(2)</b> 5372577996456 ÷ 2<sup>32</sup>（= 4294967296）商 r1 = <b>1250</b>，餘 r0 = 3868876456 = <b>0xE69A5EA8</b>。r1 = 1250 正好是 kA 的整數部分，r0 / 2<sup>32</sup> ≈ 0.9008 是小數部分。m = 2<sup>4</sup>，取 r0 最高的 4 位：0xE = <b>14</b>，和浮點版相同。（已用程式驗算；k = 0～9999 兩種版本的結果全部一致。）</p>"
+    },
+    {
+      "id": "ds-0387",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>用平方取中（mid-square）求位址：取 k² 中間的 r 位；要丟掉的位數是奇數時，右邊丟 ⌊(位數 − r)/2⌋ 位、左邊多丟一位。求：</p><p>(1) k = 1234，r = 3　(2) k = 4321，r = 3　(3) k = 56，r = 2</p>",
+      "answer": "(1) 227；(2) 710；(3) 13",
+      "explanation": "<ul><li>(1) 1234² = 1522756（7 位），要丟 4 位：左右各 2 位 → 15[227]56 → <b>227</b>。</li><li>(2) 4321² = 18671041（8 位），要丟 5 位：右邊 2 位、左邊 3 位 → 186[710]41 → <b>710</b>。</li><li>(3) 56² = 3136（4 位），要丟 2 位：左右各 1 位 → 3[13]6 → <b>13</b>。</li></ul><p>易錯：直接取「最中間」時，奇數個要丟的位數沒有唯一答案，一定要照題目的規定。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0388",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>key = 48372619052，從左邊開始每 3 位切一段，結果取最右邊 3 位（即 mod 1000）當位址。分別用 shift folding 與 boundary folding 求位址。</p>",
+      "answer": "shift：1451 → 451；boundary：1325 → 325",
+      "explanation": "<p>切段：483 | 726 | 190 | 52。</p><ul><li><b>shift</b>：483 + 726 + 190 + 52 = 1451 → 位址 <b>451</b>。</li><li><b>boundary</b>：第 2、4 段反轉：726 → 627、52 → 25；483 + 627 + 190 + 25 = 1325 → 位址 <b>325</b>。</li></ul><p>易錯：boundary 不是每段都反轉，只有偶數段（翻面疊上去的那些）；最後一段不足 3 位時，反轉的是它自己的位數（52 → 25），不是補 0 成 520 再反轉。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0389",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>m = 97，字串用 ASCII（d = 100、g = 103、o = 111）。</p><p>(1) 用「字元碼加總 mod m」，dog 與 god 的位址各是多少？</p><p>(2) 用多項式雜湊 h(s) = (s₀·31² + s₁·31 + s₂) mod 97（Horner 法每一步 mod 97），dog 與 god 的位址各是多少？</p>",
+      "answer": "(1) 都是 23；(2) dog = 25，god = 92",
+      "explanation": "<p><b>(1)</b> 兩個字串的字元相同：100 + 111 + 103 = 314，314 mod 97 = 23（97 × 3 = 291）。換位字加總一定相同，<b>一定撞</b>。</p><p><b>(2)</b> Horner，每一步 h = (h × 31 + c) mod 97：</p><div class=\"table-scroll\"><table><tr><th>字串</th><th>第 1 步</th><th>第 2 步</th><th>第 3 步</th></tr><tr><td>dog</td><td>(0 × 31 + 100) mod 97 = 3</td><td>(3 × 31 + 111) mod 97 = 204 mod 97 = 10</td><td>(10 × 31 + 103) mod 97 = 413 mod 97 = <b>25</b></td></tr><tr><td>god</td><td>(0 × 31 + 103) mod 97 = 6</td><td>(6 × 31 + 111) mod 97 = 297 mod 97 = 6</td><td>(6 × 31 + 100) mod 97 = 286 mod 97 = <b>92</b></td></tr></table></div><p>驗證：dog 的完整值 100·961 + 111·31 + 103 = 99644，99644 mod 97 = 25；god = 102524，mod 97 = 92，和每一步 mod 的結果相同。位置有了權重，換位字就分開了。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0390",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>（複選）Bloom filter 有 m = 12 個 bit、k = 2 個雜湊函數 g<sub>i</sub>(x) = (x mod 12 + i·(1 + x mod 11)) mod 12，i = 0, 1。一開始全為 0，依序插入 7、18、25。下列哪些 x 查詢的結果是「可能在」？</p>",
+      "choices": [
+        "(A) 4",
+        "(B) 13",
+        "(C) 14",
+        "(D) 30",
+        "(E) 7"
+      ],
+      "answer": "(C)(D)(E)",
+      "explanation": "<p>插入：7 → g₀ = 7、g₁ = (7 + 1 + 7) mod 12 = 3；18 → 6、(6 + 1 + 7) mod 12 = 2；25 → 1、(1 + 1 + 3) = 5。bit 1、2、3、5、6、7 是 1。</p><div class=\"table-scroll\"><table><tr><th>x</th><th>g₀</th><th>g₁</th><th>結果</th></tr><tr><td>4</td><td>4</td><td>4 + 1 + 4 = 9</td><td>bit 4 = 0 → 一定不在</td></tr><tr><td>13</td><td>1</td><td>1 + 1 + 2 = 4</td><td>bit 4 = 0 → 一定不在</td></tr><tr><td>14</td><td>2</td><td>2 + 1 + 3 = 6</td><td>都是 1 → 可能在（false positive）</td></tr><tr><td>30</td><td>6</td><td>(6 + 1 + 8) mod 12 = 3</td><td>都是 1 → 可能在（false positive）</td></tr><tr><td>7</td><td>7</td><td>3</td><td>都是 1 → 可能在（確實插入過）</td></tr></table></div><p>答案 (C)(D)(E)。14、30 沒插入過卻回答「可能在」，就是 false positive；13 的 g₀ = 1 是 1，但 g₁ = 4 是 0，只要一個 0 就能確定不在。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0391",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>從一個 universal hash family 隨機挑 h，把 n = 100 個不同的 key 用 chaining 放進 m = 50 格的表。</p><p>(1) 碰撞的 key 對數（同一格的無序對）期望值最多是多少？</p><p>(2) 對某一個 key x，x 所在串列的期望長度最多是多少？</p><p>(3) 如果改用固定的 h(k) = k mod 50，而 key 由對手挑選，碰撞的 key 對數最多是多少？</p>",
+      "answer": "(1) 99；(2) 2.98；(3) 4950",
+      "explanation": "<p><b>(1)</b> universal：任兩個不同的 key 碰撞機率 ≤ 1/m。共有 C(100, 2) = 4950 對，由期望值線性，E[碰撞對數] ≤ 4950/50 = <b>99</b>。</p><p><b>(2)</b> x 自己算 1 個，另外 99 個 key 各有 ≤ 1/50 的機率和 x 同格：期望長度 ≤ 1 + 99/50 = <b>2.98</b>，比 1 + α = 3 小一點。</p><p><b>(3)</b> 函數固定時，對手只要挑 100 個 50 的倍數，全部落在第 0 格：C(100, 2) = <b>4950</b> 對，搜尋退化成 O(n)。universal hashing 的保證是對任何輸入都成立，因為期望值是對「隨機挑 h」取的，對手事先不知道 h。</p>"
+    },
+    {
+      "id": "ds-0392",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>Bloom filter 有 m = 1000 個 bit，預計插入 n = 100 個 key。用近似式 Pr[false positive] ≈ (1 − e<sup>−kn/m</sup>)<sup>k</sup>。</p><p>(1) 使 false positive 機率最小的 k（實數）是多少？實際應取幾個雜湊函數？</p><p>(2) k 取 (1) 的整數時，false positive 機率約多少？</p><p>(3) 只用 1 個雜湊函數時呢？</p>",
+      "answer": "(1) k = 10 ln 2 ≈ 6.93，取 7；(2) 約 0.0082；(3) 約 0.0952",
+      "explanation": "<p><b>(1)</b> 最佳 k = (m/n) ln 2 = 10 × 0.693 ≈ <b>6.93</b>，取整數 <b>7</b>（6 和 8 的機率約 0.0084、0.0085，都比 7 稍大）。</p><p><b>(2)</b> k = 7：kn/m = 0.7，e<sup>−0.7</sup> ≈ 0.4966，(1 − 0.4966)<sup>7</sup> = 0.5034<sup>7</sup> ≈ <b>0.0082</b>，也就是約 0.82%。此時約一半的 bit 是 1。</p><p><b>(3)</b> k = 1：1 − e<sup>−0.1</sup> ≈ <b>0.0952</b>，約 9.5%，是 k = 7 時的 11.6 倍。</p><p>易錯：公式是 m/n（每個 key 分到幾個 bit），寫成 n/m 會得到 0.069，完全不合理。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0393",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>要替固定的 n = 10 個 key 建一張沒有碰撞的表（perfect hashing），雜湊函數從 universal family 隨機挑。</p><p>(1) 一層做法開 m = n² = 100 格。期望碰撞對數最多是多少？隨機挑一個 h 就沒有碰撞的機率至少多少？期望要挑幾次？</p><p>(2) 如果只開 m = n = 10 格，期望碰撞對數的上界是多少？能用同樣的論證保證找得到嗎？</p><p>(3) 兩層做法（第一層 m = n，第 j 格開 n<sub>j</sub>² 格）第二層的期望總格數小於多少？</p>",
+      "answer": "(1) ≤ 0.45；≥ 0.55；≤ 1/0.55 ≈ 1.82 次；(2) 4.5，不能；(3) 2n = 20",
+      "explanation": "<p><b>(1)</b> E[碰撞對數] ≤ C(10, 2)/100 = 45/100 = <b>0.45</b>。碰撞對數是非負整數，由 Markov 不等式 Pr[碰撞對數 ≥ 1] ≤ E[碰撞對數]/1 ≤ 0.45，所以沒有碰撞的機率 <b>≥ 0.55</b>。每次獨立重挑，次數是幾何分布，期望 ≤ 1/0.55 ≈ <b>1.82</b> 次。</p><p><b>(2)</b> E ≤ 45/10 = <b>4.5</b>，大於 1，Markov 只能說 Pr[≥ 1 次碰撞] ≤ 4.5，沒有意義，<b>不能</b>保證；所以一層做法才需要 n² 格。</p><p><b>(3)</b> E[Σ n<sub>j</sub>²] &lt; 2n = <b>20</b>，總空間 O(n)。這說明 perfect hashing 在 key 固定時存在，而且不一定要 n² 空間。</p>"
+    },
+    {
+      "id": "ds-0394",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>（複選）40 個 key：3, 7, 11, 15, …, 159（全部是 4i + 3，i = 0～39），用 h(k) = k mod m 放進表裡。下列敘述哪些正確？</p>",
+      "choices": [
+        "(A) m = 20 時只用到 5 格",
+        "(B) m = 20 時每一個用到的格子都有 8 個 key",
+        "(C) m = 21 時每一格都至少有 1 個 key",
+        "(D) m = 21 時最擠的一格有 3 個 key",
+        "(E) m = 24 時用到的格子數是 m = 20 時的兩倍"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<ul><li>(A) 對：m = 20 是 4 的倍數，k ≡ 3 (mod 4) 推出 k mod 20 ≡ 3 (mod 4)，只可能是 3、7、11、15、19 這 <b>5 格</b>（= m/4）。</li><li>(B) 對：40 個 key 平均分到 5 格，每格 <b>8 個</b>。</li><li>(C) 對：gcd(4, 21) = 1，連續 21 個 i 的 4i + 3 mod 21 是 0～20 的一個排列，每一格都用得到。</li><li>(D) 錯：40 = 21 + 19，前 21 個 key 各占一格，後 19 個再各占一格，最擠的一格只有 2 個。</li><li>(E) 錯：m = 24 也是 4 的倍數，只用到 24/4 = 6 格（3、7、…、23），不是 5 的兩倍。</li></ul><p>這就是「m 有因數 d、key 對 d 同餘時只用到 m/d 格」的實例；m 取質數就不會被這種規律影響。（已用程式驗算。）</p>"
+    },
+    {
+      "id": "ds-0395",
+      "topics": [
+        "hash-functions"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>用 digit analysis 替下列 6 個 7 位數的 key 選 2 個位數組成位址（m = 100），哪一組位置（由左往右數第幾位）能讓 6 個 key 都不碰撞？</p><p>1130410、1130875、1131460、1130935、1131250、1130125</p>",
+      "choices": [
+        "(A) 第 1、2 位",
+        "(B) 第 3、4 位",
+        "(C) 第 5、6 位",
+        "(D) 第 4、7 位"
+      ],
+      "answer": "(C)",
+      "explanation": "<div class=\"table-scroll\"><table><tr><th>選擇</th><th>組出的位址</th><th>不同的值</th></tr><tr><td>(A) 第 1、2 位</td><td>11, 11, 11, 11, 11, 11</td><td>1 個（全撞）</td></tr><tr><td>(B) 第 3、4 位</td><td>30, 30, 31, 30, 31, 30</td><td>2 個</td></tr><tr><td>(C) 第 5、6 位</td><td>41, 87, 46, 93, 25, 12</td><td>6 個（沒有碰撞）</td></tr><tr><td>(D) 第 4、7 位</td><td>00, 05, 10, 05, 10, 05</td><td>3 個</td></tr></table></div><p>digit analysis 的做法是看每一位數字的分布：第 1～3 位全是 113、第 4 位只有 0 和 1、第 7 位只有 0 和 5，都很偏，要丟掉；第 5、6 位最分散。答案 (C)。（第 6、7 位其實也剛好不撞，但第 7 位只有兩種值，key 一多就會大量碰撞。）（已用程式驗算。）</p>"
     }
   ]
 }

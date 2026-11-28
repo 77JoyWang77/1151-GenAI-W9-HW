@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Threads and Multithreading Models 執行緒與多執行緒模型 · 作業系統 | 資工考研互動學習站</title>
+  <meta name="description" content="thread 共享與私有資源、user／kernel thread、多執行緒模型與 blocking、Pthreads。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=51e6f2d4">
+  <script src="../../../assets/js/theme.js?v=51e6f2d4"></script>
+</head>
+<body data-subject="operating-systems" data-chapter="processes" data-chno="2" data-topic="operating-systems/processes/threads" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Operating Systems 作業系統</a> › Ch2 Processes and Threads 行程與執行緒 › Threads and Multithreading Models 執行緒與多執行緒模型</nav>
+      <div class="topic-head">
+        <h1>Threads and Multithreading Models 執行緒與多執行緒模型<small>同一個行程裡的多條執行流程：共享什麼、怎麼對應到 kernel</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch2 Processes and Threads</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">user / kernel thread</span>
+          <span class="chip">multithreading models</span>
+          <span class="chip">Pthreads</span>
+          <span class="chip">thread pool</span>
+        </div>
+      </div>
+
+      <section id="why-threads">
+        <h2>為什麼需要執行緒</h2>
+        <div class="panel prose">
+          <p>想像一個網頁伺服器：每秒有上百個連線進來，每個連線都要讀檔、等網路、送回資料。如果整個伺服器只有一條執行流程，它在等某個連線的硬碟 I/O 時，其他連線全都只能排隊。傳統的解法是每來一個連線就 <code>fork()</code> 一個新的行程去處理，但行程很「重」：每個行程都有自己的位址空間、頁表、開啟檔案表，建立和切換都要花不少時間，而且行程之間要分享資料還得透過 IPC。行程本身的狀態與 PCB 在 Process Concept 行程與行程狀態（籌備中）詳細說明。</p>
+          <p><span class="term">Thread<small>（執行緒）</small></span>就是把「執行」從行程裡拆出來：一個行程裡可以有好幾條執行流程，它們<b>共用同一個位址空間與資源</b>，各自有自己的執行狀態。行程變成「資源的容器」，thread 變成「CPU 排程的基本單位」。</p>
+          <p>多執行緒帶來四個好處：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>好處</th><th>意思</th><th>例子</th></tr></thead>
+              <tbody>
+                <tr><td>Responsiveness（回應性）</td><td>一個 thread 卡在耗時的工作時，其他 thread 還能回應使用者</td><td>瀏覽器下載檔案時，畫面照樣能捲動</td></tr>
+                <tr><td>Resource sharing（資源共享）</td><td>同一行程的 thread 天生共用記憶體和檔案，不用另外設定 shared memory 或 message passing</td><td>多個 thread 讀同一份快取資料</td></tr>
+                <tr><td>Economy（經濟）</td><td>建立 thread、在 thread 間切換，都比行程便宜很多</td><td>不用複製位址空間、不用換頁表</td></tr>
+                <tr><td>Scalability（延展性）</td><td>多核心上不同 thread 可以真的同時跑</td><td>4 個 thread 各算四分之一的陣列</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>代價是：因為共用記憶體，多個 thread 同時改同一筆資料就會出錯，需要同步機制；這也是後面「行程同步」一整章要處理的問題。</p>
+        </div>
+      </section>
+
+      <section id="shared-private">
+        <h2>共享什麼、各自擁有什麼</h2>
+        <div class="panel prose">
+          <p>這是考題最愛出的觀念。判斷原則只有一條：<b>要讓不同 thread 執行到不同地方、呼叫不同函式，就得各自擁有；其餘屬於行程的東西都共用</b>。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="threads-shared-private"></div>
+            <figcaption><b>圖 1</b>：同一個行程的三個 thread。綠色的 code、data、heap、開啟的檔案是共用的；藍色的暫存器、PC、stack 每個 thread 各一份。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>每個 thread 各自擁有</th><th>同一行程的 thread 共用</th></tr></thead>
+              <tbody>
+                <tr><td>thread ID</td><td>code section（程式碼）</td></tr>
+                <tr><td>program counter（PC）</td><td>data section（global、static 變數）</td></tr>
+                <tr><td>register set（暫存器）</td><td>heap（<code>malloc</code> 出來的空間）</td></tr>
+                <tr><td>stack（區域變數、參數、返回位址）</td><td>開啟的檔案、signal 處理方式、位址空間（同一張 page table）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>為什麼 stack 一定要分開？因為每個 thread 有自己的函式呼叫鏈：thread A 正在 <code>f()</code> 裡、thread B 正在 <code>g()</code> 裡，兩邊的區域變數和返回位址如果放在同一個 stack，一 push 一 pop 就會互相蓋掉。所以「thread 共用 stack」永遠是錯的敘述。</p>
+          <h3>切換成本：為什麼 thread 比較便宜</h3>
+          <p>從 thread A 切到<b>同一行程</b>的 thread B，只要存下 A 的暫存器、PC、stack pointer，再載入 B 的；兩者在同一個位址空間，<b>page table 不用換</b>（page-table base register 不變），TLB 裡的對應也還能用，不必清掉。切到另一個行程則要換頁表，TLB 若沒有 ASID（位址空間編號）就得整個清空，之後一段時間的記憶體存取都會變慢（TLB 的運作見 <a href="../main-memory/paging.html">Paging and TLB 分頁與 TLB</a>）。</p>
+          <p>注意考題的陷阱：「thread 切換快，因為它們共用 page table <b>和 user stack</b>」是錯的，前半對、後半錯。同理，「每個 thread 有自己的 page table」也是錯的。</p>
+          <details class="code-fold">
+            <summary>看程式碼：pthread_create / pthread_join（分段加總）</summary>
+            <div class="code-block">
+              <div class="code-head">parallelSum()：4 個 thread 各加四分之一</div>
+              <pre class="code">#define NT 4
+#define LEN 1000
+int data[LEN];                 /* data section：所有 thread 共用 */
+long partial[NT];              /* 每個 thread 寫自己的那一格，不會互相干擾 */
+
+void *sumPart(void *arg) {
+  int id = *(int *)arg;        /* 參數指向 main 裡 ids[] 的一格 */
+  long s = 0;                  /* 區域變數在這個 thread 自己的 stack 上 */
+  for (int i = id * (LEN / NT); i &lt; (id + 1) * (LEN / NT); i++) s += data[i];
+  partial[id] = s;
+  return NULL;
+}
+
+long parallelSum(void) {
+  pthread_t tid[NT];
+  int ids[NT];                 /* 每個 thread 一個獨立的參數，不能共用同一個 i */
+  for (int i = 0; i &lt; NT; i++) {
+    ids[i] = i;
+    pthread_create(&amp;tid[i], NULL, sumPart, &amp;ids[i]);
+  }
+  long total = 0;
+  for (int i = 0; i &lt; NT; i++) {
+    pthread_join(tid[i], NULL);  /* 等第 i 個 thread 結束（synchronous threading） */
+    total += partial[i];
+  }
+  return total;
+}</pre>
+            </div>
+          </details>
+          <p>這段程式裡，<code>data[]</code>、<code>partial[]</code> 是 global，所有 thread 看到的是同一份；<code>s</code> 是區域變數，每個 thread 在自己的 stack 上各有一個，不會互相干擾。每個 thread 只寫自己那一格 <code>partial[id]</code>，所以不需要鎖。另一個常見錯誤是把迴圈變數 <code>&amp;i</code> 直接傳給所有 thread：thread 真正讀取時 <code>i</code> 可能已經被 main 改掉，所以要用 <code>ids[]</code> 每個 thread 一格。</p>
+        </div>
+      </section>
+
+      <section id="parallelism">
+        <h2>多核心：並行與平行</h2>
+        <div class="panel prose">
+          <p>兩個常被混用、考試卻嚴格區分的詞：</p>
+          <ul>
+            <li><span class="term">Concurrency<small>（並行）</small></span>：多個工作<b>都在推進</b>。單核心靠快速切換，讓每個 thread 輪流跑一小段，就能做到。</li>
+            <li><span class="term">Parallelism<small>（平行）</small></span>：同一時刻<b>真的有多個工作同時在執行</b>，需要多顆核心（或多個處理器）。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="threads-concurrency"></div>
+            <figcaption><b>圖 2</b>：(a) 單核心只能輪流，4 個 thread 都在推進，是 concurrency 但沒有 parallelism；(b) 雙核心上每個時刻都有兩個 thread 同時在跑，同樣 8 段工作只要一半的時間。</figcaption>
+          </figure>
+          <p>所以「沒有 parallelism 也可以有 concurrency」是對的，「單核心系統無法支援 concurrent 計算」是錯的。反過來，有 parallelism 一定有 concurrency。</p>
+          <p>平行化的方式分兩種：<span class="term">Data Parallelism<small>（資料平行）</small></span>把同一份資料切塊、每個核心做同樣的運算（例如上面的分段加總）；<span class="term">Task Parallelism<small>（工作平行）</small></span>把不同的工作分給不同核心（例如一個 thread 解碼影片、一個處理音訊）。寫多核心程式的難處在於：怎麼切工作、讓負擔平均、資料怎麼分、thread 之間的相依與同步，以及平行程式更難測試除錯。</p>
+          <h3>Amdahl's Law：加核心的上限</h3>
+          <p>核心數加倍，速度不會跟著加倍，因為程式裡總有一部分只能序列執行。設序列部分佔原本執行時間的比例為 S、核心數為 N：</p>
+          <pre class="formula">speedup ≤ 1 / (S + (1 − S) / N)
+N → ∞ 時，speedup → 1 / S</pre>
+          <p>例：S = 10%。4 核心時 speedup = 1 / (0.1 + 0.9/4) ≈ 3.08，16 核心時 ≈ 6.4，核心多了 4 倍，speedup 只多約一倍；不管加多少核心都超不過 1 / 0.1 = 10 倍。再加上 thread 建立、同步、溝通的成本，實際值還會更低。所以「兩核心一定有兩倍加速」是錯的，「thread 越少效能一定越差」也是錯的：thread 數超過核心數或 I/O 等待的需要時，多出來的 thread 只會增加切換與搶鎖的負擔。Amdahl's Law 的推導和「比例要用執行時間而不是指令數」這個陷阱，在 <a href="../../computer-organization/performance/cpu-performance.html#improve-one-class">CPU Time and CPI CPU 時間與 CPI</a> 有一個例子，完整內容在 Amdahl's Law Amdahl 定律（籌備中）。</p>
+        </div>
+      </section>
+
+      <section id="user-kernel">
+        <h2>User Thread 與 Kernel Thread</h2>
+        <div class="panel prose">
+          <p>thread 可以在兩個層次上實作：</p>
+          <ul>
+            <li><span class="term">User Thread<small>（使用者層級執行緒）</small></span>：由 user space 的 <b>thread library</b> 建立與管理，kernel 不知道它們的存在。建立、切換都只是函式呼叫，不用 trap 進 kernel，非常快；library 也可以用自己的排程策略（例如替同一行程的 thread 設不同優先權）。</li>
+            <li><span class="term">Kernel Thread<small>（核心層級執行緒）</small></span>：由作業系統直接支援與排程，建立與切換都要經過 system call，比較慢；但 kernel 看得到每一個，可以個別排到不同核心上，一個 block 了也能改排別的。現代的 Linux、Windows、macOS 都支援。</li>
+          </ul>
+          <p>最關鍵的一句話：<b>CPU 只執行 kernel 排程的單位</b>。user thread 要真正跑起來，一定要「搭」在某個 kernel thread 上。kernel 只看得到 kernel thread，所以一個 user thread 做 <code>read()</code> 這類 <span class="term">Blocking System Call<small>（會阻塞的系統呼叫）</small></span>時，kernel 卡住的是它所搭的那個 kernel thread，搭在同一個 kernel thread 上的其他 user thread 也跟著動不了。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較</th><th>User thread</th><th>Kernel thread</th></tr></thead>
+              <tbody>
+                <tr><td>誰管理</td><td>thread library（user space）</td><td>kernel</td></tr>
+                <tr><td>建立／切換</td><td>快，不用進 kernel</td><td>慢，要 system call、mode switch</td></tr>
+                <tr><td>排程策略</td><td>library 自訂，可依應用調整</td><td>kernel 統一決定</td></tr>
+                <tr><td>一個 block</td><td>同一 kernel thread 上的全部卡住</td><td>只有自己卡住</td></tr>
+                <tr><td>多核心</td><td>只能用到它所搭的 kernel thread 數那麼多顆</td><td>每個都可以排到不同核心</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩邊各自要保存執行狀態：user thread 在 user mode 跑，有自己的 user stack 和 library 維護的控制區塊（TCB）；kernel thread 進入 kernel 執行 system call 時用的是自己的 <b>kernel stack</b>，kernel 也替它維護控制區塊（例如 Linux 的 <code>task_struct</code>）。user mode 和 kernel mode 不會共用同一個 stack，否則 user 程式就能竄改 kernel 的資料。</p>
+        </div>
+      </section>
+
+      <section id="models">
+        <h2>四種多執行緒模型</h2>
+        <div class="panel prose">
+          <p>user thread 和 kernel thread 怎麼對應，決定了「一個 block 會不會拖累別人」與「能用到幾顆核心」。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="threads-models"></div>
+            <figcaption><b>圖 3</b>：四種模型（U 是 user thread，K 是 kernel thread）。many-to-many 的虛線表示每一輪都可以重新指派；two-level 的橘色 user thread 綁定在自己的 kernel thread 上。</figcaption>
+          </figure>
+          <h3>Many-to-One</h3>
+          <p>所有 user thread 對應到<b>一個</b> kernel thread。thread 管理全在 user space，很有效率；但只要有一個 user thread 做 blocking system call，唯一的 kernel thread 就被卡住，<b>整個行程都停住</b>；而且同時只有一個 thread 能用 CPU，多核心完全派不上用場。早期的 Solaris Green Threads 就是這種，現在幾乎沒人用。</p>
+          <h3>One-to-One</h3>
+          <p>每個 user thread 都有自己的 kernel thread。一個 block，其他照跑；多個 thread 可以平行跑在不同核心上。缺點是每建立一個 user thread 就要建立一個 kernel thread，數量太多時拖累系統效能，所以有的系統會限制 thread 數。<b>Linux 與 Windows 都採用 one-to-one</b>，因為現代機器的核心多、kernel thread 也夠便宜。</p>
+          <h3>Many-to-Many</h3>
+          <p>M 個 user thread 多工到 N 個 kernel thread 上（N ≤ M），兼顧兩邊：程式可以開很多 user thread，又能平行執行，一個 block 時 library 可以把其他 user thread 放到別的 kernel thread 上。實作上 user thread 和 kernel thread 之間通常夾一層 <span class="term">LWP<small>（Lightweight Process，輕量級行程）</small></span>：對 library 來說它像一顆虛擬處理器，每個 LWP 背後接一個 kernel thread。</p>
+          <p>kernel thread 要配幾個很重要：少於核心數時，有些核心根本沒事做；剛好等於核心數時，只要有一個 block，那顆核心就閒著。所以 kernel thread 最好比核心數多。LWP 全被 block 時，有的系統用 <span class="term">Scheduler Activation<small>（排程器啟動）</small></span>：kernel 透過 <b>upcall</b> 通知 thread library「某個 thread 要 block 了」，並配給它一個新的 LWP，讓其他 user thread 繼續跑。many-to-many 很有彈性，但實作複雜，加上核心數變多後 one-to-one 已經夠用，現在主流系統很少採用。</p>
+          <h3>Two-Level</h3>
+          <p>many-to-many 的變形：大部分 user thread 一樣多工，但允許某些重要的 user thread <b>綁定（bound）</b>到自己專屬的 kernel thread，保證它隨時有 kernel thread 可用。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>模型</th><th>kernel thread 數</th><th>一個 thread 做 blocking call</th><th>能否平行</th><th>代表</th></tr></thead>
+              <tbody>
+                <tr><td>Many-to-one</td><td>1</td><td>整個行程卡住</td><td>不能</td><td>Green Threads</td></tr>
+                <tr><td>One-to-one</td><td>= user thread 數</td><td>只有自己卡住</td><td>能</td><td>Linux、Windows</td></tr>
+                <tr><td>Many-to-many</td><td>N ≤ M</td><td>只卡一個 LWP；LWP 全被卡時其他也要等</td><td>能，最多 N 個</td><td>舊版 Solaris</td></tr>
+                <tr><td>Two-level</td><td>N 個共用 + bound 的</td><td>同 many-to-many；bound thread 不受影響</td><td>能</td><td>舊版 Solaris、IRIX</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Contention Scope：誰跟誰搶</h3>
+          <p>有 user thread 的系統其實有兩層排程：</p>
+          <ul>
+            <li><span class="term">PCS<small>（Process-Contention Scope，行程競爭範圍）</small></span>：thread library 決定<b>同一個行程裡</b>哪個 user thread 可以用 LWP。競爭對象只有同行程的 thread，通常依優先權、可搶先（高優先權的會搶走低優先權的）。</li>
+            <li><span class="term">SCS<small>（System-Contention Scope，系統競爭範圍）</small></span>：kernel 決定<b>全系統</b>哪個 kernel thread 上哪顆 CPU。</li>
+          </ul>
+          <p>one-to-one 的系統只有 SCS（user thread 直接就是 kernel thread）。Pthreads 用 <code>pthread_attr_setscope()</code> 指定 <code>PTHREAD_SCOPE_PROCESS</code>（PCS）或 <code>PTHREAD_SCOPE_SYSTEM</code>（SCS），Linux 和 macOS 只允許 <code>PTHREAD_SCOPE_SYSTEM</code>。kernel 層的排程演算法見 <a href="../cpu-scheduling/cpu-scheduling.html">CPU Scheduling Algorithms CPU 排程演算法</a>，多核心的負載平衡與 processor affinity 在 Multiprocessor and Real-Time Scheduling 多處理器與即時排程（籌備中）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：多執行緒模型的模擬（排程與 blocking call）</summary>
+            <div class="code-block">
+              <div class="code-head">schedule()、blockingCall()、ioDone()</div>
+              <pre class="code">int numKernel(void) {
+  if (model == MANY_TO_ONE) return 1;
+  if (model == ONE_TO_ONE) return nUser;
+  if (model == MANY_TO_MANY) return nLWP;
+  return 1 + nLWP;             /* two-level：T0 綁定 K0，其餘共用 nLWP 個 */
+}
+
+/* user thread t 能不能用 kernel thread k */
+int allowed(int t, int k) {
+  if (model == MANY_TO_ONE) return k == 0;
+  if (model == ONE_TO_ONE) return k == t;
+  if (model == MANY_TO_MANY) return 1;
+  return t == 0 ? k == 0 : k &gt;= 1;   /* two-level：bound thread 只用自己的 K0 */
+}
+
+/* 排程一輪：kernel 把沒被卡住的 kernel thread 排上 CPU，
+   thread library 替每個 kernel thread 挑一個 ready 的 user thread */
+int schedule(int running[]) {
+  int taken[MAXT] = {0}, cnt = 0;
+  for (int k = 0; k &lt; numKernel() &amp;&amp; cnt &lt; cores; k++) {
+    if (kblocked[k]) continue;                 /* 卡在 system call 的 kernel thread 不能上 CPU */
+    for (int t = 0; t &lt; nUser; t++)
+      if (!blocked[t] &amp;&amp; !taken[t] &amp;&amp; allowed(t, k)) {
+        taken[t] = 1;
+        running[cnt++] = t;
+        break;
+      }
+  }
+  return cnt;                                  /* 同時在跑的 user thread 數 */
+}
+
+/* user thread t（目前跑在 kernel thread k 上）呼叫 read() 之類的 blocking system call */
+void blockingCall(int t, int k) {
+  blocked[t] = 1;
+  kblocked[k] = 1;             /* kernel 只看得到 kernel thread：卡住的是 k */
+  lwpOf[t] = k;
+}
+
+/* I/O 完成：t 和它的 kernel thread 回到 ready */
+void ioDone(int t) {
+  blocked[t] = 0;
+  kblocked[lwpOf[t]] = 0;
+}</pre>
+            </div>
+          </details>
+          <p>這段模擬把規則寫成程式：<code>schedule()</code> 跳過被卡住的 kernel thread，替其餘的挑一個 ready 的 user thread，最多排滿 <code>cores</code> 顆。同時在跑的數量 = min(CPU 數, 沒被卡住的 kernel thread 數, ready 的 user thread 數)。下面的動畫就是照這套規則畫的。</p>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>先按上排四個按鈕選模型；輸入框依序是 <b>user thread 數</b>（1～6）、<b>LWP 數</b>（只用在 many-to-many 和 two-level）、<b>CPU 數</b>（1～4），以及<b>依序做 blocking system call 的 thread 編號</b>（例如 <code>0 1</code>，最多 3 個），改完按「執行」。只有正在 CPU 上的 thread 才能發出 system call，輸入沒在跑的 thread 時動畫會停下來說明原因。三個例子分別示範：many-to-one 一個卡住全部卡住、many-to-many 的 LWP 被用完、單核心的 one-to-one（有 concurrency 沒有 parallelism）。</p>
+        </div>
+        <div class="viz" data-viz="thread-models"></div>
+      </section>
+
+      <section id="pthreads">
+        <h2>Pthreads 程式：建立、等待與共享</h2>
+        <div class="panel prose">
+          <p><span class="term">Pthreads<small>（POSIX threads）</small></span>是 POSIX 定義的 thread API（一份規格，不是某個實作），UNIX 類系統都有。最常用的三個函式：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>函式</th><th>作用</th></tr></thead>
+              <tbody>
+                <tr><td><code>pthread_create(&amp;tid, attr, func, arg)</code></td><td>建立 thread，從 <code>func(arg)</code> 開始執行；呼叫者不會等它</td></tr>
+                <tr><td><code>pthread_join(tid, &amp;ret)</code></td><td>等指定的 thread 結束，並取回它的回傳值</td></tr>
+                <tr><td><code>pthread_exit(ret)</code></td><td>結束自己這個 thread（只結束 thread，不是整個行程）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>parent 建立 child 之後，若會<b>等 child 結束才繼續</b>（例如呼叫 <code>pthread_join</code>），叫 <span class="term">Synchronous Threading<small>（同步執行緒）</small></span>，常見於 parent 要彙整各 child 結果的情況；parent 建完就各跑各的，叫 <span class="term">Asynchronous Threading<small>（非同步執行緒）</small></span>，例如伺服器每個連線一個 thread。編譯時要加 <code>-pthread</code>。</p>
+          <h3>程式輸出題：thread 共享、fork 複製</h3>
+          <p>考題常把 <code>fork()</code> 和 <code>pthread_create()</code> 放在一起，問某個變數最後印出多少。關鍵只有一句：<b>thread 共用同一份 global 變數；fork 出來的 child 拿到的是複本</b>，之後兩邊各改各的。</p>
+          <details class="code-fold">
+            <summary>看程式碼：threadVsFork()</summary>
+            <div class="code-block">
+              <div class="code-head">threadVsFork()：thread 改得到、child 改不到</div>
+              <pre class="code">int value = 5;                 /* global 變數 */
+
+void *addTen(void *arg) {
+  (void)arg;
+  value += 10;                 /* 改到的是同一個 process 裡唯一的那份 value */
+  return NULL;
+}
+
+void threadVsFork(void) {
+  pthread_t t;
+  pthread_create(&amp;t, NULL, addTen, NULL);
+  pthread_join(t, NULL);
+  printf("thread 之後：value = %d\n", value);   /* 15：thread 改的 parent 看得到 */
+
+  fflush(stdout);              /* 先清空緩衝區，避免 fork 後子行程重複印出 */
+  pid_t pid = fork();
+  if (pid == 0) {              /* 子行程：拿到 value 的一份複本 */
+    value += 10;
+    printf("child：value = %d\n", value);        /* 25 */
+    exit(0);
+  }
+  waitpid(pid, NULL, 0);
+  printf("fork 之後 parent：value = %d\n", value); /* 仍是 15：child 改的是自己的複本 */
+}</pre>
+            </div>
+          </details>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>時間點</th><th>parent 的 value</th><th>child 的 value</th><th>印出</th></tr></thead>
+              <tbody>
+                <tr><td>開始</td><td>5</td><td>（還沒有 child）</td><td></td></tr>
+                <tr><td>thread 執行 value += 10，parent join 後</td><td>15</td><td></td><td>thread 之後：value = 15</td></tr>
+                <tr><td>fork：child 複製一份</td><td>15</td><td>15</td><td></td></tr>
+                <tr><td>child 執行 value += 10</td><td>15</td><td>25</td><td>child：value = 25</td></tr>
+                <tr><td>parent waitpid 後</td><td>15</td><td>（已結束）</td><td>fork 之後 parent：value = 15</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>程式在 fork 前先 <code>fflush(stdout)</code>：printf 的緩衝區也在記憶體裡，若還沒送出就 fork，child 會複製一份沒送出的內容，同一行就印了兩次，這是 fork 輸出題的另一個陷阱。計算 fork 會產生幾個行程的題型（迴圈裡 fork、<code>fork() &amp;&amp; fork()</code>）屬於 Process Concept 行程與行程狀態（籌備中）。</p>
+          <h3>共享變數與 race condition</h3>
+          <p>兩個 thread 各對同一個 global 計數器加 10000 次，結果不一定是 20000。<code>count += 1</code> 在機器層級是「讀出、加一、寫回」三步，兩個 thread 可能讀到同一個舊值、各自加一寫回，就少算一次。這種結果取決於執行順序的情況叫 <span class="term">Race Condition<small>（競爭情況）</small></span>。調整 <code>pthread_join</code> 的順序沒有用（join 只決定 main 先等誰，兩個 thread 照樣同時在跑）；要用 mutex 把「讀、加、寫」包起來：</p>
+          <details class="code-fold">
+            <summary>看程式碼：用 mutex 保護共享計數器</summary>
+            <div class="code-block">
+              <div class="code-head">inc()：lock → counter++ → unlock</div>
+              <pre class="code">long counter = 0;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+void *inc(void *arg) {
+  int times = *(int *)arg;
+  for (int i = 0; i &lt; times; i++) {
+    pthread_mutex_lock(&amp;lock);
+    counter++;                 /* 讀、加、寫三步，鎖住才不會被插隊 */
+    pthread_mutex_unlock(&amp;lock);
+  }
+  return NULL;
+}</pre>
+            </div>
+          </details>
+          <p>為什麼需要鎖、鎖要滿足哪些條件，在 The Critical-Section Problem 臨界區問題（籌備中）和 Mutex Locks and Semaphores 互斥鎖與號誌（籌備中）詳細說明。</p>
+        </div>
+      </section>
+
+      <section id="threading-issues">
+        <h2>多執行緒的麻煩：fork、signal、取消</h2>
+        <div class="panel prose">
+          <h3>fork() 與 exec()</h3>
+          <p>多執行緒行程裡某個 thread 呼叫 <code>fork()</code>，child 要複製所有 thread，還是只複製呼叫者？有的 UNIX 兩種都提供；<b>POSIX 的 <code>fork()</code> 只複製呼叫 fork 的那個 thread</b>。如果 child 接著馬上 <code>exec()</code>，整個位址空間都會被新程式取代，複製其他 thread 本來就是浪費。<code>exec()</code> 不會保留原本的記憶體或任何 thread，它載入新程式、從新程式的進入點開始執行。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="threads-fork"></div>
+            <figcaption><b>圖 4</b>：T0 呼叫 fork 時，T1 正拿著 mutex m。child 只有 T0 的複本，但記憶體是整份複製的，所以 m 仍然是鎖住的狀態，而能解鎖它的 T1 不存在。</figcaption>
+          </figure>
+          <p>只複製一個 thread 帶來圖 4 的問題：其他 thread 拿著的鎖，在 child 裡永遠解不開。<code>printf</code>、<code>malloc</code> 這類函式內部都有鎖，剛好被其他 thread 拿著時，child 一呼叫就卡死。所以 POSIX 規定 fork 之後、exec 之前，child 只應該呼叫 async-signal-safe 的函式。</p>
+          <h3>Signal 要送給哪個 thread</h3>
+          <p><span class="term">Signal<small>（信號）</small></span>是 UNIX 通知行程「發生了某件事」的方式。單執行緒時送給行程就好，多執行緒時要決定由誰處理：</p>
+          <ul>
+            <li><b>Synchronous signal</b>（同步信號）：由某個 thread 自己的動作造成，例如非法存取記憶體（SIGSEGV）、除以 0，送給<b>造成它的那個 thread</b>。</li>
+            <li><b>Asynchronous signal</b>（非同步信號）：由外部事件造成，例如 <code>kill</code>、Ctrl-C。可以送給所有 thread、送給某些 thread，或指定一個專門接收 signal 的 thread。POSIX 的做法是：送給行程的 signal 交給<b>任一個沒有 block 這個 signal 的 thread</b>；每個 thread 可以用 <code>pthread_sigmask()</code> 決定要 block 哪些 signal，<code>pthread_kill()</code> 則可以把 signal 送給指定的 thread。</li>
+          </ul>
+          <h3>Thread Cancellation：提早結束某個 thread</h3>
+          <p>例如多個 thread 同時搜尋資料庫，一個找到後其他都該停。要被取消的 thread 叫 target thread，有兩種取消方式：</p>
+          <ul>
+            <li><span class="term">Asynchronous Cancellation<small>（非同步取消）</small></span>：立刻終止 target thread。它可能正在更新共享資料或拿著鎖，資源來不及釋放，很危險。</li>
+            <li><span class="term">Deferred Cancellation<small>（延遲取消）</small></span>：只設一個「請你結束」的旗標，target thread 執行到 <b>cancellation point</b>（例如 <code>pthread_testcancel()</code>、<code>read()</code> 等許多會 block 的呼叫）時才檢查、結束，可以在安全的地方收尾。<b>Pthreads 的預設是 deferred</b>。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：deferred cancellation</summary>
+            <div class="code-block">
+              <div class="code-head">spin()：只在 pthread_testcancel() 被取消</div>
+              <pre class="code">volatile int started = 0;
+
+void *spin(void *arg) {
+  (void)arg;
+  started = 1;
+  for (;;) {
+    /* ……做一小段不能被打斷的工作…… */
+    pthread_testcancel();      /* cancellation point：有取消要求就在這裡結束 */
+  }
+  return NULL;
+}
+
+  pthread_create(&amp;s, NULL, spin, NULL);
+  while (!started) sched_yield();   /* 等 spin 真的開始跑 */
+  pthread_cancel(s);           /* 只是送出取消要求 */
+  pthread_join(s, &amp;res);
+  printf("spin %s\n", res == PTHREAD_CANCELED ? "在 cancellation point 被取消" : "正常結束");</pre>
+            </div>
+          </details>
+          <p><code>pthread_cancel()</code> 只是送出取消要求，真正結束的時間點由 target thread 決定；join 回來的值是 <code>PTHREAD_CANCELED</code>，代表它是被取消的。</p>
+          <h3>Thread-Local Storage</h3>
+          <p>有時每個 thread 需要一份「自己的 global 變數」，例如每個 thread 處理的交易編號。區域變數只在一個函式裡看得到，函式返回就沒了；<span class="term">Thread-Local Storage<small>（執行緒區域儲存，TLS）</small></span>則在這個 thread 的所有函式裡都看得到、存在到 thread 結束，但每個 thread 各一份（C11 寫成 <code>_Thread_local</code>，gcc 有 <code>__thread</code>）。</p>
+        </div>
+      </section>
+
+      <section id="implicit-threading">
+        <h2>隱式執行緒與 Thread Pool</h2>
+        <div class="panel prose">
+          <p>手動建立、管理成百上千個 thread 很容易出錯。現在的趨勢是 <span class="term">Implicit Threading<small>（隱式執行緒）</small></span>：程式設計者只標出「哪些工作可以平行」，建立與管理 thread 的事交給編譯器和執行期函式庫。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>做法</th><th>概念</th></tr></thead>
+              <tbody>
+                <tr><td>Thread pool（執行緒池）</td><td>啟動時先建好固定數量的 thread 在池子裡等；有工作就交給閒置的 thread，做完回到池子，沒有閒置的就排隊</td></tr>
+                <tr><td>Fork-join</td><td>parent 把工作切成子工作（fork），等它們做完再合併（join）；Java 的 ForkJoinPool 就是這樣</td></tr>
+                <tr><td>OpenMP</td><td>在 C/C++ 程式裡用 <code>#pragma omp parallel</code> 這類編譯指示標出平行區域，由編譯器產生 thread</td></tr>
+                <tr><td>Grand Central Dispatch（GCD）</td><td>macOS／iOS 的技術：程式把工作（block）放進 dispatch queue，由系統管理的 thread pool 取出執行，程式本身不直接建立 thread</td></tr>
+                <tr><td>Intel TBB</td><td>C++ 函式庫，提供 <code>parallel_for</code> 等平行樣板</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>thread pool 的三個好處：(1) 用現成的 thread 比臨時建立快；(2) <b>限制同時存在的 thread 數</b>，request 暴增時不會把系統資源耗光，對資源有限的系統特別重要；(3) 把「要做什麼」和「怎麼執行」分開，可以換排程策略（例如延遲執行、定期執行）。pool 的大小可以依 CPU 數、記憶體大小、預期的同時連線數決定，也可以動態調整。</p>
+          <p>設計題常要你說明伺服器怎麼用 thread：常見答案是 CPU 密集的工作用約等於核心數的 thread（多了只增加切換），I/O 密集的工作則需要更多 thread 或改用非同步 I/O，讓等待 I/O 的時間有別的 thread 補上；共享資料用鎖或分區避免 race condition。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>thread 共享與私有的資源</td><td>很常考</td><td>PC、暫存器、stack、thread ID 私有；code、data、heap、檔案、page table 共用</td><td><a class="q-link" href="#q-os-0236">例題</a> <a class="q-link" href="#q-os-0188">例題</a> <a class="q-link" href="#q-os-0251">例題</a></td></tr>
+                <tr><td>thread 與 process 的切換、建立成本</td><td>很常考</td><td>同行程切換不換 page table、TLB 不清；注意理由不包括共用 stack</td><td><a class="q-link" href="#q-os-0203">例題</a> <a class="q-link" href="#q-os-0055">例題</a> <a class="q-link" href="#q-os-0054">例題</a></td></tr>
+                <tr><td>user／kernel thread 與 blocking</td><td>很常考</td><td>先看模型有幾個 kernel thread；block 卡住的是 kernel thread，搭在同一個上的全部卡住</td><td><a class="q-link" href="#q-os-0017">例題</a> <a class="q-link" href="#q-os-0069">例題</a> <a class="q-link" href="#q-os-0252">例題</a></td></tr>
+                <tr><td>many-to-many 的 kernel thread 數與效能</td><td>常考</td><td>同時在跑 = min(CPU, 沒被卡的 kernel thread, ready 的 user thread)，逐次 block 追蹤</td><td><a class="q-link" href="#q-os-0042">例題</a> <a class="q-link" href="#q-os-0256">例題</a></td></tr>
+                <tr><td>contention scope（PCS／SCS）</td><td>常考</td><td>PCS：同行程 user thread 搶 LWP；SCS：全系統 kernel thread 搶 CPU；Linux 只有 SYSTEM</td><td><a class="q-link" href="#q-os-0030">例題</a> <a class="q-link" href="#q-os-0050">例題</a></td></tr>
+                <tr><td>concurrency／parallelism、Amdahl's Law</td><td>常考</td><td>單核可 concurrency 不可 parallelism；speedup = 1 / (S + (1 − S)/N)，上限 1/S</td><td><a class="q-link" href="#q-os-0234">例題</a> <a class="q-link" href="#q-os-0080">例題</a> <a class="q-link" href="#q-os-0255">例題</a> <a class="q-link" href="#q-os-0258">例題</a></td></tr>
+                <tr><td>pthread／fork 程式輸出</td><td>常考</td><td>畫出每個行程有哪些 thread；thread 共用變數、fork 複製變數；沒有鎖的 count++ 結果不固定</td><td><a class="q-link" href="#q-os-0178">例題</a> <a class="q-link" href="#q-os-0254">例題</a> <a class="q-link" href="#q-os-0257">例題</a></td></tr>
+                <tr><td>fork／exec、signal、cancellation</td><td>偶爾</td><td>POSIX fork 只複製呼叫者；同步 signal 給肇事 thread；Pthreads 預設 deferred</td><td><a class="q-link" href="#q-os-0210">例題</a> <a class="q-link" href="#q-os-0259">例題</a> <a class="q-link" href="#q-os-0253">例題</a></td></tr>
+                <tr><td>是非綜合、implicit threading、設計題</td><td>偶爾</td><td>逐句對照定義；設計題依 CPU／I/O 密集決定 thread 數並說明同步</td><td><a class="q-link" href="#q-os-0124">例題</a> <a class="q-link" href="#q-os-0093">例題</a> <a class="q-link" href="#q-os-0097">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 同一行程的 thread 共用 stack（或共用 PC）</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> stack、PC、暫存器每個 thread 各一份；共用的是 code、data、heap、檔案</span> <a class="q-link" href="#q-os-0236">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> thread 切換快，是因為共用 page table 和 user stack</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只有「共用位址空間（page table）」是理由，user stack 並不共用</span> <a class="q-link" href="#q-os-0203">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 用 kernel thread 時，一個 thread 做 blocking I/O 會讓整個行程卡住</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> kernel 個別排程每個 kernel thread；整個行程卡住的是 many-to-one</span> <a class="q-link" href="#q-os-0069">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> kernel thread 比 user thread 容易建立、建立得更快</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> user thread 不用進 kernel，建立與切換都比較快</span> <a class="q-link" href="#q-os-0017">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 單核心系統無法支援 concurrent 計算</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 單核心靠切換就有 concurrency，做不到的是 parallelism</span> <a class="q-link" href="#q-os-0080">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 核心數加倍，速度就加倍</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 受序列部分限制：speedup = 1 / (S + (1 − S)/N)，上限 1/S</span> <a class="q-link" href="#q-os-0258">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> PCS 決定哪個 kernel thread 上哪顆 CPU</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是 SCS；PCS 是同一行程的 user thread 搶 LWP</span> <a class="q-link" href="#q-os-0050">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 多執行緒行程呼叫 fork()，child 會有所有 thread 的複本</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> POSIX fork 只複製呼叫者；其他 thread 拿著的鎖在 child 裡永遠鎖著</span> <a class="q-link" href="#q-os-0210">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> synchronous threading 是 parent 建立 child 後自己繼續執行</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是 asynchronous；synchronous 是 parent 等 child 結束（pthread_join）</span> <a class="q-link" href="#q-os-0234">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 調整 pthread_join 的順序，就能讓沒加鎖的 count++ 結果固定</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> join 只決定 main 先等誰，兩個 thread 仍同時在改；要用 mutex</span> <a class="q-link" href="#q-os-0178">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Pthreads 在 cancellation point 才取消，是 asynchronous cancellation</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是 deferred cancellation（Pthreads 預設）；asynchronous 是立刻終止</span> <a class="q-link" href="#q-os-0253">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="threads"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=51e6f2d4"></script>
+  <script src="../../../assets/js/viz-core.js?v=51e6f2d4"></script>
+  <script src="../../../assets/js/viz/operating-systems/threads.js?v=51e6f2d4"></script>
+</body>
+</html>

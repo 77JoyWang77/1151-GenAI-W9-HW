@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hash Functions 雜湊函數 · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="雜湊函數：除法與 m 的選擇、乘法、折疊、字串雜湊、universal、perfect hashing、Bloom filter">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=51e6f2d4">
+  <script src="../../../assets/js/theme.js?v=51e6f2d4"></script>
+</head>
+<body data-subject="data-structures" data-chapter="hashing" data-chno="8" data-topic="data-structures/hashing/hash-functions" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures 資料結構</a> › Ch8 Hashing 雜湊 › Hash Functions 雜湊函數</nav>
+      <div class="topic-head">
+        <h1>Hash Functions 雜湊函數<small>位址怎麼算：除法、乘法、字串雜湊、universal、perfect 與 Bloom filter</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch8 Hashing</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">division</span>
+          <span class="chip">multiplication</span>
+          <span class="chip">universal hashing</span>
+          <span class="chip">perfect hashing</span>
+          <span class="chip">Bloom filter</span>
+        </div>
+      </div>
+
+      <section id="good-hash-function">
+        <h2>好的雜湊函數要做到什麼</h2>
+        <div class="panel prose">
+          <p><span class="term">Hashing<small>（雜湊）</small></span>的目標是用一次計算就找到資料：<span class="term">Hash Function<small>（雜湊函數）</small></span> h 把 key 算成 0～m − 1 的一個位址，資料就放在表的第 h(k) 格，搜尋時再算一次就知道去哪裡找。表的大小 m 遠小於 key 的可能值（例如所有 32 位元整數、所有字串），所以一定有兩個 key 算出同一格，這叫 <span class="term">Collision<small>（碰撞）</small></span>。碰撞之後怎麼處理（chaining、linear／quadratic probing、double hashing）、load factor α = n/m 和期望探測次數的公式，都在 <a href="collision-resolution.html">Collision Resolution 碰撞處理</a>；這一頁專心講<b>位址怎麼算</b>：同樣的資料、同樣的碰撞處理，雜湊函數選得好，碰撞就少，表就快。</p>
+          <h3>四個條件</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>條件</th><th>意思</th><th>做不到會怎樣</th></tr></thead>
+              <tbody>
+                <tr><td>決定性</td><td>同一個 key 每次都算出同一個位址</td><td>插入放在 3、搜尋算出 5，永遠找不到</td></tr>
+                <tr><td>計算快</td><td>O(1)（字串是 O(長度)），只用少數加、乘、取餘</td><td>雜湊表的優勢就是快，函數本身太慢就沒意義</td></tr>
+                <tr><td>分布均勻</td><td>key 盡量平均落在 m 格，每格機率約 1/m</td><td>大家擠在少數幾格，碰撞多，搜尋退化成 O(n)</td></tr>
+                <tr><td>用到整個 key</td><td>key 的每一位（每個字元）都影響結果</td><td>只看某幾位時，那幾位相同的 key 全部撞在一起</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>「均勻」的理想模型叫 <span class="term">Simple Uniform Hashing<small>（簡單均勻雜湊）</small></span>：假設每個 key 獨立、等機率地落在 m 格中的任一格。碰撞處理頁的效能公式都建立在這個假設上。現實的 key 不是隨機的（學號連號、價格尾數常是 0 或 5、記憶體位址都是 4 的倍數），所以好的雜湊函數要能<b>打散 key 裡的規律</b>，讓結果看起來像隨機。</p>
+          <p>還有一件事雜湊函數<b>不需要</b>、也不應該做：保持 key 的大小順序。雜湊就是要把相鄰的 key 打散，所以雜湊表找最小值、找某個 key 的前驅（predecessor）或後繼（successor）都只能把整張表掃一遍；需要順序時要用 <a href="../tree/binary-search-tree.html">Binary Search Tree 二元搜尋樹</a>或平衡樹。</p>
+          <h3>key 不是整數怎麼辦</h3>
+          <p>多數雜湊函數處理的是非負整數，其他型別要先轉成整數：字串用字元碼組合成一個數（後面「字串雜湊」一節）；考題給 16 進位的 key（例如 3B、7C）時，要<b>先換成十進位</b>（3B = 59）再代公式，不能直接把 3B 當成 38 或 3。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 雜湊函數決定「碰撞有多少」，碰撞處理決定「撞了之後要多花多少時間」。兩者都會影響效能，但這是兩件獨立的事，題目通常會分開考。</p></div>
+        </div>
+      </section>
+
+      <section id="division">
+        <h2>Division Method 除法</h2>
+        <div class="panel prose">
+          <p><span class="term">Division Method<small>（除法）</small></span>是最常見、考題預設的雜湊函數：</p>
+          <pre class="formula">h(k) = k mod m          結果一定在 0～m − 1
+例：m = 13，h(2024) = 2024 mod 13 = 9（2024 = 155 × 13 + 9）</pre>
+          <p>只要一次取餘數，非常快。但取餘數只保留了 k 除以 m 的「零頭」，所以 <b>m 的選法</b>決定了 key 的哪些資訊被留下，選錯 m 會讓分布非常不均勻：</p>
+          <ul>
+            <li><b>m 不要是 2 的冪</b>：m = 2<sup>p</sup> 時，k mod 2<sup>p</sup> 就是 k 的<b>最低 p 個位元</b>，高位元完全沒用到。例如 m = 16，0x35、0x135、0x2A5、0x1005 的最低 4 位都是 0101，全部算出 5。</li>
+            <li><b>m 不要是 10 的冪</b>：同理，m = 100 只看十進位的最後兩位，價格、年份這類尾數有規律的資料會擠在一起。</li>
+            <li><b>m 不要有小因數</b>：如果 m 有因數 d，而很多 key 對 d 同餘（例如都是 4 的倍數），因為 d 整除 m，k mod m 對 d 也同餘，這些 key 只會落在 m/d 格裡，其他格完全用不到。偶數的 m 就有因數 2：key 全是偶數時只會用到一半的格子。</li>
+            <li><b>m 取質數，而且不要太靠近 2 的冪</b>：質數沒有小因數，上面兩種規律都打不散它。2 的冪附近的質數（例如 31 = 2<sup>5</sup> − 1、127 = 2<sup>7</sup> − 1）在某些資料下仍有規律（例如把字串當成以 2<sup>p</sup> 為底的數字時，m = 2<sup>p</sup> − 1 會讓字元順序調換的字串全撞），所以常選離 2 的冪遠一點的質數，例如要開 1500 格左右時選 1531（離 1024、2048 都很遠）。考題通常只要求答出「質數、不靠近 2 的冪」。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="hf-mod-choice"></div>
+            <figcaption><b>圖 1</b>：12 個 4 的倍數。m = 12 有因數 4，所有 key 只能落在 0、4、8 三格（紅色，每格 4 個）；m = 13 是質數，12 個 key 分到 12 個不同的格子（綠色），一次碰撞都沒有。</figcaption>
+          </figure>
+          <p>為什麼質數有效？設 key 都是 d 的倍數，k = d·i，位址是 d·i mod m。若 gcd(d, m) = 1，連續 m 個 i 算出的 d·i mod m 剛好是 0～m − 1 的一個排列，每一格都用得到；若 gcd(d, m) = g &gt; 1，d·i mod m 一定是 g 的倍數，只會用到 m/g 格。m 是質數時，除了 d 本身是 m 的倍數以外 gcd 一定是 1，所以不怕 key 有這種規律。圖 1 的 m = 13 正是這樣：4i mod 13 在 i = 0～11 算出 12 個不同的值。</p>
+          <details class="code-fold">
+            <summary>看程式碼：hashDiv()</summary>
+            <div class="code-block">
+              <div class="code-head">hashDiv()：除法</div>
+              <pre class="code">int hashDiv(int k, int m) {                    /* k ≥ 0，m 最好是不靠近 2 的冪的質數 */
+  return k % m;
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="multiplication">
+        <h2>Multiplication Method 乘法</h2>
+        <div class="panel prose">
+          <p>除法對 m 很挑剔；<span class="term">Multiplication Method<small>（乘法）</small></span>則對 m 沒有要求，m 甚至可以直接用 2 的冪。做法是先乘上一個 0 和 1 之間的常數 A，取<b>小數部分</b>，再放大到 0～m：</p>
+          <pre class="formula">h(k) = ⌊ m · frac(k · A) ⌋        frac(x) = x − ⌊x⌋，是 x 的小數部分，介於 [0, 1)
+常用 A = (√5 − 1) / 2 ≈ 0.6180339887（Knuth 建議的值，黃金比例的倒數）</pre>
+          <p>小數部分受 k 的每一位影響：k 只差 1，kA 就差 0.618，小數部分跳到很遠的地方，相鄰的 key 會被打散。A 理論上可以是任何 0 到 1 之間的數，但太接近有理數的 A（例如 0.5）會讓 kA 的小數部分只有少數幾種值；黃金比例是「最難用分數逼近」的無理數，打散效果特別好。</p>
+          <h3>完整算一次</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>k = 2024，m = 16</th><th>說明</th></tr></thead>
+              <tbody>
+                <tr><td>1. k × A</td><td>2024 × 0.6180339887 = 1250.900793…</td><td>整數部分 1250 之後會被丟掉</td></tr>
+                <tr><td>2. 取小數</td><td>frac = 0.900793…</td><td>一定在 [0, 1)</td></tr>
+                <tr><td>3. 乘 m</td><td>16 × 0.900793… = 14.4127…</td><td>放大到 [0, 16)</td></tr>
+                <tr><td>4. 取 floor</td><td>h(2024) = 14</td><td>位址在 0～15 之間</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>考題有時把 A 換成別的小數、用 C 的 <code>modf()</code>（取小數部分的函式）寫成 <code>floor(modf(x * 0.31) * 16)</code>，意思完全一樣：<b>先取小數部分，再乘 m、取 floor</b>。常見錯誤是先乘 m 再取小數，或忘了丟掉整數部分。</p>
+          <h3>只用整數運算的版本</h3>
+          <p>實作上不用浮點數：設字組長度 w 位元（例如 32）、m = 2<sup>p</sup>，事先算好整數 s = ⌊A · 2<sup>w</sup>⌋（A ≈ 0.618 時 s = 2654435769）。k × s 是一個 2w 位元的乘積，把它寫成 r1 · 2<sup>w</sup> + r0，<b>r0（低 w 位元）就對應 kA 的小數部分</b>，r0 最高的 p 個位元就是 h(k)。在 C 裡 32 位元無號整數相乘會自動 mod 2<sup>32</sup>，留下的剛好是 r0，再右移 w − p 位即可。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="hf-mul-shift"></div>
+            <figcaption><b>圖 2</b>：乘法法的整數版本。k 乘 s 得到 2w 位元的乘積，高 w 位元 r1 是 kA 的整數部分（丟掉），低 w 位元 r0 是小數部分，取 r0 的前 p 位（綠色）就是 h(k)。以 k = 2024、w = 32、p = 4 為例：r1 = 1250（正是 kA 的整數部分），r0 = 0xE69A5EA8，前 4 位 0xE = 14，和浮點版的結果相同。</figcaption>
+          </figure>
+          <details class="code-fold">
+            <summary>看程式碼：乘法（浮點版／整數位移版）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="浮點版"><div class="code-head">hashMul()：⌊m · frac(kA)⌋</div><pre class="code">int hashMul(int k, int m) {
+  const double A = 0.6180339887;               /* (√5 − 1) / 2，常用的 A */
+  double t = k * A;
+  double frac = t - floor(t);                  /* kA 的小數部分，介於 [0, 1) */
+  return (int)(m * frac);                      /* floor(m × 小數部分) */
+}</pre></div>
+              <div class="code-block" data-tab="整數位移版"><div class="code-head">hashMulShift()：m = 2^p，取 k·s 低 w 位元的前 p 位</div><pre class="code">uint32_t hashMulShift(uint32_t k, int p) {     /* m = 2^p，1 ≤ p ≤ 32，字組 w = 32 位元 */
+  const uint32_t s = 2654435769u;              /* s = floor(A × 2^32) */
+  uint32_t r0 = k * s;                         /* 乘積只留低 32 位元（自動 mod 2^32） */
+  return r0 &gt;&gt; (32 - p);                       /* 取 r0 最高的 p 個位元 */
+}</pre></div>
+            </div>
+          </details>
+          <p>下面的動畫把<b>同一批 key</b> 用兩種設定分別放進表裡，畫出每格有幾個 key。上下兩張圖一次只改一個變因（只改 m，或只改方法），比較分布：「4 的倍數，m = 12 vs 13」就是圖 1；「低 4 位相同，m = 16 vs 17」看 2 的冪的問題；「m = 16，除法 vs 乘法」固定 m = 16，看乘法怎麼救回 2 的冪。也可以自己輸入 key（最多 60 個）、改兩邊的 m（2～24）或切換方法。</p>
+        </div>
+        <div class="viz" data-viz="hf-dist"></div>
+      </section>
+
+      <section id="digit-methods">
+        <h2>Mid-square、Folding 與 Digit Analysis</h2>
+        <div class="panel prose">
+          <p>這三種是把 key 當成一串十進位數字來處理的方法，考題通常直接給 key 要你算位址，<b>重點是照題目的切法算對</b>。</p>
+          <h3>Mid-square 平方取中</h3>
+          <p><span class="term">Mid-square<small>（平方取中）</small></span>：先算 k²，取中間的 r 位當位址（表的大小是 10<sup>r</sup>，或再 mod m）。k² 中間的位數是由 k 的每一位交叉相乘累加出來的，受所有位數影響，最亂；兩端的位數只和 k 的最高位或最低位有關。</p>
+          <pre class="formula">k = 1234，r = 3：k² = 1522756（7 位），丟掉左右各 2 位 → 15[227]56 → h = 227
+k = 4321，r = 3：k² = 18671041（8 位），要丟 5 位：右邊丟 2 位、左邊丟 3 位 → 186[710]41 → h = 710</pre>
+          <p>剩下要丟的位數是奇數時，左右哪邊多丟一位沒有統一的規定，考題會說清楚（或給範例）；本頁的程式和動畫一律「右邊丟 ⌊(位數 − r)/2⌋ 位、左邊多丟一位」。</p>
+          <h3>Folding 折疊</h3>
+          <p><span class="term">Folding<small>（折疊）</small></span>：把 key 從左邊開始每 r 位切成一段，再把各段相加（結果太大就再 mod m，或只留最右邊 r 位，看題目定義）。有兩種疊法：</p>
+          <ul>
+            <li><span class="term">Shift Folding<small>（移位折疊）</small></span>：各段直接對齊相加。</li>
+            <li><span class="term">Boundary Folding<small>（邊界折疊）</small></span>：像把紙條來回折起來，第 2、4、6…段是「翻面」疊上去的，所以這些段要<b>把數字倒過來</b>再加。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="hf-folding"></div>
+            <figcaption><b>圖 3</b>：key = 25361482917，每 3 位一段：253、614、829、17。shift 直接相加得 1713；boundary 把第 2 段 614 倒過來成 416、第 4 段 17 倒過來成 71（橘色），加起來 1569。最後一段不足 r 位時照樣反轉它自己的位數。</figcaption>
+          </figure>
+          <h3>Digit Analysis 位數分析</h3>
+          <p><span class="term">Digit Analysis<small>（位數分析）</small></span>適合<b>事先知道全部 key</b> 的靜態資料（例如一屆學生的學號）：統計每一個位數上 0～9 出現的分布，把分布很偏（例如學號前三碼都是入學年）的位數丟掉，只留分布最平均的幾位組成位址。例如 6 個學號 1130410、1130875、1131460、1130935、1131250、1130125：前 3 位全是 113，第 4 位只有 0、1，第 7 位只有 0、5，都不能用；第 5、6 位組成 41、87、46、93、25、12，6 個都不同，m = 100 時拿它們當位址就沒有碰撞。缺點是 key 改變（下一屆入學）就要重新分析。</p>
+          <h3>其他名詞</h3>
+          <p><b>Radix conversion（基數轉換）</b>：把 key 當成另一個基數的數字重新解讀（例如把十進位的 key 當成 11 進位計算），再 mod m，用來打散十進位的規律。這幾種方法考題出現得少，知道名稱與做法即可。</p>
+          <details class="code-fold">
+            <summary>看程式碼：平方取中／折疊</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="平方取中"><div class="code-head">hashMidSquare()：取 k² 中間 r 位</div><pre class="code">int numDigits(long long x) {
+  int d = 1;
+  while (x &gt;= 10) { x /= 10; d++; }
+  return d;
+}
+
+int hashMidSquare(long long k, int r) {        /* 取 k² 中間的 r 位（十進位），k ≤ 999999 */
+  long long sq = k * k, pw = 1;
+  int drop = (numDigits(sq) - r) / 2;          /* 右邊丟掉幾位；剩下奇數位時左邊多丟一位 */
+  for (int i = 0; i &lt; drop; i++) sq /= 10;
+  for (int i = 0; i &lt; r; i++) pw *= 10;
+  return (int)(sq % pw);                       /* 再留下最右邊 r 位 */
+}</pre></div>
+              <div class="code-block" data-tab="shift 折疊"><div class="code-head">foldShift()：每 r 位切一段直接相加</div><pre class="code">int part(const char *s, int from, int r, int rev) {  /* 從 s[from] 起讀 r 位數字，rev = 1 時倒著讀 */
+  int n = (int)strlen(s), end = from + r &lt; n ? from + r : n, v = 0;
+  for (int i = 0; i &lt; end - from; i++)
+    v = v * 10 + (s[rev ? end - 1 - i : from + i] - '0');
+  return v;
+}
+
+int foldShift(const char *key, int r) {        /* 每 r 位切一段，直接相加 */
+  int n = (int)strlen(key), sum = 0;
+  for (int i = 0; i &lt; n; i += r) sum += part(key, i, r, 0);
+  return sum;
+}</pre></div>
+              <div class="code-block" data-tab="boundary 折疊"><div class="code-head">foldBoundary()：偶數段反轉後相加</div><pre class="code">int part(const char *s, int from, int r, int rev) {  /* 從 s[from] 起讀 r 位數字，rev = 1 時倒著讀 */
+  int n = (int)strlen(s), end = from + r &lt; n ? from + r : n, v = 0;
+  for (int i = 0; i &lt; end - from; i++)
+    v = v * 10 + (s[rev ? end - 1 - i : from + i] - '0');
+  return v;
+}
+
+int foldBoundary(const char *key, int r) {     /* 第 2、4、6… 段反轉後再相加 */
+  int n = (int)strlen(key), sum = 0;
+  for (int i = 0, j = 0; i &lt; n; i += r, j++) sum += part(key, i, r, j % 2 == 1);
+  return sum;
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="string-hashing">
+        <h2>字串雜湊</h2>
+        <div class="panel prose">
+          <p>字串要先變成整數才能代公式。最直覺的做法是把字元碼加起來，但這有一個致命問題：<b>加法不管順序</b>。cat、act、tac 的 ASCII 總和都是 99 + 97 + 116 = 312，不論 m 是多少一定撞在一起。字元組成相同、順序不同的字串叫 anagram（換位字），英文單字、變數名稱裡很常見。</p>
+          <p>補救的方法是讓<b>位置</b>也有權重。最常用的是 <span class="term">Polynomial Hashing<small>（多項式雜湊）</small></span>：把字串 s₀s₁…sₙ₋₁ 看成以 B 為底的數字：</p>
+          <pre class="formula">h(s) = (s₀·B^(n−1) + s₁·B^(n−2) + … + sₙ₋₂·B + sₙ₋₁) mod m       常用 B = 31、33、37 這類小質數
+
+Horner 法：h = 0；對每個字元 c：h = (h · B + c) mod m</pre>
+          <p>Horner 法從左到右，每一步把目前的值乘 B 再加上下一個字元，n 個字元只要 n 次乘法和 n 次加法。<b>每一步都 mod m</b> 很重要：B<sup>n−1</sup> 長字串時會遠遠超過 64 位元，先算完再 mod 會溢位；而 (a·B + c) mod m 等於 ((a mod m)·B + c) mod m，每一步取餘數結果不變。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>字串</th><th>ASCII 加總</th><th>加總 mod 97</th><th>Horner（B = 31）的完整值</th><th>Horner mod 97</th></tr></thead>
+              <tbody>
+                <tr><td>cat</td><td>312</td><td>21</td><td>99·961 + 97·31 + 116 = 98262</td><td>1</td></tr>
+                <tr><td>act</td><td>312</td><td>21</td><td>97·961 + 99·31 + 116 = 96402</td><td>81</td></tr>
+                <tr><td>tac</td><td>312</td><td>21</td><td>116·961 + 97·31 + 99 = 114582</td><td>25</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>只加總時三個字串全擠在 21；多項式雜湊分到 1、81、25 三個不同位置。這不代表多項式雜湊不會碰撞：把 m 換成 101，act 和 tac 都算出 48，剛好撞在一起。它只是把「必定撞」變成「偶爾撞」，碰撞機率回到接近 1/m。考題常見的折衷版本是「字元碼乘上它的位置（1, 2, 3, …）再加總」，一樣能分開大部分 anagram。</p>
+          <details class="code-fold">
+            <summary>看程式碼：字串雜湊（Horner／加總）</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="Horner"><div class="code-head">hashStr()：多項式雜湊，Horner 法</div><pre class="code">int hashStr(const char *s, int m) {            /* 多項式雜湊，用 Horner 法計算 */
+  const long long B = 31;                      /* 基底 */
+  long long h = 0;
+  for (int i = 0; s[i] != '\0'; i++)
+    h = (h * B + (unsigned char)s[i]) % m;     /* 每一步都 mod m，數字不會溢位 */
+  return (int)h;
+}</pre></div>
+              <div class="code-block" data-tab="加總"><div class="code-head">hashStrSum()：只加總（反例）</div><pre class="code">int hashStrSum(const char *s, int m) {         /* 只把字元碼加總：換位字一定撞 */
+  int sum = 0;
+  for (int i = 0; s[i] != '\0'; i++) sum += (unsigned char)s[i];
+  return sum % m;
+}</pre></div>
+            </div>
+          </details>
+          <p>下面的計算器可以一步一步算出位址。「方法」按鈕依序切換 division、multiplication、mid-square、folding（shift、boundary）、字串 Horner、字串加總；key、m 都可以自己輸入，r 是平方取中「取幾位」或折疊「每段幾位」。m ≤ 20 時下方會畫出整張表，看位址落在哪一格。快捷例子：「m = 16 只看低位」和「乘法 m = 16」用同一個 key 1000 對照兩種方法；「act 與 cat」用加總法算 act，再把 key 改成 cat 試一次，會得到一樣的位址。</p>
+        </div>
+        <div class="viz" data-viz="hf-compute"></div>
+      </section>
+
+      <section id="universal-hashing">
+        <h2>Universal Hashing 通用雜湊</h2>
+        <div class="panel prose">
+          <p>前面的方法都是<b>固定的</b>函數。固定就有弱點：只要知道函數，就能故意挑一批全部撞在同一格的 key（例如 h(k) = k mod 13 時給 13 的倍數），讓雜湊表退化成 O(n) 的串列。有人刻意送這種資料攻擊伺服器（hash flooding）時，再好的固定函數也沒用。</p>
+          <p><span class="term">Universal Hashing<small>（通用雜湊）</small></span>的想法是：準備一整個<b>函數家族</b> 𝓗，程式開始時隨機挑一個。對手不知道挑到哪一個，就沒辦法事先準備壞資料。家族要滿足：</p>
+          <pre class="formula">𝓗 是 universal ⇔ 對任意兩個不同的 key x ≠ y：  Pr_{h ∈ 𝓗}[ h(x) = h(y) ] ≤ 1/m
+（機率是對「隨機挑 h」取的，不是對 key 取的；對<b>每一對</b> key 都要成立）</pre>
+          <p>最常見的構造：選一個<b>比所有可能 key 都大的質數 p</b>，</p>
+          <pre class="formula">h_{a,b}(k) = ((a·k + b) mod p) mod m        a ∈ {1, …, p − 1}，b ∈ {0, …, p − 1} 隨機挑
+𝓗_{p,m} = { h_{a,b} } 共 p(p − 1) 個函數，是 universal</pre>
+          <p>先 mod 質數 p 是關鍵：p 是質數且 x ≠ y 都小於 p 時，(ax + b) mod p 和 (ay + b) mod p 一定不同，而且 (a, b) 隨機時這兩個值像是隨機的一對，再 mod m 才撞的機率最多 1/m。如果省略 p、直接用 (ak + b) mod m，而 key 的範圍又比 m 大，x 和 x + m 不論 a、b 是多少都會撞，就不是 universal 了。用程式驗證：固定 x = 17、y = 27、m = 10，隨機挑 20 萬組 (a, b)，h(17) = h(27) 的比例約 0.1005，和上限 1/m = 0.1 相符（差的 0.0005 是抽樣誤差）。</p>
+          <h3>universal 能保證什麼</h3>
+          <p>用期望值線性：n 個 key 共有 C(n, 2) 對，每一對碰撞的機率 ≤ 1/m，所以</p>
+          <pre class="formula">E[碰撞的 key 對數] ≤ C(n, 2) / m = n(n − 1) / (2m)
+chaining 時，任一個 key x 所在串列的期望長度 ≤ 1 + (n − 1)/m &lt; 1 + α</pre>
+          <p>例如 n = 100、m = 50（α = 2）時，期望碰撞對數最多 4950/50 = 99 對，x 所在串列期望最多 2.98 個 key。重點是這個保證對<b>任何輸入</b>都成立（worst-case input、平均過隨機的 h），不需要假設 key 是隨機的。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> uniform ≠ universal。「uniform」只說每個 key <b>單獨看</b>落在每格的機率都是 1/m；「universal」說的是任<b>兩個</b> key 撞在一起的機率 ≤ 1/m。h(k) = c（c 隨機挑一個常數）是 uniform，但所有 key 一定撞在同一格。</p></div>
+          <details class="code-fold">
+            <summary>看程式碼：hashUniv()</summary>
+            <div class="code-block">
+              <div class="code-head">hashUniv()：((a·k + b) mod p) mod m</div>
+              <pre class="code">#define P 1000003LL                            /* 質數，比所有可能的 key 都大 */
+
+int hashUniv(long long a, long long b, long long k, int m) {  /* 1 ≤ a &lt; P，0 ≤ b &lt; P */
+  return (int)(((a * k + b) % P) % m);
+}</pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="perfect-hashing">
+        <h2>Perfect Hashing 完美雜湊</h2>
+        <div class="panel prose">
+          <p>一般的雜湊表最差情況是 O(n)。如果 key 的集合是<b>固定的</b>（static，建好之後只查詢、不插入刪除，例如程式語言的保留字、字典檔、CD-ROM 上的檔名），就能做到 <span class="term">Perfect Hashing<small>（完美雜湊）</small></span>：所有 key 都<b>沒有碰撞</b>，搜尋最差 O(1)。所以「perfect hashing 理論上不存在」是錯的，它存在，只是前提是 key 集合事先固定。</p>
+          <h3>一層就做：m = n²</h3>
+          <p>從 universal 家族隨機挑 h，表開 m = n² 格：期望碰撞對數 ≤ C(n, 2)/n² = (n − 1)/(2n) &lt; 1/2。由 Markov 不等式，「至少一次碰撞」的機率 &lt; 1/2，所以隨機挑一個 h <b>沒有碰撞的機率超過一半</b>；挑到有碰撞就重挑，期望不到 2 次就成功。例如 n = 10、m = 100：期望碰撞對數 ≤ 45/100 = 0.45，成功機率 ≥ 0.55。缺點是空間 n²，n = 10⁶ 時要 10¹² 格，不實用。</p>
+          <h3>兩層：期望空間 O(n)</h3>
+          <p>改成兩層（FKS 法）：第一層用 universal 的 h 把 n 個 key 分到 m = n 格（會有碰撞沒關係）；第 j 格分到 n<sub>j</sub> 個 key，就替它開一張 n<sub>j</sub>² 格的第二層表，用上面的一層做法挑一個在這 n<sub>j</sub> 個 key 上沒有碰撞的 h<sub>j</sub>。搜尋時算 h 找到第一層的格子，再算 h<sub>j</sub> 找到第二層的位置，兩次計算、最差 O(1)。可以證明第二層的總大小期望 E[Σ n<sub>j</sub>²] &lt; 2n，所以總空間是 O(n)。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="hf-perfect"></div>
+            <figcaption><b>圖 4</b>：兩層 perfect hashing 的示意。第一層把 6 個 key 分成 2、0、1、3 個；有 n<sub>j</sub> 個 key 的格子開 n<sub>j</sub>² 格的第二層表（4、1、9 格），每張第二層表裡的 key 都不碰撞（綠色），空格（虛線）是為了換取「一定找得到不撞的 h<sub>j</sub>」付出的空間。</figcaption>
+          </figure>
+          <p>如果再要求表剛好 n 格、一格不浪費，叫 <b>minimal perfect hashing</b>，常用在編譯器的保留字表。</p>
+        </div>
+      </section>
+
+      <section id="bloom-filter">
+        <h2>Bloom Filter 布隆過濾器</h2>
+        <div class="panel prose">
+          <p>很多時候只想知道「x 在不在集合裡」，不需要取出資料，而且集合很大、記憶體很少（例如瀏覽器檢查網址是不是惡意網站、資料庫先判斷某筆資料是否可能在磁碟上、防火牆先快速篩一遍封包）。<span class="term">Bloom Filter<small>（布隆過濾器）</small></span>用一個 m 位元的陣列和 k 個雜湊函數 g₀…g₍ₖ₋₁₎ 回答這個問題，<b>不存 key 本身</b>，所以非常省空間。</p>
+          <ul>
+            <li><b>insert(x)</b>：算出 g₀(x)、…、g₍ₖ₋₁₎(x)，把這 k 個位置的 bit 都設成 1（已經是 1 就維持 1）。</li>
+            <li><b>query(x)</b>：算出同樣 k 個位置。<b>只要有一個 bit 是 0，x 一定不在</b>（插入過的話那一格一定是 1）；全部是 1 時只能回答「<b>可能在</b>」，因為這些 1 可能是別的 key 設的。</li>
+          </ul>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> Bloom filter 不會有 false negative（在集合裡卻說不在），但可能有 <span class="term">False Positive<small>（偽陽性）</small></span>（不在集合裡卻說可能在）。所以它的答案只有「一定不在」和「可能在」兩種，永遠不會說「一定在」。</p></div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="hf-bloom-fig"></div>
+            <figcaption><b>圖 5</b>：m = 16、k = 3，g<sub>i</sub>(x) = (x mod 16 + i·(1 + x mod 15)) mod 16。插入 5（位置 5、11、1）、12（12、9、6）、30（14、15、0）之後，查 15 對到 15、0、1，剛好都被 30 和 5 設成 1，回答「可能在」，其實是 false positive；查 8 的第一個位置 8 是 0，立刻知道一定不在。</figcaption>
+          </figure>
+          <h3>不能刪除</h3>
+          <p>同一個 bit 可能被好幾個 key 共用。如果「刪除 x」就把 x 的 k 個 bit 清成 0，共用這些 bit 的其他 key 查詢時會碰到 0，被誤判成「一定不在」，產生 false negative，破壞了 Bloom filter 唯一的保證。所以<b>標準 Bloom filter 不支援刪除</b>。需要刪除時改用 <b>counting Bloom filter</b>：每格放一個小計數器，插入加 1、刪除減 1，計數器變回 0 才代表沒有 key 用到這格。</p>
+          <h3>false positive 機率與最佳 k</h3>
+          <p>插入 n 個 key 之後，某一個 bit 仍是 0 的機率是 (1 − 1/m)<sup>kn</sup> ≈ e<sup>−kn/m</sup>。一個不在集合裡的 x 要被誤判，k 個位置都得是 1：</p>
+          <pre class="formula">Pr[false positive] ≈ (1 − e^(−kn/m))^k
+最佳 k = (m / n) · ln 2 ≈ 0.693 · m / n         此時大約一半的 bit 是 1，Pr ≈ (1/2)^k ≈ 0.6185^(m/n)</pre>
+          <p>k 太小，每個 key 留下的「指紋」太少，不同 key 容易長得一樣；k 太大，bit 很快被填滿成 1，什麼都像在集合裡。例如 m = 1000、n = 100：最佳 k = 10 ln 2 ≈ 6.93，取 7 個雜湊函數時 false positive 約 0.82%；只用 1 個時約 9.5%，差了約 11.6 倍。注意公式是 m/n（每個 key 分到幾個 bit），不是 n/m。</p>
+          <p>實作上不需要真的寫 k 個不同的函數：常見技巧是用兩個雜湊值組合 g<sub>i</sub>(x) = h1(x) + i·h2(x)（mod m），和 double hashing 的探測序列同一個形式。本頁的程式和動畫就用這種寫法。</p>
+          <details class="code-fold">
+            <summary>看程式碼：bloomInsert / bloomQuery</summary>
+            <div class="code-block">
+              <div class="code-head">Bloom filter：m = BM 個 bit、k = BK 個雜湊函數</div>
+              <pre class="code">int BM = 16;                                   /* bit array 的大小 m */
+int BK = 3;                                    /* 雜湊函數的個數 k */
+unsigned char bits[MAXBITS];
+
+int bloomPos(int x, int i) {                   /* 第 i 個雜湊函數（i = 0…k−1） */
+  return (x % BM + i * (1 + x % (BM - 1))) % BM;
+}
+
+void bloomInsert(int x) {
+  for (int i = 0; i &lt; BK; i++) bits[bloomPos(x, i)] = 1;
+}
+
+int bloomQuery(int x) {                        /* 0：一定不在；1：可能在 */
+  for (int i = 0; i &lt; BK; i++)
+    if (bits[bloomPos(x, i)] == 0) return 0;   /* 有一個 bit 是 0 就一定沒插入過 */
+  return 1;                                    /* 全部是 1：可能在，也可能是 false positive */
+}</pre>
+            </div>
+          </details>
+          <p>下面的動畫可以自己 insert、query，m（8～24）與 k（1～4）也可以改，上方會即時算出目前的 false positive 機率估計值。「嘗試刪除」示範把 bit 清成 0 會讓哪些 key 變成 false negative，示範完會把 bit 還原。</p>
+        </div>
+        <div class="viz" data-viz="hf-bloom"></div>
+      </section>
+
+      <section id="comparison">
+        <h2>方法比較與密碼學雜湊</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>方法</th><th>公式</th><th>m 的要求</th><th>優點</th><th>缺點</th></tr></thead>
+              <tbody>
+                <tr><td>division</td><td>k mod m</td><td>質數、不靠近 2 的冪</td><td>最快、最常用</td><td>m 選錯就很不均勻</td></tr>
+                <tr><td>multiplication</td><td>⌊m · frac(kA)⌋</td><td>沒有要求，常用 2<sup>p</sup></td><td>可用乘法加位移實作</td><td>比除法多一次乘法</td></tr>
+                <tr><td>mid-square</td><td>k² 的中間 r 位</td><td>10<sup>r</sup>（或再 mod m）</td><td>每一位都有影響</td><td>key 很大時平方會溢位</td></tr>
+                <tr><td>folding</td><td>每 r 位一段相加</td><td>結果再 mod m</td><td>適合很長的 key（電話、身分證號）</td><td>只用加法，段的順序調換會撞（shift）</td></tr>
+                <tr><td>digit analysis</td><td>挑分布最平均的位數</td><td>10<sup>位數</sup></td><td>靜態資料效果好</td><td>要事先知道全部 key</td></tr>
+                <tr><td>字串多項式</td><td>Σ sᵢ·B<sup>n−1−i</sup> mod m</td><td>質數</td><td>分得開 anagram</td><td>O(字串長度)</td></tr>
+                <tr><td>universal</td><td>((ak + b) mod p) mod m</td><td>p 是比 key 大的質數</td><td>對任何輸入都有期望保證</td><td>要隨機挑參數</td></tr>
+                <tr><td>perfect</td><td>兩層 universal</td><td>第一層 n、第二層 n<sub>j</sub>²</td><td>最差 O(1)</td><td>只適用固定的 key 集合</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>表要開多大</h3>
+          <p>不論函數多好，n 個 key 均勻分到 m 格時，平均每格 α = n/m 個。要讓搜尋期望 O(1)，α 必須是常數，也就是 <b>m = Ω(n)</b>（m 至少和 n 同階）；m = O(n) 只是上界，m 可以小到常數，α 就變成 Θ(n)。這也是表太滿時要擴容、rehash 的原因，細節見 <a href="collision-resolution.html">Collision Resolution 碰撞處理</a>的「效能、擴容與做法比較」。</p>
+          <h3>密碼學雜湊（只需要知道差別）</h3>
+          <p><span class="term">Cryptographic Hash Function<small>（密碼學雜湊函數）</small></span>（例如 SHA-256）把任意長度的資料算成固定長度的摘要，要求更強的性質：<b>單向</b>（從摘要推不回原資料）、<b>抗碰撞</b>（實際上找不到兩筆資料有相同摘要）、改一個 bit 摘要就大幅改變。用在數位簽章、檔案完整性檢查、密碼儲存。它計算比上面的方法慢很多，一般的雜湊表不需要這麼強的性質，所以不會拿來算表的位址。MD5、SHA-1 已經被找到碰撞，不再被視為安全。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>division 算位址、找誰和誰碰撞</td><td>很常考</td><td>逐一列出 k mod m；16 進位先換十進位；h 值相同才算碰撞，再接碰撞處理的規則</td><td><a class="q-link" href="#q-ds-0179">例題</a> <a class="q-link" href="#q-ds-0293">例題</a> <a class="q-link" href="#q-ds-0227">例題</a></td></tr>
+                <tr><td>m 的選擇（2 的冪、因數、質數）</td><td>常考</td><td>m = 2<sup>p</sup> 只看低 p 位；m 有因數 d 且 key 對 d 同餘 → 只用 m/d 格；所以選不靠近 2 的冪的質數</td><td><a class="q-link" href="#q-ds-0262">例題</a> <a class="q-link" href="#q-ds-0383">例題</a> <a class="q-link" href="#q-ds-0394">例題</a></td></tr>
+                <tr><td>multiplication 計算（含 modf 寫法、位元版）</td><td>常考</td><td>k × A → 取小數 → 乘 m → floor；位元版取 k·s 低 w 位元的前 p 位</td><td><a class="q-link" href="#q-ds-0133">例題</a> <a class="q-link" href="#q-ds-0386">例題</a></td></tr>
+                <tr><td>mid-square、folding、digit analysis 計算</td><td>偶爾</td><td>先確認切法：取中間幾位、每段幾位、boundary 反轉偶數段；digit analysis 找每一位的分布</td><td><a class="q-link" href="#q-ds-0387">例題</a> <a class="q-link" href="#q-ds-0388">例題</a> <a class="q-link" href="#q-ds-0395">例題</a></td></tr>
+                <tr><td>字串雜湊：加總 vs 加權、Horner</td><td>常考</td><td>anagram 加總相同必撞；加權或多項式每一步 mod m</td><td><a class="q-link" href="#q-ds-0128">例題</a> <a class="q-link" href="#q-ds-0389">例題</a></td></tr>
+                <tr><td>好雜湊函數的條件、雜湊不保序</td><td>常考</td><td>決定性、快、均勻、用到整個 key；前驅／後繼、最小值要 O(n)</td><td><a class="q-link" href="#q-ds-0385">例題</a> <a class="q-link" href="#q-ds-0325">例題</a></td></tr>
+                <tr><td>universal vs uniform、期望碰撞數</td><td>偶爾</td><td>universal：任兩 key 碰撞機率 ≤ 1/m → E[碰撞對數] ≤ C(n, 2)/m；(ak + b) mod m 在 key 比 m 大時不是 universal</td><td><a class="q-link" href="#q-ds-0273">例題</a> <a class="q-link" href="#q-ds-0391">例題</a></td></tr>
+                <tr><td>perfect hashing</td><td>偶爾</td><td>key 固定才能用；一層 m = n² 成功率 &gt; 1/2；兩層期望空間 O(n)</td><td><a class="q-link" href="#q-ds-0262">例題</a> <a class="q-link" href="#q-ds-0393">例題</a></td></tr>
+                <tr><td>Bloom filter 查詢、插入、程式追蹤</td><td>很常考</td><td>逐一算 k 個位置；有一個 0 → 一定不在；全 1 → 可能在（可能是 false positive）</td><td><a class="q-link" href="#q-ds-0133">例題</a> <a class="q-link" href="#q-ds-0242">例題</a> <a class="q-link" href="#q-ds-0318">例題</a> <a class="q-link" href="#q-ds-0319">例題</a> <a class="q-link" href="#q-ds-0390">例題</a></td></tr>
+                <tr><td>Bloom filter 性質：刪除、最佳 k、false positive 機率</td><td>常考</td><td>不能清 bit 刪除（用 counting）；k = (m/n) ln 2；Pr ≈ (1 − e<sup>−kn/m</sup>)<sup>k</sup></td><td><a class="q-link" href="#q-ds-0243">例題</a> <a class="q-link" href="#q-ds-0317">例題</a> <a class="q-link" href="#q-ds-0320">例題</a> <a class="q-link" href="#q-ds-0384">例題</a> <a class="q-link" href="#q-ds-0392">例題</a></td></tr>
+                <tr><td>表的大小與 α、擴容</td><td>常考</td><td>期望 O(1) 需要 α = O(1)，即 m = Ω(n)；碰撞處理的公式見碰撞處理頁</td><td><a class="q-link" href="#q-ds-0190">例題</a> <a class="q-link" href="#q-ds-0306">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> m 取 2 的冪比較好算，分布也沒差</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> k mod 2<sup>p</sup> 只留最低 p 個位元，低位相同的 key 全撞；除法要選不靠近 2 的冪的質數</span> <a class="q-link" href="#q-ds-0383">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> m 有因數 d、很多 key 對 d 同餘，對均勻性有利</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 這些 key 只會落在 m/d 格，是破壞均勻性</span> <a class="q-link" href="#q-ds-0262">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 16 進位的 key 直接拿來 mod</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 先換成十進位（3B = 59）再算 k mod m</span> <a class="q-link" href="#q-ds-0179">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 乘法是 (k · A · m) 取整數再 mod m</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 先取 kA 的小數部分，再乘 m、取 floor</span> <a class="q-link" href="#q-ds-0386">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> boundary folding 是把每一段都反轉</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只反轉第 2、4、6…段（翻面的那些），奇數段照原樣</span> <a class="q-link" href="#q-ds-0388">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 字串把字元碼加起來就夠了</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 加法不看順序，anagram 一定撞；要讓位置有權重（多項式、乘位置）</span> <a class="q-link" href="#q-ds-0128">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> uniform 的雜湊家族就保證碰撞少</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> uniform 只管單一 key；要 universal（任兩個 key 碰撞機率 ≤ 1/m）才有 E[碰撞] ≤ C(n, 2)/m</span> <a class="q-link" href="#q-ds-0273">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> perfect hashing 理論上不存在，或一定要 n² 空間</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> key 集合固定時存在；兩層做法期望空間 O(n)</span> <a class="q-link" href="#q-ds-0393">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Bloom filter 的 k 個 bit 都是 1 就代表 x 在集合裡</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只能說「可能在」（false positive）；有一個 0 才能確定「一定不在」</span> <a class="q-link" href="#q-ds-0133">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Bloom filter 刪除就把那 k 個 bit 清成 0</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> bit 被共用，清掉會讓別的 key 變成 false negative；要刪除得用 counting Bloom filter</span> <a class="q-link" href="#q-ds-0242">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 最佳雜湊函數個數 k = (n/m) ln 2</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> k = (m/n) ln 2，每個 key 分到的 bit 越多，k 越大</span> <a class="q-link" href="#q-ds-0243">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 要讓 Bloom filter 擋下新的 key，只要改精確檢查</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> key 沒插入 filter 時連「可能在」都過不了，base 集合和精確檢查兩邊都要加</span> <a class="q-link" href="#q-ds-0320">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 雜湊表所有操作都是平均 O(1)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 雜湊不保留順序，找前驅、後繼、最小值都要掃整張表</span> <a class="q-link" href="#q-ds-0325">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="hash-functions"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=51e6f2d4"></script>
+  <script src="../../../assets/js/viz-core.js?v=51e6f2d4"></script>
+  <script src="../../../assets/js/viz/data-structures/hash-functions.js?v=51e6f2d4"></script>
+</body>
+</html>

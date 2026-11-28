@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Collision Resolution 碰撞處理 · 資料結構 | 資工考研互動學習站</title>
   <meta name="description" content="雜湊碰撞處理：chaining、linear／quadratic probing、double hashing 與 tombstone 刪除">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=3694848e">
-  <script src="../../../assets/js/theme.js?v=3694848e"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=51e6f2d4">
+  <script src="../../../assets/js/theme.js?v=51e6f2d4"></script>
 </head>
 <body data-subject="data-structures" data-chapter="hashing" data-chno="8" data-topic="data-structures/hashing/collision-resolution" data-root="../../../">
   <header class="site-header">
@@ -41,7 +41,7 @@
         <div class="panel prose">
           <p><span class="term">Hashing<small>（雜湊）</small></span>的想法是：用一個 <span class="term">Hash Function<small>（雜湊函數）</small></span> h 把 key 直接算成陣列索引，<code>h(k)</code> 算出來是幾就放第幾格，搜尋時再算一次就知道去哪裡找。理想情況下插入、搜尋、刪除都是 <code>O(1)</code>，比 BST 的 <code>O(log n)</code> 還快，也不用像排序陣列一樣搬資料。</p>
           <p>問題是 key 的可能值（例如所有 32 位元整數、所有字串）遠比表的格子多。把一個大集合映到 m 格，依鴿籠原理，只要 key 的個數超過 m，就<b>一定</b>有兩個 key 算出同一格；就算 key 很少也可能剛好撞在一起。兩個不同的 key 有相同的 h 值，就叫 <span class="term">Collision<small>（碰撞）</small></span>。碰撞無法完全避免，所以每個雜湊表都要有一套 <span class="term">Collision Resolution<small>（碰撞處理）</small></span>的規則，這就是這一頁的主題。</p>
-          <p>雜湊函數本身怎麼設計（除法、乘法、折疊、字串雜湊、為什麼 m 最好取質數）屬於 Hash Functions 雜湊函數（籌備中）的內容，這裡一律用最常見的除法 <code>h(k) = k mod m</code>，把注意力放在「撞了之後怎麼辦」。</p>
+          <p>雜湊函數本身怎麼設計（除法、乘法、折疊、字串雜湊、為什麼 m 最好取質數）屬於 <a href="hash-functions.html">Hash Functions（雜湊函數）</a>的內容，這裡一律用最常見的除法 <code>h(k) = k mod m</code>，把注意力放在「撞了之後怎麼辦」。</p>
           <h3>Load factor</h3>
           <p>衡量雜湊表有多擠的指標是 <span class="term">Load Factor<small>（負載因子）</small></span>：</p>
           <pre class="formula">α = n / m        n：目前存了幾個 key，m：表有幾格（slot / bucket）
@@ -463,10 +463,10 @@ int removeShift(int k) {
   </div>
 
   <footer class="site-footer">
-    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=3694848e"></script>
-  <script src="../../../assets/js/viz-core.js?v=3694848e"></script>
-  <script src="../../../assets/js/viz/data-structures/collision-resolution.js?v=3694848e"></script>
+  <script src="../../../assets/js/site.js?v=51e6f2d4"></script>
+  <script src="../../../assets/js/viz-core.js?v=51e6f2d4"></script>
+  <script src="../../../assets/js/viz/data-structures/collision-resolution.js?v=51e6f2d4"></script>
 </body>
 </html>

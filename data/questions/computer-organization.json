@@ -5787,6 +5787,158 @@
       "question": "五階段 MIPS 管線把 beq 的比較器和目標位址計算都放在 ID 階段，暫存器檔前半週期寫、後半週期讀，hazard detection 與 forwarding 都正確實作。(1) ALU 前面需要幾條轉送路徑？(2) ID 的比較器前面至少要再加幾條轉送路徑？來源是哪一個管線暫存器？(3) 下面的程式會因為資料危障 stall 幾個週期（不算分支本身的控制危障）？如果 (2) 的路徑沒有做，又是幾個？<pre class=\"formula\">lw   $t0, 0($s0)\naddi $t1, $t0, 4\nbeq  $t1, $s3, L</pre>",
       "answer": "(1) 4 條　(2) 2 條，都來自 EX/MEM　(3) 2 個；沒有 ID 的轉送路徑時 3 個",
       "explanation": "<p><b>(1)</b> 來源 EX/MEM、MEM/WB 各接到 ALU 的 A、B 兩個 mux：2 × 2 = <b>4</b> 條。</p><p><b>(2)</b> 比較器有兩個輸入，各需要一條 EX/MEM → ID：ALU 指令緊接在 beq 前面時，停 1 個週期後結果正好在 EX/MEM，從這裡送過去。MEM/WB → ID 不需要：那時生產者在 WB，前半週期寫入、後半週期 ID 讀，暫存器檔就拿得到（lw → beq 停 2 個之後也是這種情況）。所以是 <b>2</b> 條。若假設暫存器檔不能同週期先寫後讀，才需要再加 MEM/WB → ID 的 2 條。</p><p><b>(3)</b> lw → addi 是 load-use，停 1；addi 停完之後在 EX 時，beq 正好在 ID 要用 $t1，結果還沒算好，再停 1，下一個週期從 EX/MEM 轉送到比較器。共 <b>2</b> 個。沒有 EX/MEM → ID 的路徑時，beq 要等 addi 的 WB，再多停 1 個，共 <b>3</b> 個。已用程式模擬驗算。</p>"
+    },
+    {
+      "id": "co-0233",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列 MIPS 指令中，哪一條的機器碼是 <b>R-type</b>？",
+      "choices": [
+        "(A) lui $t0, 0x1234",
+        "(B) jr $ra",
+        "(C) beq $t0, $t1, L",
+        "(D) jal f"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>jr 的目標位址在暫存器裡，不需要立即值或位址欄位，所以用 R-type：opcode = 0、rs = $ra（31）、funct = 8，rt、rd、shamt 都填 0。很多人看到「jump」就以為是 J-type，但 J-type 只有 j、jal 兩條，它們把目標寫在 26 位元的 address 欄位裡。</p><ul><li>(A) lui 是 I-type（opcode 15），rs 不用、填 0。</li><li>(C) beq 是 I-type（opcode 4），16 位元欄位放分支 offset。</li><li>(D) jal 是 J-type（opcode 3）。</li></ul>"
+    },
+    {
+      "id": "co-0234",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "MIPS 的 I-type 指令有 16 位元立即值。(1) addi 的立即值可以表示的範圍是 ____；(2) ori 的立即值可以表示的範圍是 ____；(3) R-type 有 ____ 個暫存器欄位，每個 ____ bits，所以最多能指定 ____ 個暫存器。",
+      "answer": "(1) −32768～32767　(2) 0～65535　(3) 3 個（rs、rt、rd），各 5 bits，2⁵ = 32 個",
+      "explanation": "<p>(1) addi 的立即值做<b>符號延伸</b>，16 位元 2's complement 的範圍是 −2¹⁵～2¹⁵ − 1 = −32768～32767。</p><p>(2) ori（以及 andi、xori）做<b>零延伸</b>，高 16 位補 0，16 位元全部當作大小，範圍 0～2¹⁶ − 1 = 0～65535。同一個欄位 0xFFFF，在 addi 裡是 −1，在 ori 裡是 65535。</p><p>(3) R-type 的 rs、rt、rd 各 5 bits，2⁵ = 32，對應 $0～$31。shamt 也是 5 bits，但它是位移量不是暫存器。</p>"
+    },
+    {
+      "id": "co-0235",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一條 beq 指令放在位址 0x00400010，它的 16 位元 offset 欄位是 5。條件成立時下一條要執行的指令位址是？",
+      "choices": [
+        "(A) 0x00400019",
+        "(B) 0x00400024",
+        "(C) 0x00400028",
+        "(D) 0x00400015"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>分支目標 = (PC + 4) + 符號延伸(offset) × 4 = 0x00400014 + 5 × 4 = 0x00400014 + 0x14 = <b>0x00400028</b>。也就是從 beq 的下一條指令再往後數 5 條。</p><ul><li>(B) 0x00400024：忘了 +4，直接用 beq 自己的位址加 20。</li><li>(A) 0x00400019：offset 當成 byte 數（PC + 4 + 5）。</li><li>(D) 0x00400015：兩個錯誤都犯了。</li></ul><p>已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0236",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "寫出下列兩條 MIPS 指令的 32 位元機器碼（以十六進位表示）。暫存器編號：$t0 = 8、$t2 = 10、$s0 = 16、$sp = 29；lw 的 opcode = 35，sll 的 funct = 0。<pre class=\"formula\">(1) lw  $t0, -8($sp)\n(2) sll $t2, $s0, 4</pre>",
+      "answer": "(1) 0x8FA8FFF8　(2) 0x00105100",
+      "explanation": "<p><b>(1)</b> lw 是 I-type：op = 35 = 100011；base 暫存器放 rs = $sp = 29 = 11101；目的暫存器放 rt = $t0 = 8 = 01000；位移 −8 用 16 位元 2's complement = 65536 − 8 = 0xFFF8。</p><pre class=\"formula\">100011 11101 01000 1111111111111000\n= 1000 1111 1010 1000 1111 1111 1111 1000 = 0x8FA8FFF8</pre><p><b>(2)</b> sll 是 R-type：op = 0；sll 不用 rs，填 0；被移位的來源放 <b>rt</b> = $s0 = 16 = 10000；rd = $t2 = 10 = 01010；shamt = 4 = 00100；funct = 0。</p><pre class=\"formula\">000000 00000 10000 01010 00100 000000\n= 0000 0000 0001 0000 0101 0001 0000 0000 = 0x00105100</pre><p>常見錯誤：把 $s0 放進 rs（sll 的來源在 rt），或把 −8 寫成 1000 0000 0000 1000（sign-magnitude）。兩個答案都用程式驗算過。</p>"
+    },
+    {
+      "id": "co-0237",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "位址 0x00400020 的指令機器碼是 0x1511FFFB。(1) 寫出它的組語（暫存器用名稱表示，opcode 4 = beq、5 = bne，$t0 = 8、$s1 = 17）。(2) 條件成立時跳到哪個位址？",
+      "answer": "(1) bne $t0, $s1, −5　(2) 0x00400010",
+      "explanation": "<p>展開成二進位：0001 0101 0001 0001 1111 1111 1111 1011。</p><ul><li>op = 第 31～26 位 = 000101 = 5 → bne，I-type。</li><li>rs = 01000 = 8 = $t0；rt = 10001 = 17 = $s1。</li><li>imm = 0xFFFB，最高位是 1，符號延伸後 = −5。</li></ul><p>(1) bne $t0, $s1, −5。</p><p>(2) 目標 = (PC + 4) + (−5) × 4 = 0x00400024 − 20 = <b>0x00400010</b>。offset 是負的，是往回跳，常見於迴圈尾端「還沒結束就跳回迴圈開頭」。若把 0xFFFB 當成 65531（零延伸）會算出遠在後面的位址，這是錯的：分支 offset 一定做符號延伸。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0238",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "要把 32 位元常數 0x1234ABCD 放進 $t0。(1) 用 lui 和 ori 兩條指令寫出來。(2) 若第二條改用 addi（立即值會符號延伸），lui 和 addi 的立即值各要是多少？",
+      "answer": "(1) lui $t0, 0x1234；ori $t0, $t0, 0xABCD　(2) lui $t0, 0x1235；addi $t0, $t0, −21555（欄位 0xABCD）",
+      "explanation": "<p>一條 MIPS 指令最多只有 16 位元立即值，所以 32 位元常數要拆成高、低兩半。</p><p><b>(1)</b> lui 把 0x1234 放到高 16 位、低 16 位清 0：$t0 = 0x12340000。ori 的立即值<b>零延伸</b>成 0x0000ABCD，OR 進去得到 0x1234ABCD。</p><p><b>(2)</b> addi 會把 0xABCD 符號延伸成 0xFFFFABCD = −21555，等於多減了 0x10000。所以 lui 要先多放 1：0x1235 << 16 = 0x12350000，再加 −21555 → 0x12350000 − 0x5433 = <b>0x1234ABCD</b>。規則：低半的最高位（第 15 位）是 1 時，高半要 +1。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0239",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一條 j 指令放在位址 0x0FFFFFFC。(1) 這條 j 能跳到的最小與最大位址各是多少？(2) 它能不能跳到只差 12 bytes 的 0x0FFFFFF0？(3) 如果不行，用一條 MIPS 指令（不用虛擬指令）怎麼跳過去？",
+      "answer": "(1) 0x10000000～0x1FFFFFFC　(2) 不行　(3) beq $zero, $zero, −4（offset −4）",
+      "explanation": "<p><b>(1)</b> j 的目標 = (PC + 4) 的高 4 位 ‖ 26 位 address ‖ 00。PC + 4 = 0x10000000，高 4 位是 0001，所以目標一定落在 0x10000000～0x1FFFFFFC（address 全 0 到全 1）。注意是用 <b>PC + 4</b> 的高 4 位，不是 j 自己的位址（0x0…），這條 j 剛好在 256 MB 區塊的最後一個 word，PC + 4 已經進入下一個區塊。</p><p><b>(2)</b> 0x0FFFFFF0 的高 4 位是 0000，和 0001 不同，j 跳不到，就算距離只有 12 bytes。j 的範圍是「同一個 256 MB 區塊」，和距離遠近無關。</p><p><b>(3)</b> 用 PC-relative 的分支：beq $zero, $zero 條件永遠成立。offset = (0x0FFFFFF0 − 0x10000000) ÷ 4 = −16 ÷ 4 = <b>−4</b>，在 ±2¹⁵ 內。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0240",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "設計一個指令長度固定 32 位元、和 MIPS 相似的 ISA，opcode 仍是 6 bits，但暫存器增加到 64 個。(1) I-type（op、rs、rt、imm）的立即值剩幾 bits？addi 的範圍是多少？(2) beq 能跳的範圍（相對 PC + 4，以 byte 計）？(3) R-type（op、rs、rt、rd、shamt、funct）若 shamt 仍要 5 bits，funct 剩幾 bits？最多能區分幾種 R-type 運算？",
+      "answer": "(1) 14 bits，−8192～8191　(2) −32768～+32764 bytes　(3) 3 bits，8 種",
+      "explanation": "<p>64 = 2⁶，每個暫存器欄位從 5 bits 變成 6 bits。</p><p><b>(1)</b> 32 − 6（op）− 6 − 6 = <b>14</b> bits。2's complement 範圍 −2¹³～2¹³ − 1 = −8192～8191，比 MIPS 的 −32768～32767 小了 4 倍。</p><p><b>(2)</b> offset 以 word 為單位：−8192～8191 個 word，乘 4 得 −32768～+32764 bytes（相對 PC + 4），約 ±32 KB，MIPS 是 ±128 KB。</p><p><b>(3)</b> 6 + 3 × 6 + 5 = 29，剩 32 − 29 = <b>3</b> bits，2³ = <b>8</b> 種，比 MIPS 的 64 種少很多，只好多用幾個 opcode。這就是「暫存器變多 → 欄位變寬 → 立即值和 opcode 空間變少」的取捨：暫存器多可以減少 load / store，但固定 32 位元下其他欄位要讓出位置。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0241",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "位址 0x00400000 有一條 <code>beq $s0, $s1, Far</code>，Far = 0x00440000（$s0 = 16、$s1 = 17；bne opcode = 5、j opcode = 2；不考慮 branch delay slot）。(1) 需要的 offset 是多少？beq 放得下嗎？(2) 組譯器要怎麼改寫？寫出改寫後兩條指令的機器碼。",
+      "answer": "(1) 65535，放不下（超出 −32768～32767）　(2) 0x00400000: bne $s0, $s1, 1 → 0x16110001；0x00400004: j Far → 0x08110000",
+      "explanation": "<p><b>(1)</b> offset = (0x00440000 − 0x00400004) ÷ 4 = 0x3FFFC ÷ 4 = 0xFFFF = <b>65535</b>。16 位元 2's complement 最大 32767，放不下；若硬塞 0xFFFF 進去會被當成 −1。</p><p><b>(2)</b> 把條件反過來，讓 bne 在「不相等」時跳過下一條，相等時往下執行 j，由 j 負責遠跳：</p><pre class=\"formula\">0x00400000: bne $s0, $s1, L2   # offset = (0x00400008 − 0x00400004) ÷ 4 = 1\n0x00400004: j   Far\n0x00400008: L2: ...</pre><ul><li>bne：op 000101、rs 10000、rt 10001、imm 1 → 0001 0110 0001 0001 0000 0000 0000 0001 = <b>0x16110001</b>。</li><li>j：PC + 4 = 0x00400008 和 Far 的高 4 位都是 0，在同一個 256 MB 區塊；address = 0x00440000 >> 2 = 0x110000 → 0000 1000 0001 0001 0000 0000 0000 0000 = <b>0x08110000</b>。</li></ul><p>改寫的原因是距離太遠，不是 beq 比較慢。兩個機器碼都用程式驗算過。</p>"
+    },
+    {
+      "id": "co-0242",
+      "topics": [
+        "mips-instruction-formats"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（RISC-V，RV32I）(1) 用 lui 和 addi 把 0x12345FFF 放進 x5，兩條指令的立即值各是多少？（lui 放 20 位元到第 31～12 位；addi 的 12 位元立即值會符號延伸。）(2) B-type 分支的立即值是 13 位元有號數、最低位固定為 0，能跳的範圍是多少 bytes？相當於幾個 32 位元指令？和 MIPS 的 beq 比，基準位址有什麼不同？",
+      "answer": "(1) lui x5, 0x12346；addi x5, x5, −1　(2) −4096～+4094 bytes，約 ±2¹⁰ 個 32 位元指令；RISC-V 以分支指令自己的 PC 為基準，MIPS 以 PC + 4 為基準",
+      "explanation": "<p><b>(1)</b> 低 12 位是 0xFFF，最高位（第 11 位）是 1，addi 會把它符號延伸成 −1。所以 lui 要多放 1：0x12345 + 1 = <b>0x12346</b>，x5 = 0x12346000，再加 −1 = 0x12345FFF。這和 MIPS 用 lui + addi 時「低半最高位是 1 就把高半 +1」是同一件事，只是切點從 16 位變成 12 位。</p><p><b>(2)</b> 13 位元有號數範圍 −2¹²～2¹² − 1，最低位固定 0，所以是 −4096～+4094 bytes。以 4 bytes 一條指令來算約 ±2¹⁰ 條（±1024）。RISC-V 的 offset 單位是 2 bytes（為了支援 16 位元的壓縮指令），而且目標 = <b>分支自己的 PC</b> + offset；MIPS 是 (PC + 4) + offset × 4。已用程式驗算。</p>"
     }
   ]
 }

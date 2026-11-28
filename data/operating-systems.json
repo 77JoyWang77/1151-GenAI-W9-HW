@@ -62,9 +62,18 @@
           "id": "threads",
           "en": "Threads and Multithreading Models",
           "zh": "執行緒與多執行緒模型",
-          "book": "4.1–4.3",
-          "status": "planned",
-          "priority": "high"
+          "book": "4.1–4.6",
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "user / kernel thread",
+            "multithreading models",
+            "Pthreads",
+            "thread pool"
+          ],
+          "updated": "2026-11-28"
         }
       ]
     },

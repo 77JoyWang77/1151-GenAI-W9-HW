@@ -65,8 +65,18 @@
           "en": "MIPS Instruction Formats",
           "zh": "MIPS 指令格式",
           "book": "2.2–2.7",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "R-type",
+            "I-type",
+            "J-type",
+            "branch offset",
+            "lui/ori"
+          ],
+          "updated": "2026-11-28"
         },
         {
           "id": "addressing-modes",

@@ -506,9 +506,18 @@
           "en": "Hash Functions",
           "zh": "雜湊函數",
           "book": "8.2",
-          "status": "planned",
+          "status": "done",
           "priority": "mid",
-          "viz": false
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "division",
+            "multiplication",
+            "universal hashing",
+            "perfect hashing",
+            "Bloom filter"
+          ],
+          "updated": "2026-11-28"
         },
         {
           "id": "collision-resolution",
@@ -526,7 +535,7 @@
             "double hashing",
             "tombstone"
           ],
-          "updated": "2026-11-27"
+          "updated": "2026-11-28"
         },
         {
           "id": "dynamic-hashing",

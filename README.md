@@ -8,10 +8,10 @@
 
 | 科目 | 狀態 | 參考書（僅供 AI 查閱） |
 |---|---|---|
-| Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 11 個 | Horowitz《Fundamentals of Data Structures in C》 |
+| Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 12 個 | Horowitz《Fundamentals of Data Structures in C》 |
 | Algorithms（演算法） | 進行中：13 章、36 個主題（高頻 19 個），已完成 3 個 | Cormen 等《Introduction to Algorithms》 |
-| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 5 個 | Patterson & Hennessy《Computer Organization and Design》 |
-| Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 3 個 | Silberschatz《Operating System Concepts》 |
+| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 6 個 | Patterson & Hennessy《Computer Organization and Design》 |
+| Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 4 個 | Silberschatz《Operating System Concepts》 |
 | Discrete Mathematics（離散數學） | 進行中：12 章、38 個主題（高頻 18 個），已完成 3 個 | Rosen《Discrete Mathematics and Its Applications》 |
 | Linear Algebra（線性代數） | 進行中：8 章、30 個主題（高頻 18 個），已完成 5 個 | Leon《Linear Algebra with Applications》 |
 
@@ -28,6 +28,7 @@
 | Binary Search Tree（二元搜尋樹） | insert / search / delete（三種情況，可切換左子樹最大 / 右子樹最小）、中序走訪 |
 | BFS & DFS（廣度與深度優先搜尋） | 自己輸入邊與起點，切換 BFS／DFS（遞迴、stack），看 queue／stack、visited、走訪順序與生成樹 |
 | Minimum Cost Spanning Tree（最小成本生成樹） | 輸入帶權邊，切換 Kruskal／Prim，看邊被考慮、收下或因成環略過，顯示 union-find 集合或 cut 與 key |
+| Hash Functions（雜湊函數） | 三個動畫：用 7 種雜湊函數（除法、乘法、平方取中、兩種折疊、兩種字串雜湊）逐步算位址；同一批 key 在兩種設定下的分布直方圖比較；Bloom filter 的插入、查詢與 false positive、為什麼不能刪除 |
 | Collision Resolution（碰撞處理） | 輸入 key 逐步 insert / search / delete，切換 linear／quadratic（+i²、±i²）／double hashing／separate chaining，刪除可選 tombstone 或搬移補位，看探測序列與群聚 |
 | Red-Black Tree（紅黑樹） | insert（叔叔紅變色、折線先旋轉、直線換色旋轉）與 delete（double black 四種 case，可切換用左子樹最大／右子樹最小取代），方形 = 黑、圓形 = 紅，NIL 以虛線框畫出 |
 
@@ -62,6 +63,7 @@
 | 主題 | 互動動畫 |
 |---|---|
 | CPU Time and CPI（CPU 時間與 CPI） | 輸入各類指令的 CPI、比例、指令數與時脈，逐步算出平均 CPI、CPU 時間與 MIPS；比較兩部機器（含 MIPS 陷阱），以及只改良一類指令的加速與上限 |
+| MIPS Instruction Formats（MIPS 指令格式） | 輸入一條組語指令或 32 位元十六進位碼，逐欄位組譯／解碼成 R、I、J 格式，示範符號／零延伸，並算出 branch 與 jump 的目標位址（含超出範圍時的改寫提示） |
 | Cache Organization and Mapping（快取組織與映射） | 自己輸入位址序列、區塊數與區塊大小，切換直接映射／2-way／全關聯，逐步看每個位址落在哪個 set、命中或失誤、LRU 換掉誰 |
 | Pipelining（管線化） | 輸入 2～6 行 MIPS 指令，逐個時脈畫管線時序圖，切換有／無 forwarding，算出總週期、stall 數與 CPI |
 | Data Hazards and Forwarding（資料危障與轉送） | 輸入 2～7 行 MIPS 指令，逐週期看各階段的指令、forwarding unit 比對 rd 算出 ForwardA/B、hazard detection unit 何時插 bubble；另一個動畫逐步重排指令避開 load-use stall |
@@ -71,6 +73,7 @@
 
 | 主題 | 互動動畫 |
 |---|---|
+| Threads（執行緒與多執行緒模型） | 選擇 many-to-one／one-to-one／many-to-many／two-level，設定 user thread、LWP、CPU 數，看某個 thread 做 blocking system call 時哪些 thread 會跟著卡住、同時有幾個在跑 |
 | CPU Scheduling Algorithms（CPU 排程演算法） | 自己輸入行程（到達、burst、優先權），切換 FCFS／SJF／SRTF／Priority／RR，逐步看 ready queue 與甘特圖，算出平均等待、周轉、回應時間 |
 | Deadlock Avoidance and Banker's Algorithm（死結避免與銀行家演算法） | 編輯 Available／Max／Allocation，逐步跑安全演算法找安全序列；輸入請求先檢查再試算安全性 |
 | Paging and TLB（分頁與 TLB） | 設定頁大小、頁表、TLB 大小，逐個位址切 p/d、查 TLB、查頁表（單層／兩層），算出 TLB 命中率與 EAT |
