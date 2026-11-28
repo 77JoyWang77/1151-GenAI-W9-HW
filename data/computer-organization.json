@@ -217,8 +217,18 @@
           "en": "Control Hazards and Branch Prediction",
           "zh": "控制危障與分支預測",
           "book": "4.8",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "branch penalty",
+            "predict-not-taken",
+            "delayed branch",
+            "2-bit predictor",
+            "BTB"
+          ],
+          "updated": "2026-11-28"
         },
         {
           "id": "exceptions",

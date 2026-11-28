@@ -357,6 +357,7 @@ figure.fig .q-fig { max-width: min(100%, var(--fig-w, 640px)); margin: 0 auto; }
 .vedge.s-visited { stroke: var(--s-visited); }
 .vedge.s-removed { stroke: var(--s-removed); stroke-dasharray: 5 5; }
 .vedge.s-muted   { stroke: var(--s-muted); }
+.vedge.s-new     { stroke: var(--s-new); } /* 原本缺這條，state "new" 的邊沒有顏色 */
 .vedge.dashed    { stroke-dasharray: 6 5; }
 
 .vptr.s-default text { fill: var(--brand); }   .vptr.s-default path { stroke: var(--brand); }

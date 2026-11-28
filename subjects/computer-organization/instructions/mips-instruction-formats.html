@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MIPS Instruction Formats MIPS 指令格式 · 計算機組織 | 資工考研互動學習站</title>
   <meta name="description" content="MIPS R/I/J 格式欄位、組語↔機器碼、符號延伸、lui/ori、branch 與 jump 目標位址、RISC-V 對照。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=cdf5c420">
-  <script src="../../../assets/js/theme.js?v=cdf5c420"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=fbb9e419">
+  <script src="../../../assets/js/theme.js?v=fbb9e419"></script>
 </head>
 <body data-subject="computer-organization" data-chapter="instructions" data-chno="2" data-topic="computer-organization/instructions/mips-instruction-formats" data-root="../../../">
   <header class="site-header">
@@ -411,7 +411,7 @@ int canJump(uint32_t pc, uint32_t target) {
               </tbody>
             </table>
           </div>
-          <p>注意 PC-relative 也是 I-type。另外，真實的 MIPS 硬體在分支後面有一個 branch delay slot（分支後的那一條指令一定會執行），它和管線的控制危障有關，在 Control Hazards and Branch Prediction 控制危障與分支預測（籌備中）說明；本頁計算目標位址時都不考慮 delay slot。</p>
+          <p>注意 PC-relative 也是 I-type。另外，真實的 MIPS 硬體在分支後面有一個 branch delay slot（分支後的那一條指令一定會執行），它和管線的控制危障有關，在 <a href="../processor/control-hazards.html">Control Hazards and Branch Prediction（控制危障與分支預測）</a>說明；本頁計算目標位址時都不考慮 delay slot。</p>
         </div>
       </section>
 
@@ -526,8 +526,8 @@ int canJump(uint32_t pc, uint32_t target) {
   <footer class="site-footer">
     <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=cdf5c420"></script>
-  <script src="../../../assets/js/viz-core.js?v=cdf5c420"></script>
-  <script src="../../../assets/js/viz/computer-organization/mips-instruction-formats.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/site.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz-core.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz/computer-organization/mips-instruction-formats.js?v=fbb9e419"></script>
 </body>
 </html>

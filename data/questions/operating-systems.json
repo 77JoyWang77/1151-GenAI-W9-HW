@@ -6644,6 +6644,214 @@
       ],
       "answer": "(A)(C)(D)",
       "explanation": "<p>(A) 對：這正是 zombie 的定義，結束碼要等 parent 取走。<br>(B) 錯：parent 先結束、child 還活著，child 是 <b>orphan</b>，不是 zombie；方向剛好相反。<br>(C) 對：UNIX 把 orphan 重新指派給 init（或設定了 subreaper 的行程），它會定期 wait，避免 orphan 結束後一直卡成 zombie。<br>(D) 對：zombie 只剩 PID 和結束碼等資訊，parent 一直不 wait，zombie 累積下來會耗盡 PID。<br>(E) 錯：zombie 已經結束了，signal 對它沒有作用；只能讓 parent 呼叫 wait()，或結束 parent，讓 zombie 被 init 收養後回收。</p>"
+    },
+    {
+      "id": "os-0270",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列哪一種 I/O 方式，CPU <b>不必</b>親自在裝置與記憶體之間搬每一筆資料？",
+      "choices": [
+        "(A) Polling（programmed I/O）",
+        "(B) Interrupt-driven I/O",
+        "(C) DMA",
+        "(D) 三種都需要 CPU 搬"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>polling 和 interrupt-driven I/O 的差別只在「CPU 怎麼知道裝置好了」：一個是反覆讀 status，一個是等中斷通知；兩者知道之後，都是 CPU 自己讀 data-in register、再寫進記憶體，每筆都經過 CPU 的暫存器。DMA 才把搬資料的工作交給 DMA controller，CPU 只在開始時設定位址與長度、結束時處理一次中斷。常見錯誤是以為 interrupt-driven I/O 的資料也不用 CPU 搬。</p>"
+    },
+    {
+      "id": "os-0271",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）關於 port-mapped I/O 與 memory-mapped I/O，下列敘述哪些正確？",
+      "choices": [
+        "(A) memory-mapped I/O 讓裝置暫存器佔用一段實體位址，用一般的 load／store 指令就能存取",
+        "(B) port-mapped I/O 用另外一套 I/O 位址空間，要用特殊的 I/O 指令（例如 x86 的 in／out）存取",
+        "(C) memory-mapped I/O 的位址區段應該設為可快取（cacheable），讀 status 才會比較快",
+        "(D) 使用者程式可以直接執行 in／out 指令操作磁碟控制器，不必經過 system call"
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<ul><li>(A)(B) 對：這就是兩者的定義。MMIO 共用記憶體位址空間；port-mapped I/O 是另一個位址空間，需要專用指令。</li><li>(C) 錯：裝置暫存器的值會被裝置自己改掉，如果被快取，CPU 讀到的是 cache 裡的舊值（例如永遠看到 BUSY），所以 MMIO 區段要設成 uncached。</li><li>(D) 錯：I/O 指令是特權指令，只能在 kernel mode 執行；MMIO 的位址也不會對映到使用者的位址空間。使用者程式要做 I/O 必須透過 system call，這是 I/O 保護的基礎。</li></ul>"
+    },
+    {
+      "id": "os-0272",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "寫出下列情境用到的 kernel I/O subsystem 技術（buffering、caching、spooling、device reservation 擇一）：<ol><li>好幾個 process 同時要列印，各自的輸出先寫成磁碟上的檔案，再由一個 daemon 依序送給印表機。</li><li>剛讀過的磁碟 block 留在記憶體裡，下次讀同一個 block 直接拿記憶體裡的那份。</li><li>網路卡收到的封包先放在 kernel 的一塊記憶體，等應用程式呼叫 read() 再複製過去。</li><li>讓某個 process 取得磁帶機的獨占使用權，用完才釋放給別人。</li></ol>",
+      "answer": "1. spooling　2. caching　3. buffering　4. device reservation",
+      "explanation": "<p>判斷的關鍵：<b>buffering</b> 是資料「在傳輸途中」暫放，只有一份（還沒交給對方）；<b>caching</b> 是保留一份「副本」，原本的資料還在別處（磁碟上），只是讀副本比較快；<b>spooling</b> 專門給一次只能服務一個工作、不能交錯輸出的裝置（印表機），把各工作的輸出排隊；<b>device reservation</b> 則是直接讓一個 process 獨占裝置。1 和 4 都在處理「不能共用的裝置」，差別是 spooling 讓大家都以為自己在印，裝置實際上依序處理；reservation 是明確地讓別人等。</p>"
+    },
+    {
+      "id": "os-0273",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某裝置以 2 MB/s（1 MB = 10<sup>6</sup> byte）持續傳輸，CPU 每次 polling 能讀走 4 byte，一次 polling（讀 status、判斷、讀 data）需 200 個時脈週期，CPU 時脈 500 MHz。(a) 為了不漏掉任何資料，CPU 花在 polling 的時間佔比是多少？(b) 另一個滑鼠只需每秒 polling 50 次，每次同樣 200 個週期，佔比是多少？",
+      "answer": "(a) 20%　(b) 0.002%",
+      "explanation": "<p><b>(a)</b> 每秒要查的次數 = 傳輸率 ÷ 每次搬的量 = 2×10<sup>6</sup> / 4 = 5×10<sup>5</sup> 次。每秒花 5×10<sup>5</sup> × 200 = 10<sup>8</sup> 週期，CPU 每秒有 5×10<sup>8</sup> 週期，佔比 = 10<sup>8</sup> / (5×10<sup>8</sup>) = <b>20%</b>：每 5 個週期就有 1 個在 polling。</p><p><b>(b)</b> 50 × 200 = 10<sup>4</sup> 週期／秒，佔比 = 10<sup>4</sup> / (5×10<sup>8</sup>) = 2×10<sup>-5</sup> = <b>0.002%</b>，幾乎可以忽略。</p><p>結論：polling 的成本和「每秒要查幾次」成正比。慢速裝置（滑鼠）用 polling 完全沒問題，高速裝置用 polling 就會吃掉一大塊 CPU。</p>"
+    },
+    {
+      "id": "os-0274",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "承上題的 2 MB/s 裝置（每次 4 byte、CPU 500 MHz，polling 佔比 20%）。改用 interrupt-driven I/O，每次中斷（保存狀態、執行 ISR 搬 4 byte、返回）共需 500 個週期，而且裝置只有 10% 的時間真的在傳資料。(a) CPU 花在中斷的時間佔比是多少？(b) 裝置活躍比例高於多少時，interrupt 反而比 polling 更耗 CPU？",
+      "answer": "(a) 5%　(b) 40%",
+      "explanation": "<p><b>(a)</b> 傳資料時每秒中斷 2×10<sup>6</sup> / 4 = 5×10<sup>5</sup> 次，只有 10% 的時間在傳，所以平均每秒 5×10<sup>4</sup> 次。週期 = 5×10<sup>4</sup> × 500 = 2.5×10<sup>7</sup>，佔比 = 2.5×10<sup>7</sup> / (5×10<sup>8</sup>) = <b>5%</b>，比 polling 的 20% 少了四分之三。</p><p><b>(b)</b> 活躍比例為 a 時，中斷佔比 = 5×10<sup>5</sup> × a × 500 / (5×10<sup>8</sup>) = 50a%。polling 不管裝置有沒有在傳都要查，固定 20%。50a% = 20% → a = <b>40%</b>。裝置超過 40% 的時間都在傳時，interrupt 反而比較貴，因為一次中斷（500 週期）比一次 poll（200 週期）貴。</p><p>易錯：把 polling 也乘上活躍比例。polling 不知道裝置什麼時候會有資料，只能一直查。</p>"
+    },
+    {
+      "id": "os-0275",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個裝置以 40 MB/s 傳輸（1 MB = 10<sup>6</sup> byte），CPU 時脈 1 GHz。(a) 使用 DMA，每塊 16 KB（這題 1 KB = 1000 byte），每塊需要 2000 個週期設定 DMA、1000 個週期處理完成中斷，CPU 花在這個裝置的時間佔比是多少？(b) 若改成每 8 byte 中斷一次、每次中斷 400 個週期，佔比又是多少？這樣可行嗎？",
+      "answer": "(a) 0.75%　(b) 200%，不可行",
+      "explanation": "<p><b>(a)</b> 每秒的塊數 = 40×10<sup>6</sup> / 16000 = 2500 塊，每塊 2000 + 1000 = 3000 週期，共 7.5×10<sup>6</sup> 週期／秒，佔比 = 7.5×10<sup>6</sup> / 10<sup>9</sup> = <b>0.75%</b>。搬資料本身由 DMA controller 做，不算 CPU 週期（但會佔用匯流排）。</p><p><b>(b)</b> 每秒中斷 40×10<sup>6</sup> / 8 = 5×10<sup>6</sup> 次，× 400 = 2×10<sup>9</sup> 週期，是 CPU 每秒週期數的 <b>200%</b>：就算 CPU 什麼都不做也處理不完，資料一定會掉。</p><p>這就是高速裝置一定要用 DMA 的原因：中斷次數從每 8 byte 一次降到每 16000 byte 一次，少了 2000 倍。</p>"
+    },
+    {
+      "id": "os-0276",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "嵌入式系統以固定週期 T = 2 ms 做 polling，每次 polling 的程式要執行 5 μs。事件在時間上均勻隨機發生。(a) 從事件發生到被發現，平均延遲和最壞延遲各是多少？(b) polling 佔用多少 CPU 時間？(c) 若要求最壞延遲 ≤ 0.5 ms，CPU 佔比變成多少？",
+      "answer": "(a) 平均 1 ms，最壞 2 ms　(b) 0.25%　(c) 1%",
+      "explanation": "<p><b>(a)</b> 事件落在兩次 polling 之間的任何位置機會相同，到下一次 polling 的等待時間在 0～T 之間均勻分布，平均 T/2 = <b>1 ms</b>；剛好在一次 polling 之後發生就要等滿一整個週期，最壞 <b>2 ms</b>（忽略 polling 本身 5 μs 的執行時間）。</p><p><b>(b)</b> 每秒 polling 1 / 2 ms = 500 次，× 5 μs = 2.5 ms，佔比 = 2.5 ms / 1 s = <b>0.25%</b>。</p><p><b>(c)</b> 最壞延遲 = T ≤ 0.5 ms，取 T = 0.5 ms，每秒 2000 次 × 5 μs = 10 ms，佔比 <b>1%</b>。延遲降為四分之一，CPU 成本變四倍：polling 頻率提高會<b>同時</b>降低延遲、提高 CPU 使用率與耗電，是取捨，不會兩全。</p>"
+    },
+    {
+      "id": "os-0277",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "把 interrupt-driven I/O 讀一筆資料的步驟依發生順序排好：<br>(a) CPU 自動保存 PC 與狀態暫存器、切到 kernel mode<br>(b) driver 寫 control register 下 READ 命令<br>(c) device controller 拉起 interrupt-request line<br>(d) 以中斷編號查 interrupt vector table，跳到 ISR<br>(e) ISR 讀 data-in register，把資料寫進 kernel buffer<br>(f) 恢復狀態，回到被中斷的程式<br>(g) CPU 把目前正在執行的那條指令做完",
+      "answer": "(b) → (c) → (g) → (a) → (d) → (e) → (f)",
+      "explanation": "<p>先下命令（b），裝置準備好才會發中斷（c）。外部中斷是非同步的，CPU 在<b>指令邊界</b>才檢查 interrupt-request line，所以先把目前的指令做完（g），再由硬體保存狀態、切到 kernel mode（a），用中斷編號當索引查向量表找到 ISR（d），ISR 搬資料（e），最後恢復狀態返回（f）。</p><p>易錯：(a) 和 (d) 的順序。一定要先保存狀態，否則跳到 ISR 時就蓋掉了 PC，回不去被中斷的程式。另外，page fault 這類 fault 不一樣，會在指令執行途中就被處理，處理完重新執行那條指令。</p>"
+    },
+    {
+      "id": "os-0278",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一張網路卡，封包平均每秒到達 λ 個，CPU 時脈 2 GHz。<br>• Interrupt 模式：每個封包一次中斷，中斷進出加上處理封包共 3000 個週期。<br>• Polling 模式：每 10 μs polling 一次（不管有沒有封包），每次 polling 的固定成本 400 個週期，每處理一個封包另需 500 個週期。<br>(a) λ = 5000 與 λ = 50000 時，兩種模式各佔多少 CPU？(b) λ 大於多少時 polling 比較省 CPU？(c) 實際系統怎麼兼顧兩者？",
+      "answer": "(a) λ=5000：interrupt 0.75%、polling 2.125%；λ=50000：interrupt 7.5%、polling 3.25%　(b) λ &gt; 16000 個／秒　(c) 平常用中斷，流量大時關掉中斷改 polling（例如 Linux NAPI），或 interrupt coalescing",
+      "explanation": "<p>先寫出兩條成本式（週期／秒）：</p><ul><li>interrupt：3000λ</li><li>polling：每秒 polling 1 / 10 μs = 10<sup>5</sup> 次 × 400 = 4×10<sup>7</sup>，再加 500λ</li></ul><p><b>(a)</b> λ = 5000：interrupt = 1.5×10<sup>7</sup> / (2×10<sup>9</sup>) = <b>0.75%</b>；polling = (4×10<sup>7</sup> + 2.5×10<sup>6</sup>) / (2×10<sup>9</sup>) = <b>2.125%</b>，polling 大部分在空轉。λ = 50000：interrupt = 1.5×10<sup>8</sup> / (2×10<sup>9</sup>) = <b>7.5%</b>；polling = (4×10<sup>7</sup> + 2.5×10<sup>7</sup>) / (2×10<sup>9</sup>) = <b>3.25%</b>，換 polling 比較省。</p><p><b>(b)</b> 3000λ = 4×10<sup>7</sup> + 500λ → 2500λ = 4×10<sup>7</sup> → λ = <b>16000</b>。超過每秒 16000 個封包時，每個封包省下的 2500 個中斷週期，已經抵得過 polling 的固定成本。</p><p><b>(c)</b> 事件率高時中斷不一定比較好。Linux 的 NAPI 在第一個封包到時用中斷叫醒 driver，接著關掉這張網卡的中斷、改用 polling 一次處理一批，佇列空了再打開中斷；網卡硬體也可以 interrupt coalescing（累積幾個封包或等一小段時間才發一次中斷）。代價是延遲會多一點（polling 模式平均多等半個週期 5 μs）。</p>"
+    },
+    {
+      "id": "os-0279",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "DMA controller 每搬 8 byte 就要佔用一個 bus cycle，記憶體匯流排時脈 400 MHz（每個 bus cycle 可傳一次 8 byte）。裝置以 200 MB/s 傳輸（1 MB = 10<sup>6</sup> byte）。(a) 使用 cycle stealing 時，DMA 每秒偷走多少個 bus cycle？佔匯流排的比例是多少？(b) 改成 burst mode，每次連續佔用匯流排傳完 4096 byte，每次佔用多久？每秒幾次？總佔用比例有沒有改變？(c) 對 CPU 來說兩種模式各有什麼影響？",
+      "answer": "(a) 2.5×10<sup>7</sup> 個，6.25%　(b) 每次 512 個 bus cycle = 1.28 μs，每秒約 48828 次，總比例仍是 6.25%　(c) cycle stealing 讓 CPU 偶爾等一個 cycle；burst 讓 CPU 一次最多等 1.28 μs，但次數少",
+      "explanation": "<p><b>(a)</b> 每秒要搬 200×10<sup>6</sup> / 8 = 2.5×10<sup>7</sup> 次，每次偷 1 個 bus cycle，佔 2.5×10<sup>7</sup> / (4×10<sup>8</sup>) = <b>6.25%</b>：平均每 16 個 bus cycle 有 1 個被 DMA 用掉。</p><p><b>(b)</b> 4096 / 8 = <b>512</b> 個 bus cycle，512 / (4×10<sup>8</sup>) = <b>1.28 μs</b>。每秒 200×10<sup>6</sup> / 4096 ≈ <b>48828</b> 次，總共 48828.125 × 512 = 2.5×10<sup>7</sup> 個 cycle，比例<b>仍是 6.25%</b>：要搬的資料量一樣，佔用匯流排的總時間就一樣，burst 只是把佔用集中成大段。</p><p><b>(c)</b> cycle stealing 一次只偷一個 cycle，CPU 剛好要存取記憶體時頂多等一個 cycle，影響分散而且很小；burst mode 傳輸效率較高（省下每次搶匯流排的仲裁開銷），但這 1.28 μs 內 CPU 若 cache miss 就得整段等。不管哪一種，CPU 都只在匯流排上和 DMA 競爭，而不是親手搬資料，所以 DMA 會「稍微拖慢 CPU、整體系統效能變好」。</p>"
+    },
+    {
+      "id": "os-0280",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）關於 DMA、cache 與位址轉換，下列敘述哪些正確？",
+      "choices": [
+        "(A) 在 cache 與 DMA 不一致（non-coherent）的系統，CPU 把記憶體 buffer 交給 DMA 送到裝置（輸出）之前，要先把那段 buffer 的 dirty cache line 寫回（clean）",
+        "(B) DMA 把裝置資料寫進記憶體（輸入）完成後，CPU 讀之前要 invalidate 那段 buffer 的 cache line",
+        "(C) DMA 用實體位址，所以 buffer 跨越多個不連續的實體頁框時，一定無法用一次 DMA 完成",
+        "(D) IOMMU 可以把裝置看到的位址轉成實體位址，也能阻止裝置寫入沒有被授權的記憶體",
+        "(E) DMA 傳輸進行中，buffer 所在的頁可以被換出（page out），DMA 會自動等它換回來"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) 對：CPU 寫的資料可能還在 write-back cache 裡沒寫回，DMA 直接讀記憶體會讀到舊資料，所以輸出前要 clean。</li><li>(B) 對：DMA 寫進記憶體的新資料不會更新 CPU 的 cache，CPU 讀之前要 invalidate，強迫從記憶體重讀。</li><li>(C) 錯：scatter-gather DMA 接受一串（位址, 長度）描述，一次命令就能搬多段不連續的實體記憶體；有 IOMMU 時也可以把它們對映成裝置眼中連續的位址。</li><li>(D) 對：IOMMU 是給 I/O 裝置用的 MMU，替 DMA 做位址轉換，也提供保護（虛擬機把裝置直接交給 guest 時特別重要）。</li><li>(E) 錯：DMA controller 不懂分頁，頁被換出後那個頁框可能已經給了別人，DMA 會寫壞別人的資料。DMA 用的 buffer 必須先 <b>pin（鎖）</b>在記憶體裡，傳完才解除。</li></ul>"
+    },
+    {
+      "id": "os-0281",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "裝置填滿一個 buffer（一個 block）需要 4 ms，CPU 處理一個 block 需要 3 ms，共要處理 10 個 block。裝置只有在有空 buffer 時才能開始填下一個 block。(a) 只有一個 buffer，總共要多久？(b) 用 double buffering（兩個 buffer 輪流用），總共要多久？(c) 若 CPU 處理一個 block 變成 6 ms，(a)(b) 各要多久？",
+      "answer": "(a) 70 ms　(b) 43 ms　(c) 單一 buffer 100 ms，double buffering 64 ms",
+      "explanation": "<p><b>(a)</b> 只有一個 buffer：裝置填完要等 CPU 處理完才能填下一塊，兩者完全不能重疊，每塊 4 + 3 = 7 ms，10 塊 = <b>70 ms</b>。</p><p><b>(b)</b> 兩個 buffer：CPU 處理 buffer A 時，裝置可以填 buffer B。第一塊要先填 4 ms 才有東西處理；之後裝置比 CPU 慢（4 ms &gt; 3 ms），每 4 ms 產出一塊，CPU 總是在等裝置；最後一塊填完後 CPU 還要 3 ms 處理。總時間 = 4 + 9 × 4 + 3 = <b>43 ms</b>。</p><p><b>(c)</b> 單一 buffer：10 × (4 + 6) = <b>100 ms</b>。double buffering：現在 CPU 比較慢，變成裝置在等 CPU 讓出 buffer，每 6 ms 完成一塊：4 + 9 × 6 + 6 = <b>64 ms</b>。</p><p>通式：double buffering ≈ 填第一塊 + (n − 1) × max(填, 處理) + 處理最後一塊。它能讓生產者（裝置）與消費者（CPU）平行工作，但總時間受較慢的那一方限制，不會比 n × max(…) 更快。</p>"
+    },
+    {
+      "id": "os-0282",
+      "topics": [
+        "io-systems"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）關於 blocking、nonblocking 與 asynchronous I/O，下列敘述哪些正確？",
+      "choices": [
+        "(A) nonblocking read() 在目前沒有資料可讀時會立刻返回（讀到 0 byte 或回傳 EAGAIN 之類的錯誤碼），process 不會進入 waiting 狀態",
+        "(B) asynchronous read 的呼叫返回時，資料已經全部放進使用者的 buffer 了",
+        "(C) 用 select()／poll() 同時等待多個 fd：select 本身會阻塞，但它返回後對可讀的 fd 呼叫 read() 就不會被卡住",
+        "(D) 在 one-to-one 的執行緒模型下，一個 thread 卡在 blocking I/O 時，同一個 process 的其他 thread 仍可以繼續執行",
+        "(E) asynchronous I/O 一定要在應用程式裡開多個 thread 才能實作"
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<ul><li>(A) 對：nonblocking 的意思就是「有多少給多少，馬上回來」。</li><li>(B) 錯：那是 nonblocking 和 async 最容易混的地方。async 呼叫返回時 I/O 才剛開始，資料要等 kernel 之後用 signal、callback 或完成事件通知才保證到齊；nonblocking 則是返回時就給你當下有的部分。</li><li>(C) 對：select／poll 是「先阻塞等待任一個 fd 就緒，再做不會卡住的讀寫」，常用來在一個 thread 裡同時服務很多連線。</li><li>(D) 對：kernel 個別排程每個 kernel thread，卡住的只有發出 I/O 的那一個；整個 process 都卡住的是 many-to-one。</li><li>(E) 錯：async I/O 可以由 kernel 直接提供（例如 POSIX aio、Linux io_uring、Windows overlapped I/O），應用程式不必自己開 thread。</li></ul>"
     }
   ]
 }

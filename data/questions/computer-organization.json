@@ -6146,6 +6146,150 @@
       "question": "某 GPU 的 SM 每個 cycle 從任一個 ready 的 warp 發出一條指令（單發）。每個 warp 的程式都是重複：連續 20 條指令（各 1 cycle，第 20 條是 load），load 要 400 cycles 才拿到資料，拿到後才能接著發下一輪的 20 條。<br>(1) 至少要幾個 warp，SM 才能在穩定狀態下每個 cycle 都有指令可發？<br>(2) 只有 10 個 warp 時，穩定狀態下 SM 的使用率是多少？<br>(3) 由此說明 GPU 和 CPU 隱藏記憶體延遲的方式有什麼不同。",
       "answer": "(1) 21 個 warp　(2) 約 47.6%　(3) 見詳解",
       "explanation": "<p><b>(1)</b> 一個 warp 每輪佔用 SM 20 個 cycle，然後要等 400 個 cycle，一輪週期是 20 + 400 = 420 cycles。在它等待的 400 cycles 裡，要有別的 warp 補滿發射槽：需要另外 ⌈400 ÷ 20⌉ = 20 個 warp，加上它自己，共 <b>21</b> 個。用模擬驗算：20 個 warp 時每 420 cycles 有 20 個閒置 cycle，21 個 warp 時閒置為 0。</p><p><b>(2)</b> 每個 warp 在 420 cycles 裡只用 20 cycles，10 個 warp 共用 200 cycles：使用率 = 200 ÷ 420 ≈ <b>47.6%</b>（模擬結果相同）。</p><p><b>(3)</b> CPU 靠<b>大容量的多層 cache</b>（和亂序執行、prefetch）讓單一執行緒少等記憶體，追求低延遲；GPU 靠<b>大量 warp 輪流執行</b>（硬體多執行緒，切換幾乎不花時間），一個 warp 在等記憶體時就發別的 warp，用平行度把延遲藏起來，追求高吞吐量，晶片面積主要給 ALU 與暫存器檔，cache 相對很小。代價是需要非常多可平行的 thread，而且每個 thread 自己的延遲並沒有變短。</p>"
+    },
+    {
+      "id": "co-0256",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "五階段 MIPS 管線採用 predict-not-taken，分支在 EX 階段結束時才決定。某個 beq 實際 taken，要 flush 掉幾條已經抓進管線的指令？",
+      "choices": [
+        "(A) 0 條",
+        "(B) 1 條",
+        "(C) 2 條",
+        "(D) 3 條"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>beq 在週期 1 IF、週期 3 EX。週期 2、3 IF 已經照「不跳」抓了 PC + 4、PC + 8 兩條，週期 3 結束時才知道要跳，這兩條都是錯的路，flush 掉，目標指令在週期 4 才抓。penalty = 決定的階段編號 − 1 = 3 − 1 = <b>2</b>。</p><p>常見錯誤：以為 EX 是第 3 級就要丟 3 條；第 3 條（PC + 12）是在週期 4 才會抓，那時已經知道要跳了。若在 ID 決定只要丟 1 條、MEM 決定要丟 3 條。</p>"
+    },
+    {
+      "id": "co-0257",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個 1024 格的 branch history table 用 PC 的第 2～11 位元當索引，每格存 2-bit 計數器、沒有 tag。程式裡兩個分支的 PC 是 0x00400010 與 0x00401010，下列何者正確？",
+      "choices": [
+        "(A) 兩個分支用不同的格子，互不影響",
+        "(B) 兩個分支共用同一格，可能讓預測變差，但程式結果仍然正確",
+        "(C) 兩個分支共用同一格，程式可能跳到錯的位址而執行出錯",
+        "(D) 硬體發現 tag 不同時會 stall，等其中一個分支決定"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>兩個位址差 0x1000 = 4096 = 2<sup>12</sup>，第 2～11 位元完全相同，所以會選到同一格（aliasing）。BHT 沒有 tag，硬體不知道這一格其實混了兩個分支的歷史，只會照計數器猜。</p><p>猜錯時管線照樣 flush 錯誤路徑、從正確位址重抓，所以只影響效能、<b>不影響正確性</b> → (B)。(C) 錯：BHT 只存「跳不跳」，不存目標；就算是存目標的 BTB 也有 tag 檢查。(D) 錯：BHT 根本沒有 tag。</p>"
+    },
+    {
+      "id": "co-0258",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）MIPS 的分支有 1 個 delay slot，下列關於填 delay slot 的敘述何者正確？",
+      "choices": [
+        "(A) 從分支之前搬下來的指令，不能寫入分支要比較的暫存器",
+        "(B) 從分支目標複製來的指令，分支不跳時也會執行，所以它在不跳的那條路上必須是無害的",
+        "(C) 從 fall-through 路徑搬上來的指令，最適合大部分時間都會 taken 的分支",
+        "(D) 編譯器找不到可以填的指令時，硬體會自動在 slot 插一個 stall"
+      ],
+      "answer": "(A)(B)",
+      "explanation": "<ul><li>(A) 對：搬到分支後面，分支比較時就讀不到它寫的新值，判斷結果會變。</li><li>(B) 對：delay slot 裡的指令不管跳不跳都執行；它只在 taken 時有用，not taken 時是白做，所以不能破壞不跳那條路要用的值。</li><li>(C) 錯：fall-through 的指令只有在<b>不跳</b>時有用，適合大多數 not taken 的分支；大多數 taken 的（例如迴圈）適合 from target。</li><li>(D) 錯：slot 是 ISA 規定一定執行的位置，硬體不會判斷裡面有沒有用；找不到指令時由編譯器放 nop。</li></ul>"
+    },
+    {
+      "id": "co-0259",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "五階段管線，基本 CPI = 1。20% 的指令是條件分支，其中 60% taken；分支在 EX 決定，猜錯或 stall 的損失是 2 個週期。其他危障不計，求下列做法的 CPI：<br>(1) 一律 stall<br>(2) predict-not-taken<br>(3) predict-taken，BTB 在 IF 就提供目標（假設 BTB 一定命中）<br>(4) 動態預測，正確率 90%（同樣有 BTB）",
+      "answer": "(1) 1.4　(2) 1.24　(3) 1.16　(4) 1.04",
+      "explanation": "<p>CPI = 1 + 分支比例 × 付出代價的比例 × penalty，penalty = 2。</p><ul><li>(1) 每個分支都停：1 + 0.2 × 1 × 2 = <b>1.4</b>，比理想慢 40%。</li><li>(2) 只有 taken（60%）要 flush：1 + 0.2 × 0.6 × 2 = <b>1.24</b>。</li><li>(3) 只有 not taken（40%）猜錯：1 + 0.2 × 0.4 × 2 = <b>1.16</b>。猜對 taken 時 BTB 已經給了目標，沒有損失；若沒有 BTB，五階段管線要到 ID 才知道目標，猜對 taken 仍損失 1 個週期，結果會變成 1 + 0.2 × (0.6 × 1 + 0.4 × 2) = 1.28，反而比 (2) 差。</li><li>(4) 只有猜錯的 10% 付代價：1 + 0.2 × 0.1 × 2 = <b>1.04</b>，只剩 stall 損失的 1/10。</li></ul><p>以上用程式驗算。</p>"
+    },
+    {
+      "id": "co-0260",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某分支的實際結果依序為 T N T T N N T T（T = taken）。預測器初始狀態是「強 not taken」。分別用 (1) 2-bit 飽和計數器（相鄰狀態一步一步走）(2) 跳躍版 2-bit（弱狀態猜錯時直接跳到另一邊的強狀態），求每次的預測與正確率。",
+      "answer": "(1) 預測 N N N N T N N N，猜對 2 次，2/8 = 25%　(2) 預測 N N N N T T N N，猜對 1 次，1/8 = 12.5%",
+      "explanation": "<p>用 3 = 強 T、2 = 弱 T、1 = 弱 N、0 = 強 N，≥ 2 預測 T。</p><div class=\"table-scroll\"><table><tr><th>次</th><th>實際</th><th>(1) 狀態：預測</th><th>(2) 狀態：預測</th></tr><tr><td>1</td><td>T</td><td>0：N 錯</td><td>0：N 錯</td></tr><tr><td>2</td><td>N</td><td>1：N 對</td><td>1：N 對</td></tr><tr><td>3</td><td>T</td><td>0：N 錯</td><td>0：N 錯</td></tr><tr><td>4</td><td>T</td><td>1：N 錯</td><td>1：N 錯，跳到 3</td></tr><tr><td>5</td><td>N</td><td>2：T 錯</td><td>3：T 錯</td></tr><tr><td>6</td><td>N</td><td>1：N 對</td><td>2：T 錯，跳到 0</td></tr><tr><td>7</td><td>T</td><td>0：N 錯</td><td>0：N 錯</td></tr><tr><td>8</td><td>T</td><td>1：N 錯</td><td>1：N 錯</td></tr></table></div><p>(1) 猜對 2 次：<b>2/8</b>。(2) 第 4 次的 T 讓跳躍版直接跳到強 taken，第 6 次又從弱 taken 直接跳到強 not taken，一路慢半拍，只對 <b>1/8</b>。這個序列 T、N 成對交替，兩種預測器都很差；換成 T T N T T T N T 時跳躍版反而比較好（4/8 對 3/8），沒有哪一版永遠比較好。已用程式模擬驗算。</p>"
+    },
+    {
+      "id": "co-0261",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "雙層迴圈：內圈每次跑 4 圈，內圈尾端的分支（向後跳）每圈執行一次，外圈共跑 5 次。只看內圈這個分支，求 (1) 1-bit 預測器、初始為 not taken (2) 2-bit 飽和計數器、初始為弱 not taken（01）的預測正確率。",
+      "answer": "(1) 10/20 = 50%　(2) 14/20 = 70%",
+      "explanation": "<p>內圈分支每輪的結果是 T T T N，5 輪共 20 次。</p><p><b>(1) 1-bit，初始 N</b>：第 1 輪 N→錯（記成 T），T、T 對，最後 N 錯（記成 N）；之後每輪都是「第一個 T 錯、中間兩個 T 對、最後 N 錯」。每輪對 2 次，共 2 × 5 = 10，<b>50%</b>。</p><p><b>(2) 2-bit，初始 01</b>：第 1 輪：01 預測 N、實際 T 錯 → 10；10 預測 T 對 → 11；11 對；11 預測 T、實際 N 錯 → 10。之後每輪從 10 開始：三個 T 都對（10 → 11 → 11），最後 N 錯回到 10。第 1 輪對 2 次，之後每輪對 3 次：2 + 3 × 4 = 14，<b>70%</b>。</p><p>內圈只有 4 次時，1-bit 每輪錯 2 次的代價很大（一半都錯）；2-bit 穩態時每輪只錯 1 次（75%），第 1 輪因為初始狀態多錯一次。已用程式模擬驗算。</p>"
+    },
+    {
+      "id": "co-0262",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "兩個管線設計執行同一個程式，基本 CPI 都是 1，20% 的指令是分支，動態預測的正確率 85%。<br>設計 A：分支在第 6 級決定，時脈週期 250 ps。<br>設計 B：把比較器搬到第 3 級，分支在第 3 級決定，但這一級變長，時脈週期變成 280 ps。<br>(1) 兩者的 CPI 與每條指令平均執行時間各是多少？哪個比較快？<br>(2) 預測正確率低於多少時，B 會比 A 快？",
+      "answer": "(1) A：CPI 1.15、287.5 ps；B：CPI 1.06、296.8 ps；A 較快（約快 3.1%）　(2) 正確率低於約 78.3%（錯誤率高於 30/138 ≈ 21.7%）",
+      "explanation": "<p>猜錯的損失 = 決定的階段編號 − 1：A 是 5、B 是 2。錯誤率 = 1 − 0.85 = 0.15。</p><p><b>(1)</b></p><ul><li>A：CPI = 1 + 0.2 × 0.15 × 5 = <b>1.15</b>，每條指令 1.15 × 250 = <b>287.5 ps</b>。</li><li>B：CPI = 1 + 0.2 × 0.15 × 2 = <b>1.06</b>，每條指令 1.06 × 280 = <b>296.8 ps</b>。</li></ul><p>B 的 CPI 比較小，但週期長了 12%，總時間反而多 296.8 ÷ 287.5 ≈ 1.032 倍，<b>A 比較快</b>。只比 CPI 或只比 penalty 會選錯。</p><p><b>(2)</b> 設錯誤率為 e，B 較快的條件是 280 × (1 + 0.2 × 2e) &lt; 250 × (1 + 0.2 × 5e)，即 280 + 112e &lt; 250 + 250e，138e &gt; 30，e &gt; 30/138 ≈ 0.217。也就是正確率低於約 <b>78.3%</b> 時，提早決定分支省下的週期才划得來。預測越準，提早決定分支的價值越小。以上用程式驗算。</p>"
+    },
+    {
+      "id": "co-0263",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一段迴圈每次進入都跑 10 圈，迴圈尾端的 bne 前 9 次 taken、第 10 次 not taken。這段迴圈在程式中先後被執行 3 次（每次都重新從第 1 圈開始，中間的其他分支不會用到同一個預測格）。分支在 EX 決定，猜錯損失 2 個週期，猜對沒有損失（有 BTB）。<br>(1) 用 2-bit 飽和計數器、初始為 01（弱 not taken），bne 共猜錯幾次？因此多花幾個週期？正確率多少？<br>(2) 改用 1-bit 預測器、初始為 not taken，答案為何？",
+      "answer": "(1) 猜錯 4 次、多 8 個週期、26/30 ≈ 86.7%　(2) 猜錯 6 次、多 12 個週期、24/30 = 80%",
+      "explanation": "<p>bne 共執行 3 × 10 = 30 次，序列是 (T×9, N) 重複 3 次。</p><p><b>(1) 2-bit，初始 01</b>：</p><ul><li>第 1 次執行迴圈：第 1 圈 01 預測 N、實際 T，錯 → 10；第 2 圈起預測 T 都對（10 → 11）；第 10 圈 11 預測 T、實際 N，錯 → 10。錯 2 次。</li><li>第 2、3 次：從 10 開始，前 9 次都對，第 10 次錯 → 10。各錯 1 次。</li></ul><p>共 2 + 1 + 1 = <b>4</b> 次，多 4 × 2 = <b>8</b> 個週期，正確率 26/30 ≈ <b>86.7%</b>。</p><p><b>(2) 1-bit，初始 N</b>：第 1 次執行時第 1 圈錯（記成 T）、第 10 圈錯（記成 N）；第 2、3 次一進來第 1 圈又因為記著 N 而錯，第 10 圈也錯。每次都錯 2 次，共 <b>6</b> 次，多 <b>12</b> 個週期，正確率 24/30 = <b>80%</b>。</p><p>兩者的差別都來自「離開迴圈之後再進來」：2-bit 的 10 經過一次 N 仍預測 T，1-bit 則被那一次 N 改掉。已用程式模擬驗算。</p>"
+    },
+    {
+      "id": "co-0264",
+      "topics": [
+        "control-hazards"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "original"
+      },
+      "question": "MIPS 的分支有 1 個 delay slot，分支在 ID 決定。下面的程式要編譯器填 delay slot：<pre class=\"code\">      add  $t0, $s1, $s2\n      lw   $t1, 0($t0)\n      beq  $t1, $zero, Skip\n      (delay slot)\n      sub  $t2, $s3, $s4     # 不跳時執行；之後會先寫 $t3 再讀 $t3\n      ...\nSkip: or   $t3, $s5, $s6     # Skip 之後的程式會讀 $t2</pre>已知不跳的那條路在讀 $t3 之前一定會先重新寫入 $t3；Skip 之後的程式會讀 $t2（讀到的必須是跳之前的舊值）。<br>(1) 能不能從分支之前（add 或 lw）搬一條進 slot？<br>(2) 能不能從目標複製 or 進 slot？要怎麼改分支？<br>(3) 能不能從 fall-through 搬 sub 進 slot？<br>(4) 若這個分支大部分時間會跳，應該選哪一種？",
+      "answer": "(1) 不能　(2) 可以，分支改跳到 Skip 的下一條　(3) 不能　(4) from target（複製 or）",
+      "explanation": "<p><b>(1) 不能</b>：lw 寫的 $t1 是 beq 要比較的值，搬到 beq 後面，beq 就讀到舊的 $t1；add 寫的 $t0 是 lw 的位址，add 必須在 lw 之前，也不能搬到 beq 後面。分支之前的兩條都在分支條件的相依鏈上。</p><p><b>(2) 可以</b>：把 or 複製進 slot，beq 的目標改成 Skip 的下一條（原本的 or 留在 Skip，給其他跳到 Skip 的地方用）。跳的時候 or 本來就要做，等於省下一個週期；不跳的時候 or 白做、寫了 $t3，但那條路在讀 $t3 之前會先重寫 $t3，所以不影響結果。</p><p><b>(3) 不能</b>：sub 放進 slot 後，跳的時候也會執行，把 $t2 改掉，而 Skip 之後的程式要讀 $t2 的舊值，結果會錯。</p><p><b>(4)</b> 大部分時間會跳時，from target 的 slot 在大部分情況下都是有用的工作，選 <b>(2)</b>。如果三種都不合法，只能放 nop，等於每個分支停 1 個週期。</p>"
     }
   ]
 }

@@ -422,15 +422,25 @@
             "reduction",
             "co-NP"
           ],
-          "updated": "2026-11-27"
+          "updated": "2026-11-28"
         },
         {
           "id": "np-reductions",
           "en": "NP-Completeness Reductions",
           "zh": "NP 完備歸約",
           "book": "34.4–34.5",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 3,
+          "tags": [
+            "reduction",
+            "3-SAT",
+            "CLIQUE",
+            "SUBSET-SUM",
+            "HAM-CYCLE"
+          ],
+          "updated": "2026-11-28"
         },
         {
           "id": "backtracking-branch-and-bound",

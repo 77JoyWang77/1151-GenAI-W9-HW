@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pipelining 管線化 · 計算機組織 | 資工考研互動學習站</title>
   <meta name="description" content="MIPS 五階段管線、時脈與加速比、throughput 與 latency、三種危障與 stall、forwarding。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=cdf5c420">
-  <script src="../../../assets/js/theme.js?v=cdf5c420"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=fbb9e419">
+  <script src="../../../assets/js/theme.js?v=fbb9e419"></script>
 </head>
 <body data-subject="computer-organization" data-chapter="processor" data-chno="4" data-topic="computer-organization/processor/pipelining" data-root="../../../">
   <header class="site-header">
@@ -234,7 +234,7 @@ sub $t3, $t1, $s3     # 第 3 個週期就想在 ID 讀 $t1</pre>
           </div>
           <p>編譯器也能幫忙：只要把一條不相關的指令搬到 lw 和使用者之間，load-use 的 stall 就不見了（練習題有一題重排的例子）。forwarding 單元怎麼判斷該轉送哪一個、hazard detection unit 怎麼插入 bubble，在 <a href="data-hazards.html">Data Hazards and Forwarding（資料危障與轉送）</a>主題會詳細講。</p>
           <h3>Control hazard（控制危障）：還不知道下一條是誰</h3>
-          <p>遇到分支指令（例如 beq）時，要比較完兩個暫存器才知道下一條該取 PC + 4 還是分支目標，但 IF 每個週期都要取一條新指令。最簡單的做法是 stall 到結果出來：如果分支到 MEM 階段才決定，每個分支要停 3 個週期；把比較和目標位址計算提早到 ID，可以降到 1 個。更好的做法是<b>先猜</b>（例如一律猜不跳，照常取 PC + 4），猜對就沒有損失，猜錯再把取錯的指令清掉；或是用 delayed branch 讓分支後面那一格一定執行。分支預測的各種方法在 Control Hazards and Branch Prediction 控制危障與分支預測主題（籌備中）介紹，這一頁的模擬只處理資料危障。</p>
+          <p>遇到分支指令（例如 beq）時，要比較完兩個暫存器才知道下一條該取 PC + 4 還是分支目標，但 IF 每個週期都要取一條新指令。最簡單的做法是 stall 到結果出來：如果分支到 MEM 階段才決定，每個分支要停 3 個週期；把比較和目標位址計算提早到 ID，可以降到 1 個。更好的做法是<b>先猜</b>（例如一律猜不跳，照常取 PC + 4），猜對就沒有損失，猜錯再把取錯的指令清掉；或是用 delayed branch 讓分支後面那一格一定執行。分支預測的各種方法在 <a href="control-hazards.html">Control Hazards and Branch Prediction（控制危障與分支預測）</a>主題介紹，這一頁的模擬只處理資料危障。</p>
           <h3>模擬程式怎麼排時序</h3>
           <p>把上面的規則寫成程式：對每條指令 j，先假設它可以在 IF 的下一個週期完成 ID；再找它讀的每個暫存器最近是誰寫的（lastWriter），依有沒有 forwarding 算出它<b>最早</b>可以完成 ID 的週期 need，取最大值。多等的週期就是 stall。沒有 forwarding 時 need = 生產者的 ID + 3（就是它的 WB 週期）；有 forwarding 時 ALU 指令是 ID + 1（下一條照常進行）、lw 是 ID + 2（多停一格）。</p>
           <details class="code-fold">
@@ -362,8 +362,8 @@ int schedule(const Inst *in, int n, int forwarding) {
   <footer class="site-footer">
     <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=cdf5c420"></script>
-  <script src="../../../assets/js/viz-core.js?v=cdf5c420"></script>
-  <script src="../../../assets/js/viz/computer-organization/pipelining.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/site.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz-core.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz/computer-organization/pipelining.js?v=fbb9e419"></script>
 </body>
 </html>

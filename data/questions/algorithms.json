@@ -4856,6 +4856,179 @@
       ],
       "answer": "(A)(B)(C)",
       "explanation": "<ul><li>(A) 對：A 是 NP-hard 且 A ≤<sub>p</sub> B，難度往箭頭方向傳，B 是 NP-hard。</li><li>(B) 對，而且是這題的陷阱：很多人以為「B 在不在 NP 不知道」。但 B ≤<sub>p</sub> C 且 C ∈ NP，B 的驗證器可以先把輸入轉成 C 的輸入、再用 C 的驗證器，所以 B ∈ NP。合起來 B 是 NP-complete。同理 C 也是 NPC（A ≤<sub>p</sub> C 由遞移性得到）。</li><li>(C) 對：C ∈ NP，而 A 是 NP-hard，所以每個 NP 問題（包括 C）都 ≤<sub>p</sub> A。所有 NPC 問題互相都能歸約。</li><li>(D) 錯：前半對（B ≤<sub>p</sub> C ∈ P ⇒ B ∈ P），但 A ≤<sub>p</sub> B ≤<sub>p</sub> C 也讓 A ∈ P，進而 P = NP。後半「A 不一定在 P」錯。</li><li>(E) 錯：D ≤<sub>p</sub> A 只說 D 不比 A 難，D 可能是任何 NP 問題，甚至是 P 裡的問題。方向反了。</li></ul><p>口訣：容易（∈ P、∈ NP）往箭頭的<b>反方向</b>傳；困難（NP-hard）往箭頭的<b>同方向</b>傳。</p>"
+    },
+    {
+      "id": "al-0202",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>已知 3-SAT 是 NP-complete。小明對一個新的決策問題 X 證明了兩件事：(1) X ∈ NP；(2) X ≤<sub>p</sub> 3-SAT。根據這兩件事，可以推出什麼？</p>",
+      "choices": [
+        "(A) X 是 NP-complete",
+        "(B) X 是 NP-hard，但不一定在 NP",
+        "(C) X ∈ NP，但推不出 X 是 NP-hard",
+        "(D) X ∈ P"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>X ≤<sub>p</sub> 3-SAT 的意思是「會解 3-SAT 就會解 X」，也就是 X <b>不比</b> 3-SAT 難。任何 NP 問題（包括排序這種 P 問題）都能歸約到 3-SAT，所以 (2) 對 X 的難度沒有提供任何下界，而且 (2) 本身也能推出 (1)（NP 對歸約往左封閉）。</p><ul><li>(A)(B) 錯：要證明 X 是 NP-hard，方向必須是 3-SAT ≤<sub>p</sub> X，把已知很難的問題變成 X。</li><li>(D) 錯：沒有任何條件說 X 有多項式演算法。</li></ul><p>選 (C)。這是證明 NPC 時最常見的錯誤：方向寫反。</p>"
+    },
+    {
+      "id": "al-0203",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>無向圖 G 有 n = 10 個點，已知 G 最大的 clique 有 4 個點。設 Ḡ 是 G 的補圖（原本有邊的變沒邊、沒邊的變有邊）。</p><p>(a) Ḡ 的最大獨立集有幾個點？(b) Ḡ 的最小點覆蓋有幾個點？(c) G 本身的最小點覆蓋可以由這些資訊算出來嗎？</p>",
+      "answer": "(a) 4；(b) 6；(c) 不行",
+      "explanation": "<ul><li>(a) 一組點在 G 中兩兩相鄰 ⇔ 在 Ḡ 中兩兩不相鄰，所以 G 的 clique 和 Ḡ 的獨立集是同一回事，最大獨立集大小 = 4。</li><li>(b) 在同一張圖 Ḡ 裡，S 是獨立集 ⇔ V − S 是點覆蓋，所以最小點覆蓋 = n − 最大獨立集 = 10 − 4 = <b>6</b>。</li><li>(c) 不行：G 的最小點覆蓋 = 10 − (G 的最大獨立集)，而 G 的最大獨立集等於 Ḡ 的最大 clique，題目沒給。常見錯誤是把「補圖」和「補集」混在一起：clique ↔ 獨立集要<b>換成補圖</b>、k 不變；獨立集 ↔ 點覆蓋是<b>同一張圖</b>、k 變成 n − k。</li></ul><p>（用程式對 200 張隨機圖驗證過：G 的最大 clique = Ḡ 的最大獨立集，Ḡ 的最小點覆蓋 = n − Ḡ 的最大獨立集。）</p>"
+    },
+    {
+      "id": "al-0204",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>用標準的 3-SAT → CLIQUE 歸約處理一個有 m = 5 個子句、每個子句恰好 3 個字面的公式 φ。下列敘述何者<b>正確</b>？</p>",
+      "choices": [
+        "(A) 圖有 5 個點，門檻 k = 3",
+        "(B) 圖有 15 個點，同一個子句的 3 個點兩兩相連",
+        "(C) 圖有 15 個點，門檻 k = 5；兩個點相連 ⇔ 它們屬於不同子句而且不是 x 與 ¬x",
+        "(D) 圖有 15 個點，門檻 k = 15"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>構造：每個字面出現一次就畫一個點，共 3m = 15 個點；兩點之間連邊的條件是「不同子句」<b>而且</b>「不互補」；門檻 k = m = 5。</p><ul><li>(A) 錯：點是字面，不是子句；門檻是子句數。</li><li>(B) 錯：同一個子句的點<b>不</b>連。若連了，一個 clique 就能在同一個子句裡拿兩個點，(⇐) 方向的「每個子句恰好一個」就壞掉。把同子句連成三角形是 3-SAT → <b>獨立集</b>的構造，別搞混。</li><li>(D) 錯：clique 只能每個子句拿一個點，大小最多 m。</li></ul><p>選 (C)。邊最多有 C(5, 2) × 9 = 90 條（任兩個子句之間 3 × 3 對，再扣掉互補的），所以圖的大小是 O(m²)，多項式。</p>"
+    },
+    {
+      "id": "al-0205",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>公式 φ = (x<sub>1</sub> ∨ x<sub>2</sub> ∨ ¬x<sub>3</sub>)(¬x<sub>1</sub> ∨ x<sub>3</sub>)(¬x<sub>2</sub> ∨ ¬x<sub>3</sub>)。</p><p>(a) 做 3-SAT → CLIQUE 歸約，圖有幾個點、幾條邊？k 是多少？<br>(b) 改做 3-SAT → INDEPENDENT-SET 歸約，圖有幾條邊？<br>(c) 由滿足指派 x<sub>1</sub> = T, x<sub>2</sub> = F, x<sub>3</sub> = T 找出 (a) 的圖中一個大小 k 的 clique。</p>",
+      "answer": "(a) 7 個點、12 條邊、k = 3；(b) 9 條邊；(c) {x<sub>1</sub>@C<sub>1</sub>, x<sub>3</sub>@C<sub>2</sub>, ¬x<sub>2</sub>@C<sub>3</sub>}",
+      "explanation": "<p>字面共 3 + 2 + 2 = <b>7</b> 個，每個一個點；k = 子句數 = 3。</p><p><b>(a) CLIQUE 的邊</b>：只在不同子句之間連，扣掉互補的。</p><ul><li>C<sub>1</sub>–C<sub>2</sub>：3 × 2 = 6 對，扣掉 x<sub>1</sub>/¬x<sub>1</sub>、¬x<sub>3</sub>/x<sub>3</sub>，剩 4 條。</li><li>C<sub>1</sub>–C<sub>3</sub>：6 對，扣掉 x<sub>2</sub>/¬x<sub>2</sub>，剩 5 條（¬x<sub>3</sub> 和 ¬x<sub>3</sub> 是同一個字面，不互補，要連）。</li><li>C<sub>2</sub>–C<sub>3</sub>：4 對，扣掉 x<sub>3</sub>/¬x<sub>3</sub>，剩 3 條。</li></ul><p>共 4 + 5 + 3 = <b>12</b> 條。</p><p><b>(b) 獨立集的邊</b>：同一子句內兩兩相連 3 + 1 + 1 = 5 條，加上不同子句的互補對 2 + 1 + 1 = 4 條，共 <b>9</b> 條。檢查：7 個點共有 C(7, 2) = 21 對，12 + 9 = 21，兩張圖剛好互為補圖。</p><p><b>(c)</b> 每個子句挑一個為真的字面：C<sub>1</sub> 的 x<sub>1</sub>、C<sub>2</sub> 的 x<sub>3</sub>、C<sub>3</sub> 的 ¬x<sub>2</sub>。三者分屬不同子句，也沒有互補，兩兩之間都有邊，是 3-clique。（程式列出這張圖全部 4 個 3-clique，這是其中之一。）</p>"
+    },
+    {
+      "id": "al-0206",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>用 VERTEX-COVER → SUBSET-SUM 的 4 進位構造處理路徑圖 v<sub>0</sub>–v<sub>1</sub>–v<sub>2</sub>–v<sub>3</sub>，邊依序編號 e<sub>0</sub> = v<sub>0</sub>v<sub>1</sub>、e<sub>1</sub> = v<sub>1</sub>v<sub>2</sub>、e<sub>2</sub> = v<sub>2</sub>v<sub>3</sub>，k = 2。每個點 v<sub>i</sub> 對應 x<sub>i</sub> = 4<sup>3</sup> + Σ<sub>e<sub>j</sub> 碰到 v<sub>i</sub></sub> 4<sup>j</sup>，每條邊 e<sub>j</sub> 對應 y<sub>j</sub> = 4<sup>j</sup>。</p><p>(a) 寫出集合 S（以十進位表示）與目標 t。<br>(b) 點覆蓋 {v<sub>1</sub>, v<sub>2</sub>} 對應到 S 的哪個子集？</p>",
+      "answer": "(a) S = {65, 69, 84, 80, 1, 4, 16}，t = 170；(b) {69, 84, 1, 16}",
+      "explanation": "<p><b>(a)</b> m = 3 條邊，最高位是 4<sup>3</sup> = 64。</p><ul><li>x<sub>0</sub>：碰到 e<sub>0</sub>，64 + 1 = 65</li><li>x<sub>1</sub>：碰到 e<sub>0</sub>、e<sub>1</sub>，64 + 1 + 4 = 69</li><li>x<sub>2</sub>：碰到 e<sub>1</sub>、e<sub>2</sub>，64 + 4 + 16 = 84</li><li>x<sub>3</sub>：碰到 e<sub>2</sub>，64 + 16 = 80</li><li>y<sub>0</sub>, y<sub>1</sub>, y<sub>2</sub> = 1, 4, 16</li></ul><p>t 的最高位放 k = 2，每條邊那一位放 2：t = 2·64 + 2·(1 + 4 + 16) = 128 + 42 = <b>170</b>。</p><p><b>(b)</b> x<sub>1</sub> + x<sub>2</sub> = 69 + 84 = 153，各邊位 (e<sub>2</sub>, e<sub>1</sub>, e<sub>0</sub>) = (1, 2, 1)：e<sub>1</sub> 兩端都選了，已經是 2；e<sub>0</sub>、e<sub>2</sub> 只被蓋到 1 次，各補一個 y：153 + y<sub>0</sub> + y<sub>2</sub> = 153 + 1 + 16 = 170。子集是 {69, 84, 1, 16}。</p><p>程式窮舉 2<sup>7</sup> 個子集，總和 170 的共 3 個，正好對應大小 2 的 3 個點覆蓋 {v<sub>1</sub>, v<sub>2</sub>}、{v<sub>0</sub>, v<sub>2</sub>}、{v<sub>1</sub>, v<sub>3</sub>}。常見錯誤：只加 x 不補 y（得到 153），或把 t 的邊位寫成 1。</p>"
+    },
+    {
+      "id": "al-0207",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>用 SAT → 3-SAT 的標準拆法（長度 k &gt; 3 的子句 (l<sub>1</sub> ∨ … ∨ l<sub>k</sub>) 拆成 (l<sub>1</sub> ∨ l<sub>2</sub> ∨ y<sub>1</sub>)(¬y<sub>1</sub> ∨ l<sub>3</sub> ∨ y<sub>2</sub>)…(¬y<sub>k−3</sub> ∨ l<sub>k−1</sub> ∨ l<sub>k</sub>)，長度 ≤ 3 的子句不變）處理公式</p><p>φ = (x<sub>1</sub> ∨ x<sub>2</sub> ∨ x<sub>3</sub> ∨ x<sub>4</sub> ∨ x<sub>5</sub>)(¬x<sub>1</sub> ∨ ¬x<sub>2</sub> ∨ x<sub>3</sub> ∨ ¬x<sub>4</sub>)(x<sub>2</sub> ∨ ¬x<sub>5</sub>)。</p><p>(a) 新公式有幾個子句、多了幾個新變數？(b) 一個長度 k 的子句一般會變成幾個子句、多幾個新變數？(c) 為什麼原本的指派若滿足 φ，新變數一定設得出來？</p>",
+      "answer": "(a) 6 個子句、3 個新變數；(b) k − 2 個子句、k − 3 個新變數；(c) 見詳解",
+      "explanation": "<p><b>(a)</b> 長度 5 → 3 個子句、2 個新變數；長度 4 → 2 個子句、1 個新變數；長度 2 不變 → 1 個子句。共 3 + 2 + 1 = <b>6</b> 個子句、2 + 1 = <b>3</b> 個新變數：</p><pre>(x1 ∨ x2 ∨ y1)(¬y1 ∨ x3 ∨ y2)(¬y2 ∨ x4 ∨ x5)\n(¬x1 ∨ ¬x2 ∨ y3)(¬y3 ∨ x3 ∨ ¬x4)\n(x2 ∨ ¬x5)</pre><p><b>(b)</b> 頭尾各吃掉 2 個字面，中間每個子句吃 1 個：子句數 = 2 + (k − 4) = <b>k − 2</b>，相鄰兩個子句共用一個新變數，新變數 = <b>k − 3</b>。所以新公式的長度只是原本的常數倍，歸約是線性時間。</p><p><b>(c)</b> 若 l<sub>i</sub> 為真：讓它左邊的 y 全部設 T（每個子句由右端的 y 滿足）、右邊的 y 全部設 F（每個子句由左端的 ¬y 滿足），l<sub>i</sub> 所在的那個子句由 l<sub>i</sub> 自己滿足。反過來，若原本 k 個字面全假，這串子句會逼 y<sub>1</sub> = T、y<sub>2</sub> = T、…，最後一個子句 (¬y<sub>k−3</sub> ∨ l<sub>k−1</sub> ∨ l<sub>k</sub>) 變成全假，所以兩邊可滿足性相同。</p><p>（程式拆了這個公式並窮舉兩邊的指派，可滿足性一致；另外對 3000 個隨機公式也一致。）</p>"
+    },
+    {
+      "id": "al-0208",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>圖 G 有 4 個點 0、1、2、3，邊為 01、12、02、03。用 HAM-CYCLE → TSP 歸約：建一張 4 個點的完全圖，G 的邊權重 1、其他點對權重 2，門檻 k = n = 4。</p><p>(a) 完全圖上最短的巡迴（每個點恰好一次再回到起點）總長是多少？TSP 的答案是 yes 還是 no？<br>(b) G 有沒有 Hamiltonian cycle？這和 (a) 一致嗎？<br>(c) 若 G 有 Hamiltonian <b>path</b> 但沒有 Hamiltonian cycle，最短巡迴長度是多少？</p>",
+      "answer": "(a) 5，no；(b) 沒有，一致；(c) n + 1",
+      "explanation": "<p><b>(a)</b> 點 3 在 G 中只連到 0，巡迴經過 3 時一定要用兩條和 3 相連的邊，其中至多一條（3-0）是權重 1，另一條（3-1 或 3-2）權重 2。所以任何巡迴至少用到一條權重 2 的邊，總長 ≥ 3·1 + 2 = 5。巡迴 0-3-1-2-0 用 03(1) + 31(2) + 12(1) + 20(1) = <b>5</b> 達到。5 &gt; k = 4，答案是 <b>no</b>。</p><p><b>(b)</b> 點 3 的度數只有 1，不可能有 Hamiltonian cycle（cycle 上每個點都要 2 條邊），答案也是 no，兩邊一致。</p><p><b>(c)</b> 把 Hamiltonian path 的兩端用一條權重 2 的邊接起來，得到長度 (n − 1)·1 + 2 = <b>n + 1</b> 的巡迴；又因為沒有 HC，任何巡迴至少一條權重 2，長度 ≥ n + 1，所以最短就是 n + 1。這題的圖正好是這種情況（3-0-1-2 是 Hamiltonian path），n + 1 = 5 和 (a) 吻合。（程式窮舉排列確認最短巡迴為 5。）</p>"
+    },
+    {
+      "id": "al-0209",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>HALF-CLIQUE：輸入一張點數 n 為偶數的無向圖 G，問 G 有沒有大小為 n/2 的 clique。已知 CLIQUE（給 G 和 k，問有沒有大小 k 的 clique）是 NP-complete，證明 HALF-CLIQUE 是 NP-complete。</p>",
+      "answer": "∈ NP（證書是 n/2 個點）；由 CLIQUE 歸約：k ≤ n/2 時加 n − 2k 個和所有點相連的新點，k &gt; n/2 時加 2k − n 個孤立點。",
+      "explanation": "<p><b>1. HALF-CLIQUE ∈ NP</b>：證書是 n/2 個點，檢查每一對都相鄰，O(n<sup>2</sup>)。</p><p><b>2. CLIQUE ≤<sub>p</sub> HALF-CLIQUE</b>。給 CLIQUE 的輸入 (G, k)，G 有 n 個點（1 ≤ k ≤ n）。分兩種情況「墊」點，讓目標剛好變成一半：</p><ul><li><b>k ≤ n/2</b>：加 n − 2k 個新點，每個新點和<b>所有</b>其他點（含新點）相連。新圖 G′ 有 2n − 2k 個點，目標 n − k。<br>(⇒) G 的 k-clique 加上全部 n − 2k 個新點，兩兩相鄰，大小 n − k。<br>(⇐) G′ 的 (n − k)-clique 最多含 n − 2k 個新點，所以至少 k 個點來自 G，它們在 G 中兩兩相鄰，G 有 k-clique。</li><li><b>k &gt; n/2</b>：加 2k − n 個孤立點。G′ 有 2k 個點，目標 k。孤立點不和任何點相鄰，k ≥ 2 時不可能在 k-clique 裡，所以 G′ 有 k-clique ⇔ G 有 k-clique（k = 1 時兩邊都是 yes）。</li></ul><p><b>3. 多項式時間</b>：最多加 n 個點、O(n<sup>2</sup>) 條邊。</p><p>由 1、2，HALF-CLIQUE 是 NP-complete。常見錯誤：只處理 k ≤ n/2 一種情況，或只證了 (⇒) 一個方向。（程式對 300 組隨機 (G, k) 驗證兩邊答案一致。）</p>"
+    },
+    {
+      "id": "al-0210",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>一般的 TSP（權重不一定滿足三角不等式）最佳化問題：給完全圖與正整數權重，求最短的巡迴。證明：若 P ≠ NP，則一般 TSP <b>不存在</b>多項式時間的 2-近似演算法（輸出的巡迴長度 ≤ 2 × 最佳值）。已知 HAM-CYCLE 是 NP-complete。</p>",
+      "answer": "用 2-近似演算法解 HAM-CYCLE：G 的邊權重 1、非邊權重 2n + 1；有 HC 時近似解 ≤ 2n，沒有 HC 時任何巡迴 ≥ 3n。",
+      "explanation": "<p>反證：假設有多項式時間的 2-近似演算法 A。給 HAM-CYCLE 的輸入 G（n 個點），建完全圖：</p><pre>w(u, v) = 1          若 (u, v) 是 G 的邊\nw(u, v) = 2n + 1     否則</pre><ul><li><b>G 有 HC</b>：沿著它走就是長度 n 的巡迴，最佳值 OPT = n（不可能更短），A 輸出的巡迴長度 ≤ 2·OPT = 2n。</li><li><b>G 沒有 HC</b>：任何巡迴至少用到一條非邊，長度 ≥ (n − 1)·1 + (2n + 1) = 3n &gt; 2n，A 輸出的長度當然也 ≥ 3n。</li></ul><p>所以「A 的輸出 ≤ 2n」⇔「G 有 HC」。建圖 O(n<sup>2</sup>)，權重只要 O(log n) 個位元，整個過程是多項式時間，HAM-CYCLE 就在 P，推得 P = NP，矛盾。</p><p>同樣的做法把非邊權重改成 ρn + 1，可以排除任何常數 ρ 的近似。重點：這個歸約刻意讓 yes 和 no 的最佳值差距大於 ρ 倍（n 對上 3n 以上），一般的歸約沒有這個性質，所以「NPC 問題都互相歸約」不代表近似難度相同。和滿足三角不等式的 metric TSP（有 2-近似）是不同的問題，因為 2n + 1 的權重會破壞三角不等式。</p>"
+    },
+    {
+      "id": "al-0211",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>（複選）下列哪些構造是<b>正確</b>的多項式時間歸約（兩個方向都成立）？</p>",
+      "choices": [
+        "(A) INDEPENDENT-SET(G, k) → CLIQUE(Ḡ, k)，Ḡ 是 G 的補圖",
+        "(B) VERTEX-COVER(G, k) → INDEPENDENT-SET(G, k)",
+        "(C) HAM-CYCLE(G) → TSP：n 個點的完全圖，G 的邊權重 1、其他權重 2，門檻 n",
+        "(D) 3-SAT(φ) → CLIQUE(G, m)：每個字面一個點，<b>不同子句</b>的任兩個點都連邊（不管是否互補），m 是子句數",
+        "(E) HAM-CYCLE(G) → HAM-PATH(G)：圖不改，直接問 G 有沒有 Hamiltonian path"
+      ],
+      "answer": "(A)(C)",
+      "explanation": "<ul><li>(A) 對：S 在 G 中兩兩不相鄰 ⇔ S 在 Ḡ 中兩兩相鄰，k 不變；補圖 O(n<sup>2</sup>)。</li><li>(B) 錯：S 是點覆蓋 ⇔ V − S 是獨立集，門檻要改成 n − k。反例：三角形有大小 2 的點覆蓋，卻沒有大小 2 的獨立集。</li><li>(C) 對：G 有 HC ⇔ 有全用權重 1 的巡迴 ⇔ 最短巡迴 ≤ n。</li><li>(D) 錯：少了「不互補」的條件。反例 φ = (x<sub>1</sub>)(¬x<sub>1</sub>) 不可滿足，但兩個點屬於不同子句而相連，形成 2-clique，(⇐) 方向失敗。</li><li>(E) 錯：只有 (⇒) 成立（cycle 拿掉一條邊就是 path）。反例：一條 3 個點的路徑 a–b–c 有 Hamiltonian path，卻沒有 Hamiltonian cycle。正確的 HC → HAM-PATH 要改圖（例如複製一個點再各接一個新端點）。</li></ul><p>選 (A)(C)。檢查一個歸約，一定要兩個方向都試反例。</p>"
+    },
+    {
+      "id": "al-0212",
+      "topics": [
+        "np-reductions"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "<p>4-COLOR：給無向圖 G，問能不能用 4 種顏色替點著色，使相鄰的點顏色不同。已知 3-COLOR 是 NP-complete，證明 4-COLOR 是 NP-complete。</p>",
+      "answer": "∈ NP；由 3-COLOR 歸約：加一個和所有點相連的新點 u。",
+      "explanation": "<p><b>1. 4-COLOR ∈ NP</b>：證書是每個點的顏色（每個點 2 個位元），檢查每條邊兩端顏色不同，O(V + E)。</p><p><b>2. 3-COLOR ≤<sub>p</sub> 4-COLOR</b>：給 G，新增一個點 u，連到 G 的每個點，得到 G′。</p><ul><li>(⇒) G 能 3 著色：沿用原本的顏色，u 塗第 4 種顏色，u 的鄰居都不是這個顏色，合法。</li><li>(⇐) G′ 能 4 著色：u 和每個點都相鄰，所以 G 的點全都不是 u 的顏色，只用了剩下 3 種顏色，這就是 G 的 3 著色。</li></ul><p><b>3. 多項式時間</b>：多 1 個點、n 條邊。</p><p>所以 4-COLOR 是 NP-complete。同樣的做法一次加一個「通用點」，可以得到所有 k ≥ 3 的 k-COLOR 都是 NPC；但 2-COLOR 就是判斷二分圖，用 BFS 線性時間就能解，不能拿來當歸約的起點。（程式對 150 張隨機圖驗證 G 可 3 著色 ⇔ G′ 可 4 著色。）</p>"
     }
   ]
 }

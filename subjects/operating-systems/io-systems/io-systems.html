@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>I/O Hardware and DMA I/O 硬體與 DMA · 作業系統 | 資工考研互動學習站</title>
+  <meta name="description" content="I/O 硬體、polling 與 interrupt、DMA 流程與 CPU 負擔計算、blocking／async I/O、緩衝與快取。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=fbb9e419">
+  <script src="../../../assets/js/theme.js?v=fbb9e419"></script>
+</head>
+<body data-subject="operating-systems" data-chapter="io-systems" data-chno="10" data-topic="operating-systems/io-systems/io-systems" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Operating Systems 作業系統</a> › Ch10 I/O Systems I/O 系統 › I/O Hardware and DMA I/O 硬體與 DMA</nav>
+      <div class="topic-head">
+        <h1>I/O Hardware and DMA I/O 硬體與 DMA<small>CPU 怎麼和裝置溝通：polling、interrupt、DMA 與 kernel 的 I/O 服務</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch10 I/O Systems</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">polling / interrupt</span>
+          <span class="chip">DMA</span>
+          <span class="chip">memory-mapped I/O</span>
+          <span class="chip">blocking / async I/O</span>
+          <span class="chip">buffering / spooling</span>
+        </div>
+      </div>
+
+      <section id="why-io">
+        <h2>I/O 為什麼要特別處理</h2>
+        <div class="panel prose">
+          <p>電腦的工作不外乎兩件事：計算與 I/O。CPU 和記憶體只有少數幾種，I/O 裝置卻千奇百怪：鍵盤、滑鼠、磁碟、SSD、網卡、螢幕、感測器……它們的速度差了好幾個數量級，傳資料的單位也不一樣（一個字元、一個封包、一個 block）。作業系統的 I/O 子系統要解決兩個問題：<b>怎麼用同一套方式控制這麼多不同的裝置</b>，以及<b>怎麼不讓慢吞吞的裝置拖住飛快的 CPU</b>。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>裝置</th><th>傳輸率（數量級）</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>鍵盤</td><td>約 10 B/s</td><td>1 GHz 的 CPU 在兩次按鍵之間可以執行上億條指令</td></tr>
+                <tr><td>滑鼠</td><td>約 100 B/s</td><td>每秒幾十到上百次回報，每次幾個 byte</td></tr>
+                <tr><td>硬碟（HDD）</td><td>約 100 MB/s</td><td>比鍵盤快 10<sup>7</sup> 倍，CPU 若一個 byte 一個 byte 搬就會被佔滿</td></tr>
+                <tr><td>NVMe SSD、10 Gbps 網卡</td><td>約 1 GB/s 以上</td><td>每秒上百萬次傳輸，一定要靠 DMA</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>I/O 硬體：port、bus、controller</h3>
+          <p>裝置透過連接點 <span class="term">Port<small>（埠）</small></span> 接到電腦，多個裝置共用的一組線路與通訊協定叫 <span class="term">Bus<small>（匯流排）</small></span>，現在 PC 上最主要的是 PCIe。真正和 CPU 打交道的不是裝置本身，而是 <span class="term">Device Controller<small>（裝置控制器）</small></span>：一塊負責操作 port、bus 或裝置的電子電路（例如磁碟控制器、USB 控制器、網卡上的晶片），複雜的控制器本身就有一顆小處理器和韌體。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="io-bus"></div>
+            <figcaption><b>圖 1</b>：CPU 與記憶體接在系統匯流排上；每一類裝置都有自己的 controller，CPU 只和 controller 的暫存器溝通，不直接碰裝置。</figcaption>
+          </figure>
+          <p>controller 通常有四種暫存器，driver 就是靠讀寫它們完成所有 I/O：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>暫存器</th><th>方向</th><th>用途</th></tr></thead>
+              <tbody>
+                <tr><td>data-in</td><td>裝置 → 主機</td><td>主機讀它取得輸入資料</td></tr>
+                <tr><td>data-out</td><td>主機 → 裝置</td><td>主機寫它送出輸出資料</td></tr>
+                <tr><td>status</td><td>裝置 → 主機</td><td>忙碌（busy）、資料已備妥（ready）、發生錯誤等狀態位元</td></tr>
+                <tr><td>control</td><td>主機 → 裝置</td><td>下命令（讀、寫）、切換模式（例如全雙工、同位檢查）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>每一種裝置的暫存器用法都不同，把這些細節包起來的軟體是 <span class="term">Device Driver<small>（裝置驅動程式）</small></span>，它是 kernel 的一部分，對上層提供統一的介面（讀一個 block、送一個封包），對下讀寫 controller 的暫存器。下面這份模擬的 controller 會用在整頁的程式碼與動畫裡：</p>
+          <details class="code-fold">
+            <summary>看程式碼：模擬的 device controller</summary>
+            <div class="code-block">
+              <div class="code-head">Controller、issueRead()、deviceTick()</div>
+              <pre class="code">enum { IDLE, BUSY, READY };
+#define CMD_READ 1
+
+typedef struct {
+  int status;        /* status register：IDLE／BUSY／READY */
+  int control;       /* control register：driver 寫入命令 */
+  int dataIn;        /* data-in register：裝置要給主機的資料 */
+  int delay;         /* 模擬用：還要幾個時間單位資料才準備好 */
+  int next;          /* 模擬用：裝置下一筆資料的值 */
+} Controller;
+
+Controller dev;
+int ioDelay = 3;     /* 裝置每準備一筆資料要幾個時間單位 */
+
+void issueRead(Controller *c, int delay) {   /* driver 寫 control register 下命令 */
+  c-&gt;control = CMD_READ;
+  c-&gt;status = BUSY;
+  c-&gt;delay = delay;
+}
+
+/* 時間前進一個單位；資料剛準備好時回傳 1 */
+int deviceTick(Controller *c) {
+  if (c-&gt;status != BUSY) return 0;
+  if (--c-&gt;delay &gt; 0) return 0;
+  c-&gt;dataIn = c-&gt;next++;
+  c-&gt;status = READY;
+  return 1;
+}</pre>
+            </div>
+          </details>
+          <p><code>issueRead()</code> 就是 driver 寫 control register 下命令；<code>deviceTick()</code> 模擬裝置經過一段時間把資料放進 data-in、把 status 改成 READY。實際硬體上這兩件事是平行發生的，CPU 不知道裝置什麼時候會好，這正是接下來 polling 與 interrupt 要解決的問題。</p>
+        </div>
+      </section>
+
+      <section id="port-mmio">
+        <h2>I/O 指令與 Memory-Mapped I/O</h2>
+        <div class="panel prose">
+          <p>CPU 要怎麼「讀寫 controller 的暫存器」？有兩種做法，考題常問兩者的差別：</p>
+          <ul>
+            <li><span class="term">Port-Mapped I/O<small>（I/O 指令／獨立 I/O 位址空間）</small></span>：裝置暫存器在另一個獨立的 I/O 位址空間，每個暫存器有一個 port 號碼，要用專門的 I/O 指令存取，例如 x86 的 <code>in</code>、<code>out</code>。</li>
+            <li><span class="term">Memory-Mapped I/O<small>（記憶體映射 I/O，MMIO）</small></span>：把裝置暫存器放進記憶體的實體位址空間，佔用一段位址，CPU 用一般的 load／store 指令讀寫那段位址，實際上就是在讀寫裝置。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="io-port-mmio"></div>
+            <figcaption><b>圖 2</b>：(a) port-mapped I/O 有兩個位址空間，RAM 用 load／store、裝置用 in／out；(b) memory-mapped I/O 只有一個位址空間，其中一段（橘色）對映到裝置暫存器。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較</th><th>Port-mapped I/O</th><th>Memory-mapped I/O</th></tr></thead>
+              <tbody>
+                <tr><td>位址空間</td><td>獨立的 I/O 空間</td><td>和記憶體共用，佔掉一段位址</td></tr>
+                <tr><td>存取指令</td><td>特殊 I/O 指令（in／out）</td><td>一般 load／store，任何定址模式都能用</td></tr>
+                <tr><td>大量資料</td><td>一次一個 byte／word 慢慢送</td><td>例如顯示卡把整塊畫面記憶體對映進來，直接寫很快</td></tr>
+                <tr><td>要注意</td><td>指令集要多一組 I/O 指令</td><td>那段位址必須設為 <b>uncached</b>；程式寫錯指標可能誤寫到裝置</td></tr>
+                <tr><td>常見平台</td><td>x86（傳統裝置，兩種都有）</td><td>ARM、RISC-V、MIPS 幾乎全是 MMIO；PCIe 裝置也多用 MMIO</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>不管哪一種，<b>I/O 都是特權操作</b>：in／out 是特權指令，只能在 kernel mode 執行；MMIO 那段位址也不會對映進使用者行程的位址空間。使用者程式要做 I/O 只能透過 system call 請 kernel 代勞，這樣 kernel 才能檢查權限、避免一個程式亂下命令把磁碟弄壞。user mode／kernel mode 的切換在 Interrupts and Dual-Mode Operation 中斷與雙重模式（籌備中）說明。</p>
+        </div>
+      </section>
+
+      <section id="polling">
+        <h2>Polling：CPU 自己一直問</h2>
+        <div class="panel prose">
+          <p>最直接的做法：CPU 下完命令後，在迴圈裡反覆讀 status register，直到裝置說「好了」，再自己把資料搬走。這叫 <span class="term">Polling<small>（輪詢）</small></span>，迴圈本身叫 <span class="term">Busy-Waiting<small>（忙碌等待）</small></span>；資料由 CPU 一筆一筆搬的方式統稱 <span class="term">Programmed I/O<small>（PIO，程式控制 I/O）</small></span>。</p>
+          <ol>
+            <li>driver 寫 control register 下命令，裝置把 status 設成 busy。</li>
+            <li>CPU 反覆讀 status，只要還是 busy 就再讀一次。</li>
+            <li>裝置把資料放進 data-in，status 變成 ready。</li>
+            <li>CPU 讀到 ready，離開迴圈，從 data-in 讀出資料寫進記憶體，清掉 ready。</li>
+            <li>要讀多筆就重複 1～4。</li>
+          </ol>
+          <details class="code-fold">
+            <summary>看程式碼：pollingRead()</summary>
+            <div class="code-block">
+              <div class="code-head">pollingRead()：busy-wait 等 status，再自己搬資料</div>
+              <pre class="code">/* CPU 自己等、自己搬：回傳花在空轉檢查的次數 */
+int pollingRead(Controller *c, int *buf, int n, int delay) {
+  int polls = 0;
+  for (int i = 0; i &lt; n; i++) {
+    issueRead(c, delay);                 /* 1. 寫 control register 下命令 */
+    while (c-&gt;status != READY) {         /* 2. busy-wait：反覆讀 status register */
+      polls++;
+      deviceTick(c);
+    }
+    buf[i] = c-&gt;dataIn;                  /* 3. CPU 讀 data-in，自己寫進記憶體 */
+    c-&gt;status = IDLE;                    /* 4. 清掉 ready，準備下一筆 */
+  }
+  return polls;
+}</pre>
+            </div>
+          </details>
+          <h3>polling 的成本在哪裡</h3>
+          <p>單看一次 polling 很便宜：讀 status、測一個 bit、條件分支，幾條指令就結束。真正的浪費是<b>一直查、卻很少碰到裝置準備好</b>：裝置越慢，每筆資料要空轉的次數越多，CPU 在這段時間什麼別的事都做不了。上面的程式回傳 <code>polls</code>，就是花在空轉的檢查次數；每筆要等 d 個時間單位，讀 n 筆就空轉 n × d 次。</p>
+          <p>另一種常見的寫法是<b>週期性 polling</b>：不是死盯著，而是每隔 T 查一次，中間 CPU 可以做別的事。這時要算的是延遲：事件在兩次檢查之間任何時刻發生的機會相同，平均要等 <b>T/2</b> 才被發現，最壞等 <b>T</b>。把 T 縮短能降低延遲，但每秒檢查次數變多，CPU 使用率與耗電一起上升，這是一個取捨，不能兩全。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> polling 不一定是壞的：裝置很快（查一兩次就好）、或事件非常頻繁時，polling 省掉了中斷進出的成本，反而更有效率。慢速而且偶爾才有資料的裝置，才是 polling 最浪費的情況。</p></div>
+        </div>
+      </section>
+
+      <section id="interrupts">
+        <h2>Interrupt：裝置好了再通知</h2>
+        <div class="panel prose">
+          <p>與其讓 CPU 一直問，不如讓裝置準備好時主動通知 CPU。CPU 有一條 <span class="term">Interrupt-Request Line<small>（中斷請求線）</small></span>，controller 有事時就把它拉起來；CPU <b>每執行完一條指令</b>就檢查這條線，發現有中斷就暫停目前的程式，跳去執行對應的 <span class="term">Interrupt Service Routine<small>（中斷服務常式，ISR／interrupt handler）</small></span>。這叫 <span class="term">Interrupt-Driven I/O<small>（中斷驅動 I/O）</small></span>：下完命令 CPU 就去做別的事，不必盯著 status。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="io-interrupt-flow"></div>
+            <figcaption><b>圖 3</b>：中斷處理的六個步驟。②～④ 由硬體自動完成；保存狀態（③）一定在跳到 ISR（⑤）之前，否則 PC 被蓋掉就回不去了。</figcaption>
+          </figure>
+          <ol>
+            <li>controller 把資料準備好，拉起 interrupt-request line。</li>
+            <li>CPU 先把正在執行的指令做完，在<b>指令邊界</b>才檢查中斷。</li>
+            <li>硬體自動保存 PC 和狀態暫存器（放到 kernel stack），切換到 kernel mode。</li>
+            <li>用中斷編號當索引，查 <span class="term">Interrupt Vector Table<small>（中斷向量表）</small></span>，取得 ISR 的位址並跳過去。有了向量表，CPU 不必一個一個問「是哪個裝置發的」。</li>
+            <li>ISR 處理裝置：讀 data-in、把資料存好、清掉中斷原因，必要時下一筆命令。</li>
+            <li>執行「從中斷返回」的指令，恢復狀態，被中斷的程式從原處繼續，完全不知道剛才被打斷過。</li>
+          </ol>
+          <details class="code-fold">
+            <summary>看程式碼：向量表、devISR()、CPU 主迴圈</summary>
+            <div class="code-block">
+              <div class="code-head">vector[]、devISR()、cpuRun()</div>
+              <pre class="code">typedef void (*Handler)(void);
+#define NVEC 8
+#define IRQ_DEV 3
+#define IRQ_DMA 5
+Handler vector[NVEC];                    /* interrupt vector table：中斷編號 → 處理常式 */
+int irqLine = -1;                        /* interrupt-request line：-1 表示沒有中斷 */
+int useDMA = 0;                          /* 裝置的資料交給 DMA 還是發中斷給 CPU */
+int *ioBuf, ioWant, ioPos, ioDone;
+int otherWork, interrupts;               /* 等 I/O 時 CPU 做的其他工作、中斷次數 */
+int dmaCycle(void);
+
+void devISR(void) {                      /* 裝置的 interrupt service routine */
+  ioBuf[ioPos++] = dev.dataIn;           /* 一次中斷搬一筆 */
+  dev.status = IDLE;                     /* 回應裝置，清掉中斷原因 */
+  if (ioPos &lt; ioWant) issueRead(&amp;dev, ioDelay);   /* 還沒讀完：下一筆的命令 */
+  else ioDone = 1;                       /* 讀完：喚醒等待的 process */
+}
+
+void cpuRun(void) {                      /* CPU 的主迴圈（模擬） */
+  while (!ioDone) {
+    otherWork++;                         /* 執行其他 process 的一條指令 */
+    if (deviceTick(&amp;dev) &amp;&amp; !useDMA) irqLine = IRQ_DEV;
+    if (useDMA &amp;&amp; dmaCycle()) irqLine = IRQ_DMA;
+    if (irqLine &gt;= 0) {                  /* 每條指令結束時檢查 interrupt-request line */
+      int irq = irqLine;
+      irqLine = -1;
+      interrupts++;                      /* 硬體：保存 PC 與狀態、切到 kernel mode */
+      vector[irq]();                     /* 查向量表，跳到對應的 handler */
+    }                                    /* handler 返回：恢復狀態，回到被中斷的程式 */
+  }
+}</pre>
+            </div>
+          </details>
+          <p><code>cpuRun()</code> 模擬 CPU：每執行一條其他程式的指令（<code>otherWork++</code>）就檢查一次 <code>irqLine</code>，有中斷就查 <code>vector[irq]</code> 呼叫對應的 handler。<code>devISR()</code> 一次中斷只搬一筆，所以讀 n 筆就會中斷 n 次，<b>資料仍然是 CPU 搬的</b>：interrupt 改善的是「怎麼知道裝置好了」，不是「誰搬資料」。（程式中 <code>dmaCycle()</code> 的宣告是給後面的 DMA 用的。）</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="io-poll-vs-int"></div>
+            <figcaption><b>圖 4</b>：同樣讀兩筆資料。(a) polling 時，裝置準備資料的整段時間 CPU 都在查 status；(b) interrupt 時，CPU 照常執行其他工作，只在資料好時被打斷一小段（紅色）。</figcaption>
+          </figure>
+          <h3>現代中斷機制的細節</h3>
+          <ul>
+            <li><b>Maskable 與 nonmaskable</b>：CPU 通常有兩條中斷線。<span class="term">Nonmaskable Interrupt<small>（不可遮罩中斷，NMI）</small></span>留給記憶體錯誤這類無法恢復的緊急事件；一般裝置用 maskable 中斷，kernel 執行不能被打斷的關鍵程式時可以暫時遮罩（例如 x86 清掉 IF 旗標）。注意遮罩只對外部的 maskable 中斷有效，除以零、page fault 這類 CPU 內部的例外遮不掉。</li>
+            <li><b>優先權</b>：中斷分等級，高優先權的可以打斷正在執行的低優先權 ISR，低優先權的則被延後處理。</li>
+            <li><b>Interrupt chaining</b>：裝置比向量表的項目多時，一個項目指向一串 handler，依序呼叫，直到有一個認領這次中斷。</li>
+            <li><b>Edge-triggered 與 level-triggered</b>：前者在訊號變化的瞬間觸發，後者在訊號維持時持續觸發。兩者都可能因為高頻或彈跳的訊號造成大量中斷，仍需要 debouncing 或節流。</li>
+            <li><b>不只裝置會用</b>：除以零、page fault 等 <span class="term">Exception<small>（例外）</small></span>，以及 system call 用的 <span class="term">Trap<small>（陷阱，軟體中斷）</small></span>，也都在向量表裡有自己的項目，走同一套「保存狀態 → 查表 → 執行 handler」的流程。差別是 trap 和例外由某條指令引起（<b>同步</b>），硬體中斷和目前執行的指令無關（<b>非同步</b>）。CPU 架構層級的例外處理在 Exceptions 例外處理（籌備中）。</li>
+            <li><b>誰會發中斷</b>：有主動行為的裝置控制器、計時器、DMA controller、其他 CPU 核心。DRAM 是被動元件，只會被讀寫，不會發中斷。</li>
+          </ul>
+          <h3>Top half 與 bottom half</h3>
+          <p>ISR 執行時通常遮罩了同等級的中斷，跑太久會讓其他裝置的中斷等不到。所以中斷處理分成兩半：<b>top half</b>（ISR 本身）只做最急的事，例如回應裝置、把硬體暫存器裡的資料抓下來、排程後續工作；<b>bottom half</b>（Linux 的 softirq、tasklet、work queue）稍後在中斷開啟的情況下做比較花時間的處理，例如解析資料、放進佇列、喚醒等待的行程。以滑鼠為例：ISR 收下原始的位移封包，driver 的 bottom half 把它轉成移動事件放進事件佇列，再喚醒阻塞在 <code>read()</code> 或 <code>select()</code> 上的視窗系統，視窗系統讀到事件才重畫游標。</p>
+          <p>計時器也是靠中斷運作的：Round Robin 排程每個時間片結束時，就是硬體 timer 發中斷，ISR 呼叫排程器切換行程（見 <a href="../cpu-scheduling/cpu-scheduling.html">CPU Scheduling Algorithms CPU 排程演算法</a>）。</p>
+        </div>
+      </section>
+
+      <section id="dma">
+        <h2>DMA：把搬資料交給專門的控制器</h2>
+        <div class="panel prose">
+          <p>interrupt 解決了「等」的浪費，但每筆資料仍要中斷一次、由 CPU 搬一次。磁碟一次要讀幾十 KB、網卡每秒收上百萬個封包，若每幾個 byte 就中斷一次，CPU 光是進出中斷就忙不過來。解法是 <span class="term">Direct Memory Access<small>（直接記憶體存取，DMA）</small></span>：由一個專門的 <b>DMA controller</b> 在裝置和記憶體之間直接搬資料，CPU 只負責開頭的設定和結尾的一次中斷。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="io-dma-steps"></div>
+            <figcaption><b>圖 5</b>：DMA 的流程。CPU 只參與 ①（設定）和 ⑥（完成中斷）；中間每一筆資料都由 DMA controller 直接寫進記憶體，不經過 CPU 的暫存器。</figcaption>
+          </figure>
+          <ol>
+            <li>driver 在記憶體準備好 buffer，把<b>來源／目的位址、長度、方向</b>寫進 DMA controller 的暫存器（或寫一個 command block 放在記憶體，把它的位址告訴 DMA），然後對裝置下命令。CPU 接著去做別的事。</li>
+            <li>裝置準備好一筆資料，對 DMA controller 送 <b>DMA-request</b>。</li>
+            <li>DMA controller 取得記憶體匯流排的使用權，送 <b>DMA-acknowledge</b> 給裝置。</li>
+            <li>資料直接寫進記憶體，DMA 把目的位址加一、剩餘筆數減一。</li>
+            <li>重複 2～4，直到剩餘筆數變成 0。</li>
+            <li>整塊搬完，DMA controller 發<b>一次</b>中斷通知 CPU。</li>
+          </ol>
+          <details class="code-fold">
+            <summary>看程式碼：dmaStart()、dmaCycle()、dmaISR()</summary>
+            <div class="code-block">
+              <div class="code-head">DMA controller 的模擬</div>
+              <pre class="code">typedef struct {
+  int *dst;          /* 目的記憶體位址 */
+  int count;         /* 還剩幾筆 */
+  int busy;
+} DMAController;
+DMAController dma;
+int stolen;          /* DMA 用掉的 bus cycle 數（cycle stealing） */
+
+void dmaISR(void) { ioDone = 1; }        /* 整塊只中斷這一次 */
+
+void dmaStart(int *dst, int n) {         /* driver 寫 DMA 的位址、長度暫存器 */
+  dma.dst = dst;
+  dma.count = n;
+  dma.busy = 1;
+  issueRead(&amp;dev, ioDelay);              /* 之後 CPU 就不管了 */
+}
+
+/* 裝置有資料（DMA-request）時，DMA 搶一個 bus cycle 寫進記憶體；整塊搬完回傳 1 */
+int dmaCycle(void) {
+  if (!dma.busy || dev.status != READY) return 0;
+  *dma.dst++ = dev.dataIn;               /* 直接寫記憶體，不經過 CPU */
+  stolen++;                              /* 這個 bus cycle CPU 用不到 */
+  dev.status = IDLE;                     /* DMA-acknowledge：裝置準備下一筆 */
+  if (--dma.count &gt; 0) { issueRead(&amp;dev, ioDelay); return 0; }
+  dma.busy = 0;
+  return 1;                              /* 整塊搬完：發中斷 */
+}</pre>
+            </div>
+          </details>
+          <p>和 interrupt 版比較：同樣讀 n 筆，interrupt 版中斷 n 次、CPU 搬 n 筆；DMA 版中斷 <b>1 次</b>、CPU 搬 <b>0 筆</b>。完成通知也不一定要用中斷，CPU 也可以 polling DMA controller 的狀態暫存器，只是通常用中斷。</p>
+          <h3>Cycle stealing 與 burst mode</h3>
+          <p>DMA 搬資料要用記憶體匯流排，這段時間 CPU 不能用匯流排存取記憶體（cache 裡命中的存取不受影響）。DMA 每搬一筆就搶走一個 bus cycle、再還給 CPU，叫 <span class="term">Cycle Stealing<small>（週期竊取）</small></span>；一次佔住匯流排把整塊連續傳完，叫 <span class="term">Burst Mode<small>（突發模式）</small></span>，傳輸效率較高，但這段時間 CPU 要存取記憶體就得整段等。兩者佔用匯流排的總時間一樣（要搬的資料量一樣），差別只在集中還是分散。所以 DMA 會<b>稍微拖慢 CPU 的計算</b>，但 CPU 不必親手搬資料、不必每筆中斷，<b>整體系統效能仍然提升</b>。</p>
+          <h3>考題愛問的延伸</h3>
+          <ul>
+            <li><b>Scatter-gather</b>：DMA 可以接受一串（位址, 長度），一次命令搬多段不連續的記憶體，例如一個封包的 header 和 payload 在不同地方。</li>
+            <li><b>小資料用 PIO</b>：DMA 有固定的設定成本（寫暫存器、完成中斷）。只有幾個 byte、又要求低延遲時，CPU 直接搬反而最快完成；DMA 適合大量資料、追求 throughput 的情況。</li>
+            <li><b>Cache 一致性</b>：DMA 直接讀寫記憶體，不經過 CPU 的 cache。硬體若不會自動維持一致（non-coherent），driver 要自己處理：<b>輸出前</b>把 buffer 的 dirty cache line 寫回（clean），<b>輸入完成後</b>、CPU 讀之前把 buffer 的 cache line invalidate，否則會讀到 cache 裡的舊資料。write-back cache 的運作見 <a href="../../computer-organization/memory-hierarchy/cache-mapping.html">Cache Organization and Mapping 快取組織與映射</a>。</li>
+            <li><b>位址與分頁</b>：DMA controller 傳統上用實體位址，不懂行程的頁表。所以 DMA 用的 buffer 必須先 <b>pin</b> 在記憶體裡（傳輸中不能被換出）。<span class="term">IOMMU<small>（I/O 記憶體管理單元）</small></span>替裝置做位址轉換，讓 DMA 可以用裝置自己的虛擬位址，同時限制裝置只能存取被允許的記憶體。頁表與位址轉換見 <a href="../main-memory/paging.html">Paging and TLB 分頁與 TLB</a>。</li>
+            <li><b>DMA 不是「讓應用程式直接存取記憶體」</b>：「direct」指的是<b>裝置</b>不經過 CPU 直接和記憶體交換資料。GPU 從主記憶體讀資料、網卡把封包寫進記憶體，都是 DMA。kernel 與 user 之間的資料複製則是記憶體到記憶體，一般由 CPU 做並檢查使用者位址。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="viz-transfer">
+        <h2>動手操作：一次傳輸的訊號流程</h2>
+        <div class="panel prose">
+          <p>用上方三個按鈕選 <b>Polling</b>、<b>Interrupt</b> 或 <b>DMA</b>；兩個輸入框分別是<b>要讀幾筆</b>（1～6）和<b>裝置每筆要準備幾個時間單位</b>（1～5），改完按「執行」。畫面上看得到 CPU、中斷向量表、device controller 的三個暫存器、DMA controller 與記憶體裡的 buf，箭頭是這一步送出的訊號。第一筆會完整走一遍每個步驟，之後的每筆濃縮成一步。頂端的計數器記錄空轉檢查次數、CPU 做了多少其他工作、中斷次數、DMA 偷走的 bus cycle：同樣的筆數與準備時間，切換三種方式比較這幾個數字。</p>
+        </div>
+        <div class="viz" data-viz="io-transfer"></div>
+      </section>
+
+      <section id="cpu-load">
+        <h2>CPU 負擔怎麼算</h2>
+        <div class="panel prose">
+          <p>計組與作業系統都會考「某裝置用 polling／interrupt／DMA 各要花多少 CPU 時間」。解法都一樣：<b>算出每秒發生幾次「要 CPU 處理的事」，乘上每次的週期數，再除以 CPU 每秒的週期數（時脈）</b>。</p>
+          <pre class="formula">CPU 時間佔比 = 每秒事件次數 × 每次的週期數 ÷ 時脈
+
+polling   ：事件次數 = 傳輸率 ÷ 每次傳輸量              （裝置閒著也要照查）
+interrupt ：事件次數 = 傳輸率 ÷ 每次傳輸量 × 活躍比例
+DMA       ：事件次數 = 傳輸率 ÷ 每塊大小 × 活躍比例       （每次 = 設定 + 完成中斷）</pre>
+          <p>polling 那一行不乘活躍比例：CPU 不知道裝置什麼時候會有資料，為了不漏資料只能一直照最高速率查。interrupt 和 DMA 只在真的有資料時才花 CPU。</p>
+          <h3>例：8 MB/s 的硬碟</h3>
+          <p>條件：CPU 1 GHz；每次 poll／中斷搬 16 byte；一次 poll 300 週期、一次中斷 600 週期；DMA 每塊 8 KB（這裡 1 KB = 1000 byte、1 MB = 10<sup>6</sup> byte，題目若用 1024 要照題目），每塊設定加完成中斷共 3000 週期。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>方式</th><th>每秒事件次數</th><th>每秒週期數</th><th>CPU 佔比</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>Polling</td><td>8×10<sup>6</sup> / 16 = 5×10<sup>5</sup></td><td>× 300 = 1.5×10<sup>8</sup></td><td>15%</td><td>每 7 個週期就有 1 個在查 status</td></tr>
+                <tr><td>Interrupt（一直在傳）</td><td>5×10<sup>5</sup></td><td>× 600 = 3×10<sup>8</sup></td><td>30%</td><td>比 polling 還高：一次中斷比一次 poll 貴，而裝置沒有閒著的時候</td></tr>
+                <tr><td>Interrupt（20% 時間在傳）</td><td>10<sup>5</sup></td><td>6×10<sup>7</sup></td><td>6%</td><td>只有 polling 的 40%：閒著的時間不花 CPU</td></tr>
+                <tr><td>DMA</td><td>8×10<sup>6</sup> / 8000 = 1000</td><td>× 3000 = 3×10<sup>6</sup></td><td>0.3%</td><td>是 polling 的 1/50，中斷次數少了 500 倍</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>同樣用 polling，每秒只需檢查 30 次的滑鼠（120 B/s、每次 4 byte）只佔 30 × 300 / 10<sup>9</sup> = 0.0009%，完全可以忽略。這張表說明了三件事：慢速裝置用 polling 就夠了；interrupt 不一定比 polling 省，要看裝置多常在傳；高速裝置一定要用 DMA。</p>
+          <details class="code-fold">
+            <summary>看程式碼：三種方式的 CPU 佔比</summary>
+            <div class="code-block">
+              <div class="code-head">pollingLoad()、interruptLoad()、dmaLoad()</div>
+              <pre class="code">/* rate：裝置傳輸率（byte/s）　unit：每次 poll／中斷搬的 byte 數
+   clock：CPU 時脈（Hz）　active：裝置真的在傳資料的時間比例（0～1） */
+double pollingLoad(double rate, double unit, double cPoll, double clock) {
+  double polls = rate / unit;              /* 要跟上裝置，每秒至少查這麼多次 */
+  return polls * cPoll / clock;            /* 裝置閒著也得照查，和 active 無關 */
+}
+
+double interruptLoad(double rate, double unit, double cInt, double clock, double active) {
+  double ints = rate / unit * active;      /* 只有裝置真的在傳時才會中斷 */
+  return ints * cInt / clock;
+}
+
+double dmaLoad(double rate, double block, double cDma, double clock, double active) {
+  double blocks = rate / block * active;   /* 每搬完一整塊才中斷一次 */
+  return blocks * cDma / clock;            /* cDma = 設定 DMA + 完成中斷的週期數 */
+}</pre>
+            </div>
+          </details>
+          <p>下面的計算器照這三個函式一步一步算，最後畫成長條比較。輸入框依序是：裝置速率（byte/s）、每次傳輸大小（byte）、CPU 時脈（Hz）、一次 poll 的週期、一次中斷的週期、DMA 塊大小（byte）、DMA 每塊的週期（設定＋完成中斷）、裝置活躍 %；數字可以用 K、M、G 代表 10<sup>3</sup>、10<sup>6</sup>、10<sup>9</sup>，例如 <code>8M</code>、<code>1G</code>。超過 100% 的組合會標成紅色，表示 CPU 根本處理不完。</p>
+        </div>
+        <div class="viz" data-viz="io-cpu-load"></div>
+      </section>
+
+      <section id="app-interface">
+        <h2>應用程式看到的 I/O 介面</h2>
+        <div class="panel prose">
+          <p>應用程式不會直接面對 controller 的暫存器。kernel 把裝置分成幾大類，每類提供一組標準的 system call，driver 負責把它們翻譯成具體的硬體操作；新裝置只要寫一個符合介面的 driver，應用程式不必改。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>類別</th><th>存取方式</th><th>例子</th></tr></thead>
+              <tbody>
+                <tr><td>Block device（區塊裝置）</td><td>以 block 為單位 read、write、seek，可以隨機存取；也可以 mmap 對映進記憶體</td><td>磁碟、SSD</td></tr>
+                <tr><td>Character device（字元裝置）</td><td>一個字元一個字元依序 get、put</td><td>鍵盤、滑鼠、序列埠</td></tr>
+                <tr><td>Network device（網路裝置）</td><td>socket 介面：建立連線、send、receive，用 select／poll 等多個 socket</td><td>網卡</td></tr>
+                <tr><td>Clock and timer（時鐘與計時器）</td><td>讀目前時間、設定多久之後觸發</td><td>programmable interval timer</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>不屬於標準操作的功能，UNIX 用 <code>ioctl()</code> 這個「萬用」system call，讓應用程式把任意命令傳給 driver。</p>
+          <h3>Blocking、nonblocking 與 asynchronous</h3>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="io-blocking-models"></div>
+            <figcaption><b>圖 6</b>：三種 I/O 呼叫的時間線。(a) blocking 呼叫後就進入等待；(b) nonblocking 立刻帶著「現在有的」回來；(c) asynchronous 立刻返回，等整個 I/O 做完由 kernel 主動通知。</figcaption>
+          </figure>
+          <ul>
+            <li><span class="term">Blocking I/O<small>（阻塞式 I/O）</small></span>：呼叫後 process 從 running 移到 waiting，I/O 完成才回到 ready，拿到結果才繼續。程式是直線流程，最容易寫、最容易懂，大部分 system call 預設都是 blocking。</li>
+            <li><span class="term">Nonblocking I/O<small>（非阻塞式 I/O）</small></span>：呼叫<b>立刻返回</b>，帶回當下能拿到的資料（可能是 0 byte，或回傳 EAGAIN 之類的錯誤碼），process 不會進入 waiting。適合一邊等輸入、一邊還要更新畫面的程式；常和 <code>select()</code>／<code>poll()</code> 搭配：先阻塞等待任一個 fd 就緒，再對就緒的 fd 做不會卡住的讀寫。</li>
+            <li><span class="term">Asynchronous I/O<small>（非同步 I/O）</small></span>：呼叫立刻返回，但 I/O <b>整個</b>交給 kernel 在背景完成，完成後再用 signal、callback 或完成事件通知（例如 POSIX aio、Linux io_uring）。和 nonblocking 的差別：nonblocking 返回時已經給你「現在有的部分」；async 返回時資料還沒到，要等通知才保證全部到齊。</li>
+          </ul>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 一句話分辨：blocking「做完才回來」；nonblocking「有多少給多少，馬上回來」；asynchronous「馬上回來，做完再通知你」。</p></div>
+          <p>多執行緒程式裡，一個 thread 做 blocking I/O 時其他 thread 能不能繼續，取決於執行緒模型：one-to-one 只卡住自己，many-to-one 整個 process 都卡住（見 <a href="../processes/threads.html">Threads and Multithreading Models 執行緒與多執行緒模型</a>）。所以 blocking 的程式寫法加上多執行緒，也能達到「等 I/O 時繼續做別的事」的效果；process 在等待時位於哪個狀態與佇列，見 <a href="../processes/process-concept.html">Process Concept 行程與行程狀態</a>。</p>
+          <p>另外一個常見的介面是 <span class="term">Vectored I/O<small>（分散／聚集 I/O）</small></span>：<code>readv()</code>／<code>writev()</code> 一次 system call 就讀寫多個 buffer，省下多次呼叫的成本，概念上和 DMA 的 scatter-gather 對應。</p>
+        </div>
+      </section>
+
+      <section id="kernel-io">
+        <h2>Kernel I/O Subsystem：排程、緩衝、快取、spooling</h2>
+        <div class="panel prose">
+          <p>在 system call 與 driver 之間，kernel 有一層和裝置無關的 <span class="term">Kernel I/O Subsystem<small>（核心 I/O 子系統）</small></span>，提供所有裝置共用的服務。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="io-kernel-layers"></div>
+            <figcaption><b>圖 7</b>：kernel 的 I/O 分層。kernel I/O subsystem 與裝置無關；driver 以下才和特定硬體有關。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>服務</th><th>做什麼</th></tr></thead>
+              <tbody>
+                <tr><td>I/O scheduling（I/O 排程）</td><td>重排等待中的請求，提高效率與公平性，例如磁碟依位置排序（見 Disk Scheduling 磁碟排程（籌備中））</td></tr>
+                <tr><td>Buffering（緩衝）</td><td>資料<b>在傳輸途中</b>暫放的記憶體區域</td></tr>
+                <tr><td>Caching（快取）</td><td>保留資料的<b>副本</b>在較快的記憶體，原本的資料還在別處</td></tr>
+                <tr><td>Spooling（排存）</td><td>替一次只能服務一個工作、不能交錯輸出的裝置（印表機）保存各工作的輸出，再依序送出</td></tr>
+                <tr><td>Device reservation（裝置保留）</td><td>讓 process 明確地獨占某個裝置，用完再釋放</td></tr>
+                <tr><td>Error handling（錯誤處理）</td><td>重試暫時性的錯誤，回傳錯誤碼，記錄錯誤日誌</td></tr>
+                <tr><td>I/O protection（保護）</td><td>I/O 指令是特權指令，使用者只能透過 system call，由 kernel 檢查權限</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Buffering 的三個理由</h3>
+          <ol>
+            <li><b>速度不一致</b>：網路一點一點收資料，磁碟一次寫一大塊，中間要有地方累積。</li>
+            <li><b>資料單位不一致</b>：網路封包要先切小再傳、收到後重組，應用程式看到的是一整個訊息。</li>
+            <li><b>Copy semantics</b>：應用程式呼叫 <code>write()</code> 後馬上改自己的 buffer，寫出去的應該仍是呼叫當下的內容。kernel 先把資料複製到自己的 buffer，之後怎麼改都不影響。</li>
+          </ol>
+          <p>只有一個 buffer 時，裝置填滿它之後要等 CPU 處理完才能填下一塊，兩邊輪流等對方。<span class="term">Double Buffering<small>（雙緩衝）</small></span>用兩個 buffer 輪流：CPU 處理 A 的同時，裝置填 B，讓生產者與消費者平行工作。</p>
+          <details class="code-fold">
+            <summary>看程式碼：single buffer 與 double buffering 的總時間</summary>
+            <div class="code-block">
+              <div class="code-head">singleBuffer()、doubleBuffer()</div>
+              <pre class="code">/* 裝置填滿一個 buffer 要 tFill，CPU 處理一個 buffer 要 tProc，共 n 個 block */
+double singleBuffer(int n, double tFill, double tProc) {
+  return n * (tFill + tProc);            /* 只有一個 buffer：裝置和 CPU 輪流等對方 */
+}
+
+double doubleBuffer(int n, double tFill, double tProc) {
+  double slow = tFill &gt; tProc ? tFill : tProc;
+  return tFill + (n - 1) * slow + tProc; /* 兩個 buffer 輪流用：填下一塊與處理這一塊重疊 */
+}</pre>
+            </div>
+          </details>
+          <p>例：裝置填一塊 4 ms、CPU 處理一塊 3 ms、共 10 塊。單一 buffer 要 10 × (4 + 3) = 70 ms；double buffering 是 4 + 9 × 4 + 3 = 43 ms，省了約 39%。總時間受較慢的一方限制，所以 double buffering 最多只能把時間壓到接近 n × max(填, 處理)。</p>
+          <h3>Caching 與 buffering 的關係</h3>
+          <p>同一塊記憶體可以同時是 buffer 和 cache：檔案系統的 <b>page cache</b> 把讀過的檔案 block 留在 DRAM，下次讀同一塊直接拿副本（caching）；寫入的資料也先放在這裡，稍後才寫回磁碟（buffering）。DRAM 是揮發性的，斷電就沒了，所以要保證資料真的寫到磁碟，要呼叫 <code>fsync()</code>。</p>
+          <p>user space 也有一層緩衝：C 的 stdio（<code>printf</code>、<code>puts</code>、<code>fwrite</code>）先把資料存在函式庫的 buffer，滿了（fully buffered）或遇到換行（line buffered，終端機預設）才呼叫一次 <code>write()</code> system call。比較兩種寫法時要分清楚三種時間：user CPU time（函式庫搬資料）、system CPU time（system call 次數與 kernel 的工作）、clock time（含等磁碟）。每次 write 之後都 fsync，等的是磁碟，clock time 大增；line buffering 讓 system call 次數變多，system time 增加。</p>
+          <p>非同步 I/O 也靠 buffering 實作：kernel 先把資料收進自己的 buffer、讓呼叫立刻返回，背景再慢慢寫到裝置；等不及的應用程式要的是「呼叫不必等裝置」，而 buffer 正好吸收了兩邊的速度差。spooling 則可以看成「替每個工作在磁碟上準備一個大 buffer」。</p>
+        </div>
+      </section>
+
+      <section id="io-lifecycle">
+        <h2>一次 read() 的完整旅程與效能</h2>
+        <div class="panel prose">
+          <p>把整頁的元件串起來：一個 process 對已開啟的檔案呼叫 blocking <code>read()</code>，大致會經過下面這些步驟。</p>
+          <ol>
+            <li>process 執行 system call（trap），切到 kernel mode。</li>
+            <li>kernel 檢查參數；若資料已經在 page cache 裡，直接複製到使用者的 buffer 返回，不必碰裝置。</li>
+            <li>否則 kernel 把請求交給 driver，process 從 running 移到 waiting，CPU 去排程別的 process。</li>
+            <li>driver 在 kernel 裡準備 buffer，設定 DMA、對 controller 下命令。</li>
+            <li>controller 操作裝置，資料由 DMA 寫進 kernel buffer。</li>
+            <li>傳完，DMA controller 發中斷；ISR（top half）記錄完成、排程後續處理。</li>
+            <li>driver 確認結果，通知 kernel I/O subsystem 這個請求完成。</li>
+            <li>kernel 把資料複製到使用者的 buffer（或放進 page cache 再複製），把 process 移回 ready。</li>
+            <li>process 被排程執行時，<code>read()</code> 才返回。</li>
+          </ol>
+          <h3>I/O 的效能從哪裡省</h3>
+          <p>I/O 是影響系統效能的主因之一：每次 I/O 都要執行 driver、處理中斷、做 context switch、在 kernel 與 user 之間複製資料。改善的方向就是把這些成本減少：</p>
+          <ul>
+            <li><b>減少 context switch 與中斷</b>：一次處理一批，例如網卡的 interrupt coalescing（累積幾個封包才中斷一次）；流量大時乾脆關掉中斷改用 polling（Linux 網路的 NAPI），因為事件很頻繁時，中斷進出的成本比 polling 還貴。</li>
+            <li><b>減少資料複製</b>：用 DMA 讓裝置直接寫記憶體；用 mmap 或 zero-copy（例如 <code>sendfile()</code>）避免 kernel 與 user 之間多複製一次。</li>
+            <li><b>把工作往下放</b>：把重複的處理交給 controller 的硬體或韌體（例如網卡算 checksum、SSD 控制器的 FTL 自己做 wear leveling），讓 CPU、匯流排的負擔下降。</li>
+            <li><b>平衡 CPU、記憶體、匯流排與 I/O</b>：任何一個成為瓶頸，其他的都會閒著等。</li>
+          </ul>
+          <p>儲存裝置還有自己的效能議題，例如 SSD 的 garbage collection 與 erase 造成少數請求延遲特別長（tail latency）、ECC 能修正的位元數有限、檔案系統與 key-value store 的寫入放大等，這些會在 Disk Scheduling 磁碟排程（籌備中）與 File-System Interface 檔案系統介面與目錄結構（籌備中）討論；題庫裡相關的考古題也標了本主題，可以先看詳解。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>polling 與 interrupt 的比較</td><td>很常考</td><td>polling：CPU 反覆讀 status，浪費在「查很多次卻很少 ready」；interrupt：裝置主動通知；兩者資料都由 CPU 搬</td><td><a class="q-link" href="#q-os-0106">例題</a> <a class="q-link" href="#q-os-0068">例題</a> <a class="q-link" href="#q-os-0270">例題</a></td></tr>
+                <tr><td>DMA 的流程與性質</td><td>很常考</td><td>CPU 設定位址與長度 → DMA 搬（cycle stealing）→ 整塊完成才中斷一次；可用中斷或 polling 同步；不是讓 app 直接存取記憶體</td><td><a class="q-link" href="#q-os-0134">例題</a> <a class="q-link" href="#q-os-0173">例題</a> <a class="q-link" href="#q-os-0073">例題</a></td></tr>
+                <tr><td>DMA 進階：cache、IOMMU、PIO 的時機</td><td>常考</td><td>non-coherent：輸出前 clean、輸入後 invalidate；IOMMU 做裝置位址轉換與保護；小資料低延遲用 PIO；buffer 要 pin</td><td><a class="q-link" href="#q-os-0144">例題</a> <a class="q-link" href="#q-os-0098">例題</a> <a class="q-link" href="#q-os-0152">例題</a> <a class="q-link" href="#q-os-0280">例題</a></td></tr>
+                <tr><td>中斷處理流程、向量表、優先權、trap 比較</td><td>很常考</td><td>指令邊界檢查 → 保存狀態 → 查向量表 → ISR → 返回；trap 同步、硬體中斷非同步；遮罩只對 maskable 外部中斷</td><td><a class="q-link" href="#q-os-0189">例題</a> <a class="q-link" href="#q-os-0200">例題</a> <a class="q-link" href="#q-os-0208">例題</a> <a class="q-link" href="#q-os-0277">例題</a></td></tr>
+                <tr><td>controller 暫存器、MMIO、driver 的角色</td><td>常考</td><td>data-in／data-out／status／control；I/O 指令或 MMIO；ISR 是 top half，driver 的其餘處理在 bottom half</td><td><a class="q-link" href="#q-os-0098">例題</a> <a class="q-link" href="#q-os-0094">例題</a> <a class="q-link" href="#q-os-0271">例題</a></td></tr>
+                <tr><td>blocking／nonblocking／asynchronous</td><td>常考</td><td>blocking 做完才回來；nonblocking 有多少給多少；async 做完再通知；結合 timer 與排程的設計題</td><td><a class="q-link" href="#q-os-0024">例題</a> <a class="q-link" href="#q-os-0096">例題</a> <a class="q-link" href="#q-os-0282">例題</a></td></tr>
+                <tr><td>kernel I/O subsystem：buffering、caching、spooling</td><td>常考</td><td>傳輸途中暫放 → buffering；保留副本 → caching；不能交錯的裝置排隊 → spooling；page cache 在 DRAM 會隨斷電消失</td><td><a class="q-link" href="#q-os-0098">例題</a> <a class="q-link" href="#q-os-0204">例題</a> <a class="q-link" href="#q-os-0226">例題</a> <a class="q-link" href="#q-os-0272">例題</a></td></tr>
+                <tr><td>CPU 負擔計算（計組角度）</td><td>偶爾</td><td>每秒事件次數 × 每次週期 ÷ 時脈；polling 不乘活躍比例；DMA 以塊計</td><td><a class="q-link" href="#q-os-0106">例題</a> <a class="q-link" href="#q-os-0273">例題</a> <a class="q-link" href="#q-os-0274">例題</a> <a class="q-link" href="#q-os-0275">例題</a></td></tr>
+                <tr><td>polling 延遲、中斷與 polling 的交叉點</td><td>偶爾</td><td>週期 T：平均延遲 T/2、最壞 T；寫出兩條成本式求交點；事件率高時 polling 可能較省</td><td><a class="q-link" href="#q-os-0135">例題</a> <a class="q-link" href="#q-os-0276">例題</a> <a class="q-link" href="#q-os-0278">例題</a></td></tr>
+                <tr><td>cycle stealing、double buffering 的時間</td><td>偶爾</td><td>匯流排佔比 = 每秒傳輸次數 ÷ bus 時脈；double buffering ≈ 第一塊 + (n − 1) × max + 最後處理</td><td><a class="q-link" href="#q-os-0134">例題</a> <a class="q-link" href="#q-os-0279">例題</a> <a class="q-link" href="#q-os-0281">例題</a></td></tr>
+                <tr><td>儲存裝置綜合（SSD、ECC、tail latency）</td><td>偶爾</td><td>逐句對照定義；開放題列出原因與對策並說明</td><td><a class="q-link" href="#q-os-0112">例題</a> <a class="q-link" href="#q-os-0130">例題</a> <a class="q-link" href="#q-os-0146">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> interrupt-driven I/O 要 CPU 不斷檢查 status register</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是 polling；interrupt 是裝置好了主動通知，CPU 中間可以做別的事</span> <a class="q-link" href="#q-os-0068">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> polling 沒效率，是因為一次 polling 要執行很多指令</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 一次 polling 只要幾條指令；浪費在反覆查卻很少碰到 ready</span> <a class="q-link" href="#q-os-0106">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 用了 interrupt，資料就不用 CPU 搬</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> interrupt 只改變「怎麼知道裝置好了」，每筆資料仍由 ISR 搬；不用 CPU 搬的是 DMA</span> <a class="q-link" href="#q-os-0270">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> DMA 每傳一個 word 中斷一次，或 DMA 完全不用中斷</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 整塊傳完才中斷一次（也可以用 polling 查完成）</span> <a class="q-link" href="#q-os-0134">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> DMA 讓應用程式可以直接存取主記憶體</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> direct 指的是裝置不經 CPU 直接和記憶體交換資料</span> <a class="q-link" href="#q-os-0173">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> DMA 直接寫記憶體，所以 CPU 讀 buffer 時一定是新資料</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> cache 不一致時 CPU 可能讀到舊副本，讀之前要 invalidate；輸出前要 clean</span> <a class="q-link" href="#q-os-0144">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> DMA 總是比 CPU 搬快，小資料也該用 DMA</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> DMA 有固定的設定與完成中斷成本；幾個 byte、要求低延遲時 PIO 較好</span> <a class="q-link" href="#q-os-0098">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 事件率越高，interrupt 比 polling 越划算</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 事件很頻繁時中斷進出的成本累積起來比 polling 貴（NAPI 在高流量改 polling）</span> <a class="q-link" href="#q-os-0135">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 提高 polling 頻率能同時降低延遲與 CPU 使用率</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 延遲降低、CPU 與耗電上升，是取捨；平均延遲 T/2、最壞 T</span> <a class="q-link" href="#q-os-0276">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 計算 polling 成本時要乘上裝置的活躍比例</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> polling 不知道何時有資料，閒著也要照查；只有 interrupt 和 DMA 乘活躍比例</span> <a class="q-link" href="#q-os-0274">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 中斷只能由硬體產生；IF 旗標可以遮掉 page fault</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> trap（system call）是軟體中斷；IF 只遮罩 maskable 的外部中斷，例外遮不掉</span> <a class="q-link" href="#q-os-0208">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> DRAM 也會發中斷，CPU 接著切到 kernel 提供服務</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> DRAM 是被動元件不發中斷；「切到 kernel 派送服務」描述的是 system call</span> <a class="q-link" href="#q-os-0189">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> blocking system call 發出後，應用程式繼續執行自己的程式碼</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> process 進入 waiting，I/O 完成才繼續；那是 nonblocking／async 的行為</span> <a class="q-link" href="#q-os-0024">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> asynchronous read 返回時資料已經到齊</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> async 返回時 I/O 才開始，要等通知；返回時就給部分資料的是 nonblocking</span> <a class="q-link" href="#q-os-0282">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> page cache 放在 DRAM，斷電後資料還在</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> DRAM 是揮發性的；要確保寫到磁碟得 fsync</span> <a class="q-link" href="#q-os-0204">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 印表機輸出先存到磁碟再依序送出，叫 buffering</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 給不能交錯輸出的裝置排隊叫 spooling；buffering 是傳輸途中暫放</span> <a class="q-link" href="#q-os-0272">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="io-systems"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz-core.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz/operating-systems/io-systems.js?v=fbb9e419"></script>
+</body>
+</html>

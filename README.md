@@ -9,9 +9,9 @@
 | 科目 | 狀態 | 參考書（僅供 AI 查閱） |
 |---|---|---|
 | Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 12 個 | Horowitz《Fundamentals of Data Structures in C》 |
-| Algorithms（演算法） | 進行中：13 章、36 個主題（高頻 19 個），已完成 3 個 | Cormen 等《Introduction to Algorithms》 |
-| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 7 個 | Patterson & Hennessy《Computer Organization and Design》 |
-| Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 5 個 | Silberschatz《Operating System Concepts》 |
+| Algorithms（演算法） | 進行中：13 章、36 個主題（高頻 19 個），已完成 4 個 | Cormen 等《Introduction to Algorithms》 |
+| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 8 個 | Patterson & Hennessy《Computer Organization and Design》 |
+| Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 6 個 | Silberschatz《Operating System Concepts》 |
 | Discrete Mathematics（離散數學） | 進行中：12 章、38 個主題（高頻 18 個），已完成 3 個 | Rosen《Discrete Mathematics and Its Applications》 |
 | Linear Algebra（線性代數） | 進行中：8 章、30 個主題（高頻 18 個），已完成 5 個 | Leon《Linear Algebra with Applications》 |
 
@@ -39,6 +39,7 @@
 | Longest Common Subsequence（最長共同子序列） | 自己輸入兩個字串，一格一格填 LCS 長度表，再從右下角照箭頭回溯找出 LCS；可切換平手往上／往左，比較不同的 LCS |
 | Master Theorem（主定理） | 輸入 a、b、f(n) = n^k lg^p n，逐層畫遞迴樹與每層成本，判斷 case 並給出答案（含落在空隙的例子） |
 | P, NP, and NP-Completeness（P、NP 與 NP 完備） | 輸入 CNF 公式與 certificate，對照逐子句驗證（多項式）和暴力枚舉指派（指數）的步數 |
+| NP-Completeness Reductions（NP 完備歸約） | 輸入一個 3-CNF 公式，逐步建出 3-SAT → Clique（或獨立集）歸約的圖，互補字面不連邊；再用滿足指派找出 clique、從 clique 讀回指派，不可滿足時顯示最大 clique 只有 m−1 |
 
 ### 離散數學已完成的主題
 
@@ -67,6 +68,7 @@
 | Cache Organization and Mapping（快取組織與映射） | 自己輸入位址序列、區塊數與區塊大小，切換直接映射／2-way／全關聯，逐步看每個位址落在哪個 set、命中或失誤、LRU 換掉誰 |
 | Pipelining（管線化） | 輸入 2～6 行 MIPS 指令，逐個時脈畫管線時序圖，切換有／無 forwarding，算出總週期、stall 數與 CPI |
 | Data Hazards and Forwarding（資料危障與轉送） | 輸入 2～7 行 MIPS 指令，逐週期看各階段的指令、forwarding unit 比對 rd 算出 ForwardA/B、hazard detection unit 何時插 bubble；另一個動畫逐步重排指令避開 load-use stall |
+| Control Hazards and Branch Prediction（控制危障與分支預測） | 兩個動畫：切換分支決定階段與 stall／predict-not-taken／predict-taken／delayed branch，逐週期看哪些指令被 flush；輸入 T/N 序列或迴圈次數，逐步看 1-bit、2-bit 預測器的狀態轉移與正確率 |
 | Cache Performance（快取效能） | 輸入 CPI、存取比例、miss rate、penalty（可加 L2），逐步展開 AMAT 與 CPI，長條圖比較各部分停頓 |
 | Multiprocessors and GPUs（多處理器與 GPU） | 兩個動畫：多核心對共享變數的交錯執行（可窮舉所有交錯結果、加鎖比較）；MSI／MESI snooping 快取一致性逐步模擬，顯示各快取狀態、bus 交易、作廢與 false sharing |
 
@@ -79,6 +81,7 @@
 | CPU Scheduling Algorithms（CPU 排程演算法） | 自己輸入行程（到達、burst、優先權），切換 FCFS／SJF／SRTF／Priority／RR，逐步看 ready queue 與甘特圖，算出平均等待、周轉、回應時間 |
 | Deadlock Avoidance and Banker's Algorithm（死結避免與銀行家演算法） | 編輯 Available／Max／Allocation，逐步跑安全演算法找安全序列；輸入請求先檢查再試算安全性 |
 | Paging and TLB（分頁與 TLB） | 設定頁大小、頁表、TLB 大小，逐個位址切 p/d、查 TLB、查頁表（單層／兩層），算出 TLB 命中率與 EAT |
+| I/O Hardware and DMA（I/O 硬體與 DMA） | 兩個動畫：切換 polling／interrupt／DMA 逐步走一次傳輸，看 CPU、controller、DMA 與記憶體之間的訊號；輸入裝置速率等參數，算出三種方式的 CPU 負擔並畫成長條 |
 
 ## 這個專案的重點：CLAUDE.md
 

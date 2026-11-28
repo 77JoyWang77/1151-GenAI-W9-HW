@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>P, NP, and NP-Completeness P、NP 與 NP 完備 · 演算法 | 資工考研互動學習站</title>
   <meta name="description" content="P、NP、co-NP 的定義，多項式時間歸約的方向，NP-hard 與 NP 完備的判斷，以及偽多項式時間。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=cdf5c420">
-  <script src="../../../assets/js/theme.js?v=cdf5c420"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=fbb9e419">
+  <script src="../../../assets/js/theme.js?v=fbb9e419"></script>
 </head>
 <body data-subject="algorithms" data-chapter="np-completeness" data-chno="12" data-topic="algorithms/np-completeness/p-np" data-root="../../../">
   <header class="site-header">
@@ -204,7 +204,7 @@ int verifySAT(const CNF *f, const int x[]) {
             <div class="fig-draw" data-fig="p-np-is-vc"></div>
             <figcaption><b>圖 2</b>：兩個三角形 abc、def 用 bd、ce 連起來。綠色的 S = {a, d} 兩兩不相鄰；剩下橘色的 4 個點蓋住了全部 8 條邊。</figcaption>
           </figure>
-          <p>所以歸約函數 f 只要把 (G, k) 變成 (G, n − k)：「G 有大小 k 的獨立集」⇔「G 有大小 n − k 的點覆蓋」。轉換只改一個數字，O(1) 時間。以圖 2 為例，n = 6：最大獨立集大小是 2（每個三角形最多選一點），所以最小點覆蓋大小是 6 − 2 = 4；想選 {a, d, e} 當獨立集就不行，因為 d、e 相鄰。程式把 5 個點的所有 1024 張圖、每個 k 都檢查了一遍，6,144 組答案完全一致。同樣的想法反過來也成立（VC ≤p IS），再加上「G 的獨立集 = 補圖的 clique」，三個問題其實是同一個問題的三種說法。更多的歸約技巧（3-SAT → CLIQUE、VC → HAM-CYCLE 這類需要「零件」的構造）放在 NP-Completeness Reductions 這一頁（籌備中）。</p>
+          <p>所以歸約函數 f 只要把 (G, k) 變成 (G, n − k)：「G 有大小 k 的獨立集」⇔「G 有大小 n − k 的點覆蓋」。轉換只改一個數字，O(1) 時間。以圖 2 為例，n = 6：最大獨立集大小是 2（每個三角形最多選一點），所以最小點覆蓋大小是 6 − 2 = 4；想選 {a, d, e} 當獨立集就不行，因為 d、e 相鄰。程式把 5 個點的所有 1024 張圖、每個 k 都檢查了一遍，6,144 組答案完全一致。同樣的想法反過來也成立（VC ≤p IS），再加上「G 的獨立集 = 補圖的 clique」，三個問題其實是同一個問題的三種說法。更多的歸約技巧（3-SAT → CLIQUE、VC → HAM-CYCLE 這類需要「零件」的構造）放在 <a href="np-reductions.html">NP-Completeness Reductions（NP 完備歸約）</a>這一頁。</p>
           <details class="code-fold">
             <summary>看程式碼：獨立集、點覆蓋的檢查與歸約</summary>
             <div class="code-tabs">
@@ -370,10 +370,10 @@ int isVertexCover(const Graph *g, const int in[]) {
   </div>
 
   <footer class="site-footer">
-    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=cdf5c420"></script>
-  <script src="../../../assets/js/viz-core.js?v=cdf5c420"></script>
-  <script src="../../../assets/js/viz/algorithms/p-np.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/site.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz-core.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz/algorithms/p-np.js?v=fbb9e419"></script>
 </body>
 </html>

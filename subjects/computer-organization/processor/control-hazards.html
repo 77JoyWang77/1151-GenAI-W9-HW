@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control Hazards and Branch Prediction 控制危障與分支預測 · 計算機組織 | 資工考研互動學習站</title>
+  <meta name="description" content="分支 penalty、flush、delayed branch、分支 CPI、1-bit／2-bit 預測器、迴圈正確率與 BTB">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=fbb9e419">
+  <script src="../../../assets/js/theme.js?v=fbb9e419"></script>
+</head>
+<body data-subject="computer-organization" data-chapter="processor" data-chno="4" data-topic="computer-organization/processor/control-hazards" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Computer Organization 計算機組織</a> › Ch4 The Processor 處理器 › Control Hazards and Branch Prediction 控制危障與分支預測</nav>
+      <div class="topic-head">
+        <h1>Control Hazards and Branch Prediction 控制危障與分支預測<small>分支要到哪一級才知道結果、猜錯要丟幾條、怎麼猜得更準</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch4 The Processor</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">branch penalty</span>
+          <span class="chip">predict-not-taken</span>
+          <span class="chip">delayed branch</span>
+          <span class="chip">2-bit predictor</span>
+          <span class="chip">BTB</span>
+        </div>
+      </div>
+
+      <section id="from-pipelining">
+        <h2>從管線化接著往下：分支讓 IF 不知道下一條要抓誰</h2>
+        <div class="panel prose">
+          <p><a href="pipelining.html#hazards">Pipelining 管線化</a>那一頁已經介紹過三種危障，也提過最簡單的處理：遇到分支就 stall 到結果出來。這一頁專門處理分支。先用三句話複習：</p>
+          <ul>
+            <li>IF 每個週期都要抓一條新指令，但遇到 beq、bne 時，要比較完兩個暫存器才知道下一條是 PC + 4 還是分支目標，這叫 <span class="term">Control Hazard<small>（控制危障，又叫 branch hazard）</small></span>。</li>
+            <li>分支成立、真的跳到目標，叫 <span class="term">Taken<small>（跳）</small></span>；不成立、照順序往下走，叫 <span class="term">Not Taken<small>（不跳）</small></span>。目標位址 = PC + 4 + 位移 × 4，計算方式在 <a href="../instructions/mips-instruction-formats.html#branch-jump">MIPS Instruction Formats MIPS 指令格式</a>講過，這裡不重複。</li>
+            <li>因為分支而白白浪費的週期數，叫 <span class="term">Branch Penalty<small>（分支損失）</small></span>。</li>
+          </ul>
+          <p>考題幾乎都在問同一件事的不同面向：<b>分支要等多久才知道結果、這段時間 IF 做了什麼、猜錯要丟掉幾條、平均起來讓 CPI 多了多少</b>。這一頁依序講：</p>
+          <ol>
+            <li>分支在 ID、EX、MEM 決定時，penalty 各是多少，猜錯要 <span class="term">Flush<small>（清除）</small></span>幾條指令。</li>
+            <li>四種不需要記錄歷史的做法：stall、predict-not-taken、predict-taken、delayed branch，以及 delay slot 的三種填法。</li>
+            <li>分支造成的 CPI 損失：分支比例 × 付出代價的比例 × penalty。</li>
+            <li>動態預測：1-bit、2-bit 計數器（兩種狀態圖版本），以及迴圈、給定序列時的正確率怎麼算。</li>
+            <li>BTB、correlating predictor、tournament predictor 等進一步的做法。</li>
+          </ol>
+          <p>例子都用 MIPS 五階段管線（IF、ID、EX、MEM、WB），階段編號 IF = 1、ID = 2、EX = 3、MEM = 4。分支在哪一級決定每一題的設定都不同，題目一定會寫，先找出這個條件再開始算。</p>
+        </div>
+      </section>
+
+      <section id="resolve-stage">
+        <h2>分支在哪一級決定：penalty 與 flush 幾條</h2>
+        <div class="panel prose">
+          <p>設分支在第 1 個週期 IF，在第 k 級（IF = 1）<b>結束時</b>才知道結果。從第 2 個週期到第 k 個週期，IF 每個週期都必須做點什麼：要嘛不抓（stall），要嘛先抓一條「猜的」。不管哪一種，這 k − 1 個週期抓的東西都可能是白做的：</p>
+          <pre class="formula">penalty（最多損失的週期數）= 決定的階段編號 − 1
+ID 決定 → 1　　EX 決定 → 2　　MEM 決定 → 3</pre>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>分支在哪一級結束時決定</th><th>決定前 IF 已經用掉的週期</th><th>一律 stall 時每個分支停</th><th>猜錯時要 flush 的指令</th></tr></thead>
+              <tbody>
+                <tr><td>ID（比較器、目標加法器搬到 ID）</td><td>第 2 週期</td><td>1</td><td>1 條（IF/ID 裡那條）</td></tr>
+                <tr><td>EX（ALU 比較）</td><td>第 2、3 週期</td><td>2</td><td>2 條（IF/ID、ID/EX 裡的）</td></tr>
+                <tr><td>MEM（最原始的 datapath：在 MEM 才更新 PC）</td><td>第 2～4 週期</td><td>3</td><td>3 條（IF、ID、EX 三級裡的）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="control-hazards-resolve"></div>
+            <figcaption><b>圖 1</b>：beq 在週期 1 IF，猜不跳時接著在週期 2、3、4 抓 i+1、i+2、i+3。beq 在 ID（週期 2）結束就決定時，只有 i+1 已經抓了；在 EX（週期 3）決定時多了 i+2；在 MEM（週期 4）決定時 i+3 也抓了。顏色對應決定的階段：藍色那條在三種情況都會被丟掉，紅色那條只有 MEM 才決定時才會被抓進來。</figcaption>
+          </figure>
+          <h3>為什麼要把分支提早到 ID</h3>
+          <p>決定得越早，penalty 越小。把分支搬到 ID 要加兩樣硬體：一個 <b>相等比較器</b>（beq 只需要比是否相等，用 XOR 再 OR 起來就好，比完整的 ALU 快很多，所以塞得進 ID）、一個 <b>計算目標的加法器</b>。另外還要一個 <b>IF.Flush</b> 訊號：猜錯時把 IF/ID 管線暫存器清成 nop，這就是 flush。</p>
+          <p>代價是 beq 在 ID 就要用到暫存器的值，比一般指令早一個週期，資料危障變多：前一條是 ALU 指令要停 1 個週期，前一條是 lw 要停 2 個週期。這部分在 <a href="data-hazards.html#branch-in-id">Data Hazards and Forwarding 資料危障與轉送</a>已經詳細講過，算題目時記得兩種 stall 要分開加。</p>
+          <h3>管線越深，penalty 越大</h3>
+          <p>為了提高時脈，現代處理器把管線切成十幾級，分支的比較可能到第 10 級以後才完成，猜錯一次就要丟掉十幾條指令。所以時脈越高的處理器越需要準確的分支預測。反過來，如果某個設計為了提早決定分支而拉長了時脈週期，就要把「CPI 變小」和「每個週期變長」放在一起比，不能只看 penalty（例題見練習題）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：branchPenalty() 決定階段與 penalty</summary>
+            <div class="code-block"><div class="code-head">branchPenalty()：決定前已經多抓了 resolve − 1 條</div><pre class="code">int branchPenalty(int resolve) {
+  return resolve - 1;
+}</pre></div>
+          </details>
+          <h3>完成週期題怎麼算</h3>
+          <p>有些考題給一段程式和「實際執行順序」，要你寫出每條指令在哪個週期完成。分支這部分的規則只有兩條：</p>
+          <ul>
+            <li><b>猜對</b>：下一條照常在分支的下一個週期 IF，沒有損失（猜 taken 要能在 IF 就拿到目標，否則還是要等目標算出來）。</li>
+            <li><b>猜錯</b>：正確的下一條在「分支決定的那個週期的下一個週期」才 IF。分支在 EX 決定、EX 在週期 6，正確的指令就在週期 7 IF。</li>
+          </ul>
+          <p>再加上資料危障的 stall（沒有 forwarding 要等 WB；分支在 ID 比較要多等），一條一條往下排就好。</p>
+        </div>
+      </section>
+
+      <section id="static-schemes">
+        <h2>四種靜態做法：stall、猜不跳、猜跳、delayed branch</h2>
+        <div class="panel prose">
+          <p>「靜態」指做法在執行前就固定，硬體不記錄每個分支過去的行為。設 penalty = p（分支決定的階段編號 − 1）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>做法</th><th>決定之前 IF 做什麼</th><th>實際 taken 時損失</th><th>實際 not taken 時損失</th></tr></thead>
+              <tbody>
+                <tr><td><b>一律 stall</b></td><td>什麼都不抓</td><td>p</td><td>p</td></tr>
+                <tr><td><b><span class="term">Predict-Not-Taken<small>（預測不跳）</small></span></b></td><td>照常抓 PC + 4</td><td>p（flush 掉）</td><td>0</td></tr>
+                <tr><td><b><span class="term">Predict-Taken<small>（預測跳）</small></span></b>，IF 就拿得到目標</td><td>從目標抓</td><td>0</td><td>p（flush 掉）</td></tr>
+                <tr><td><b><span class="term">Delayed Branch<small>（延遲分支）</small></span></b>，1 個 slot</td><td>抓分支後面那一條，一定執行</td><td>p − 1</td><td>p − 1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Predict-not-taken：最便宜的猜法</h3>
+          <p>IF 本來就會抓 PC + 4，所以「猜不跳」完全不用額外硬體，只需要猜錯時能 flush：把已經進入管線的錯誤指令的控制訊號清成 0，讓它們變成 bubble。被 flush 的指令還沒走到 MEM、WB，不會寫記憶體或暫存器，所以<b>猜錯只浪費時間，不會改變程式的結果</b>。換句話說，stall、predict-not-taken、各種動態預測，只要硬體正確處理，程式看得到的暫存器與記憶體內容完全一樣，差別只在花了幾個週期。也因此，把「一律 stall」換成任何靜態預測，CPI 只會變小或一樣，不會變大：猜對省下 p 個週期，猜錯也只是和 stall 一樣付出 p。</p>
+          <h3>Predict-taken：要先知道目標</h3>
+          <p>猜跳的前提是 IF 下一個週期就能從目標抓指令。但目標位址要等 ID 解碼、加法器算出來；在標準的五階段管線裡，就算猜 taken 而且猜對，也要等到 ID 才知道目標，仍損失 1 個週期。所以 predict-taken 通常搭配 <b>BTB</b>（後面介紹）：在 IF 就用 PC 查出目標。題目寫「when a branch is predicted taken, the target address is also predicted」就是這個意思，猜對 taken 的損失是 0。</p>
+          <h3>依方向猜：向後跳猜 taken</h3>
+          <p>迴圈尾端的分支是往回跳（目標位址比較小），大部分時間都是 taken；if 判斷常是往前跳，比較常不跳。所以有一種靜態規則是 <span class="term">BTFN<small>（Backward Taken, Forward Not taken）</small></span>：往回跳猜 taken、往前跳猜 not taken，編譯器也可以在指令裡加提示位元。</p>
+          <p>考題常問「一個 for 迴圈用 always-taken 和 always-not-taken 哪個準」。答案取決於分支怎麼編譯：如果判斷放在迴圈尾端、用向後分支跳回去，n 圈的迴圈這個分支執行 n 次，前 n − 1 次 taken，always-taken 準確率 (n − 1)/n；如果判斷放在開頭、條件不成立就往前跳出去，這個分支執行 n + 1 次，前 n 次 not taken，反而是 always-not-taken 比較準。題目沒有給組合語言時，作答要寫出假設。</p>
+          <details class="code-fold">
+            <summary>看程式碼：fetchTrace() 四種做法下 IF 每個週期抓什麼</summary>
+            <div class="code-block"><div class="code-head">Strategy 與 Fetch 結構</div><pre class="code">typedef enum { STALL, PREDICT_NT, PREDICT_T, DELAYED } Strategy;
+
+typedef struct {
+  char name[12];   /* 抓進來的是哪一條：beq、i+1、i+2…（循序）、t1、t2…（目標）、slot、bubble */
+  int cycle;       /* 在第幾個週期 IF */
+  int flushed;     /* 1：猜錯，被清掉（變成 bubble） */
+} Fetch;</pre></div>
+            <div class="code-block"><div class="code-head">fetchTrace()：回傳損失的週期數（bubble + flush）</div><pre class="code">int fetchTrace(Strategy st, int resolve, int taken, Fetch *out, int n) {
+  int lost = 0, seq = 1, tgt = 1;
+  snprintf(out[0].name, sizeof out[0].name, "beq");
+  out[0].cycle = 1;
+  out[0].flushed = 0;
+  for (int c = 2; c &lt;= n; c++) {
+    Fetch *f = &amp;out[c - 1];
+    f-&gt;cycle = c;
+    f-&gt;flushed = 0;
+    if (c &gt; resolve) {                              /* 結果已知：照實際方向抓 */
+      if (taken) snprintf(f-&gt;name, sizeof f-&gt;name, "t%d", tgt++);
+      else snprintf(f-&gt;name, sizeof f-&gt;name, "i+%d", seq++);
+    } else if (st == DELAYED &amp;&amp; c == 2) {           /* delay slot：不管跳不跳都執行 */
+      snprintf(f-&gt;name, sizeof f-&gt;name, "slot");
+      seq = 2;                                      /* slot 就是原本的 i+1 */
+    } else if (st == STALL || st == DELAYED) {      /* 還不知道：什麼都不抓 */
+      snprintf(f-&gt;name, sizeof f-&gt;name, "bubble");
+      lost++;
+    } else if (st == PREDICT_NT) {                  /* 猜不跳：照常抓 PC + 4 */
+      snprintf(f-&gt;name, sizeof f-&gt;name, "i+%d", seq++);
+      if (taken) { f-&gt;flushed = 1; lost++; }
+    } else {                                        /* 猜跳：BTB 在 IF 就給出目標 */
+      snprintf(f-&gt;name, sizeof f-&gt;name, "t%d", tgt++);
+      if (!taken) { f-&gt;flushed = 1; lost++; }
+    }
+  }
+  return lost;
+}</pre></div>
+          </details>
+          <h3>動手操作：每個分支損失幾個週期</h3>
+          <p>切換「決定在」ID／EX／MEM、「做法」與「實際」結果，逐個週期看 IF 抓了什麼：紅色是猜錯被 flush 的指令，之後變成 nop 繼續往下走；灰色 nop 是 stall 插的 bubble；紫色是 delay slot 裡一定會執行的指令；綠色是 beq 決定結果的那一級。可以試試同一個設定下 taken 和 not taken 的差別，再對照上表的四列。</p>
+        </div>
+        <div class="viz" data-viz="branch-timing"></div>
+      </section>
+
+      <section id="delayed-branch">
+        <h2>Delayed Branch：delay slot 的三種填法</h2>
+        <div class="panel prose">
+          <p>Delayed branch 是直接改 ISA 的規定：<b>分支後面那一條指令不管跳不跳都會執行</b>，這個位置叫 <span class="term">Branch Delay Slot<small>（分支延遲槽）</small></span>。MIPS 的分支就有 1 個 delay slot。硬體因此在決定之前永遠有一條「一定要做」的指令可以抓；分支在 ID 決定時（penalty = 1），只要 slot 裡放的是有用的指令，分支就完全沒有損失。</p>
+          <p>重點是<b>誰負責把有用的指令放進 slot</b>：是編譯器（或寫組合語言的人）。硬體只是照規定執行，所以 delayed branch 是靠軟體排程的技巧，需要編譯器配合；動態預測、forwarding 則完全是硬體的事，程式不用改。找不到合適的指令時，只能放 nop，這時就等於 stall 1 個週期。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="control-hazards-delay-slot"></div>
+            <figcaption><b>圖 2</b>：三種填 delay slot 的來源。(a) 從分支之前搬一條和分支無關的指令下來；(b) 從分支目標複製一條，分支改跳到目標的下一條；(c) 從不跳的那條路搬一條上來。橘色是被搬（或複製）的指令，紫色是填好的 slot。(b)、(c) 的 slot 只在其中一個方向有用，另一個方向執行了也不能出錯。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>來源</th><th>什麼時候有用</th><th>條件</th><th>適合</th></tr></thead>
+              <tbody>
+                <tr><td>(a) from before（分支之前）</td><td>一定有用（本來就要做）</td><td>搬下去後不影響分支判斷：不能寫分支要比較的暫存器，也不能是分支條件所依賴的指令鏈的一部分</td><td>首選，找得到就用它</td></tr>
+                <tr><td>(b) from target（目標）</td><td>只有 taken 時有用</td><td>not taken 時白做也不能出錯：它寫的暫存器在不跳的那條路上不能先被讀；要用「複製」的，分支改跳到目標的下一條</td><td>大多數會 taken 的分支，例如迴圈</td></tr>
+                <tr><td>(c) from fall-through（不跳的路）</td><td>只有 not taken 時有用</td><td>taken 時白做也不能出錯：它寫的暫存器在目標那條路上不能先被讀</td><td>大多數不跳的分支</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>「白做也不能出錯」的意思是：slot 裡的指令不能做任何在那條路上會被看見的事。寫一個之後會先被覆寫、不會被讀到的暫存器沒關係；寫記憶體（sw）或可能引發例外的指令就很危險，通常不搬。</p>
+          <h3>為什麼現代處理器不用了</h3>
+          <ul>
+            <li><b>只蓋得住 1 個週期</b>：分支在 ID 決定時剛好；但管線一深、penalty 變成 10 個週期以上，就要十幾個 slot，編譯器根本找不到那麼多獨立的指令。</li>
+            <li><b>一次發好幾條指令的處理器</b>（multiple issue，在 Instruction-Level Parallelism 指令層級平行（籌備中）介紹），一個週期就要填好幾個 slot，問題更嚴重。</li>
+            <li><b>寫進 ISA 就改不掉</b>：delay slot 是指令集規格的一部分，之後的處理器就算管線完全不同，也得繼續支援這個規定。這是它和管線實作綁太緊的缺點，所以「delayed branch 對長管線很有用」是錯的。</li>
+          </ul>
+          <p>考題問 delayed branch 算不算「hardware technique」時要小心：它的確要硬體照規定執行，但填 slot 這件事是編譯器做的，所以大多數教材把它歸為需要編譯器配合的技巧。</p>
+        </div>
+      </section>
+
+      <section id="branch-cpi">
+        <h2>分支造成的 CPI 損失</h2>
+        <div class="panel prose">
+          <p>把每個分支的損失平均到每一條指令（CPI 的定義與 CPU 時間的公式見 <a href="../performance/cpu-performance.html">CPU Time and CPI CPU 時間與 CPI</a>；資料危障和分支一起算的寫法見<a href="pipelining.html#hazard-performance">管線化的「把 stall 算進效能」</a>）：</p>
+          <pre class="formula">CPI = 基本 CPI + 分支比例 × 付出代價的比例 × penalty
+
+付出代價的比例：
+  一律 stall          → 1（每個分支都付）
+  predict-not-taken   → taken 的比例
+  predict-taken（BTB）→ not taken 的比例
+  動態預測            → 預測錯誤率 = 1 − 正確率</pre>
+          <p>最常見的陷阱是題目給「正確率」：正確率 20% 代表 80% 的分支猜錯，要乘的是 0.8，不是 0.2。</p>
+          <h3>例子</h3>
+          <p>15% 的指令是分支，其中 70% taken；基本 CPI = 1，分支在 MEM 決定（p = 3）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>做法</th><th>計算</th><th>CPI</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>一律 stall</td><td>1 + 0.15 × 1 × 3</td><td>1.45</td><td>比理想慢 45%，將近一半的時間在等分支</td></tr>
+                <tr><td>predict-not-taken</td><td>1 + 0.15 × 0.7 × 3</td><td>1.315</td><td>taken 的分支比較多，猜不跳只省了 30% 的損失</td></tr>
+                <tr><td>動態預測，正確率 92%</td><td>1 + 0.15 × 0.08 × 3</td><td>1.036</td><td>損失剩 3.6%，只有 stall 的 8%</td></tr>
+                <tr><td>動態預測 + 分支搬到 ID（p = 1）</td><td>1 + 0.15 × 0.08 × 1</td><td>1.012</td><td>再降到 1.2%，前提是時脈沒有變慢</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>比較兩個設計時，CPI 只是一半：執行時間 = 指令數 × CPI × 週期時間。把分支提早決定可能讓 ID 變長、拖慢整個時脈；這時要把兩邊的「CPI × 週期時間」算出來比，才知道哪個比較快。</p>
+          <details class="code-fold">
+            <summary>看程式碼：branchCPI() 加上分支損失的 CPI</summary>
+            <div class="code-block"><div class="code-head">branchCPI()：基本 CPI + 分支比例 × 付出代價的比例 × penalty</div><pre class="code">double branchCPI(double baseCPI, double branchFrac, double missRate, int penalty) {
+  return baseCPI + branchFrac * missRate * penalty;   /* 每條指令平均多出的週期 */
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="dynamic-prediction">
+        <h2>動態預測：1-bit 與 2-bit 計數器</h2>
+        <div class="panel prose">
+          <p>靜態做法對每個分支都用同一套規則，但每個分支的習性不一樣：迴圈的分支幾乎總是 taken，檢查錯誤的分支幾乎總是 not taken。<span class="term">Dynamic Branch Prediction<small>（動態分支預測）</small></span>在執行時記錄每個分支最近的行為，用來猜下一次。</p>
+          <h3>Branch History Table</h3>
+          <p>最簡單的硬體是 <span class="term">Branch Prediction Buffer<small>（分支預測緩衝區，又叫 Branch History Table, BHT）</small></span>：一塊很小的記憶體，用分支指令 PC 的<b>低位元</b>當索引（最低 2 位元一定是 00，所以從第 2 位元往上取），每一格存 1 或 2 個位元的預測。例如 1024 格的 BHT 用 PC 的第 2～11 位元選格子。</p>
+          <ul>
+            <li><b>沒有 tag</b>：格子裡不記錄「這是哪個分支的歷史」，所以低位元相同的兩個分支會共用同一格，互相干擾（aliasing），拿到別的分支的歷史而猜錯。</li>
+            <li>猜錯只影響效能，不影響正確性：反正猜錯會 flush，所以 BHT 可以做得又小又簡單，不用檢查 tag。</li>
+          </ul>
+          <h3>1-bit：記住上一次</h3>
+          <p>每格 1 個位元，記錄這個分支上一次是 taken 還是 not taken，下次就猜一樣的。問題出在迴圈：內圈跑 n 次的分支，結果是 T T … T N，接著下次進入迴圈又是 T T … T N。1-bit 在最後一次 N 猜錯（它記著 T），然後記成 N；下次進入迴圈的第一次 T 又猜錯。<b>每次離開迴圈都要錯 2 次</b>，即使這個分支 n − 1 次都是 taken。</p>
+          <h3>2-bit 飽和計數器</h3>
+          <p>改成每格 2 個位元，當成 0～3 的計數器：taken 加 1、not taken 減 1，到 3 或 0 就停住（飽和）；值 ≥ 2 預測 taken。四個狀態寫成二進位：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>狀態</th><th>名稱</th><th>預測</th><th>遇到 taken</th><th>遇到 not taken</th></tr></thead>
+              <tbody>
+                <tr><td>11</td><td>強 taken（strongly taken）</td><td>T</td><td>停在 11</td><td>→ 10</td></tr>
+                <tr><td>10</td><td>弱 taken（weakly taken）</td><td>T</td><td>→ 11</td><td>→ 01</td></tr>
+                <tr><td>01</td><td>弱 not taken</td><td>N</td><td>→ 10</td><td>→ 00</td></tr>
+                <tr><td>00</td><td>強 not taken</td><td>N</td><td>→ 01</td><td>停在 00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="control-hazards-fsm"></div>
+            <figcaption><b>圖 3</b>：(a) 1-bit 只有兩個狀態，結果和預測不同就換邊。(b) 2-bit 飽和計數器的四個狀態排成一列：taken 往右（上方的箭頭）、not taken 往左（下方的箭頭），左邊兩個預測 not taken、右邊兩個預測 taken。從 11 要連續兩次 not taken 才會跨到預測 not taken 那一邊。</figcaption>
+          </figure>
+          <p>這樣一次例外（例如迴圈最後一次的 N）只會讓 11 退到 10，下次還是猜 T。所以 2-bit 的特性是：<b>在強狀態時，要連續猜錯兩次才會改變預測</b>；在弱狀態時錯一次就會換邊。內圈 n 次的迴圈，2-bit 每次離開只錯 1 次。</p>
+          <p>注意 2-bit 計數器只看<b>這一條分支自己</b>的歷史。它比 1-bit 好，是因為多了「遲滯」（要錯兩次才改），不是因為用了其他分支的資訊；那是後面 correlating predictor 的事。</p>
+          <h3>同一個狀態圖，題目的畫法可能不一樣</h3>
+          <p>考題附的狀態圖常常排成 2 × 2 的方形（左上強 taken、右上弱 taken、右下弱 not taken、左下強 not taken），而且狀態的<b>編碼不一定一樣</b>：有的題目用 11 代表強 taken，有的反過來用 00、01 代表預測 taken，10、11 代表預測 not taken。起始狀態也每題不同（有的從強 taken 開始，有的從強 not taken 開始）。作答前先把題目的圖轉成「哪幾個狀態預測 T、taken 往哪走、not taken 往哪走、從哪裡開始」，不要背編碼。</p>
+          <h3>另一種 2-bit：跳躍版</h3>
+          <p>除了飽和計數器，還有一種常見的 2-bit 狀態圖：<b>在弱狀態又猜錯時，直接跳到另一邊的強狀態</b>，而不是走到另一邊的弱狀態。強狀態的行為和飽和計數器一樣（錯一次退到弱狀態）。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="control-hazards-fsm-jump"></div>
+            <figcaption><b>圖 4</b>：跳躍版 2-bit。和圖 3(b) 只差中間：01（弱 not taken）遇到 taken 不是到 10，而是從上方直接跳到 11；10（弱 taken）遇到 not taken 從下方直接跳到 00。01 和 10 之間沒有箭頭。</figcaption>
+          </figure>
+          <p>兩種版本在「強狀態錯一次不改預測」這點相同，所以迴圈的計算結果通常一樣；但在 T、N 交錯的序列上會不同。例如從 00 開始，序列 T T N T T T N T：飽和版猜對 3 次，跳躍版猜對 4 次（第 2 次 T 讓跳躍版直接到 11，後面比較穩）。換一個序列可能反過來，沒有哪一版永遠比較好。考古題附圖的都是飽和計數器，題目沒畫圖時就用飽和計數器，並寫出假設。</p>
+          <details class="code-fold">
+            <summary>看程式碼：predictTaken() 與 nextState()（1-bit／2-bit 飽和／跳躍版）</summary>
+            <div class="code-block"><div class="code-head">Kind 與狀態的意義</div><pre class="code">typedef enum { ONE_BIT, TWO_BIT_SAT, TWO_BIT_JUMP } Kind;
+/* 狀態：1-bit 用 1 = 上次 taken、0 = 上次 not taken；
+ * 2-bit 用 3 = 強 taken、2 = 弱 taken、1 = 弱 not taken、0 = 強 not taken */</pre></div>
+            <div class="code-block"><div class="code-head">predictTaken()：1-bit 看上一次，2-bit 看 ≥ 2</div><pre class="code">int predictTaken(Kind k, int s) {
+  if (k == ONE_BIT) return s == 1;
+  return s &gt;= 2;                                    /* 2 和 3 預測 taken */
+}</pre></div>
+            <div class="code-block"><div class="code-head">nextState()：依實際結果更新狀態</div><pre class="code">int nextState(Kind k, int s, int taken) {
+  if (k == ONE_BIT) return taken;                   /* 只記住上一次的結果 */
+  if (k == TWO_BIT_JUMP) {                          /* 跳躍版：弱狀態猜錯直接跳到另一邊的強狀態 */
+    if (taken &amp;&amp; s == 1) return 3;
+    if (!taken &amp;&amp; s == 2) return 0;
+  }
+  if (taken) return s &lt; 3 ? s + 1 : 3;              /* 飽和計數器：往上加，最多到 3 */
+  return s &gt; 0 ? s - 1 : 0;                         /* 往下減，最少到 0 */
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="loop-accuracy">
+        <h2>迴圈與序列的預測正確率怎麼算</h2>
+        <div class="panel prose">
+          <p>不管題目怎麼包裝，步驟都一樣：</p>
+          <ol>
+            <li>寫出這個分支每一次的實際結果（T/N 序列）。迴圈尾端的向後分支，內圈 n 次就是「n − 1 個 T、1 個 N」，外圈每跑一次就重複一輪。</li>
+            <li>從題目給的初始狀態開始，每一次：用目前狀態預測 → 和實際比 → 依實際結果轉到下一個狀態。</li>
+            <li>數猜對幾次，除以總次數。</li>
+          </ol>
+          <h3>迴圈的公式</h3>
+          <p>內圈 n 次、整段重複 m 輪，1-bit 初始為 T、2-bit 初始為 11 或 10：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>預測器</th><th>第一輪錯幾次</th><th>之後每輪錯幾次</th><th>正確率</th><th>n = 4、m = 3</th></tr></thead>
+              <tbody>
+                <tr><td>always taken</td><td>1</td><td>1</td><td>(n − 1)/n</td><td>9/12 = 75%</td></tr>
+                <tr><td>1-bit</td><td>1（最後的 N）</td><td>2（第一次的 T + 最後的 N）</td><td>[(n − 1) + (m − 1)(n − 2)] / mn</td><td>7/12 ≈ 58%</td></tr>
+                <tr><td>2-bit</td><td>1</td><td>1</td><td>(n − 1)/n</td><td>9/12 = 75%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="control-hazards-loop-compare"></div>
+            <figcaption><b>圖 5</b>：內圈 4 次、重複 3 輪。綠色猜對、紅色猜錯。1-bit 從第 2 輪開始每輪錯 2 次（第一次和最後一次），2-bit 每輪只錯最後一次。n 越小差距越大：n = 2 時 1-bit 從第 2 輪起每次都錯。</figcaption>
+          </figure>
+          <p>三個容易算錯的地方：</p>
+          <ul>
+            <li><b>初始狀態</b>：1-bit 初始 N（或 2-bit 從 01、00 開始）時，第一輪前面還會多錯幾次，公式要調整，最保險是照步驟逐次追。</li>
+            <li><b>外層迴圈只跑幾次時</b>：外層分支的序列很短（例如 T T N），1-bit 和 2-bit 都只錯最後一次，正確率一樣，不是 2-bit 一定比較高。2-bit 的優勢要在「離開之後又會再進來」的分支上才看得出來。</li>
+            <li><b>「重複很多次」問的是穩態</b>：一個模式重複 r 次，前幾輪的狀態還在變，正確率會和之後不同。跑個兩三輪，如果某一輪開始時的狀態和上一輪開始時一樣，之後每一輪就完全重複，長期的正確率就是那一輪的正確率，不是前幾輪的平均。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：runPredictor() 與 loopOutcomes()</summary>
+            <div class="code-block"><div class="code-head">runPredictor()：逐次預測、比對、更新狀態</div><pre class="code">int runPredictor(Kind k, int *state, const int *outcome, int n, int verbose) {
+  int correct = 0;
+  for (int i = 0; i &lt; n; i++) {
+    int p = predictTaken(k, *state);
+    if (p == outcome[i]) correct++;
+    if (verbose)
+      printf("  #%-2d 狀態 %d 預測 %c 實際 %c %s\n", i + 1, *state,
+             p ? 'T' : 'N', outcome[i] ? 'T' : 'N', p == outcome[i] ? "對" : "錯");
+    *state = nextState(k, *state, outcome[i]);
+  }
+  return correct;
+}</pre></div>
+            <div class="code-block"><div class="code-head">loopOutcomes()：產生迴圈分支的 T/N 序列</div><pre class="code">int loopOutcomes(int inner, int outer, int *outcome) {
+  int n = 0;
+  for (int r = 0; r &lt; outer; r++)
+    for (int i = 0; i &lt; inner; i++) outcome[n++] = (i &lt; inner - 1);
+  return n;
+}</pre></div>
+          </details>
+          <h3>動手操作：預測器逐次追蹤</h3>
+          <p>可以輸入 T/N 序列（例如考題給的 N T N N T），或輸入內圈次數與輪數產生迴圈序列；用「預測器」切換 1-bit、2-bit 飽和、2-bit 跳躍版，用「初始」切換起始狀態。上面是狀態圖：藍色是目前狀態、紫色是這次轉到的狀態、橘色是走的那條邊；下面依序列出每一次的狀態、預測（綠對紅錯）與實際結果，右上角是累計正確率。迴圈模式最後會另外列出最後一輪的正確率，就是重複很多次時的穩態值。</p>
+        </div>
+        <div class="viz" data-viz="branch-predictor"></div>
+      </section>
+
+      <section id="btb-advanced">
+        <h2>BTB 與更進一步的預測器</h2>
+        <div class="panel prose">
+          <h3>Branch Target Buffer：在 IF 就知道目標</h3>
+          <p>BHT 只回答「跳不跳」，不知道跳去哪裡；目標要等 ID 算出來，猜 taken 至少還是損失 1 個週期。<span class="term">Branch Target Buffer<small>（分支目標緩衝區，BTB）</small></span>是一個存「分支的 PC → 上次跳去的目標」的小 cache，在 <b>IF 階段</b>和抓指令同時用 PC 查：查到了而且預測 taken，下一個週期就直接從目標抓，猜對時完全沒有損失。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="control-hazards-btb"></div>
+            <figcaption><b>圖 6</b>：BTB 用 PC 的低位元選一列，再比對 tag 確認真的是這條分支；命中而且預測位元說 taken 時，下一個 PC 用表裡的目標，否則照常用 PC + 4。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>BHT（branch prediction buffer）</th><th>BTB</th></tr></thead>
+              <tbody>
+                <tr><td>存什麼</td><td>1 或 2 個預測位元</td><td>目標位址（常附預測位元）</td></tr>
+                <tr><td>有沒有 tag</td><td>沒有，aliasing 只會讓預測變差</td><td>有，用錯別的分支的目標會跳到莫名其妙的地方，所以要確認</td></tr>
+                <tr><td>什麼時候查</td><td>ID（已經知道是分支）或 IF</td><td>IF（還沒解碼就要決定下一個 PC）</td></tr>
+                <tr><td>猜 taken 猜對的損失</td><td>還要等目標算出來</td><td>0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Correlating predictor：看其他分支</h3>
+          <p>有些分支的結果和<b>前面其他分支</b>有關。例如先判斷 <code>if (x == 0)</code>、再判斷 <code>if (x &gt;= 0)</code>：前一個成立時後一個一定成立。2-bit 計數器只看自己，抓不到這種關係。<span class="term">Correlating Predictor<small>（相關預測器）</small></span>用一個 <b>global history</b> 暫存器記住最近幾個分支（不管是哪一條）的結果，和這條分支自己的 PC 一起選計數器：同一條分支，在「前面分支走法不同」的情況下用不同的計數器。這種寫法叫 (m, n) 預測器：用最近 m 個分支的結果，從 2<sup>m</sup> 個 n-bit 計數器裡選一個。</p>
+          <h3>Tournament predictor：讓兩種預測器比賽</h3>
+          <p>有的分支適合看自己的歷史（local），有的適合看全域歷史（global）。<span class="term">Tournament Predictor<small>（競賽預測器）</small></span>同時做兩種預測，再用每個分支一個 2-bit 的選擇器記錄「最近誰比較準」，就聽誰的。選擇器的更新方式和 2-bit 計數器一樣，要連續贏兩次才換人。</p>
+          <h3>Indirect branch 與 return</h3>
+          <p><code>jr $t0</code> 這種目標放在暫存器裡的 <span class="term">Indirect Branch<small>（間接分支）</small></span>（switch 的跳躍表、函式指標、虛擬函式），每次的目標都可能不同，BTB 只記得上一次的目標，所以比條件分支<b>更難</b>預測。函式返回（<code>jr $ra</code>）有固定的規律：回到最近一次呼叫的下一條，所以處理器用一個小堆疊（return address stack）專門記返回位址。</p>
+          <h3>乾脆不要分支：條件選擇</h3>
+          <p>很短的 if-else 可以改寫成沒有分支的程式：兩邊的值都算，再用一條條件選擇指令依條件挑一個寫入，例如 ARMv8 的 <code>CSEL</code>、MIPS 的 <code>movn</code> / <code>movz</code>。分支少了，就沒有猜錯的代價；缺點是兩邊都要算，只適合很短的分支。另外，迴圈展開（loop unrolling）可以減少迴圈分支執行的次數，在 Instruction-Level Parallelism 指令層級平行（籌備中）介紹。</p>
+          <p>最後補充：猜錯時「flush 掉錯誤路徑、從正確的位址重新抓」這套機制，處理器遇到例外時也會用到，在 Exceptions 例外處理（籌備中）介紹。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>分支在某一級決定：penalty、stall 數、flush 幾條</td><td>很常考</td><td>penalty = 決定的階段編號 − 1（ID 1、EX 2、MEM 3）；一律 stall 時每個分支都付；猜錯時 flush 的就是這幾條</td><td><a class="q-link" href="#q-co-0164">例題</a> <a class="q-link" href="#q-co-0154">例題</a> <a class="q-link" href="#q-co-0256">例題</a></td></tr>
+                <tr><td>分支造成的額外 CPI</td><td>很常考</td><td>分支比例 × 付出代價的比例 × penalty；給正確率要先換成錯誤率；比較設計時再乘週期時間</td><td><a class="q-link" href="#q-co-0164">例題</a> <a class="q-link" href="#q-co-0139">例題</a> <a class="q-link" href="#q-co-0259">例題</a> <a class="q-link" href="#q-co-0262">例題</a></td></tr>
+                <tr><td>迴圈分支：1-bit vs 2-bit 正確率</td><td>很常考</td><td>寫出每輪 T…TN；從初始狀態逐次追；1-bit 從第二輪起每輪錯 2 次、2-bit 錯 1 次；外層短迴圈兩者常相同</td><td><a class="q-link" href="#q-co-0132">例題</a> <a class="q-link" href="#q-co-0065">例題</a> <a class="q-link" href="#q-co-0261">例題</a> <a class="q-link" href="#q-co-0263">例題</a></td></tr>
+                <tr><td>給狀態圖與 T/N 序列，算正確率</td><td>常考</td><td>先讀懂題目的編碼與起始狀態；逐次追；問「重複很多次」時找穩態</td><td><a class="q-link" href="#q-co-0165">例題</a> <a class="q-link" href="#q-co-0204">例題</a> <a class="q-link" href="#q-co-0260">例題</a></td></tr>
+                <tr><td>含分支的管線追蹤：完成週期、每圈幾個週期</td><td>常考</td><td>先排資料危障；猜對沒有損失（猜 taken 要 IF 就有目標）；猜錯時正確指令在決定週期的下一個週期 IF</td><td><a class="q-link" href="#q-co-0099">例題</a> <a class="q-link" href="#q-co-0100">例題</a> <a class="q-link" href="#q-co-0204">例題</a></td></tr>
+                <tr><td>always-taken vs always-not-taken</td><td>常考</td><td>看分支編譯在迴圈尾端（向後，多半 taken）還是開頭（向前，多半不跳）；寫出假設</td><td><a class="q-link" href="#q-co-0104">例題</a> <a class="q-link" href="#q-co-0065">例題</a></td></tr>
+                <tr><td>delayed branch 的觀念與填 slot</td><td>常考</td><td>slot 一定執行、靠編譯器填；from before 首選，from target／fall-through 要確認另一個方向執行也無害；只蓋得住 1 個週期</td><td><a class="q-link" href="#q-co-0136">例題</a> <a class="q-link" href="#q-co-0050">例題</a> <a class="q-link" href="#q-co-0105">例題</a> <a class="q-link" href="#q-co-0258">例題</a> <a class="q-link" href="#q-co-0264">例題</a></td></tr>
+                <tr><td>BHT 與 BTB 的結構</td><td>常考</td><td>BHT：PC 低位元索引、沒有 tag、aliasing；BTB：IF 階段查、有 tag、存目標</td><td><a class="q-link" href="#q-co-0019">例題</a> <a class="q-link" href="#q-co-0148">例題</a> <a class="q-link" href="#q-co-0175">例題</a> <a class="q-link" href="#q-co-0257">例題</a></td></tr>
+                <tr><td>correlating、tournament、indirect branch、條件選擇</td><td>偶爾</td><td>correlating 用 global history；2-bit 只看自己；indirect 目標會變、較難猜；CSEL 用資料選擇取代分支</td><td><a class="q-link" href="#q-co-0019">例題</a> <a class="q-link" href="#q-co-0148">例題</a> <a class="q-link" href="#q-co-0175">例題</a></td></tr>
+                <tr><td>分支在 ID 比較時的資料危障</td><td>常考</td><td>ALU 指令 → beq 停 1、lw → beq 停 2（細節在資料危障頁）</td><td><a class="q-link" href="#q-co-0016">例題</a> <a class="q-link" href="#q-co-0148">例題</a></td></tr>
+                <tr><td>預測是否改變結果、深管線與時脈</td><td>偶爾</td><td>flush 的指令不寫回，各種做法只差時間；管線越深 penalty 越大，越需要好的預測</td><td><a class="q-link" href="#q-co-0172">例題</a> <a class="q-link" href="#q-co-0126">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 分支提早到 ID 決定，每個分支仍要停 2 個週期</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> ID 結束就知道結果，只有 IF 多抓的那 1 條，penalty 是 1</span> <a class="q-link" href="#q-co-0016">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 分支在 MEM 決定，penalty 是 4</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 決定前 IF 只多抓了 IF、ID、EX 三級裡的 3 條，penalty = 4 − 1 = 3</span> <a class="q-link" href="#q-co-0164">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 題目給「預測正確率 20%」就乘 0.2</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 付出代價的是猜錯的 80%，要乘 0.8</span> <a class="q-link" href="#q-co-0164">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 加了靜態預測，猜錯時要 flush，CPI 可能比一律 stall 更大</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 猜錯的代價和 stall 一樣是 p，猜對還省下 p，CPI 只會變小或一樣</span> <a class="q-link" href="#q-co-0139">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 猜錯時錯誤路徑上的指令已經執行了，結果可能不同</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 被 flush 的指令還沒走到 MEM、WB，不會寫回任何東西，架構結果完全相同</span> <a class="q-link" href="#q-co-0172">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 1-bit 預測器在迴圈裡每次離開只錯 1 次</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 離開那次錯，下次進入的第一次又錯，每輪錯 2 次</span> <a class="q-link" href="#q-co-0132">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 2-bit 計數器猜錯一次就改變預測</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 在強狀態要連錯兩次才換邊；在弱狀態錯一次就換</span> <a class="q-link" href="#q-co-0065">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 2-bit 的正確率一定比 1-bit 高</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 外層只跑幾次的分支（T T N）兩者一樣；有些交錯的序列 2-bit 甚至不比較好</span> <a class="q-link" href="#q-co-0132">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 2-bit 狀態一律是 11 = 強 taken</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 編碼、起始狀態、甚至狀態圖版本都依題目，先讀懂圖再追</span> <a class="q-link" href="#q-co-0204">例題</a> <a class="q-link" href="#q-co-0260">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 模式重複很多次的正確率等於前幾輪的正確率</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 前幾輪狀態還在變；找到每輪開始狀態重複的那一輪，它的正確率才是穩態</span> <a class="q-link" href="#q-co-0165">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Branch history table 要有 tag 檢查</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> BHT 沒有 tag，aliasing 只會讓預測變差；要存目標位址的 BTB 才需要 tag</span> <a class="q-link" href="#q-co-0019">例題</a> <a class="q-link" href="#q-co-0148">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> BTB 在 ID 階段查，提早改變 PC</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 在 IF 就要用 PC 查，下一個週期才能從目標抓指令</span> <a class="q-link" href="#q-co-0175">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 2-bit 預測器利用其他分支的全域歷史</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 它只看這條分支自己的歷史；用 global history 的是 correlating predictor</span> <a class="q-link" href="#q-co-0175">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Delayed branch 是純硬體技術，程式不用配合</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> slot 裡放什麼由編譯器決定，找不到就放 nop</span> <a class="q-link" href="#q-co-0136">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> Delayed branch 對長管線特別有用</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 一個 slot 只蓋得住 1 個週期，管線越深越沒用，而且寫進 ISA 就改不掉</span> <a class="q-link" href="#q-co-0105">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 從目標搬一條指令進 slot 一定安全</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 不跳時它也會執行，寫的暫存器在不跳的那條路上不能被讀</span> <a class="q-link" href="#q-co-0264">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> lw 後面緊接著用它比較的 beq（在 ID 比較）停 1 個週期</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> beq 在 ID 就要值，lw 的資料 MEM 結束才有，要停 2 個</span> <a class="q-link" href="#q-co-0148">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="control-hazards"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz-core.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz/computer-organization/control-hazards.js?v=fbb9e419"></script>
+</body>
+</html>

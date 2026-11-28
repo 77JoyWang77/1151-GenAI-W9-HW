@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NP-Completeness Reductions NP 完備歸約 · 演算法 | 資工考研互動學習站</title>
+  <meta name="description" content="證明 NP 完備的步驟與方向，3-SAT、CLIQUE、點覆蓋、子集合和、HAM-CYCLE、3-COLOR 的歸約構造。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=fbb9e419">
+  <script src="../../../assets/js/theme.js?v=fbb9e419"></script>
+</head>
+<body data-subject="algorithms" data-chapter="np-completeness" data-chno="12" data-topic="algorithms/np-completeness/np-reductions" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Algorithms 演算法</a> › Ch12 NP-Completeness NP 完備 › NP-Completeness Reductions NP 完備歸約</nav>
+      <div class="topic-head">
+        <h1>NP-Completeness Reductions NP 完備歸約<small>把已知的難題變成新問題：構造、證明兩個方向、算大小</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch12 NP-Completeness</span>
+          <span class="chip" data-difficulty="3">難度</span>
+          <span class="chip">reduction</span>
+          <span class="chip">3-SAT</span>
+          <span class="chip">CLIQUE</span>
+          <span class="chip">SUBSET-SUM</span>
+          <span class="chip">HAM-CYCLE</span>
+        </div>
+      </div>
+
+      <section id="recap">
+        <h2>從定義到證明：這一頁要學會什麼</h2>
+        <div class="panel prose">
+          <p>P、NP、NP-hard、NP-complete 的定義和「A ≤<sub>p</sub> B 的方向」已經在 <a href="p-np.html#reduction">P、NP 與 NP 完備</a>講過，這裡只用三句話複習：</p>
+          <ul>
+            <li><b>歸約</b> A ≤<sub>p</sub> B：一個多項式時間的轉換 f，使「x 是 A 的 yes ⇔ f(x) 是 B 的 yes」。意思是 B 至少和 A 一樣難（<a href="p-np.html#reduction">詳細定義</a>）。</li>
+            <li><b>NP-complete</b> = 在 NP 裡 ＋ NP-hard（<a href="p-np.html#np-complete">定義與性質</a>）。</li>
+            <li><b>起點</b>：Cook–Levin 定理說 SAT 是 NPC，之後的 NPC 問題都是從它一路歸約出來的（<a href="p-np.html#cook-levin">定理與常見 NPC 清單</a>）。</li>
+          </ul>
+          <p>那一頁回答的是「這些詞是什麼意思」；這一頁要回答考卷上更實際的問題：<b>拿到一個新問題，怎麼證明它是 NP-complete？</b>這需要兩種能力。第一是邏輯：看到「若 A ≤<sub>p</sub> B 則……」能立刻判斷對錯、知道該從哪個已知問題歸約過來。第二是構造：真的寫出轉換 f，再證明 yes 對 yes、no 對 no。考古題裡這兩類大約各占一半，構造題通常給 10～15 分，而且會要求「兩個方向都要證」。</p>
+          <p>下圖是這一頁會走過的歸約。每一條箭頭都是一個獨立的構造，學會之後，遇到新問題時可以從這張圖上挑一個「長得最像」的已知問題當起點。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="np-reductions-tree"></div>
+            <figcaption><b>圖 1</b>：常考的歸約樹。箭頭從已知 NPC 問題指向新問題；SAT 是起點（Cook–Levin），往下每一個問題都因為「上游的 NPC 問題能歸約到它」而成為 NP-hard。虛線是另一條也常考的路。</figcaption>
+          </figure>
+          <div class="callout"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 證明 X 是 NP-complete 的固定格式：<b>(1) X ∈ NP</b>：說出 certificate 和多項式時間的驗證方法。<b>(2) 挑一個已知 NPC 問題 Y，構造 f 使 Y ≤<sub>p</sub> X</b>。<b>(3) f 是多項式時間</b>。<b>(4) 正確性兩個方向</b>：y 是 yes ⇒ f(y) 是 yes；f(y) 是 yes ⇒ y 是 yes。四項缺一不可。</div>
+        </div>
+      </section>
+
+      <section id="inference">
+        <h2>推論題：A ≤p B 能推出什麼</h2>
+        <div class="panel prose">
+          <p>選擇題最常給一串歸約加上幾個條件，問哪些敘述一定成立。只要記住一件事：歸約 A ≤<sub>p</sub> B 是「把 A 變成 B」，所以 <b>B 會解 ⇒ A 就會解</b>。由這一句可以推出所有規則：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="np-reductions-chain"></div>
+            <figcaption><b>圖 2</b>：一串歸約 A ≤p B ≤p C ≤p D。「很難」（NP-hard）沿著箭頭往右傳；「好解、好驗證」（∈ P、∈ NP）逆著箭頭往左傳。反方向一律推不出來。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>已知 A ≤p B 和……</th><th>可以推出</th><th>推不出（常見陷阱）</th></tr></thead>
+              <tbody>
+                <tr><td>A 是 NP-hard</td><td>B 是 NP-hard</td><td>B 是 NPC：還缺 B ∈ NP</td></tr>
+                <tr><td>A 是 NPC</td><td>B 是 NP-hard</td><td>B 是 NPC（B 可能是停機問題）</td></tr>
+                <tr><td>B ∈ P（或 NP、co-NP）</td><td>A ∈ P（或 NP、co-NP）</td><td>—</td></tr>
+                <tr><td>A ∈ P</td><td>什麼都推不出</td><td>B ∈ P：簡單的問題可以變成很難的問題</td></tr>
+                <tr><td>B 是 NP-hard</td><td>什麼都推不出</td><td>A 是 NP-hard：例如排序 ≤p SAT</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>一題走一遍</h3>
+          <p>設 SAT ≤<sub>p</sub> X ≤<sub>p</sub> Y ≤<sub>p</sub> Z，而且 Y ∈ NP。逐一判斷：</p>
+          <ul>
+            <li><b>誰是 NP-hard</b>：SAT 是 NP-hard，往右傳，X、Y、Z 都是。</li>
+            <li><b>誰在 NP</b>：Y ∈ NP，往左傳，X ∈ NP（SAT 本來就在）。Z 在箭頭右邊，<b>不知道</b>。</li>
+            <li><b>誰是 NPC</b>：X、Y 同時 ∈ NP 且 NP-hard，是 NPC；Z 只能說是 NP-hard。</li>
+            <li><b>「若 Z ∈ P 則 P = NP」</b>：成立。Z ∈ P 往左傳得 X ∈ P，X 是 NPC，所有 NP 問題都能多項式解。</li>
+            <li><b>「若 X ∈ P 則 Z ∈ P」</b>：不成立。X ∈ P 雖然推得 P = NP，但 Z 可能根本不在 NP（例如不可判定），P = NP 也救不了它。</li>
+          </ul>
+          <h3>三個進階細節</h3>
+          <ul>
+            <li><b>歸約的速度也會傳過去</b>：若 A 可以<b>線性時間</b>歸約到 B，B 有 O(N<sup>3</sup>) 演算法，那 A 也有 O(N<sup>3</sup>)，因為轉換後的輸入長度只有 O(N)，(cN)<sup>3</sup> = O(N<sup>3</sup>)。但「B 沒有 O(N<sup>3</sup>) 演算法」推不出 P ≠ NP：B 可能只是比 NP 更難，A 也可能有 O(N<sup>4</sup>) 的解。</li>
+            <li><b>不是每個 NPC 問題都能歸約到每個 NP 問題</b>：NP 裡有兩個「平凡」的語言，∅（永遠答 no）和全部字串（永遠答 yes）。歸約必須把 yes 送到 yes，∅ 根本沒有 yes 可以送，所以 SAT 不可能歸約到 ∅。考題問「every NPC problem reduces to every problem in NP」時，答案是錯。</li>
+            <li><b>NP-hard 問題不一定能歸約到另一個 NP-hard 問題</b>：停機問題是 NP-hard，但它不可判定，如果能歸約到 SAT（可判定），停機問題就能解了。NPC 之間可以互相歸約，是因為它們都在 NP 裡。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="proof-template">
+        <h2>寫歸約證明的方法：先挑起點，再設計零件</h2>
+        <div class="panel prose">
+          <p>格式在上面的 callout 裡，真正難的是第 (2) 步：<b>要從哪個已知問題歸約過來？怎麼設計 f？</b>常用的手法可以分成三類，難度由淺到深：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>手法</th><th>想法</th><th>例子</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Restriction<small>（限制法）</small></span></td><td>新問題 X 的某個特例就是已知的 NPC 問題，f 只要把 Y 的輸入「原封不動」或稍微改一下放進 X</td><td>HAM-CYCLE → TSP（權重只有 1、2）；HAM-PATH → 長度 k 的簡單路徑（k = n − 1）；CLIQUE → HALF-CLIQUE（補點）</td></tr>
+                <tr><td><span class="term">Local Replacement<small>（局部替換）</small></span></td><td>把 Y 的輸入的每個「小零件」換成一小塊等價的結構，各換各的</td><td>SAT → 3-SAT（每個長子句換成一串短子句）；IS → VC（集合取補）</td></tr>
+                <tr><td><span class="term">Gadget Design<small>（零件設計）</small></span></td><td>替變數、子句分別設計零件，讓「零件能不能拼起來」剛好對應「公式能不能滿足」</td><td>3-SAT → CLIQUE、3-SAT → 3-COLOR、VC → SUBSET-SUM</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>怎麼挑起點：看新問題「長得像誰」。</p>
+          <ul>
+            <li>要從<b>一堆東西裡挑一組</b>、彼此有衝突限制（選點、選集合）：從 CLIQUE、INDEPENDENT-SET、VERTEX-COVER 來。</li>
+            <li>要<b>排一個順序</b>、經過每個東西一次（路線、排程）：從 HAM-CYCLE、HAM-PATH 來。</li>
+            <li>和<b>數字加總</b>有關（湊總和、分兩堆、背包）：從 SUBSET-SUM 來。</li>
+            <li>其他都不像，或是限制條件很「邏輯」（真假、互斥、至少一個）：從 3-SAT 來，它結構最簡單，每個子句只有 3 個字面。</li>
+          </ul>
+          <p>正確性證明的寫法也固定：<b>(⇒)</b> 從 Y 的一個解，<b>具體構造</b>出 f(y) 的一個解；<b>(⇐)</b> 從 f(y) 的<b>任意</b>一個解，反推出 Y 的一個解。(⇐) 比較難，因為你不能假設 f(y) 的解長成你想要的樣子，必須用構造的性質逼它就範（例如「同一個子句的點之間沒有邊，所以 clique 每個子句只能拿一個」）。只證 (⇒) 是最常被扣分的地方：這只說明 yes 送到 yes，沒有排除 no 也被送到 yes。</p>
+        </div>
+      </section>
+
+      <section id="sat-to-3sat">
+        <h2>SAT → 3-SAT：把長子句拆開</h2>
+        <div class="panel prose">
+          <p>Cook–Levin 給的是一般的 <span class="term">CNF<small>（合取範式）</small></span>公式（CNF 的寫法見<a href="../../discrete-math/logic/propositional-logic.html#normal-forms">命題邏輯</a>），子句可以任意長。後面的構造都希望每個子句<b>最多 3 個字面</b>，零件才設計得出來，所以第一步先證明 3-SAT 也是 NPC。3-SAT ∈ NP 很明顯（certificate 是一組指派）；接下來用局部替換把 SAT 歸約到 3-SAT。</p>
+          <p>長度 ≤ 3 的子句不動。長度 k &gt; 3 的子句 (l<sub>1</sub> ∨ l<sub>2</sub> ∨ … ∨ l<sub>k</sub>) 引入 k − 3 個新變數 y<sub>1</sub>, …, y<sub>k−3</sub>，換成一串 k − 2 個子句：</p>
+          <pre class="formula">(l1 ∨ l2 ∨ y1)(¬y1 ∨ l3 ∨ y2)(¬y2 ∨ l4 ∨ y3) … (¬y(k−3) ∨ l(k−1) ∨ lk)</pre>
+          <p>例如 6 個字面的子句變成 (x1 ∨ x2 ∨ y1)(¬y1 ∨ x3 ∨ y2)(¬y2 ∨ x4 ∨ y3)(¬y3 ∨ x5 ∨ x6)，4 個子句、3 個新變數。y 像一條「接力棒」：y<sub>i</sub> = T 表示「真的字面在更右邊，請後面負責」。</p>
+          <ul>
+            <li><b>(⇒)</b> 原子句被某個 l<sub>i</sub> 滿足：l<sub>i</sub> 左邊的 y 全設 T，右邊的 y 全設 F。左邊每個子句由結尾的 y 滿足，右邊每個子句由開頭的 ¬y 滿足，l<sub>i</sub> 所在的子句由 l<sub>i</sub> 自己滿足。</li>
+            <li><b>(⇐)</b> 若原本的 l<sub>1</sub>…l<sub>k</sub> 全假：第一個子句逼 y<sub>1</sub> = T，第二個子句因此逼 y<sub>2</sub> = T……一路傳到最後一個子句 (¬y<sub>k−3</sub> ∨ l<sub>k−1</sub> ∨ l<sub>k</sub>) 全假。所以新的那串子句能被滿足，就代表原本的 l 至少一個為真。</li>
+            <li><b>大小</b>：每個長度 k 的子句變成 k − 2 個子句，新公式長度是原本的常數倍，線性時間。</li>
+          </ul>
+          <p>如果題目要求「每個子句<b>恰好</b> 3 個字面」，短子句可以重複字面補齊（(x) 變成 (x ∨ x ∨ x)），或另外加兩個強迫為假的新變數。反過來要注意：<b>2-SAT 在 P</b>，同樣的拆法拆不成 2 個字面的子句，所以 3 是臨界點。</p>
+          <details class="code-fold">
+            <summary>看程式碼：reduceSATTo3SAT()</summary>
+            <div class="code-block"><div class="code-head">reduceSATTo3SAT()：長子句換成一串 3 字面子句</div><pre class="code">void reduceSATTo3SAT(const CNF *f, CNF *g) {
+  g-&gt;n = f-&gt;n; g-&gt;m = 0;
+  for (int j = 0; j &lt; f-&gt;m; j++) {
+    const int *l = f-&gt;lit[j];
+    int k = f-&gt;len[j];
+    if (k &lt;= 3) {                                   /* 本來就夠短，照抄 */
+      g-&gt;len[g-&gt;m] = k;
+      memcpy(g-&gt;lit[g-&gt;m++], l, sizeof(int) * k);
+      continue;
+    }
+    int y = ++g-&gt;n;                                 /* 第一個新變數 y1 */
+    int first[3] = { l[0], l[1], y };
+    g-&gt;len[g-&gt;m] = 3; memcpy(g-&gt;lit[g-&gt;m++], first, sizeof first);
+    for (int t = 2; t &lt; k - 2; t++) {               /* 中間：(¬y ∨ l_t ∨ y') */
+      int y2 = ++g-&gt;n;
+      int mid[3] = { -y, l[t], y2 };
+      g-&gt;len[g-&gt;m] = 3; memcpy(g-&gt;lit[g-&gt;m++], mid, sizeof mid);
+      y = y2;
+    }
+    int last[3] = { -y, l[k - 2], l[k - 1] };       /* 最後：(¬y ∨ l_{k-1} ∨ l_k) */
+    g-&gt;len[g-&gt;m] = 3; memcpy(g-&gt;lit[g-&gt;m++], last, sizeof last);
+  }
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="sat-to-clique">
+        <h2>3-SAT → CLIQUE：每個字面一個點</h2>
+        <div class="panel prose">
+          <p><span class="term">Clique<small>（團）</small></span>是一組兩兩相鄰的點。CLIQUE 問題：給圖 G 和 k，有沒有 k 個點的 clique？它在 NP（certificate 是 k 個點，檢查 O(k<sup>2</sup>) 對）。要證明 NP-hard，從 3-SAT 歸約。給有 m 個子句的 3-CNF 公式 φ：</p>
+          <ol>
+            <li><b>點</b>：每個子句的每個字面各畫一個點，點記得「我是哪個字面、在第幾個子句」。最多 3m 個點。</li>
+            <li><b>邊</b>：兩個點相連 ⇔ 它們<b>在不同子句</b>，而且<b>不互補</b>（不是 x<sub>i</sub> 和 ¬x<sub>i</sub>）。</li>
+            <li><b>門檻</b>：k = m。</li>
+          </ol>
+          <p>直覺：一個 clique 就是「每個子句派一個代表，而且代表之間不吵架」。同一子句不連邊，所以最多每個子句一個代表；互補不連邊，所以代表們可以同時為真。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="np-reductions-sat-clique"></div>
+            <figcaption><b>圖 3</b>：φ = (x1 ∨ x2 ∨ x3)(¬x1 ∨ ¬x2 ∨ x3)(x1 ∨ ¬x2 ∨ ¬x3) 的圖。三組點分別是 C1、C2、C3；同一組內沒有邊，x1 和 ¬x1 這類互補的點也沒有邊。指派 x = (T, F, F) 讓 C1 的 x1、C2 的 ¬x2、C3 的 x1 為真，三點兩兩相鄰（綠色），是 3-clique。</figcaption>
+          </figure>
+          <h3>正確性的兩個方向</h3>
+          <ul>
+            <li><b>(⇒) φ 可滿足 ⇒ G 有 m-clique</b>：取一組滿足指派，每個子句至少有一個字面為真，各挑一個，得到 m 個點。任兩個點在不同子句；兩者都為真，所以不可能一個是 x、一個是 ¬x。照連邊規則它們之間一定有邊，所以是 m-clique。</li>
+            <li><b>(⇐) G 有 m-clique ⇒ φ 可滿足</b>：任取一個 m-clique。同一子句的點之間沒有邊，m 個點只能<b>每個子句剛好一個</b>；互補的點之間沒有邊，所以 clique 裡不會同時有 x 和 ¬x。把 clique 裡的字面全設為真（不會矛盾），沒出現的變數隨便設。每個子句都有一個真字面，φ 被滿足。</li>
+          </ul>
+          <p><b>大小</b>：N ≤ 3m 個點，檢查每一對點 O(N<sup>2</sup>) = O(m<sup>2</sup>)。圖 3 的公式有 9 個點、21 條邊：任兩個子句之間有 3 × 3 = 9 對，三對子句共 27 對，扣掉 6 對互補（例如 C1 的 x1 和 C2 的 ¬x1）。程式對 3000 個隨機公式（其中 580 個不可滿足）都確認「φ 可滿足 ⇔ G 有 m-clique」，也確認 (⇒)、(⇐) 兩個構造本身都正確。</p>
+          <h3>換成獨立集只要把邊反過來</h3>
+          <p><span class="term">Independent Set<small>（獨立集）</small></span>是一組兩兩<b>不</b>相鄰的點。3-SAT → INDEPENDENT-SET 用同樣的點，連邊規則改成：<b>同一子句的點兩兩相連</b>（三角形，保證每個子句最多選一個）、<b>互補的點相連</b>（保證不會同時選 x 和 ¬x），k 一樣是 m。比較兩條規則會發現它們剛好是補集：「不同子句且不互補」的否定就是「同子句或互補」。所以這兩張圖互為補圖，圖 3 的公式在獨立集版本有 15 條邊，21 + 15 = 36 = C(9, 2)。</p>
+          <details class="code-fold">
+            <summary>看程式碼：3-SAT → CLIQUE／獨立集</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="CLIQUE"><div class="code-head">reduce3SATToClique()：不同子句、不互補才連</div><pre class="code">void literalVertices(const CNF *f, Graph *g, int lit[], int cls[]) {
+  g-&gt;n = 0;
+  for (int j = 0; j &lt; f-&gt;m; j++)
+    for (int t = 0; t &lt; f-&gt;len[j]; t++) {
+      lit[g-&gt;n] = f-&gt;lit[j][t];
+      cls[g-&gt;n] = j;
+      g-&gt;n++;
+    }
+}
+
+void reduce3SATToClique(const CNF *f, Graph *g, int *k, int lit[], int cls[]) {
+  literalVertices(f, g, lit, cls);
+  for (int u = 0; u &lt; g-&gt;n; u++)
+    for (int v = 0; v &lt; g-&gt;n; v++)
+      g-&gt;adj[u][v] = u != v
+                     &amp;&amp; cls[u] != cls[v]            /* 不同子句才連 */
+                     &amp;&amp; lit[u] != -lit[v];          /* x 和 ¬x 不連 */
+  *k = f-&gt;m;
+}</pre></div>
+              <div class="code-block" data-tab="獨立集"><div class="code-head">reduce3SATToIS()：同子句或互補就連</div><pre class="code">void reduce3SATToIS(const CNF *f, Graph *g, int *k, int lit[], int cls[]) {
+  literalVertices(f, g, lit, cls);
+  for (int u = 0; u &lt; g-&gt;n; u++)
+    for (int v = 0; v &lt; g-&gt;n; v++)
+      g-&gt;adj[u][v] = u != v
+                     &amp;&amp; (cls[u] == cls[v]           /* 同一個子句：最多選一個 */
+                         || lit[u] == -lit[v]);     /* x 和 ¬x：不能同時為真 */
+  *k = f-&gt;m;
+}</pre></div>
+              <div class="code-block" data-tab="兩個方向"><div class="code-head">pickTrueLiterals()（⇒）／readAssignment()（⇐）</div><pre class="code">long pickTrueLiterals(const CNF *f, const Graph *g, const int x[], const int lit[], const int cls[]) {
+  long s = 0;
+  for (int j = 0; j &lt; f-&gt;m; j++)
+    for (int v = 0; v &lt; g-&gt;n; v++)
+      if (cls[v] == j &amp;&amp; litValue(lit[v], x)) {
+        s |= 1L &lt;&lt; v;                               /* 子句 j 挑這個點 */
+        break;                                      /* 每個子句只挑一個 */
+      }
+  return s;
+}
+
+void readAssignment(const CNF *f, const Graph *g, long s, const int lit[], int x[]) {
+  for (int i = 1; i &lt;= f-&gt;n; i++) x[i] = 0;         /* 沒被選到的變數：設成什麼都可以 */
+  for (int v = 0; v &lt; g-&gt;n; v++)
+    if (s &gt;&gt; v &amp; 1) x[abs(lit[v])] = lit[v] &gt; 0;    /* x_i 為真設 1，¬x_i 為真設 0 */
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作：一步一步建出 CLIQUE 的圖</h2>
+        <div class="panel prose">
+          <p>下面的動畫照上一節的規則建圖：先每個字面一個點，再一對一對子句地連邊，互補的點對會用紅色虛線標出來、然後不連。建完之後，動畫拿暴力法找到的滿足指派走一次 (⇒)：每個子句挑一個為真的字面，看它們兩兩相鄰；再拿暴力法找到的任意一個 m-clique 走一次 (⇐)，看怎麼讀回指派。</p>
+          <p>公式寫法：每個子句用括號包起來，字面寫 x1～x4，否定在前面加 <code>!</code>（或 ¬），子句內用 <code>|</code>（或 ∨）隔開，最多 4 個子句、每個子句 1～3 個字面。按「目標：Clique」可以切換成 3-SAT → 獨立集，比較兩張圖；按「不可滿足」可以看到圖上找不到大小 m 的 clique，最多只湊得到 m − 1 個點。</p>
+        </div>
+        <div class="viz" data-viz="sat-to-clique"></div>
+      </section>
+
+      <section id="clique-is-vc">
+        <h2>CLIQUE、獨立集、點覆蓋：同一個問題的三種說法</h2>
+        <div class="panel prose">
+          <p>有了 CLIQUE 是 NPC，另外兩個圖問題可以用很短的歸約接上。<a href="p-np.html#reduction">P、NP 與 NP 完備</a>已經證過 IS ≤<sub>p</sub> VC（S 是獨立集 ⇔ V − S 是 <span class="term">Vertex Cover<small>（點覆蓋）</small></span>）；再加上 clique 和獨立集的補圖關係，三個問題就能互相轉換：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="np-reductions-complement"></div>
+            <figcaption><b>圖 4</b>：左邊 G 的 {a, b, c} 兩兩相鄰；換成補圖 Ḡ 後，{a, b, c} 兩兩不相鄰，是獨立集；在同一張 Ḡ 裡，剩下的 {d, e} 蓋住了 Ḡ 的全部 5 條邊，是點覆蓋。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>歸約</th><th>圖怎麼改</th><th>門檻怎麼改</th><th>為什麼對</th></tr></thead>
+              <tbody>
+                <tr><td>CLIQUE(G, k) → IS(Ḡ, k)</td><td>換成補圖</td><td>不變</td><td>S 在 G 兩兩相鄰 ⇔ S 在 Ḡ 兩兩不相鄰</td></tr>
+                <tr><td>IS(G, k) → CLIQUE(Ḡ, k)</td><td>換成補圖</td><td>不變</td><td>同上，反過來讀</td></tr>
+                <tr><td>IS(G, k) → VC(G, n − k)</td><td>不變</td><td>k → n − k</td><td>每條邊最多 1 端在 S ⇔ 至少 1 端在 V − S</td></tr>
+                <tr><td>VC(G, k) → IS(G, n − k)</td><td>不變</td><td>k → n − k</td><td>同上</td></tr>
+                <tr><td>CLIQUE(G, k) → VC(Ḡ, n − k)</td><td>換成補圖</td><td>k → n − k</td><td>上面兩條串起來</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>記法：<b>clique ↔ 獨立集換「圖」</b>（補圖），<b>獨立集 ↔ 點覆蓋換「點」</b>（補集）。兩者別混在一起：點覆蓋和獨立集是在<b>同一張圖</b>上互補。用數字講：若 10 個點的 G 最大 clique 有 4 個點，則 Ḡ 的最大獨立集也是 4、Ḡ 的最小點覆蓋是 10 − 4 = 6，但 G 自己的最小點覆蓋和這些沒有直接關係。補圖要 O(n<sup>2</sup>) 時間，改門檻 O(1)，都是多項式。程式枚舉了 5 個點以內的全部圖、每個 k（共 6504 組），三個問題的答案完全一致。</p>
+          <p>這三個問題在<b>特殊的圖</b>上會變簡單，這是判斷題的常客：二分圖的最小點覆蓋 = 最大匹配（多項式時間）；區間圖的最大獨立集用活動選擇的 greedy 就能解。</p>
+          <details class="code-fold">
+            <summary>看程式碼：補圖與兩個轉換</summary>
+            <div class="code-block"><div class="code-head">complementGraph() / reduceCliqueToIS() / reduceISToVC()</div><pre class="code">void complementGraph(const Graph *g, Graph *h) {
+  h-&gt;n = g-&gt;n;
+  for (int u = 0; u &lt; g-&gt;n; u++)
+    for (int v = 0; v &lt; g-&gt;n; v++)
+      h-&gt;adj[u][v] = u != v &amp;&amp; !g-&gt;adj[u][v];
+}
+
+void reduceCliqueToIS(const Graph *g, int k, Graph *h, int *k2) {
+  complementGraph(g, h);
+  *k2 = k;
+}
+
+void reduceISToVC(const Graph *g, int k, Graph *h, int *k2) {
+  *h = *g;
+  *k2 = g-&gt;n - k;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="subset-sum">
+        <h2>VERTEX-COVER → SUBSET-SUM：用位數記帳</h2>
+        <div class="panel prose">
+          <p><span class="term">Subset Sum<small>（子集合和）</small></span>：給一組正整數 S 和目標 t，有沒有一個子集合加起來剛好是 t？它在 NP（certificate 是子集合）。數字問題要從圖問題歸約過來，關鍵技巧是<b>把數字當成好幾個欄位</b>：每一位數記一件事，只要保證加的時候不會進位，各位數就互不干擾，「總和等於 t」就變成「每一位都剛好等於 t 的那一位」。</p>
+          <p>給 VERTEX-COVER 的輸入 G（n 個點、m 條邊 e<sub>0</sub>…e<sub>m−1</sub>）和 k，所有數字都寫成 m + 1 位的 4 進位數：最高位記「選了幾個點」，第 j 位記「邊 e<sub>j</sub> 被蓋到幾次」。</p>
+          <ul>
+            <li><b>點 v<sub>i</sub> → x<sub>i</sub></b>：最高位 1，v<sub>i</sub> 碰到的每條邊那一位放 1。x<sub>i</sub> = 4<sup>m</sup> + Σ<sub>e<sub>j</sub> 碰到 v<sub>i</sub></sub> 4<sup>j</sup>。</li>
+            <li><b>邊 e<sub>j</sub> → y<sub>j</sub></b>：只有第 j 位是 1，y<sub>j</sub> = 4<sup>j</sup>，用來「補一次」。</li>
+            <li><b>目標</b>：最高位放 k，每條邊那一位都放 2。t = k·4<sup>m</sup> + Σ<sub>j</sub> 2·4<sup>j</sup>。</li>
+          </ul>
+          <p>例子：三角形 v0v1v2 加一條尾巴 v2v3，邊 e0 = v0v1、e1 = v0v2、e2 = v1v2、e3 = v2v3，k = 2。最高位是 4<sup>4</sup> = 256：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>數</th><th>選點位</th><th>邊位 e3 e2 e1 e0</th><th>十進位</th></tr></thead>
+              <tbody>
+                <tr><td>x0</td><td>1</td><td><code>0 0 1 1</code></td><td>261</td></tr>
+                <tr><td>x1</td><td>1</td><td><code>0 1 0 1</code></td><td>273</td></tr>
+                <tr><td>x2</td><td>1</td><td><code>1 1 1 0</code></td><td>340</td></tr>
+                <tr><td>x3</td><td>1</td><td><code>1 0 0 0</code></td><td>320</td></tr>
+                <tr><td>y0～y3</td><td>0</td><td>各自那一位是 1</td><td>1、4、16、64</td></tr>
+                <tr><td>t</td><td>2</td><td><code>2 2 2 2</code></td><td>682</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>點覆蓋 {v1, v2}：x1 + x2 = 613，各邊位是 (e3, e2, e1, e0) = (1, 2, 1, 1)；e2 兩端都選了已經是 2，其他三條只蓋到 1 次，補上 y0 + y1 + y3 = 69，總和 682 = t。程式窮舉 2<sup>8</sup> 個子集，總和 682 的剛好 2 個，對應這張圖大小 2 的兩個點覆蓋 {v1, v2}、{v0, v2}；k 換成 0 或 1 時都找不到，和點覆蓋的答案一致。</p>
+          <h3>正確性</h3>
+          <ul>
+            <li><b>為什麼不會進位</b>：每一位最多被三個數加到：邊的兩個端點各 1、加上 y<sub>j</sub> 的 1，合計 3 &lt; 4。所以用 4 進位（或任何 ≥ 4 的基底）就能把每一位分開比較。</li>
+            <li><b>(⇒)</b> 點覆蓋 C（|C| = k）：取所有 x<sub>i</sub>（v<sub>i</sub> ∈ C），最高位是 k；每條邊至少一端在 C，該位是 1 或 2，是 1 的再加 y<sub>j</sub>。總和 = t。</li>
+            <li><b>(⇐)</b> 若某子集總和 = t：沒有進位，逐位比較。最高位 = k，所以剛好選了 k 個 x，對應 k 個點；第 j 位 = 2，而 y<sub>j</sub> 最多貢獻 1，所以至少有一個 x 在這一位是 1，也就是 e<sub>j</sub> 至少一個端點被選。這 k 個點是點覆蓋。</li>
+            <li><b>大小</b>：n + m 個數，每個 m + 1 位（4 進位），總位元數 O((n + m)·m)，多項式時間寫得出來。</li>
+          </ul>
+          <p>注意最後一點：這些數字的<b>值</b>是 4<sup>m</sup> 級，指數大，但<b>位數</b>只有 O(m)，而歸約只要求「寫出輸出的時間」是多項式。這也說明了 SUBSET-SUM 的 O(n·t) 動態規劃為什麼救不了 NP（見<a href="p-np.html#pseudo-polynomial">偽多項式時間</a>）：歸約造出來的 t 本來就是指數大。標準教材裡更常見的是 3-SAT → SUBSET-SUM，想法一樣，只是每個數字的欄位改成「變數位」和「子句位」，用 10 進位。題目若要求加上別的限制（例如只准選奇數個元素），通常是在這個構造上再加幾個「控制位數」強迫選法。</p>
+          <details class="code-fold">
+            <summary>看程式碼：reduceVCToSubsetSum()</summary>
+            <div class="code-block"><div class="code-head">reduceVCToSubsetSum()：4 進位，每一位代表一條邊</div><pre class="code">int reduceVCToSubsetSum(int n, int m, const int eu[], const int ev[], int k,
+                        long long S[], long long *t) {
+  long long p[MAXE + 1];
+  p[0] = 1;
+  for (int j = 1; j &lt;= m; j++) p[j] = p[j - 1] * 4;
+  int c = 0;
+  for (int i = 0; i &lt; n; i++) {                     /* 每個點一個數 x_i */
+    S[c] = p[m];
+    for (int j = 0; j &lt; m; j++)
+      if (eu[j] == i || ev[j] == i) S[c] += p[j];   /* 碰到的邊那一位放 1 */
+    c++;
+  }
+  for (int j = 0; j &lt; m; j++) S[c++] = p[j];        /* 每條邊一個補位數 y_j */
+  *t = k * p[m];
+  for (int j = 0; j &lt; m; j++) *t += 2 * p[j];       /* 每條邊那一位都要湊到 2 */
+  return c;                                          /* 共 n + m 個數 */
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="ham-tsp">
+        <h2>HAM-CYCLE → TSP 與各種路徑問題</h2>
+        <div class="panel prose">
+          <p><span class="term">Hamiltonian Cycle<small>（漢米爾頓迴路）</small></span>是經過每個點恰好一次再回到起點的 cycle（和 Euler 迴路的比較見<a href="../../discrete-math/graphs/euler-hamilton.html#hamilton">Euler 與 Hamilton</a>）。HAM-CYCLE 是 NPC，通常由 VERTEX-COVER 用一個比較複雜的「每條邊一個 12 點零件」的構造證明，考研幾乎不會要你寫出那個零件，只要知道這條箭頭存在。真正常考的是從 HAM-CYCLE <b>往下</b>歸約，這些幾乎都是限制法。</p>
+          <h3>TSP 的決策版本</h3>
+          <p><span class="term">Traveling Salesman Problem<small>（旅行推銷員問題）</small></span>的決策版本：給完全圖和整數權重，有沒有總長 ≤ k 的巡迴？給 HAM-CYCLE 的輸入 G（n 個點），建一張 n 個點的完全圖：G 的邊權重 1，不是 G 的邊權重 2，k = n。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="np-reductions-ham-tsp"></div>
+            <figcaption><b>圖 5</b>：左邊 G 有 Hamiltonian cycle 0-1-2-3-0（綠）；右邊的完全圖把 G 的邊設成 1，G 沒有的邊 1-3 設成 2（虛線）。沿著 G 的 HC 走，巡迴長度剛好是 n = 4。</figcaption>
+          </figure>
+          <ul>
+            <li><b>(⇒)</b> G 有 HC：同一條路線在完全圖上全部走權重 1 的邊，長度 n ≤ k。</li>
+            <li><b>(⇐)</b> 有長度 ≤ n 的巡迴：巡迴剛好 n 條邊、每條至少 1，總長 ≤ n 只能每條都是 1，也就是全部是 G 的邊，這就是 G 的 HC。</li>
+            <li><b>大小</b>：n<sup>2</sup> 個權重，每個 1 個位元，O(n<sup>2</sup>)。</li>
+          </ul>
+          <p>如果 G 沒有 HC 但有 Hamiltonian path，最短巡迴會是 n + 1（path 的兩端用一條權重 2 的邊接起來）。程式對 600 張隨機圖（其中 242 張有 HC）確認「G 有 HC ⇔ 最短巡迴 ≤ n」；把圖 5 的邊 2-3 拿掉，點 3 只剩一條邊，最短巡迴就變成 5 &gt; 4。</p>
+          <h3>路徑與環的變形：先問能不能「放進」HAM</h3>
+          <p>判斷題常見的一群問題，都可以把 Hamiltonian 問題直接當成特例：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>問題</th><th>歸約</th><th>結論</th></tr></thead>
+              <tbody>
+                <tr><td>u 到 v 有沒有長度 k 的<b>簡單</b>路徑</td><td>HC：選一點 u，對每個鄰居 v 問「u 到 v 有沒有長度 n − 1 的簡單路徑」，最多問 n 次</td><td>NPC</td></tr>
+                <tr><td>最長簡單路徑（權重都是 1）</td><td>長度能到 n − 1 ⇔ 有 Hamiltonian path</td><td>NP-hard</td></tr>
+                <tr><td>最大的環</td><td>長度能到 n ⇔ 有 HC</td><td>NP-hard</td></tr>
+                <tr><td>有負環時的最短<b>簡單</b>路徑</td><td>權重全部取負號，就是最長簡單路徑</td><td>NP-hard</td></tr>
+                <tr><td>u 到 v 有沒有長度 k 的 walk（可重複點）</td><td>放不進 HAM：可以繞圈湊長度</td><td>P（DP 或鄰接矩陣次方）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>第一列的歸約用的是「多次呼叫」的歸約（Turing 歸約），對「若它在 P 則 HC 在 P」的結論一樣成立；想要一次轉換的 Karp 歸約也可以，加一個新點複製 u 的鄰居即可。關鍵詞永遠是 <b>simple</b>：題目沒寫清楚時，作答先講明你採用哪一種解讀。</p>
+          <details class="code-fold">
+            <summary>看程式碼：reduceHCToTSP()</summary>
+            <div class="code-block"><div class="code-head">reduceHCToTSP()：邊權重 1、非邊權重 2、k = n</div><pre class="code">void reduceHCToTSP(const Graph *g, int w[][MAXV], int *k) {
+  for (int u = 0; u &lt; g-&gt;n; u++)
+    for (int v = 0; v &lt; g-&gt;n; v++)
+      w[u][v] = u == v ? 0 : (g-&gt;adj[u][v] ? 1 : 2);
+  *k = g-&gt;n;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="three-color">
+        <h2>3-SAT → 3-COLOR：調色盤與 OR 零件</h2>
+        <div class="panel prose">
+          <p><span class="term">3-Coloring<small>（三著色）</small></span>：能不能用 3 種顏色替每個點著色，讓相鄰的點不同色？2 色就是判斷二分圖，用 <a href="../../data-structures/graph/bfs-dfs.html">BFS</a> 線性時間就能解；3 色卻是 NPC。這是零件設計最典型的例子，三種零件各管一件事：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="np-reductions-3color"></div>
+            <figcaption><b>圖 6</b>：三種零件，顏色代表一組合法的著色（綠 = T、紅 = F、藍 = B）。調色盤三角形替三種顏色命名；變數零件讓 x1、¬x1 一個 T、一個 F；子句零件把 l1、l2、l3 串成兩個 OR，輸出 o2 連到 F 和 B，所以 o2 只能是 T。圖中 l1、l2 是 F、l3 是 T，子句成立，整個零件塗得出來。</figcaption>
+          </figure>
+          <ol>
+            <li><b>調色盤</b>：三個點 T、F、B 連成三角形，三種顏色各占一個。之後就把「和 T 同色」叫做真、「和 F 同色」叫做假。</li>
+            <li><b>變數零件</b>：每個變數兩個點 x<sub>i</sub>、¬x<sub>i</sub>，互相連邊，也都連到 B。它們不能是 B 色、又不能同色，所以一個是 T、一個是 F，正好是一組指派。</li>
+            <li><b>OR 零件</b>：輸入 a、b，加三個點 p、q、o，邊 a–p、b–q、p–q、p–o、q–o。性質：a、b 都是 F 時，p、q 都不能是 F 又互相不同，只能是 {T, B}，o 和兩者都相鄰，只剩 F；只要 a、b 有一個是 T，就有辦法讓 o 塗成 T。</li>
+            <li><b>子句零件</b>：子句 (l<sub>1</sub> ∨ l<sub>2</sub> ∨ l<sub>3</sub>) 用兩個 OR 零件算出 o<sub>2</sub> = OR(OR(l<sub>1</sub>, l<sub>2</sub>), l<sub>3</sub>)，再把 o<sub>2</sub> 連到 F 和 B，逼 o<sub>2</sub> = T。</li>
+          </ol>
+          <p><b>(⇒)</b> 有滿足指派：照指派塗變數點，每個子句至少一個輸入是 T，OR 零件的內部點照性質塗，o<sub>2</sub> 塗 T，全部合法。<b>(⇐)</b> 圖能 3 著色：每個變數零件給出一組指派；若某個子句三個字面全是 F，兩個 OR 零件會逼 o<sub>2</sub> = F，但 o<sub>2</sub> 和 F 相鄰，矛盾。所以每個子句都有真字面。<b>大小</b>：3 + 2n + 6m 個點、3 + 3n + 12m 條邊，線性。示範公式（n = 3、m = 3）造出 27 個點、48 條邊；程式對 300 個隨機公式（其中 21 個不可滿足）用回溯法著色，答案全部一致。</p>
+          <p>有了 3-COLOR，k ≥ 4 的 k-COLOR 也都是 NPC：每多一種顏色，就加一個和所有點相連的新點。</p>
+          <details class="code-fold">
+            <summary>看程式碼：reduce3SATTo3Color()</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="建圖"><div class="code-head">reduce3SATTo3Color()：調色盤、變數、子句</div><pre class="code">void reduce3SATTo3Color(const CNF *f, Graph *g) {
+  memset(g, 0, sizeof *g);
+  g-&gt;n = 3 + 2 * f-&gt;n;
+  addEdge(g, T, F); addEdge(g, F, B); addEdge(g, B, T);
+  for (int i = 1; i &lt;= f-&gt;n; i++) {
+    addEdge(g, varNode(i), varNode(-i));
+    addEdge(g, varNode(i), B); addEdge(g, varNode(-i), B);
+  }
+  for (int j = 0; j &lt; f-&gt;m; j++) {
+    const int *l = f-&gt;lit[j];
+    int o1 = orGadget(g, varNode(l[0]), varNode(l[1]));
+    int o2 = orGadget(g, o1, varNode(l[2]));
+    addEdge(g, o2, F); addEdge(g, o2, B);           /* 子句的輸出只能是 T */
+  }
+}</pre></div>
+              <div class="code-block" data-tab="OR 零件"><div class="code-head">orGadget()：兩個輸入都是 F 時輸出一定是 F</div><pre class="code">int varNode(int l) { return l &gt; 0 ? 3 + 2 * (l - 1) : 4 + 2 * (-l - 1); }
+
+void addEdge(Graph *g, int u, int v) { g-&gt;adj[u][v] = g-&gt;adj[v][u] = 1; }
+
+int orGadget(Graph *g, int a, int b) {
+  int p = g-&gt;n++, q = g-&gt;n++, o = g-&gt;n++;
+  addEdge(g, a, p); addEdge(g, b, q); addEdge(g, p, q);
+  addEdge(g, p, o); addEdge(g, q, o);
+  return o;
+}</pre></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="p-or-hard">
+        <h2>用歸約判斷：在 P 還是 NP-hard</h2>
+        <div class="panel prose">
+          <p>很多題目把一個 NP-hard 問題和它的「好解版本」混在一起，要你分類。常見的對照表在 <a href="p-np.html#cook-levin">P、NP 與 NP 完備</a>已經列過；這裡補上判斷的<b>方法</b>：先問「能不能把一個已知 NPC 問題放進去」（能 ⇒ NP-hard），再問「有沒有已知的多項式演算法」。兩個都找不到時，題目通常會給提示。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>問題</th><th>分類</th><th>理由</th></tr></thead>
+              <tbody>
+                <tr><td>最小的環（girth，權重都是 1）</td><td>P</td><td>每個點做一次 BFS，O(V(V + E))</td></tr>
+                <tr><td>找一個負環</td><td>P</td><td>Bellman-Ford 跑完 V − 1 輪後還能鬆弛</td></tr>
+                <tr><td>找一個正環</td><td>P</td><td>權重全部取負號，變成找負環</td></tr>
+                <tr><td>最大割 MAX-CUT</td><td>NP-hard</td><td>已知 NPC（由 3-SAT 系列歸約）</td></tr>
+                <tr><td>最小割 MIN-CUT</td><td>P</td><td>max-flow min-cut 定理</td></tr>
+                <tr><td>2-SAT</td><td>P</td><td>每個 2 字面子句寫成兩條蘊含邊，一個變數和它的否定落在同一個強連通分量 ⇔ 不可滿足</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>2-SAT 的線性時間演算法用的是 Strongly Connected Components 強連通元件（籌備中）；手算小題時，「(x ∨ y)(¬x ∨ y) 等於直接強迫 y = 1」這種化簡最快。另外記得：「NP-hard」和「在 P」要在 P ≠ NP 的前提下才互斥，題目通常會寫 Assume P ≠ NP。</p>
+        </div>
+      </section>
+
+      <section id="poly-size">
+        <h2>歸約為什麼是多項式時間：一張表整理</h2>
+        <div class="panel prose">
+          <p>證明裡的「f 是多項式時間」常常被寫成一句「顯然」，但閱卷老師要看的是：<b>輸出有多大、每個部分花多少時間</b>，而且要對<b>輸入長度</b>算。下表用 n 代表變數數或點數、m 代表子句數或邊數：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>歸約</th><th>輸出大小</th><th>時間</th><th>要注意的地方</th></tr></thead>
+              <tbody>
+                <tr><td>SAT → 3-SAT</td><td>長度 k 的子句 → k − 2 個子句</td><td>O(公式長度)</td><td>新變數 k − 3 個，不是 k 個</td></tr>
+                <tr><td>3-SAT → CLIQUE / IS</td><td>≤ 3m 個點、O(m<sup>2</sup>) 條邊</td><td>O(m<sup>2</sup>)</td><td>k = m（子句數），不是變數數</td></tr>
+                <tr><td>CLIQUE ↔ IS ↔ VC</td><td>同樣的點、O(n<sup>2</sup>) 條邊</td><td>O(n<sup>2</sup>)</td><td>補圖或 k → n − k</td></tr>
+                <tr><td>VC → SUBSET-SUM</td><td>n + m 個數，每個 m + 1 位</td><td>O((n + m)m)</td><td>數值是指數大，但位數是多項式</td></tr>
+                <tr><td>HAM-CYCLE → TSP</td><td>n<sup>2</sup> 個權重</td><td>O(n<sup>2</sup>)</td><td>權重只有 1、2</td></tr>
+                <tr><td>3-SAT → 3-COLOR</td><td>3 + 2n + 6m 個點</td><td>O(n + m)</td><td>每個子句 6 個新點</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>兩個常見的錯誤：</p>
+          <ul>
+            <li><b>把數字寫成一進位或用數值當大小</b>：例如「建一張有 t 個點的圖」，t 是 SUBSET-SUM 的目標，值可能是 2<sup>位元數</sup>，這個轉換就是指數時間。數字只能出現在輸出裡當成數字，不能拿來決定要畫幾個點。</li>
+            <li><b>歸約裡偷偷解了原問題</b>：例如 f 先暴力判斷 φ 可不可滿足，再輸出一個固定的 yes 或 no 實例。這樣對答案當然對，但轉換本身是指數時間，不算歸約。f 只能看輸入的「形狀」，不能去解它。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="approx">
+        <h2>歸約與近似（簡述）</h2>
+        <div class="panel prose">
+          <p>NPC 問題的最佳化版本沒辦法保證又快又準，退而求其次就是近似演算法。這一章只需要記住它和歸約的關係，演算法細節在 Vertex Cover and TSP Approximation 頂點覆蓋與 TSP 近似（籌備中）。</p>
+          <ul>
+            <li><b>點覆蓋有 2-近似</b>：反覆挑一條還沒被蓋到的邊，把兩個端點都放進 C。挑出的邊彼此沒有共同端點，任何點覆蓋都要在每條挑出的邊上至少選一點，所以 |C| = 2 × 挑出的邊數 ≤ 2 × 最佳值。</li>
+            <li><b>歸約不保留近似比</b>：IS(G, k) ⇔ VC(G, n − k) 是同一個歸約，但點覆蓋有 2-近似，獨立集在 P ≠ NP 下卻沒有任何常數倍近似。原因是 k 小一點，n − k 只差一點點，「差幾倍」不會跟著轉換保持。</li>
+            <li><b>一般 TSP 沒有常數倍近似</b>：把 HAM-CYCLE → TSP 的非邊權重從 2 改成 ρn + 1，有 HC 時最佳值是 n，沒有 HC 時任何巡迴都 &gt; ρn，於是 ρ-近似演算法能分辨兩種情況，等於在多項式時間解了 HC。只有滿足三角不等式的 metric TSP 才有 2-近似。</li>
+            <li><b>SUBSET-SUM 可以近似到任意好</b>：對 DP 的候選總和做「修剪」（相差不到 (1 + δ) 倍的只留一個），得到 (1 − ε)-近似，時間是 n 和 1/ε 的多項式。同樣是 NPC，近似的難度可以差非常多。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>證明 NPC 的步驟與歸約方向</td><td>很常考</td><td>(1) X ∈ NP；(2) 已知 NPC ≤p X（把已知的難題變成新問題）；X ≤p 已知 NPC 什麼都證明不了</td><td><a class="q-link" href="#q-al-0112">例題</a> <a class="q-link" href="#q-al-0162">例題</a> <a class="q-link" href="#q-al-0023">例題</a> <a class="q-link" href="#q-al-0202">例題</a></td></tr>
+                <tr><td>給一串 ≤p 與條件，判斷推論</td><td>很常考</td><td>NP-hard 往右傳、∈ P／∈ NP 往左傳；NPC 要兩個都成立；箭頭右邊的問題只知道是 NP-hard</td><td><a class="q-link" href="#q-al-0066">例題</a> <a class="q-link" href="#q-al-0135">例題</a> <a class="q-link" href="#q-al-0045">例題</a> <a class="q-link" href="#q-al-0201">例題</a></td></tr>
+                <tr><td>NPC／NP-hard 之間能不能互相歸約</td><td>常考</td><td>NPC 之間一定可以；NP-hard 不一定（停機問題）；不能歸約到 ∅ 或全集這種平凡語言</td><td><a class="q-link" href="#q-al-0113">例題</a> <a class="q-link" href="#q-al-0150">例題</a> <a class="q-link" href="#q-al-0151">例題</a> <a class="q-link" href="#q-al-0049">例題</a></td></tr>
+                <tr><td>照標準構造算出點數、邊數、數字</td><td>常考</td><td>先寫出構造規則（點、邊、k 或 t），再逐項數；SUBSET-SUM 逐位寫出來最不會錯</td><td><a class="q-link" href="#q-al-0046">例題</a> <a class="q-link" href="#q-al-0205">例題</a> <a class="q-link" href="#q-al-0206">例題</a> <a class="q-link" href="#q-al-0207">例題</a></td></tr>
+                <tr><td>自己構造歸約證明 NPC</td><td>常考</td><td>挑長得像的起點（選點 → CLIQUE／VC、排順序 → HAM、加總 → SUBSET-SUM）；寫 ∈ NP、構造、多項式、兩個方向</td><td><a class="q-link" href="#q-al-0137">例題</a> <a class="q-link" href="#q-al-0185">例題</a> <a class="q-link" href="#q-al-0200">例題</a> <a class="q-link" href="#q-al-0209">例題</a> <a class="q-link" href="#q-al-0212">例題</a></td></tr>
+                <tr><td>檢查一個歸約對不對</td><td>偶爾</td><td>兩個方向各找反例：最小的不可滿足公式、路徑圖、三角形</td><td><a class="q-link" href="#q-al-0211">例題</a> <a class="q-link" href="#q-al-0204">例題</a></td></tr>
+                <tr><td>用歸約判斷在 P 還是 NP-hard</td><td>很常考</td><td>能放進 HAM／3-SAT ⇒ NP-hard；權重取負、BFS、最大流、SCC 這些技巧 ⇒ P</td><td><a class="q-link" href="#q-al-0067">例題</a> <a class="q-link" href="#q-al-0090">例題</a> <a class="q-link" href="#q-al-0183">例題</a></td></tr>
+                <tr><td>歸約與近似</td><td>偶爾</td><td>一般 TSP 用 HC 加大非邊權重證明不可近似；歸約不保留近似比；SUBSET-SUM 有 FPTAS</td><td><a class="q-link" href="#q-al-0011">例題</a> <a class="q-link" href="#q-al-0120">例題</a> <a class="q-link" href="#q-al-0210">例題</a> <a class="q-link" href="#q-al-0138">例題</a></td></tr>
+                <tr><td>CLIQUE／IS／VC 補圖、補集換算</td><td>偶爾</td><td>clique ↔ IS 換補圖、k 不變；IS ↔ VC 同一張圖、k → n − k</td><td><a class="q-link" href="#q-al-0203">例題</a> <a class="q-link" href="#q-al-0198">例題</a> <a class="q-link" href="#q-al-0208">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 要證明新問題 X 是 NPC，就證明 X ≤p 某個已知 NPC 問題</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 方向相反：已知 NPC ≤p X。X ≤p 3-SAT 只說明 X 不比 3-SAT 難（連排序都做得到）</span> <a class="q-link" href="#q-al-0162">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> A 是 NPC、A ≤p B，所以 B 是 NPC</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只能推出 B 是 NP-hard；B 還要另外證明 ∈ NP</span> <a class="q-link" href="#q-al-0120">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> A ≤p B 且 A ∈ P，所以 B ∈ P</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 「好解」只會逆著箭頭傳：B ∈ P ⇒ A ∈ P</span> <a class="q-link" href="#q-al-0066">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> B 沒有 O(N³) 演算法，A 又線性歸約到 B，所以 P ≠ NP</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只有「B 有 O(N³) ⇒ A 有 O(N³)」這個方向；B 沒有快的解法，什麼都推不出</span> <a class="q-link" href="#q-al-0045">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 任何 NPC 問題都能歸約到任何 NP 問題</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 反過來才對：任何 NP 問題都能歸約到任何 NPC 問題；∅ 這種平凡語言沒有 yes 實例，誰都歸約不過去</span> <a class="q-link" href="#q-al-0150">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 3-SAT → CLIQUE 時，同一個子句的點也要連邊</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 同子句<b>不</b>連，互補也不連；把同子句連成三角形是 3-SAT → 獨立集的構造</span> <a class="q-link" href="#q-al-0204">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 正確性只要證 (⇒)：原問題 yes 時新問題也是 yes</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 還要證 (⇐)，否則 no 的實例可能也被送到 yes；要從新問題的<b>任意</b>解反推</span> <a class="q-link" href="#q-al-0211">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> VC → SUBSET-SUM 的 t 就是點覆蓋那幾個 x 的總和</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每條邊的位要湊到 2，只蓋到一次的邊要再加 y；t = k·4<sup>m</sup> + Σ 2·4<sup>j</sup></span> <a class="q-link" href="#q-al-0046">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 點覆蓋和 clique 一樣，換成補圖、k 不變</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> clique ↔ 獨立集換補圖；獨立集 ↔ 點覆蓋是同一張圖、k 變成 n − k</span> <a class="q-link" href="#q-al-0203">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 「u 到 v 有沒有長度 k 的路徑」一定是 NPC</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 簡單路徑才是（k = n − 1 就是 Hamiltonian path）；允許重複點的 walk 用 DP 就能解</span> <a class="q-link" href="#q-al-0185">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 所有 NPC 問題互相歸約，所以近似難度也一樣</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 歸約不保留近似比：點覆蓋有 2-近似，一般 TSP 連常數倍近似都沒有</span> <a class="q-link" href="#q-al-0049">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="np-reductions"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz-core.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz/algorithms/np-reductions.js?v=fbb9e419"></script>
+</body>
+</html>

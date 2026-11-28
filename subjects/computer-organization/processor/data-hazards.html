@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Data Hazards and Forwarding 資料危障與轉送 · 計算機組織 | 資工考研互動學習站</title>
   <meta name="description" content="RAW/WAR/WAW、forwarding unit 條件、double hazard、load-use 偵測與 bubble、重排指令。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=cdf5c420">
-  <script src="../../../assets/js/theme.js?v=cdf5c420"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=fbb9e419">
+  <script src="../../../assets/js/theme.js?v=fbb9e419"></script>
 </head>
 <body data-subject="computer-organization" data-chapter="processor" data-chno="4" data-topic="computer-organization/processor/data-hazards" data-root="../../../">
   <header class="site-header">
@@ -314,7 +314,7 @@ add $t1, $t1, $t4</pre>
       <section id="branch-in-id">
         <h2>分支提早到 ID 比較時的資料危障</h2>
         <div class="panel prose">
-          <p>為了減少分支的損失，常把 beq 的比較器和目標位址計算搬到 ID 階段（分支預測和 flush 的細節在 Control Hazards and Branch Prediction 控制危障與分支預測主題（籌備中）介紹）。代價是：beq 在 <b>ID</b> 就要用到暫存器的值，比一般指令在 EX 才用早了一個週期，資料危障變得更嚴重：</p>
+          <p>為了減少分支的損失，常把 beq 的比較器和目標位址計算搬到 ID 階段（分支預測和 flush 的細節在 <a href="control-hazards.html">Control Hazards and Branch Prediction（控制危障與分支預測）</a>主題介紹）。代價是：beq 在 <b>ID</b> 就要用到暫存器的值，比一般指令在 EX 才用早了一個週期，資料危障變得更嚴重：</p>
           <ul>
             <li><b>ALU 指令 → beq（d = 1）</b>：ALU 結果在生產者 EX 結束才有，beq 的 ID 和生產者的 EX 在同一個週期，來不及 → <b>stall 1</b>，下一個週期再從 EX/MEM 轉送到 ID 的比較器。</li>
             <li><b>lw → beq（d = 1）</b>：資料要到 lw 的 MEM 結束才有 → <b>stall 2</b>，beq 的 ID 和 lw 的 WB 同一個週期，直接讀暫存器檔。</li>
@@ -482,8 +482,8 @@ Forwarding unit 的比較器 = 4 組（EX/MEM.rd、MEM/WB.rd 各和 rs、rt 比�
   <footer class="site-footer">
     <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=cdf5c420"></script>
-  <script src="../../../assets/js/viz-core.js?v=cdf5c420"></script>
-  <script src="../../../assets/js/viz/computer-organization/data-hazards.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/site.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz-core.js?v=fbb9e419"></script>
+  <script src="../../../assets/js/viz/computer-organization/data-hazards.js?v=fbb9e419"></script>
 </body>
 </html>

@@ -334,8 +334,18 @@
           "en": "I/O Hardware and DMA",
           "zh": "I/O 硬體與 DMA",
           "book": "12.2–12.4",
-          "status": "planned",
-          "priority": "mid"
+          "status": "done",
+          "priority": "mid",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "polling / interrupt",
+            "DMA",
+            "memory-mapped I/O",
+            "blocking / async I/O",
+            "buffering / spooling"
+          ],
+          "updated": "2026-11-28"
         }
       ]
     },
