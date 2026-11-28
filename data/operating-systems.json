@@ -47,8 +47,18 @@
           "en": "Process Concept",
           "zh": "行程與行程狀態",
           "book": "3.1–3.3",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "process states",
+            "PCB",
+            "context switch",
+            "fork / exec / wait",
+            "zombie / orphan"
+          ],
+          "updated": "2026-11-28"
         },
         {
           "id": "ipc",

@@ -5939,6 +5939,213 @@
       "question": "（RISC-V，RV32I）(1) 用 lui 和 addi 把 0x12345FFF 放進 x5，兩條指令的立即值各是多少？（lui 放 20 位元到第 31～12 位；addi 的 12 位元立即值會符號延伸。）(2) B-type 分支的立即值是 13 位元有號數、最低位固定為 0，能跳的範圍是多少 bytes？相當於幾個 32 位元指令？和 MIPS 的 beq 比，基準位址有什麼不同？",
       "answer": "(1) lui x5, 0x12346；addi x5, x5, −1　(2) −4096～+4094 bytes，約 ±2¹⁰ 個 32 位元指令；RISC-V 以分支指令自己的 PC 為基準，MIPS 以 PC + 4 為基準",
       "explanation": "<p><b>(1)</b> 低 12 位是 0xFFF，最高位（第 11 位）是 1，addi 會把它符號延伸成 −1。所以 lui 要多放 1：0x12345 + 1 = <b>0x12346</b>，x5 = 0x12346000，再加 −1 = 0x12345FFF。這和 MIPS 用 lui + addi 時「低半最高位是 1 就把高半 +1」是同一件事，只是切點從 16 位變成 12 位。</p><p><b>(2)</b> 13 位元有號數範圍 −2¹²～2¹² − 1，最低位固定 0，所以是 −4096～+4094 bytes。以 4 bytes 一條指令來算約 ±2¹⁰ 條（±1024）。RISC-V 的 offset 單位是 2 bytes（為了支援 16 位元的壓縮指令），而且目標 = <b>分支自己的 PC</b> + offset；MIPS 是 (PC + 4) + offset × 4。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0243",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "關於 strong scaling（強擴展）與 weak scaling（弱擴展），下列何者正確？",
+      "choices": [
+        "(A) strong scaling：每個處理器分到的資料量固定，總問題隨處理器數變大",
+        "(B) strong scaling：總問題大小固定，看增加處理器數能加速多少",
+        "(C) weak scaling 的理想情況是執行時間隨處理器數成反比下降",
+        "(D) 只要程式有序列部分，weak scaling 就一定無法維持執行時間不變"
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(A) 錯：「每個處理器分到的量固定、總問題跟著處理器數變大」是 <b>weak scaling</b> 的定義。</li><li>(B) 對：strong scaling 固定<b>總</b>問題大小，看加處理器能快多少，每個處理器分到 S / P。</li><li>(C) 錯：時間和 P 成反比下降是 strong scaling 的理想情況；weak scaling 的理想是<b>時間維持不變</b>。</li><li>(D) 錯：weak scaling 時序列部分的工作量不會跟著變大，每個處理器的平行工作量也固定，執行時間可以維持不變（例如 20 個序列加法＋每核 32 個加法，P = 8 或 32 都是 52 個單位）。序列部分限制的是 strong scaling。</li></ul>"
+    },
+    {
+      "id": "co-0244",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）下列關於多處理器記憶體架構的敘述，哪些正確？",
+      "choices": [
+        "(A) SMP 的所有處理器共用同一個實體位址空間",
+        "(B) NUMA 系統中，存取本地記憶體比存取其他節點的記憶體快",
+        "(C) message passing 的 cluster 中，各節點可以用 load / store 直接讀寫其他節點的記憶體",
+        "(D) UMA 的意思是每個處理器存取任何記憶體位置的時間大致相同",
+        "(E) 共享記憶體的多處理器不需要同步機制"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<ul><li>(A) 對：SMP（shared-memory multiprocessor）的所有處理器共用同一個實體位址空間，用一般的 load / store 就能讀寫共享資料。</li><li>(B) 對：NUMA 的記憶體分散在各節點，存取本地記憶體走節點內部，存取別的節點要經過互連網路，比較慢。</li><li>(C) 錯：message passing 的 cluster 每個節點有<b>私有</b>的位址空間，要拿別人的資料只能用 send / receive 傳訊息，不能直接 load / store。</li><li>(D) 對：UMA（uniform memory access）就是不論存取哪個位置，延遲大致相同。</li><li>(E) 錯：共享記憶體反而最需要同步（lock、barrier），否則多個處理器同時讀改寫共享變數會產生 race。</li></ul>"
+    },
+    {
+      "id": "co-0245",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "兩個核心使用 snooping 的 MESI 協定。一開始兩個快取都沒有 X 所在的 block。P0 先讀 X，接著 P0 寫 X（P1 都沒有動作）。下列何者正確？",
+      "choices": [
+        "(A) 讀完後 P0 是 S，寫的時候要送 BusUpgr",
+        "(B) 讀完後 P0 是 E，寫的時候直接變成 M，不需要 bus 交易",
+        "(C) 讀完後 P0 是 M",
+        "(D) 讀完後 P0 是 E，寫的時候要送 BusRdX"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>P0 讀 X 是 read miss，送出 BusRd。沒有任何其他快取有副本，MESI 就給它 <b>E（Exclusive，獨占且乾淨）</b>。接著 P0 寫 X：既然確定沒有別人有副本，不必通知任何人，直接從 E 悄悄升成 M，<b>不需要 bus 交易</b>。整段只用了 1 次 bus 交易。</p><p>對照 MSI：沒有 E，讀完是 S；寫的時候不知道別人有沒有副本，必須送 BusUpgr（invalidate），共 2 次 bus 交易。E 狀態省下的就是這一次。(D) 錯在 E 寫入不用 BusRdX；(A) 是 MSI 的行為；(C) 讀不會讓狀態變成 M。</p>"
+    },
+    {
+      "id": "co-0246",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "關於 MIPS 的 ll（load linked）與 sc（store conditional），下列何者正確？",
+      "choices": [
+        "(A) ll 會鎖住該位址，在 sc 之前其他核心都不能寫入",
+        "(B) 如果 ll 和 sc 之間有其他核心寫入同一個位址，sc 會失敗，並把暫存器設成 0",
+        "(C) sc 成功之後，還要再執行一次 ll 確認值沒有被改掉",
+        "(D) 用 ll / sc 實作 spin lock 時，unlock 也必須用 ll / sc"
+      ],
+      "answer": "(B)",
+      "explanation": "<ul><li>(A) 錯：ll 不會鎖住記憶體，其他核心照樣可以寫；硬體只是記下這個位址（link）。</li><li>(B) 對：ll 之後、sc 之前，只要有別人寫過那個位址（或發生 context switch），sc 就失敗，不寫入，並把來源暫存器設成 0；成功則設成 1。程式檢查這個值，失敗就跳回去重做。</li><li>(C) 錯：sc 成功就代表 ll 到 sc 之間沒人改過，讀－改－寫已經在效果上不可分割，不用再檢查。</li><li>(D) 錯：unlock 只有持有鎖的人會做，用一般的 <code>sw $zero, 0($s1)</code> 把 0 寫回就好。</li></ul>"
+    },
+    {
+      "id": "co-0247",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個程式先做 20 次只能序列執行的純量加法，再把一個 N × N 矩陣的所有元素加總；這 N<sup>2</sup> 次加法可以平均分給所有處理器。每次加法花 1 個時間單位，忽略通訊與同步的成本。<br>(1) N = 16 時，用 8 個與 32 個處理器的 speedup 各是多少？<br>(2) N = 32 時呢？<br>(3) 從結果說明 strong scaling 與 weak scaling 的差別。",
+      "answer": "(1) 8 核 5.31 倍、32 核 9.86 倍　(2) 8 核 7.05 倍、32 核 20.08 倍　(3) 見詳解",
+      "explanation": "<p>時間 = 20 + N<sup>2</sup> ÷ P。</p><p><b>(1)</b> N = 16：T<sub>1</sub> = 20 + 256 = 276。P = 8：20 + 32 = 52，speedup = 276 ÷ 52 ≈ <b>5.31</b>（效率 66%）；P = 32：20 + 8 = 28，speedup ≈ <b>9.86</b>（效率只有 31%）。處理器多了 4 倍，speedup 不到 2 倍，因為固定的 20 個序列單位佔了 28 裡的 71%。</p><p><b>(2)</b> N = 32：T<sub>1</sub> = 20 + 1024 = 1044。P = 8：20 + 128 = 148，speedup ≈ <b>7.05</b>（88%）；P = 32：20 + 32 = 52，speedup ≈ <b>20.08</b>（63%）。問題變大後，序列部分佔的比例變小，同樣的處理器數得到的 speedup 高很多。</p><p><b>(3)</b> 固定 N、增加 P 看加速是 <b>strong scaling</b>，它受序列部分限制，P 越大效率越低。讓每個處理器的工作量固定（每核 32 個加法：P = 8 配 N = 16、P = 32 配 N = 32），兩種情況的時間都是 20 + 32 = <b>52</b>，這是 <b>weak scaling</b>：問題隨處理器數放大，時間維持不變。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0248",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "承上題 N = 32、使用 32 個處理器。若工作分配不平均：其中一個處理器分到 64 個加法，其他處理器各分到不超過 32 個（總數仍是 1024）。speedup 變成多少？和平均分配相比損失多少？此時的效率（speedup ÷ P）是多少？",
+      "answer": "speedup ≈ 12.43，比平均分配的 20.08 少約 38%；效率約 38.8%",
+      "explanation": "<p>平行階段要等<b>最慢</b>的處理器做完，其他處理器早做完也只能等，所以時間 = 20 + max（各處理器的工作量）= 20 + 64 = <b>84</b>。</p><p>speedup = 1044 ÷ 84 ≈ <b>12.43</b>；平均分配時是 1044 ÷ 52 ≈ 20.08，少了 (20.08 − 12.43) ÷ 20.08 ≈ <b>38%</b>。效率 = 12.43 ÷ 32 ≈ <b>38.8%</b>。</p><p>重點：只有一個處理器多做 1 倍，整體就慢了將近四成。題目只要給「最忙的那個分到多少」就夠了，其他處理器怎麼分不影響答案（只要不超過它）。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0249",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "三個核心、snooping、write-back、MSI 協定。一開始所有快取都沒有 X 所在的 block。依序執行：P0 讀 X、P1 讀 X、P2 讀 X、P0 寫 X、P1 寫 X、P2 寫 X。<br>(1) 寫出每一步之後三個快取的狀態與 bus 交易。<br>(2) 總共幾次 bus 交易、幾次 invalidate、幾次寫回（flush）？<br>(3) 改用 MESI，bus 交易數會改變嗎？",
+      "answer": "(2) bus 交易 6 次、invalidate 4 次、寫回 2 次　(3) 不會，仍是 6 次",
+      "explanation": "<div class=\"table-scroll\"><table><tr><th>步驟</th><th>bus 交易</th><th>P0</th><th>P1</th><th>P2</th><th>說明</th></tr><tr><td>P0 讀</td><td>BusRd</td><td>S</td><td>I</td><td>I</td><td>read miss</td></tr><tr><td>P1 讀</td><td>BusRd</td><td>S</td><td>S</td><td>I</td><td>read miss</td></tr><tr><td>P2 讀</td><td>BusRd</td><td>S</td><td>S</td><td>S</td><td>read miss</td></tr><tr><td>P0 寫</td><td>BusUpgr</td><td>M</td><td>I</td><td>I</td><td>P1、P2 被 invalidate（2 次）</td></tr><tr><td>P1 寫</td><td>BusRdX</td><td>I</td><td>M</td><td>I</td><td>P0 是 M：先寫回再作廢</td></tr><tr><td>P2 寫</td><td>BusRdX</td><td>I</td><td>I</td><td>M</td><td>P1 是 M：先寫回再作廢</td></tr></table></div><p><b>(2)</b> bus 交易 <b>6</b> 次（其中 5 次是 miss，P0 寫那次是有資料的 upgrade）；invalidate 2 + 1 + 1 = <b>4</b> 次；寫回 <b>2</b> 次（P1、P2 寫的時候，前一個 M 的持有者要先 flush）。</p><p><b>(3)</b> MESI 只在 P0 第一次讀時給 E，但 P1 一讀就把 P0 降成 S，之後的情況和 MSI 完全一樣，仍是 <b>6</b> 次。E 只在「讀了之後、別人讀之前就自己寫」時才省得到一次 BusUpgr。已用程式模擬驗算。</p>"
+    },
+    {
+      "id": "co-0250",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "advanced",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "共享變數 x 初值為 1。P0 執行 <code>x = x + 1</code>，P1 執行 <code>x = x * 2</code>；兩者各自被編成 load、運算、store 三條指令，沒有加鎖，系統有 cache coherence，每條指令本身不可分割。<br>(1) 兩個核心的指令共有幾種交錯方式？x 最後所有可能的值是什麼？<br>(2) 若用鎖讓兩個運算各自不可分割，x 可能是多少？",
+      "answer": "(1) 20 種交錯，x ∈ {2, 3, 4}　(2) x ∈ {3, 4}",
+      "explanation": "<p><b>(1)</b> 從 6 條指令的位置裡挑 3 個給 P0：C(6, 3) = <b>20</b> 種。</p><ul><li>P0 整個先做：(1 + 1) × 2 = <b>4</b>。</li><li>P1 整個先做：1 × 2 + 1 = <b>3</b>。</li><li>兩邊都在對方 store 之前就 load 到 1：P0 算出 2、P1 也算出 2，誰最後 store 都是 <b>2</b>，另一個人的更新被蓋掉（lost update）。</li></ul><p>所以 x ∈ {2, 3, 4}。cache coherence 只保證大家看到同一個位址的寫入順序一致，不會讓「讀－改－寫」變成不可分割，2 仍然會出現。</p><p><b>(2)</b> 加鎖後只剩「誰先做完」兩種順序，x ∈ {<b>3, 4</b>}。注意加鎖只能消除 race，不能決定先後；要固定答案還得用其他同步（例如讓 P1 等 P0 做完）。已用程式窮舉驗算。</p>"
+    },
+    {
+      "id": "co-0251",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "一個迴圈對 1000 個元素做 <code>Y[i] = a * X[i] + Y[i]</code>，元素都是 64-bit 的 double。<br>(1) 在最大向量長度 MVL = 64 的向量處理器上用 strip mining，需要幾段向量運算？若第一段先處理餘數，第一段處理幾個元素？<br>(2) 改用 256-bit 的 SIMD 擴充指令，一條指令可以同時處理幾個元素？主迴圈要跑幾次？",
+      "answer": "(1) 16 段，第一段 40 個，其餘 15 段各 64 個　(2) 4 個元素，主迴圈 250 次",
+      "explanation": "<p><b>(1)</b> 1000 = 15 × 64 + 40，需要 ⌈1000 ÷ 64⌉ = <b>16</b> 段。第一段長度 = 1000 mod 64 = <b>40</b>，把向量長度暫存器（VL）設成 40；之後 15 段都設成 64。每一段是一組向量指令（向量 load、乘、加、store），取代了 64 次純量迴圈。</p><p><b>(2)</b> 256 ÷ 64 = <b>4</b> 個 double 放進一個 SIMD 暫存器（lane 數 = 暫存器寬度 ÷ 元素寬度）。1000 ÷ 4 = <b>250</b> 次，剛好整除，不用處理剩餘元素。若元素換成 32-bit float，一次可以做 8 個，只要 125 次。</p><p>差別：向量處理器的向量長度由 VL 暫存器在執行期決定，同一份程式碼可以處理任意長度；SIMD 擴充的寬度寫死在指令裡，換更寬的硬體就要換指令（重新編譯）。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0252",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某 GPU 一個 warp 有 32 個 thread（tid = 0～31 連續）。kernel 內有：<pre class=\"code\">if (tid % 4 == 0) A();   /* A 要 20 cycles */\nelse              B();   /* B 要 10 cycles */</pre>(1) 一個 warp 執行這段要幾個 cycle？SIMD efficiency（真正有在做事的 lane-cycle ÷ 總 lane-cycle）是多少？<br>(2) 共有 128 個 thread（4 個 warp），若把條件改成以 warp 為單位分路，例如 <code>if ((tid / 32) % 4 == 0)</code>，仍然是四分之一的 thread 做 A，4 個 warp 合計要幾個 cycle？和原本相比快幾倍？",
+      "answer": "(1) 30 cycles，效率約 41.7%　(2) 50 cycles（原本 120），約快 2.4 倍",
+      "explanation": "<p><b>(1)</b> 一個 warp 的 32 個 thread 共用一個 PC（SIMT）。warp 裡有 8 個 thread 走 A、24 個走 B，兩路都有人走，所以硬體先執行 A（另外 24 個 lane 被 mask 掉），再執行 B（那 8 個被 mask 掉）：20 + 10 = <b>30</b> cycles。</p><p>有用的 lane-cycle = 8 × 20 + 24 × 10 = 400；總共 32 × 30 = 960；效率 = 400 ÷ 960 ≈ <b>41.7%</b>。</p><p><b>(2)</b> 條件只和 warp 編號有關，同一個 warp 裡所有 thread 走同一路，<b>不會分歧</b>：warp 0 全部做 A，20 cycles；warp 1～3 全部做 B，各 10 cycles，合計 20 + 30 = <b>50</b> cycles。原本 4 個 warp 都分歧，4 × 30 = 120 cycles，快了 120 ÷ 50 = <b>2.4</b> 倍，效率變成 100%。</p><p>要點：divergence 是 warp 內部的問題，不同 warp 走不同路完全沒有代價。寫 GPU 程式時盡量讓分支條件以 warp（32 的倍數）為單位一致。已用程式驗算。</p>"
+    },
+    {
+      "id": "co-0253",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "16 個節點用以下五種拓撲連接：ring、4 × 4 2D mesh（無環繞）、4 × 4 2D torus、4 維 hypercube、fully connected。<br>(1) 各需要幾條連線（link）？bisection 時最少切斷幾條？<br>(2) 若每條 link 的頻寬是 25 GB/s，各自的 bisection bandwidth 是多少？<br>(3) 要在 16 個加速器間反覆做大張量的 all-reduce，主要該看哪一個指標？",
+      "answer": "(1) ring 16 / 2；mesh 24 / 4；torus 32 / 8；hypercube 32 / 8；fully connected 120 / 64　(2) 50、100、200、200、1600 GB/s　(3) bisection bandwidth",
+      "explanation": "<p><b>(1)</b></p><ul><li>Ring：每個節點連左右，<b>16</b> 條；從中間切成兩半會切斷 <b>2</b> 條。</li><li>4 × 4 mesh：每列 3 條橫線 × 4 列 + 每行 3 條直線 × 4 行 = <b>24</b> 條；從中間直切，切斷每一列的 1 條，共 <b>4</b> 條。</li><li>4 × 4 torus：每列、每行都多一條環繞線，32 條；每列被切兩次（中間＋環繞），共 <b>8</b> 條。</li><li>4 維 hypercube：每個節點 4 條，16 × 4 ÷ 2 = <b>32</b> 條；沿某一維切開，每對相鄰節點各 1 條，共 16 ÷ 2 = <b>8</b> 條。</li><li>Fully connected：C(16, 2) = <b>120</b> 條；兩半各 8 個，任兩個跨半的節點都有線，8 × 8 = <b>64</b> 條。</li></ul><p>以上數字是用程式窮舉所有「平分成兩半」的切法、取最小值驗算的。</p><p><b>(2)</b> bisection bandwidth = 切斷的 link 數 × 25 GB/s：ring 50、mesh 100、torus 200、hypercube 200、fully connected 1600 GB/s。</p><p><b>(3)</b> 大張量的 all-reduce 是所有節點同時交換大量資料，瓶頸是「切成兩半時兩邊之間能同時傳多少」，也就是 <b>bisection bandwidth</b>，而不是單一跳的延遲。代價是連線數：fully connected 的 bisection 是 ring 的 32 倍，但連線數是 7.5 倍、每個節點要 15 個埠，節點一多就做不出來，所以實際系統常用 torus、hypercube 或多層交換器折衷。</p>"
+    },
+    {
+      "id": "co-0254",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "兩個核心使用 snooping、write-back、MSI 協定，block 大小 64 bytes。int 變數 x 在位址 0x1000，y 在 0x1004。P0 在迴圈裡不斷執行 <code>x = i</code>，P1 不斷執行 <code>y = i</code>（i 都在暫存器裡，每次只產生一次寫入）。假設寫入完全交替：P0 寫 x、P1 寫 y、P0 寫 x……共 8 次寫入（各 4 次），一開始兩個快取都沒有這個 block。<br>(1) 共幾次 bus 交易、invalidate、寫回？<br>(2) 若把 y 移到 0x1040，答案變成多少？<br>(3) (1) 的現象叫什麼？要怎麼在程式上避免？",
+      "answer": "(1) bus 交易 8 次、invalidate 7 次、寫回 7 次　(2) bus 交易 2 次、invalidate 0、寫回 0　(3) false sharing；用 padding／對齊讓兩個變數落在不同 block",
+      "explanation": "<p><b>(1)</b> 0x1000 ÷ 64 = 64、0x1004 ÷ 64 = 64（取整），x、y 在<b>同一個 block</b>。第 1 次 P0 寫：I → M，BusRdX。第 2 次 P1 寫：BusRdX，P0 是 M，先寫回再變 I。之後每一次寫都一樣：自己是 I、對方是 M，所以每次寫都是 write miss。</p><p>bus 交易 = 8 次（每次寫都 miss）；invalidate = 7 次（第 1 次以外，每次都作廢對方）；寫回 = 7 次（被作廢的都是 M）。兩個核心其實從來沒碰過對方的變數。</p><p><b>(2)</b> 0x1040 ÷ 64 = 65，y 換到另一個 block。P0 第一次寫 x miss 一次後一直是 M，P1 也一樣，總共只有 <b>2</b> 次 bus 交易，<b>0</b> 次 invalidate 與寫回，其餘 6 次都是 write hit。</p><p><b>(3)</b> 這叫 <b>false sharing（偽共享）</b>：一致性以 block 為單位追蹤，兩個核心存取同一個 block 裡<b>不同的 word</b>，也會被當成共享而互相 invalidate。和 true sharing（真的在用同一個變數）不同，它可以靠資料配置消除：在變數之間補空間（padding）或依 block 大小對齊，讓每個核心常寫的資料各自佔一個 block。block 越大越容易發生 false sharing。已用程式模擬驗算。</p>"
+    },
+    {
+      "id": "co-0255",
+      "topics": [
+        "multiprocessors"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某 GPU 的 SM 每個 cycle 從任一個 ready 的 warp 發出一條指令（單發）。每個 warp 的程式都是重複：連續 20 條指令（各 1 cycle，第 20 條是 load），load 要 400 cycles 才拿到資料，拿到後才能接著發下一輪的 20 條。<br>(1) 至少要幾個 warp，SM 才能在穩定狀態下每個 cycle 都有指令可發？<br>(2) 只有 10 個 warp 時，穩定狀態下 SM 的使用率是多少？<br>(3) 由此說明 GPU 和 CPU 隱藏記憶體延遲的方式有什麼不同。",
+      "answer": "(1) 21 個 warp　(2) 約 47.6%　(3) 見詳解",
+      "explanation": "<p><b>(1)</b> 一個 warp 每輪佔用 SM 20 個 cycle，然後要等 400 個 cycle，一輪週期是 20 + 400 = 420 cycles。在它等待的 400 cycles 裡，要有別的 warp 補滿發射槽：需要另外 ⌈400 ÷ 20⌉ = 20 個 warp，加上它自己，共 <b>21</b> 個。用模擬驗算：20 個 warp 時每 420 cycles 有 20 個閒置 cycle，21 個 warp 時閒置為 0。</p><p><b>(2)</b> 每個 warp 在 420 cycles 裡只用 20 cycles，10 個 warp 共用 200 cycles：使用率 = 200 ÷ 420 ≈ <b>47.6%</b>（模擬結果相同）。</p><p><b>(3)</b> CPU 靠<b>大容量的多層 cache</b>（和亂序執行、prefetch）讓單一執行緒少等記憶體，追求低延遲；GPU 靠<b>大量 warp 輪流執行</b>（硬體多執行緒，切換幾乎不花時間），一個 warp 在等記憶體時就發別的 warp，用平行度把延遲藏起來，追求高吞吐量，晶片面積主要給 ALU 與暫存器檔，cache 相對很小。代價是需要非常多可平行的 thread，而且每個 thread 自己的延遲並沒有變短。</p>"
     }
   ]
 }

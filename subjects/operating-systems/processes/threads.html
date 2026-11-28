@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Threads and Multithreading Models 執行緒與多執行緒模型 · 作業系統 | 資工考研互動學習站</title>
   <meta name="description" content="thread 共享與私有資源、user／kernel thread、多執行緒模型與 blocking、Pthreads。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=51e6f2d4">
-  <script src="../../../assets/js/theme.js?v=51e6f2d4"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=cdf5c420">
+  <script src="../../../assets/js/theme.js?v=cdf5c420"></script>
 </head>
 <body data-subject="operating-systems" data-chapter="processes" data-chno="2" data-topic="operating-systems/processes/threads" data-root="../../../">
   <header class="site-header">
@@ -38,7 +38,7 @@
       <section id="why-threads">
         <h2>為什麼需要執行緒</h2>
         <div class="panel prose">
-          <p>想像一個網頁伺服器：每秒有上百個連線進來，每個連線都要讀檔、等網路、送回資料。如果整個伺服器只有一條執行流程，它在等某個連線的硬碟 I/O 時，其他連線全都只能排隊。傳統的解法是每來一個連線就 <code>fork()</code> 一個新的行程去處理，但行程很「重」：每個行程都有自己的位址空間、頁表、開啟檔案表，建立和切換都要花不少時間，而且行程之間要分享資料還得透過 IPC。行程本身的狀態與 PCB 在 Process Concept 行程與行程狀態（籌備中）詳細說明。</p>
+          <p>想像一個網頁伺服器：每秒有上百個連線進來，每個連線都要讀檔、等網路、送回資料。如果整個伺服器只有一條執行流程，它在等某個連線的硬碟 I/O 時，其他連線全都只能排隊。傳統的解法是每來一個連線就 <code>fork()</code> 一個新的行程去處理，但行程很「重」：每個行程都有自己的位址空間、頁表、開啟檔案表，建立和切換都要花不少時間，而且行程之間要分享資料還得透過 IPC。行程本身的狀態與 PCB 在 <a href="process-concept.html">Process Concept（行程與行程狀態）</a>詳細說明。</p>
           <p><span class="term">Thread<small>（執行緒）</small></span>就是把「執行」從行程裡拆出來：一個行程裡可以有好幾條執行流程，它們<b>共用同一個位址空間與資源</b>，各自有自己的執行狀態。行程變成「資源的容器」，thread 變成「CPU 排程的基本單位」。</p>
           <p>多執行緒帶來四個好處：</p>
           <div class="table-scroll">
@@ -318,7 +318,7 @@ void threadVsFork(void) {
               </tbody>
             </table>
           </div>
-          <p>程式在 fork 前先 <code>fflush(stdout)</code>：printf 的緩衝區也在記憶體裡，若還沒送出就 fork，child 會複製一份沒送出的內容，同一行就印了兩次，這是 fork 輸出題的另一個陷阱。計算 fork 會產生幾個行程的題型（迴圈裡 fork、<code>fork() &amp;&amp; fork()</code>）屬於 Process Concept 行程與行程狀態（籌備中）。</p>
+          <p>程式在 fork 前先 <code>fflush(stdout)</code>：printf 的緩衝區也在記憶體裡，若還沒送出就 fork，child 會複製一份沒送出的內容，同一行就印了兩次，這是 fork 輸出題的另一個陷阱。計算 fork 會產生幾個行程的題型（迴圈裡 fork、<code>fork() &amp;&amp; fork()</code>）屬於 <a href="process-concept.html">Process Concept（行程與行程狀態）</a>。</p>
           <h3>共享變數與 race condition</h3>
           <p>兩個 thread 各對同一個 global 計數器加 10000 次，結果不一定是 20000。<code>count += 1</code> 在機器層級是「讀出、加一、寫回」三步，兩個 thread 可能讀到同一個舊值、各自加一寫回，就少算一次。這種結果取決於執行順序的情況叫 <span class="term">Race Condition<small>（競爭情況）</small></span>。調整 <code>pthread_join</code> 的順序沒有用（join 只決定 main 先等誰，兩個 thread 照樣同時在跑）；要用 mutex 把「讀、加、寫」包起來：</p>
           <details class="code-fold">
@@ -472,8 +472,8 @@ void *spin(void *arg) {
   <footer class="site-footer">
     <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=51e6f2d4"></script>
-  <script src="../../../assets/js/viz-core.js?v=51e6f2d4"></script>
-  <script src="../../../assets/js/viz/operating-systems/threads.js?v=51e6f2d4"></script>
+  <script src="../../../assets/js/site.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/viz-core.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/viz/operating-systems/threads.js?v=cdf5c420"></script>
 </body>
 </html>

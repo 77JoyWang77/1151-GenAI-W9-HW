@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CPU Time and CPI CPU 時間與 CPI · 計算機組織 | 資工考研互動學習站</title>
   <meta name="description" content="CPU time = IC × CPI × cycle time、加權平均 CPI、MIPS 陷阱、只改一類的上限與 roofline。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=51e6f2d4">
-  <script src="../../../assets/js/theme.js?v=51e6f2d4"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=cdf5c420">
+  <script src="../../../assets/js/theme.js?v=cdf5c420"></script>
 </head>
 <body data-subject="computer-organization" data-chapter="performance" data-chno="1" data-topic="computer-organization/performance/cpu-performance" data-root="../../../">
   <header class="site-header">
@@ -323,7 +323,7 @@ double cpiNeeded(const InstClass cls[], int n, int k, double target) {
               </tbody>
             </table>
           </div>
-          <p>算 intensity 時，分母是「真的和主記憶體搬的量」：資料已經在 cache 裡、可以重複使用的部分不算，所以同一個程式在 cache 放得下或放不下時，intensity 可以差好幾倍。例如矩陣乘向量，每個矩陣元素只用一次，intensity 是常數（約每個 word 一次乘法）；矩陣乘矩陣每個元素可以重複用 N 次，intensity 隨 N 成長，N 夠大就變成 compute-bound。LLM 產生 token 時每個參數只用一次，intensity 很低，是典型的 memory-bound；把參數從 16 bit 壓到 8 bit，搬的 bytes 減半，速度大約快 2 倍。多處理器、GPU 與加速器的架構在 Multiprocessors and GPUs 多處理器與 GPU 主題（籌備中）介紹。</p>
+          <p>算 intensity 時，分母是「真的和主記憶體搬的量」：資料已經在 cache 裡、可以重複使用的部分不算，所以同一個程式在 cache 放得下或放不下時，intensity 可以差好幾倍。例如矩陣乘向量，每個矩陣元素只用一次，intensity 是常數（約每個 word 一次乘法）；矩陣乘矩陣每個元素可以重複用 N 次，intensity 隨 N 成長，N 夠大就變成 compute-bound。LLM 產生 token 時每個參數只用一次，intensity 很低，是典型的 memory-bound；把參數從 16 bit 壓到 8 bit，搬的 bytes 減半，速度大約快 2 倍。多處理器、GPU 與加速器的架構在 <a href="../parallel/multiprocessors.html">Multiprocessors and GPUs（多處理器與 GPU）</a>主題介紹。</p>
           <details class="code-fold">
             <summary>看程式碼：attainable()</summary>
             <div class="code-block"><div class="code-head">attainable()：roofline 的可達效能</div><pre class="code">/* roofline：可達效能 = min(峰值運算, 記憶體頻寬 × arithmetic intensity) */
@@ -401,10 +401,10 @@ double attainable(double peakFlops, double bandwidth, double intensity) {
   </div>
 
   <footer class="site-footer">
-    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=51e6f2d4"></script>
-  <script src="../../../assets/js/viz-core.js?v=51e6f2d4"></script>
-  <script src="../../../assets/js/viz/computer-organization/cpu-performance.js?v=51e6f2d4"></script>
+  <script src="../../../assets/js/site.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/viz-core.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/viz/computer-organization/cpu-performance.js?v=cdf5c420"></script>
 </body>
 </html>

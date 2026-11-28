@@ -10,8 +10,8 @@
 |---|---|---|
 | Data Structures（資料結構） | 進行中：10 章、54 個主題（高頻 27 個），已完成 12 個 | Horowitz《Fundamentals of Data Structures in C》 |
 | Algorithms（演算法） | 進行中：13 章、36 個主題（高頻 19 個），已完成 3 個 | Cormen 等《Introduction to Algorithms》 |
-| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 6 個 | Patterson & Hennessy《Computer Organization and Design》 |
-| Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 4 個 | Silberschatz《Operating System Concepts》 |
+| Computer Organization（計算機組織） | 進行中：6 章、27 個主題（高頻 13 個），已完成 7 個 | Patterson & Hennessy《Computer Organization and Design》 |
+| Operating Systems（作業系統） | 進行中：12 章、27 個主題（高頻 12 個），已完成 5 個 | Silberschatz《Operating System Concepts》 |
 | Discrete Mathematics（離散數學） | 進行中：12 章、38 個主題（高頻 18 個），已完成 3 個 | Rosen《Discrete Mathematics and Its Applications》 |
 | Linear Algebra（線性代數） | 進行中：8 章、30 個主題（高頻 18 個），已完成 5 個 | Leon《Linear Algebra with Applications》 |
 
@@ -68,11 +68,13 @@
 | Pipelining（管線化） | 輸入 2～6 行 MIPS 指令，逐個時脈畫管線時序圖，切換有／無 forwarding，算出總週期、stall 數與 CPI |
 | Data Hazards and Forwarding（資料危障與轉送） | 輸入 2～7 行 MIPS 指令，逐週期看各階段的指令、forwarding unit 比對 rd 算出 ForwardA/B、hazard detection unit 何時插 bubble；另一個動畫逐步重排指令避開 load-use stall |
 | Cache Performance（快取效能） | 輸入 CPI、存取比例、miss rate、penalty（可加 L2），逐步展開 AMAT 與 CPI，長條圖比較各部分停頓 |
+| Multiprocessors and GPUs（多處理器與 GPU） | 兩個動畫：多核心對共享變數的交錯執行（可窮舉所有交錯結果、加鎖比較）；MSI／MESI snooping 快取一致性逐步模擬，顯示各快取狀態、bus 交易、作廢與 false sharing |
 
 ### 作業系統已完成的主題
 
 | 主題 | 互動動畫 |
 |---|---|
+| Process Concept（行程與行程狀態） | 兩個動畫：輸入事件序列看五狀態／七狀態轉移（非法轉移會標出並說明）；5 種 fork 程式逐輪畫出行程樹並統計輸出次數 |
 | Threads（執行緒與多執行緒模型） | 選擇 many-to-one／one-to-one／many-to-many／two-level，設定 user thread、LWP、CPU 數，看某個 thread 做 blocking system call 時哪些 thread 會跟著卡住、同時有幾個在跑 |
 | CPU Scheduling Algorithms（CPU 排程演算法） | 自己輸入行程（到達、burst、優先權），切換 FCFS／SJF／SRTF／Priority／RR，逐步看 ready queue 與甘特圖，算出平均等待、周轉、回應時間 |
 | Deadlock Avoidance and Banker's Algorithm（死結避免與銀行家演算法） | 編輯 Available／Max／Allocation，逐步跑安全演算法找安全序列；輸入請求先檢查再試算安全性 |

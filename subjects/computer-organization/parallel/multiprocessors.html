@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multiprocessors and GPUs 多處理器與 GPU · 計算機組織 | 資工考研互動學習站</title>
+  <meta name="description" content="加速比與強弱擴展、同步與 ll/sc、MSI/MESI 一致性、false sharing、互連網路、GPU 的 SIMT 與 warp。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=cdf5c420">
+  <script src="../../../assets/js/theme.js?v=cdf5c420"></script>
+</head>
+<body data-subject="computer-organization" data-chapter="parallel" data-chno="6" data-topic="computer-organization/parallel/multiprocessors" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Computer Organization 計算機組織</a> › Ch6 Parallel Processors 平行處理器 › Multiprocessors and GPUs 多處理器與 GPU</nav>
+      <div class="topic-head">
+        <h1>Multiprocessors and GPUs 多處理器與 GPU<small>多核心、共享記憶體、快取一致性與 GPU：平行硬體怎麼合作</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch6 Parallel Processors</span>
+          <span class="chip" data-difficulty="3">難度</span>
+          <span class="chip">speedup</span>
+          <span class="chip">cache coherence</span>
+          <span class="chip">MSI/MESI</span>
+          <span class="chip">GPU</span>
+          <span class="chip">SIMT</span>
+        </div>
+      </div>
+
+      <section id="why-multiprocessor">
+        <h2>為什麼要多處理器</h2>
+        <div class="panel prose">
+          <p>單一處理器變快的老方法是提高時脈、把管線切深、一個 cycle 發更多指令。這幾招在 2000 年代中期碰到兩道牆：時脈越高功耗越大、散熱做不到（Power Wall and Multicore 功耗牆與多核心，籌備中）；一個程式裡能同時執行的獨立指令也有限，硬體再怎麼找 ILP 也找不出更多（Instruction-Level Parallelism 指令層級平行，籌備中）。業界的出路是：不再讓一顆核心更快，而是在同一顆晶片上放<b>很多顆</b>比較省電的核心。</p>
+          <ul>
+            <li><span class="term">Multiprocessor<small>（多處理器）</small></span>：有兩個以上處理器的電腦系統。</li>
+            <li><span class="term">Multicore<small>（多核心）</small></span>：多個處理器（核心）做在同一顆晶片上，是現在最常見的多處理器。</li>
+            <li><span class="term">Thread-Level Parallelism<small>（執行緒層級平行，TLP）</small></span>：把工作分成多個可以同時執行的執行緒，分給不同核心。和管線、多發這類在單一指令流裡找平行的 ILP 是不同層次的平行。</li>
+          </ul>
+          <h3>多核心不會自動讓程式變快</h3>
+          <p>多處理器有兩種用法。第一種是同時跑很多個互不相干的程式（job-level parallelism），例如伺服器同時處理很多個請求：每個工作本身沒有變快，但每秒完成的工作變多，改善的是 throughput（見 <a href="../performance/cpu-performance.html#why-measure">CPU Time and CPI CPU 時間與 CPI</a> 的 response time 與 throughput）。第二種是把<b>一個</b>程式改寫成 <span class="term">Parallel Processing Program<small>（平行處理程式）</small></span>，讓它的 response time 變短，這才是困難的地方：</p>
+          <ul>
+            <li><b>切工作</b>：要找到夠多可以同時做、彼此獨立的部分。</li>
+            <li><b>負載平衡</b>：每個核心分到的量要差不多，否則大家都在等最慢的那個。</li>
+            <li><b>溝通與同步</b>：核心之間要交換資料、要等彼此做完一個階段，這些都是單核心沒有的額外成本。</li>
+            <li><b>序列部分</b>：只要有一部分只能一個核心做，它就是上限。Amdahl's Law 說 speedup ≤ 1 ÷ (s + (1 − s) ÷ P)，s 是序列部分佔的時間比例。例如想用 100 顆處理器得到 90 倍，代入可得 s 最多只能約 0.11%；s = 5% 時只有約 16.8 倍。完整推導在 Amdahl's Law Amdahl 定律（籌備中），<a href="../../operating-systems/processes/threads.html#parallelism">Threads and Multithreading Models 執行緒與多執行緒模型</a> 也有一個例子。</li>
+          </ul>
+          <h3>平行硬體的分類</h3>
+          <p>依「幾個指令流 × 幾個資料流」可以把電腦分成 SISD、SIMD、MISD、MIMD 四類（Flynn 分類），多核心是 <b>MIMD</b>（每顆核心跑自己的程式、處理自己的資料），向量處理器和 SIMD 指令是 <b>SIMD</b>（一條指令同時處理多筆資料），GPU 介於兩者之間。核心內部還可以用硬體多執行緒（fine-grained、coarse-grained、SMT）讓多個執行緒共用一顆核心的功能單元。這兩個主題在 Flynn's Taxonomy and Multithreading Flynn 分類與硬體多執行緒（籌備中）詳細介紹，這一頁專注在下面幾種架構：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>架構</th><th>平行的單位</th><th>核心之間怎麼溝通</th><th>這一頁的重點</th></tr></thead>
+              <tbody>
+                <tr><td>共享記憶體多處理器（多核心 CPU）</td><td>執行緒</td><td>讀寫同一個位址空間</td><td>同步、cache coherence</td></tr>
+                <tr><td>Cluster（叢集）</td><td>行程，每個節點一台電腦</td><td>網路上傳訊息</td><td>message passing、互連網路</td></tr>
+                <tr><td>GPU</td><td>上千個輕量執行緒，32 個一組</td><td>晶片內共享記憶體</td><td>SIMT、warp、延遲隱藏</td></tr>
+                <tr><td>向量處理器、SIMD 指令</td><td>同一條指令裡的多筆資料</td><td>（單一指令流）</td><td>向量長度、lane 數</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>另一個方向是 <span class="term">Heterogeneous Multicore<small>（異質多核心）</small></span>：同一顆晶片放不同種類的核心。例如手機常用的 big.LITTLE，把高效能的大核（多發、亂序、高時脈）和省電的小核（簡單、淺管線、低時脈）放在一起，輕負載交給小核，重負載才叫醒大核，目的是<b>能源效率</b>。</p>
+        </div>
+      </section>
+
+      <section id="scaling">
+        <h2>加速比、強擴展與弱擴展</h2>
+        <div class="panel prose">
+          <p>評估平行程式最基本的兩個數字：</p>
+          <pre class="formula">speedup（加速比）  = T<sub>1</sub> ÷ T<sub>P</sub>          T<sub>1</sub>：1 個處理器的時間，T<sub>P</sub>：P 個處理器的時間
+efficiency（效率）= speedup ÷ P             1 = 100%，代表每個處理器都沒有閒著</pre>
+          <p>例如 32 個處理器得到 20 倍，效率 = 20 ÷ 32 ≈ 63%，等於平均每個處理器有 37% 的時間沒在做有用的事（在等序列部分、等別人、在溝通）。</p>
+          <h3>兩種「加處理器」的問法</h3>
+          <ul>
+            <li><span class="term">Strong Scaling<small>（強擴展）</small></span>：<b>總問題大小固定</b>，增加處理器，看時間能縮短多少。問題大小為 S 時，每個處理器分到 S ÷ P。</li>
+            <li><span class="term">Weak Scaling<small>（弱擴展）</small></span>：<b>每個處理器分到的量固定</b>，處理器變多時問題也跟著變大（總量 = 每核的量 × P），看時間能不能維持不變。</li>
+          </ul>
+          <p>考題常故意寫反：「strong scaling 是每個處理器使用的記憶體大小維持 S」是錯的，那是 weak scaling。實務上 weak scaling 比較容易做到，因為很多問題變大時，可平行的部分（例如矩陣）長得比序列部分快。</p>
+          <h3>完整例子</h3>
+          <p>程式先做 20 次只能序列執行的加法，再把 N × N 矩陣的元素加總，N<sup>2</sup> 次加法平均分給 P 個處理器。每次加法 1 個時間單位，先忽略溝通成本：T<sub>P</sub> = 20 + N<sup>2</sup> ÷ P。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>N</th><th>P</th><th>T<sub>1</sub></th><th>T<sub>P</sub></th><th>speedup</th><th>效率</th><th>解讀</th></tr></thead>
+              <tbody>
+                <tr><td>16</td><td>8</td><td>276</td><td>20 + 32 = 52</td><td>5.31</td><td>66%</td><td></td></tr>
+                <tr><td>16</td><td>32</td><td>276</td><td>20 + 8 = 28</td><td>9.86</td><td>31%</td><td>處理器多 4 倍，speedup 不到 2 倍：序列的 20 佔了 28 的 71%</td></tr>
+                <tr><td>32</td><td>8</td><td>1044</td><td>20 + 128 = 148</td><td>7.05</td><td>88%</td><td></td></tr>
+                <tr><td>32</td><td>32</td><td>1044</td><td>20 + 32 = 52</td><td>20.08</td><td>63%</td><td>問題變大，序列部分佔比下降，speedup 高很多</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>固定 N 看上下兩列是 strong scaling；把每核的工作量固定在 32 個（P = 8 配 N = 16、P = 32 配 N = 32），時間都是 <b>52</b>，這就是理想的 weak scaling。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mp-scaling"></div>
+            <figcaption><b>圖 1</b>：(a) 強擴展：總量固定 1024，處理器越多，藍色（平行部分）越短，但橘色的 20 個序列單位永遠在，佔比越來越大；(b) 弱擴展：每核固定 32 個，總量隨 P 變大，時間維持 52。兩個小圖的長度比例尺不同。</figcaption>
+          </figure>
+          <h3>負載不平衡</h3>
+          <p>上面假設每個處理器分到一樣多。如果 N = 32、P = 32 時，其中一個處理器分到 64 個加法（其他的都不超過 32 個），平行階段要等最慢的那個：T<sub>P</sub> = 20 + 64 = 84，speedup 從 20.08 掉到 1044 ÷ 84 ≈ <b>12.43</b>，少了約 38%。只有一個處理器多做一倍，整體就慢將近四成，所以<b>平行階段的時間 = 最忙的那個處理器的時間</b>。</p>
+          <h3>理想 speedup 的判斷</h3>
+          <p>迴圈每次迭代彼此完全獨立（例如 <code>A[i][j] = B[j][i] * 100 + 20</code>，每個元素只由一個輸入算出）時，把迭代平均切給 P 個核心，理想 speedup 就是 P；雙核心就是 2 倍。處理器的字長（32 或 64 位元）和這件事無關；「一條指令同時做幾筆」是 SIMD 的事，在後面的「向量處理器與 SIMD」討論。</p>
+          <details class="code-fold">
+            <summary>看程式碼：parallelTime()、imbalancedTime()、speedupOf()、efficiency()</summary>
+            <div class="code-block"><div class="code-head">平行時間、負載不平衡、speedup 與效率</div><pre class="code">/* 序列部分 serial 個時間單位，可平行的 work 個單位平均分給 p 個核心 */
+double parallelTime(double serial, double work, int p) {
+  return serial + work / p;
+}
+
+/* 負載不平衡：最忙的核心分到 maxShare 個單位，其他核心做完也要等它 */
+double imbalancedTime(double serial, double maxShare) {
+  return serial + maxShare;
+}
+
+double speedupOf(double t1, double tp) { return t1 / tp; }
+double efficiency(double t1, double tp, int p) { return t1 / tp / p; }</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="shared-memory">
+        <h2>共享記憶體：SMP、UMA 與 NUMA</h2>
+        <div class="panel prose">
+          <p><span class="term">Shared Memory Multiprocessor<small>（共享記憶體多處理器，SMP）</small></span>讓所有處理器共用<b>同一個實體位址空間</b>：任何核心用一般的 load / store 就能讀寫任何位址，執行緒之間交換資料只要讀寫同一個變數。多核心 CPU 都是這一類。依存取時間是否相同，再分兩種：</p>
+          <ul>
+            <li><span class="term">UMA<small>（Uniform Memory Access，均勻記憶體存取）</small></span>：不論存取哪個位址、由哪個核心存取，延遲大致相同。典型做法是所有核心透過一條 bus 接到同一組記憶體，簡單，但 bus 是共用的，核心一多就塞車，通常只做到幾十顆。</li>
+            <li><span class="term">NUMA<small>（Nonuniform Memory Access，非均勻記憶體存取）</small></span>：記憶體分散在各個節點，每個節點的核心存取「本地」記憶體快，存取別的節點要經過互連網路，比較慢。可以擴展到更多處理器，代價是程式要注意資料放在哪裡（作業系統也會盡量把執行緒排在它的資料附近）。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mp-uma-numa"></div>
+            <figcaption><b>圖 2</b>：(a) UMA：四個核心各有自己的快取，經由同一條 bus 存取唯一的共享記憶體；(b) NUMA：每個節點有本地記憶體，節點之間用互連網路連起來，位址空間仍然只有一個，但遠端存取比較慢。</figcaption>
+          </figure>
+          <p>共享位址空間讓程式好寫，但帶來兩個新問題，是這一頁接下來的重點：多個核心同時修改同一個變數要<b>同步</b>；每個核心都有自己的快取，同一個位址可能有好幾份副本，要維持 <b>cache coherence</b>。</p>
+          <h3>例子：平行加總</h3>
+          <p>要把 P × k 個數加總，最直接的做法分兩階段：每個處理器先把自己那 k 個加成一個部分和（完全平行），再把 P 個部分和合起來。第二階段若讓一個處理器全包要 P − 1 次加法；用<b>樹狀歸約（reduction）</b>，每一輪讓一半的處理器把另一半的部分和加進來，只要 log<sub>2</sub> P 輪。8 個處理器時：第 1 輪 4 個人同時加、第 2 輪 2 個、第 3 輪 1 個，3 輪就完成，序列做要 7 次。</p>
+          <p>每一輪都要等上一輪的所有加法做完才能開始，否則可能讀到還沒加好的部分和，這種「大家都到了才往下走」的同步叫 <span class="term">Barrier<small>（屏障）</small></span>。</p>
+          <details class="code-fold">
+            <summary>看程式碼：treeSum()</summary>
+            <div class="code-block"><div class="code-head">treeSum()：每輪減半的樹狀加總</div><pre class="code">/* 樹狀加總：每一輪讓前一半的核心把後一半的部分和加進來 */
+float treeSum(float part[], int p) {
+  for (int half = p / 2; half &gt;= 1; half /= 2)   /* 每輪參與的核心數減半 */
+    for (int i = 0; i &lt; half; i++)               /* 這一輪 i = 0..half-1 同時做 */
+      part[i] = part[i] + part[i + half];        /* 真的平行時，每輪之間要 barrier */
+  return part[0];
+}</pre></div>
+          </details>
+          <h3>浮點數的加總順序會影響結果</h3>
+          <p>平行化改變了加法的<b>順序</b>。整數加法有結合律，順序不影響結果；浮點數每加一次都會捨入，<b>沒有結合律</b>。用 float 加總 {10<sup>8</sup>, 1, 1, 1, −10<sup>8</sup>, 1, 1, 1}（真正的和是 6）：</p>
+          <ul>
+            <li>由左到右依序加：10<sup>8</sup> 附近的 float 間距是 8，每次加 1 都被捨掉，加完前四個還是 10<sup>8</sup>，減掉 10<sup>8</sup> 變 0，最後只得到 <b>3</b>。</li>
+            <li>樹狀加總：第一輪 10<sup>8</sup> 先和 −10<sup>8</sup> 配對抵消成 0，三個 1 + 1 = 2 都沒有損失，最後得到 <b>6</b>。</li>
+          </ul>
+          <p>所以平行版和循序版的浮點結果可能不同，處理器數改變時結果也可能變；需要可重現結果的程式要固定加總順序。</p>
+        </div>
+      </section>
+
+      <section id="synchronization">
+        <h2>同步：交錯、race 與原子操作</h2>
+        <div class="panel prose">
+          <p>共享變數最常見的錯誤是 <span class="term">Race Condition<small>（競爭情況）</small></span>：結果取決於各核心指令的先後。<code>x = x + 1</code> 在機器層級是三條指令：load 到暫存器、在暫存器裡加 1、store 回記憶體。兩個核心的這三條可以任意交錯，如果兩邊都在對方 store 之前 load，就都拿到舊值，後寫的那個會<b>蓋掉</b>先寫的，這叫 <span class="term">Lost Update<small>（遺失更新）</small></span>。軟體層面怎麼用 mutex 保護，見 <a href="../../operating-systems/processes/threads.html#pthreads">Threads and Multithreading Models 執行緒與多執行緒模型</a>；這一節從硬體角度看：交錯到底會產生哪些結果、硬體提供什麼指令做出不可分割的操作。</p>
+          <h3>考法：列出所有可能的最終值</h3>
+          <p>x 初值 1，P0 執行 <code>x = x + 1</code>、P1 執行 <code>x = x * 2</code>，沒有加鎖。兩邊各 3 條指令，交錯方式有 C(6, 3) = 20 種，但結果只有三種：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>情況</th><th>例子（每格是哪個核心執行下一條）</th><th>最後 x</th><th>說明</th></tr></thead>
+              <tbody>
+                <tr><td>P0 整個先做完</td><td>P0 P0 P0 P1 P1 P1</td><td>4</td><td>(1 + 1) × 2</td></tr>
+                <tr><td>P1 整個先做完</td><td>P1 P1 P1 P0 P0 P0</td><td>3</td><td>1 × 2 + 1</td></tr>
+                <tr><td>兩邊都先 load 到 1</td><td>P0 P1 P0 P1 P0 P1</td><td>2</td><td>P0 算出 2、P1 也算出 2，誰最後寫都是 2：遺失更新</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>解題步驟：(1) 先列出「一次做完一整個運算」的各種先後順序，這些結果一定可能；(2) 再找「某人讀到舊值、晚於別人寫回」的交錯，看會多出哪些值；(3) 題目若有多個變數或多個運算，就逐一檢查每個 load 可能讀到哪幾個版本。題目數字多的時候（三個核心、各好幾條），可以用下面的程式窮舉所有交錯驗算。</p>
+          <p>常見的陷阱：<b>有 cache coherence 不代表沒有 race</b>。coherence 保證所有核心看到同一個位址的寫入順序一致、最後的寫入一定會被看到，但它不會把「讀－改－寫」三條指令綁在一起，上表的 2 在有 coherence 的系統上照樣會出現。</p>
+          <details class="code-fold">
+            <summary>看程式碼：step()、runOp() 與 explore()：窮舉所有交錯</summary>
+            <div class="code-block"><div class="code-head">一條一條執行、加鎖時一次做完一個運算、遞迴窮舉每一種交錯</div><pre class="code">void step(Core *c) {
+  Inst in = c-&gt;prog[c-&gt;pc];
+  switch (in.op) {
+    case LOAD:   c-&gt;reg = mem[in.var]; break;      /* 讀共享記憶體到自己的暫存器 */
+    case ADDI:   c-&gt;reg = c-&gt;reg + in.k; break;    /* 只改自己的暫存器 */
+    case MULI:   c-&gt;reg = c-&gt;reg * in.k; break;
+    case STORE:  mem[in.var] = c-&gt;reg; break;      /* 寫回共享記憶體，別人才看得到 */
+    case STOREI: mem[in.var] = in.k; break;
+  }
+  c-&gt;pc++;
+}
+
+/* 加鎖（原子）時：一次把整個高階運算做完，中間不讓別人插隊 */
+void runOp(Core *c) {
+  do step(c); while (c-&gt;pc &lt; c-&gt;len &amp;&amp; !c-&gt;prog[c-&gt;pc].first);
+}
+
+/* 窮舉所有交錯：每次選一個還沒跑完的核心先走一步 */
+void explore(Core cs[], int n) {
+  int moved = 0;
+  for (int i = 0; i &lt; n; i++) {
+    if (cs[i].pc == cs[i].len) continue;       /* 這個核心已經跑完 */
+    Core saved = cs[i];
+    int m0 = mem[0], m1 = mem[1];
+    if (atomicOps) runOp(&amp;cs[i]); else step(&amp;cs[i]);
+    explore(cs, n);
+    cs[i] = saved; mem[0] = m0; mem[1] = m1;   /* 還原，換下一個核心先走 */
+    moved = 1;
+  }
+  if (!moved) record(mem[0], mem[1]);          /* 全部跑完：記下一種結果 */
+}</pre></div>
+          </details>
+          <h3>硬體提供的原子操作</h3>
+          <p>要寫出鎖，需要一個硬體保證<b>不可分割</b>的「讀－改－寫」。只用一般的 load 和 store 做不到：讀到「鎖是空的」和寫入「我拿到了」之間，別人可能也讀到空的。常見的硬體原語：</p>
+          <ul>
+            <li><span class="term">Atomic Exchange<small>（原子交換，swap）</small></span>：一條指令把暫存器和記憶體的值互換。拿鎖時把 1 換進去，換回來的是 0 就代表拿到了，是 1 就代表別人拿著。</li>
+            <li><b>Test-and-set</b>、<b>fetch-and-add</b>、<b>compare-and-swap</b>：同樣是一條指令完成讀與寫，差別在怎麼改。</li>
+            <li><b>ll / sc</b>（MIPS、RISC-V、ARM 的做法）：拆成兩條指令。<span class="term">Load Linked<small>（ll）</small></span>讀出值並記下這個位址；<span class="term">Store Conditional<small>（sc）</small></span>只有在 ll 之後沒有人寫過這個位址時才真的寫入，並把暫存器設成 1（成功），否則不寫、設成 0（失敗），程式看到 0 就跳回去重來。</li>
+          </ul>
+          <p>一條指令同時讀又寫，對管線很不友善（要在一條指令裡做兩次記憶體存取，還不能被打斷）；ll / sc 把它拆成兩條普通長相的指令，比較好實作，這是它的主要優點。ll / sc 的幾個重點：</p>
+          <ul>
+            <li>ll <b>不會鎖住</b>記憶體，別的核心照樣可以寫，只是寫了之後這邊的 sc 會失敗。</li>
+            <li>sc 失敗的原因不只有 context switch：<b>其他核心</b>在 ll 與 sc 之間寫入同一位址也會失敗。所以「沒有 context switch，sc 就一定成功」是錯的。</li>
+            <li>sc 的位址必須和 ll 相同，檢查成功與否要看 <b>sc 寫回的那個暫存器</b>。考題常給一段 sc 寫錯位址、或分支檢查錯暫存器的程式要你找 bug。</li>
+            <li>ll 和 sc 之間只放少量暫存器運算，越長越容易被別人插隊而失敗。競爭很激烈時 sc 可能一直失敗重試，不見得比 atomic swap 有效率。</li>
+            <li>unlock 只要用一般的 store 把 0 寫回，因為只有持有鎖的人會寫它。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：用 ll / sc 做 atomic swap 與 spin lock（MIPS）</summary>
+            <div class="code-block"><div class="code-head">atomic swap 與 spin lock（MIPS 組合語言）</div><pre class="code">   用 ll / sc 做 atomic swap（交換 $s4 與 0($s1)）：
+try:  add  $t0, $zero, $s4   # 要寫進去的值
+      ll   $t1, 0($s1)       # load linked：讀舊值，並記下這個位址
+      sc   $t0, 0($s1)       # store conditional：期間沒人寫過才成功，$t0 = 1
+      beq  $t0, $zero, try   # 失敗（$t0 = 0）就整段重來
+      add  $s4, $zero, $t1   # 把讀到的舊值放進 $s4
+
+   用 ll / sc 做 spin lock（0($s1) 為 0 表示沒人拿，1 表示被占用）：
+lock: ll   $t0, 0($s1)       # 讀鎖目前的值
+      bne  $t0, $zero, lock  # 已經被占用就繼續轉（spin）
+      addi $t0, $zero, 1
+      sc   $t0, 0($s1)       # 試著把 1 寫進去
+      beq  $t0, $zero, lock  # 被別人搶先寫了，sc 失敗，重來
+      ...                    # critical section
+      sw   $zero, 0($s1)     # unlock：寫回 0 就好，不用 ll / sc</pre></div>
+          </details>
+          <p>鎖要滿足哪些條件、怎麼避免忙等浪費 CPU，在 The Critical-Section Problem 臨界區問題（籌備中）和 Mutex Locks and Semaphores 互斥鎖與號誌（籌備中）介紹。</p>
+          <h3>動手操作</h3>
+          <p>下方動畫可以自己寫每個核心要做的運算（<code>a += 1</code>、<code>a -= 2</code>、<code>a *= 2</code>、<code>a = 5</code>、<code>a++</code>，變數 a 或 b，用分號隔開，每核最多 3 個；P2 可以空白），以及執行順序：例如「0 1 0 1」表示下一條指令依序由 P0、P1、P0、P1 執行，沒寫完的部分依 P0、P1、P2 做完。</p>
+          <ul>
+            <li><b>加鎖</b>打開後，每個數字代表一整個運算（三條指令一次做完，期間別人不能插隊）。</li>
+            <li><b>列舉所有結果</b>：窮舉所有交錯，列出所有可能的 (a, b) 和一個能得到它的順序；紅字是只有遺失更新才會出現的結果。</li>
+            <li>快捷例子：「遺失更新」是上表第三種情況；「a++ ‖ a = 2」是 P0 做 a++、b++，P1 做 a = 2、b += 2；「三核心」三個核心交錯修改同一個 a，可能的結果多達二十幾種。</li>
+          </ul>
+        </div>
+        <div class="viz" data-viz="mp-race"></div>
+      </section>
+
+      <section id="coherence">
+        <h2>Cache Coherence：snooping 與 MSI / MESI</h2>
+        <div class="panel prose">
+          <p>每顆核心都有自己的快取，同一個位址可能同時在好幾個快取裡。快取用 write-back（見 <a href="../memory-hierarchy/cache-mapping.html">Cache Organization and Mapping 快取組織與映射</a>）時問題最明顯：P0 和 P1 都讀過 X = 0，接著 P0 寫 X = 1，新值只在 P0 的快取裡，P1 再讀 X 還是從自己的快取讀到 0。這就是 <span class="term">Cache Coherence<small>（快取一致性）</small></span>問題。</p>
+          <h3>一致的定義</h3>
+          <ul>
+            <li><b>同一核心先寫後讀</b>：P 寫了 X 之後自己讀 X（中間沒有別人寫），一定讀到自己寫的值。</li>
+            <li><b>寫入會傳出去</b>（write propagation）：P 寫了 X 後經過足夠時間，其他核心讀 X 一定讀到新值。</li>
+            <li><b>寫入有一致的順序</b>（write serialization）：兩個核心先後寫同一個 X，所有核心看到的順序都一樣，不會有人看到 1 再看到 2、另一人看到 2 再看到 1。</li>
+          </ul>
+          <p>注意這些都只講<b>同一個位址</b>。不同位址之間的讀寫順序是另一個問題（memory consistency，下一節）。</p>
+          <h3>兩種維持方法</h3>
+          <ul>
+            <li><span class="term">Snooping<small>（監聽式）</small></span>：所有快取接在同一條 bus（或廣播網路）上，每個快取都監聽 bus 上的交易，看到別人要讀或寫自己也有的 block 就做出反應。簡單、反應快，但每次都要廣播，核心多時 bus 會成為瓶頸，適合 UMA。</li>
+            <li><span class="term">Directory<small>（目錄式）</small></span>：在記憶體端為每個 block 記錄「哪些快取有副本、誰擁有最新值」，只對相關的快取發訊息，不必廣播，適合 NUMA 和大量核心。</li>
+          </ul>
+          <p>收到別人寫入時，可以把自己的副本作廢（<span class="term">Write Invalidate<small>（寫入作廢）</small></span>），也可以把新值更新進來（write update）。現代處理器幾乎都用 write invalidate：同一個核心連續寫很多次時只要作廢別人一次，之後都是本地 write hit，比每次寫都廣播新值省頻寬。</p>
+          <h3>MSI 協定</h3>
+          <p>每個快取裡的每個 block 有三種狀態：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>狀態</th><th>意思</th><th>記憶體是不是最新</th><th>可以直接讀</th><th>可以直接寫</th></tr></thead>
+              <tbody>
+                <tr><td><b>M</b>（Modified）</td><td>只有我有，而且我改過</td><td>否（最新值只在我這裡）</td><td>是</td><td>是</td></tr>
+                <tr><td><b>S</b>（Shared）</td><td>我有一份乾淨的副本，別人可能也有</td><td>是</td><td>是</td><td>否，要先作廢別人</td></tr>
+                <tr><td><b>I</b>（Invalid）</td><td>沒有有效資料</td><td>—</td><td>否（miss）</td><td>否（miss）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>狀態怎麼變，分成「自己的核心存取」和「在 bus 上看到別人的交易」兩邊：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>事件</th><th>原狀態</th><th>bus 交易</th><th>新狀態</th><th>其他快取的反應</th></tr></thead>
+              <tbody>
+                <tr><td>自己讀</td><td>I</td><td>BusRd（read miss）</td><td>S</td><td>有人是 M：寫回（flush）記憶體並提供資料，自己降成 S</td></tr>
+                <tr><td>自己讀</td><td>S 或 M</td><td>無（read hit）</td><td>不變</td><td>—</td></tr>
+                <tr><td>自己寫</td><td>I</td><td>BusRdX（write miss：讀進來並要求獨占）</td><td>M</td><td>有副本的全部變 I；是 M 的先寫回</td></tr>
+                <tr><td>自己寫</td><td>S</td><td>BusUpgr（invalidate）</td><td>M</td><td>有副本的全部變 I</td></tr>
+                <tr><td>自己寫</td><td>M</td><td>無（write hit）</td><td>M</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>看懂這張表的關鍵：<b>M 一定是唯一的副本</b>（所以寫 M 不用通知任何人），<b>S 可能有很多份</b>（所以寫 S 一定要先作廢別人）。追蹤題的例子：三個核心依序 P0 讀、P1 讀、P2 讀、P0 寫、P1 寫、P2 寫，三次讀各一次 BusRd（都變 S）；P0 寫送 BusUpgr，作廢 P1、P2；P1 寫是 write miss，P0（M）先寫回再作廢；P2 寫同理。總共 6 次 bus 交易、4 次 invalidate、2 次寫回。</p>
+          <h3>MESI：多一個 E</h3>
+          <p>MSI 的浪費：一個核心讀了一個<b>只有它在用</b>的 block（S），之後要寫還得送一次 BusUpgr，但其實根本沒有別人可以作廢。MESI 多了 <b>E（Exclusive）</b>：read miss 時如果沒有其他快取有副本，就給 E（獨占、乾淨，記憶體也是最新的）。之後寫入可以不上 bus，直接 E → M。別人讀這個 block 時，E 降成 S，不用寫回（因為是乾淨的）。私有資料先讀後寫的情況非常多，E 能省下大量 bus 交易，所以多數處理器用 MESI 或它的變形（例如再加 O 狀態的 MOESI）。directory 協定、MOESI 等進一步的內容在 Cache Coherence 快取一致性（籌備中）。</p>
+          <details class="code-fold">
+            <summary>看程式碼：access()：MSI / MESI 的請求端與監聽端</summary>
+            <div class="code-block"><div class="code-head">access()：一次讀或寫，順便更新其他快取的狀態</div><pre class="code">void access(int p, int isWrite) {
+  int others = 0;                                    /* 其他快取有沒有副本 */
+  for (int q = 0; q &lt; nproc; q++) if (q != p &amp;&amp; state[q] != I) others = 1;
+  if (!isWrite) {                                    /* ---- 讀 ---- */
+    if (state[p] != I) return;                       /* S、E、M 都是 read hit */
+    busTx++; misses++;                               /* read miss：送出 BusRd */
+    for (int q = 0; q &lt; nproc; q++) {
+      if (q == p) continue;
+      if (state[q] == M) { flushes++; state[q] = S; } /* 有最新值的寫回，降成 S */
+      else if (state[q] == E) state[q] = S;
+    }
+    state[p] = (useMESI &amp;&amp; !others) ? E : S;         /* MESI：沒人有副本就拿 E */
+    return;
+  }
+  /* ---- 寫 ---- */
+  if (state[p] == M) return;                         /* write hit，不必通知別人 */
+  if (state[p] == E) { state[p] = M; return; }       /* 獨占：悄悄升成 M，不上 bus */
+  busTx++;                                           /* S：BusUpgr；I：BusRdX */
+  if (state[p] == I) misses++;
+  for (int q = 0; q &lt; nproc; q++) {
+    if (q == p || state[q] == I) continue;
+    if (state[q] == M) flushes++;                    /* 最新值先寫回 */
+    state[q] = I;                                    /* 其他副本全部作廢 */
+    invals++;
+  }
+  state[p] = M;
+}</pre></div>
+          </details>
+          <h3>動手操作</h3>
+          <p>輸入一串存取，例如 <code>P0 R X, P1 W Y</code>（核心、R 讀或 W 寫、變數 X 或 Y，用逗號隔開，最多 11 個；變數省略就是 X）。X 和 Y 放在<b>同一個 block</b> 裡，所以存取 Y 也會影響 X 的副本。每一步會顯示請求端的狀態、bus 上的交易、其他快取監聽到之後的反應（作廢、寫回），以及記憶體是不是最新的。寫入時寫進一個遞增的新值，方便看出誰拿著最新的資料。</p>
+          <ul>
+            <li><b>協定</b>按鈕切換 MSI 與 MESI；<b>核心數</b>可填 2～4。</li>
+            <li>快捷例子：「教學例」是三核心的讀寫交錯；「MESI 的 E」是先讀後寫的私有資料，切換協定比較 bus 交易數；「false sharing」是 P0 只寫 X、P1 只寫 Y，卻每次都互相作廢（下一節）。</li>
+          </ul>
+        </div>
+        <div class="viz" data-viz="mp-msi"></div>
+      </section>
+
+      <section id="false-sharing">
+        <h2>False Sharing 與記憶體一致性</h2>
+        <div class="panel prose">
+          <h3>False sharing</h3>
+          <p>coherence 是以 <b>block</b> 為單位追蹤的，不知道你用的是 block 裡的哪個 word。兩個核心各自存取同一個 block 裡<b>不同的</b>變數，硬體仍然當成共享：P0 寫 x 會把 P1 整個 block 作廢，P1 寫 y 又把 P0 的作廢，block 在兩個快取之間來回搬。這叫 <span class="term">False Sharing<small>（偽共享）</small></span>，相對於真的在用同一個變數的 true sharing。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mp-false-sharing"></div>
+            <figcaption><b>圖 3</b>：(a) x、y 在同一個 64 B block，P0 只寫 x、P1 只寫 y，每次寫都要把對方的 block 作廢（紅色虛線）；(b) 在中間補空間，讓 x、y 落在不同 block，各自停在 M，之後都是 write hit。</figcaption>
+          </figure>
+          <p>量化一下：兩核心、MSI、64 B block，x 在 0x1000、y 在 0x1004（同一個 block），P0 寫 x、P1 寫 y 交替各 4 次。除了第一次，每次寫入都是 write miss、都要作廢對方、對方是 M 還要先寫回：<b>8 次 bus 交易、7 次 invalidate、7 次寫回</b>。把 y 移到 0x1040（下一個 block），只有各自第一次 miss，總共 <b>2 次 bus 交易</b>，其餘 6 次都是 write hit。</p>
+          <p>這也是 block 大小的取捨之一：block 越大，越能利用 spatial locality、減少 compulsory miss（見 <a href="../memory-hierarchy/cache-performance.html">Cache Performance 快取效能</a>），但不相干的變數越容易擠在同一個 block，false sharing miss 變多。解法是在程式裡讓各執行緒常寫的資料依 block 大小對齊或補空間（padding），例如每個執行緒的計數器各佔 64 bytes。</p>
+          <h3>Memory consistency：不同位址之間的順序</h3>
+          <p>coherence 只管同一個位址。<span class="term">Memory Consistency Model<small>（記憶體一致性模型）</small></span>規定的是：一個核心對<b>不同位址</b>的讀寫，在別的核心眼中是什麼順序。最直覺的是 <span class="term">Sequential Consistency<small>（循序一致性）</small></span>：所有核心的存取像是排成一個總順序，而且每個核心自己的存取在其中保持程式順序。</p>
+          <p>但處理器為了效能，store 不會等寫進快取才繼續，而是先放進 <span class="term">Store Buffer<small>（寫入緩衝區）</small></span>，後面的 load 就先執行了。x86 採用的 <span class="term">TSO<small>（Total Store Order）</small></span>就是正式允許這件事：<b>store 之後對不同位址的 load 可以提早</b>，其他順序（load→load、load→store、store→store）都保持。經典例子（A、B 初值 0）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Proc0</th><th>Proc1</th><th>循序一致</th><th>TSO</th></tr></thead>
+              <tbody>
+                <tr><td>store 1 → A；load B</td><td>store 1 → B；load A</td><td>不可能兩個 load 都讀到 0</td><td><b>可能</b>都讀到 0：兩個 store 都還在各自的 store buffer 裡</td></tr>
+                <tr><td>store 1 → A；store 1 → B</td><td>load B；load A</td><td>讀到 B = 1 就一定讀到 A = 1</td><td>同左：store→store、load→load 都不會重排</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>需要更強的順序時，程式要插入 <span class="term">Fence<small>（記憶體屏障）</small></span>指令，強迫前面的存取完成才能做後面的。lock、unlock 的實作內部都包含這類屏障，所以用鎖保護好的程式不必自己煩惱一致性模型。</p>
+        </div>
+      </section>
+
+      <section id="message-passing">
+        <h2>Message Passing、Cluster 與互連網路</h2>
+        <div class="panel prose">
+          <p>另一種多處理器不共享位址空間：每個處理器（節點）有自己的<b>私有</b>記憶體，要拿別人的資料只能用 send 和 receive 明確地傳訊息，叫做 <span class="term">Message Passing<small>（訊息傳遞）</small></span>。最典型的是 <span class="term">Cluster<small>（叢集）</small></span>：一堆普通的電腦用網路接起來，每台跑自己的作業系統；把規模放大到數萬台，就是雲端服務的 warehouse-scale computer。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較</th><th>共享記憶體（SMP）</th><th>Message passing（cluster）</th></tr></thead>
+              <tbody>
+                <tr><td>位址空間</td><td>一個，大家共用</td><td>每個節點各自一個</td></tr>
+                <tr><td>交換資料</td><td>load / store 同一個位址（隱式）</td><td>send / receive（顯式）</td></tr>
+                <tr><td>同步</td><td>lock、barrier</td><td>收到訊息本身就是同步</td></tr>
+                <tr><td>硬體 coherence</td><td>需要</td><td>不需要（資料不共享）</td></tr>
+                <tr><td>擴展性</td><td>受 bus／coherence 限制</td><td>容易擴展到很多節點</td></tr>
+                <tr><td>缺點</td><td>同步與 coherence 的成本</td><td>溝通延遲大，程式要自己切資料與傳遞；每台各一份 OS 與記憶體，管理成本高</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>互連網路的拓撲</h3>
+          <p>不論 NUMA、cluster 或多顆加速器，節點之間都要靠網路連接。評估一個拓撲常用兩個數字（以下都假設每條連線頻寬相同）：</p>
+          <ul>
+            <li><b>Total network bandwidth</b>：所有連線的頻寬總和 = 連線數 × 每條頻寬，是最好情況。</li>
+            <li><span class="term">Bisection Bandwidth<small>（二分頻寬）</small></span>：把節點分成兩半（各一半節點），找讓「跨過切線的連線數」最少的切法，那個數 × 每條頻寬。這是最壞情況下兩半之間能同時傳的量。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mp-topologies"></div>
+            <figcaption><b>圖 4</b>：16 個節點的 (a) ring 與 (b) 4 × 4 mesh。藍、綠各 8 個節點；橘色虛線是讓被切斷的連線（紅色虛線）最少的切法。ring 只要切 2 條就分成兩半，mesh 要切 4 條。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>拓撲（16 個節點）</th><th>連線數</th><th>bisection（條）</th><th>每條 25 GB/s 時的 bisection bandwidth</th></tr></thead>
+              <tbody>
+                <tr><td>Bus（共用一條）</td><td>1</td><td>1</td><td>25 GB/s，所有人搶同一條</td></tr>
+                <tr><td>Ring</td><td>16</td><td>2</td><td>50 GB/s</td></tr>
+                <tr><td>4 × 4 2D mesh</td><td>24</td><td>4</td><td>100 GB/s</td></tr>
+                <tr><td>4 × 4 2D torus（mesh 加環繞線）</td><td>32</td><td>8</td><td>200 GB/s</td></tr>
+                <tr><td>4 維 hypercube</td><td>32</td><td>8</td><td>200 GB/s</td></tr>
+                <tr><td>Fully connected</td><td>120</td><td>64</td><td>1600 GB/s</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>一般化：n 個節點的 ring 有 n 條連線、bisection 2；fully connected 有 n(n − 1) ÷ 2 條、bisection (n ÷ 2)<sup>2</sup>；k × k mesh 的 bisection 是 k，torus 是 2k；2<sup>d</sup> 個節點的 hypercube 有 d × 2<sup>d − 1</sup> 條、bisection 2<sup>d − 1</sup>。fully connected 的 bisection 是 ring 的 32 倍，但連線數是 7.5 倍、每個節點要 15 個埠，節點一多就做不出來，實際系統用 torus、多層交換器（fat tree）等折衷。</p>
+          <p>近年考題常把這些放在 AI 加速器的情境裡：多顆 GPU 訓練大模型時要反覆做 all-reduce（每顆把自己算的梯度和所有人加總），大量資料同時在所有節點之間流動，瓶頸是 <b>bisection bandwidth</b>，不是單一跳的延遲。NVLink、Infinity Fabric 這類晶片間高速互連就是為此設計的。把一顆大晶片拆成多個 chiplet 也一樣：原本晶片內的連線變成跨 chiplet 的連線，必然多出通訊延遲與頻寬開銷。</p>
+          <details class="code-fold">
+            <summary>看程式碼：countLinks() 與 bisection()：窮舉所有平分方式</summary>
+            <div class="code-block"><div class="code-head">連線數與 bisection（窮舉驗算）</div><pre class="code">int countLinks(int n) {
+  int c = 0;
+  for (int a = 0; a &lt; n; a++) for (int b = a + 1; b &lt; n; b++) c += adj[a][b];
+  return c;
+}
+
+/* 窮舉所有把節點分成兩半的方法，找跨過切線的最少連線數 */
+int bisection(int n) {
+  int best = 1 &lt;&lt; 30;
+  for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++) {
+    if (!(mask &amp; 1) || __builtin_popcount(mask) != n / 2) continue;   /* 固定節點 0 在左半，避免重複 */
+    int cut = 0;
+    for (int a = 0; a &lt; n; a++) for (int b = a + 1; b &lt; n; b++)
+      if (adj[a][b] &amp;&amp; (((mask &gt;&gt; a) &amp; 1) != ((mask &gt;&gt; b) &amp; 1))) cut++;
+    if (cut &lt; best) best = cut;
+  }
+  return best;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="gpu">
+        <h2>GPU：SIMT、warp 與延遲隱藏</h2>
+        <div class="panel prose">
+          <p>GPU 原本為繪圖設計：每個像素要做的計算都一樣、彼此獨立，數量又非常多。這種工作不在乎單一像素多快算完，只在乎每秒能算多少像素，所以 GPU 和 CPU 的設計方向剛好相反：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較</th><th>CPU</th><th>GPU</th></tr></thead>
+              <tbody>
+                <tr><td>目標</td><td>單一執行緒的<b>延遲</b>越低越好</td><td>整體<b>吞吐量</b>越高越好</td></tr>
+                <tr><td>晶片面積主要給</td><td>大容量多層快取、分支預測、亂序執行</td><td>大量 ALU 與很大的暫存器檔</td></tr>
+                <tr><td>怎麼對付記憶體延遲</td><td>用快取讓資料就在旁邊，少去記憶體</td><td>同時掛著上千個執行緒，一組在等記憶體就換另一組執行</td></tr>
+                <tr><td>記憶體</td><td>DDR：容量大、延遲低</td><td>GDDR 或 HBM：頻寬高出數倍，延遲較高</td></tr>
+                <tr><td>適合</td><td>分支多、相依多、序列的工作</td><td>大量資料做相同計算（資料層級平行）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>硬體組織</h3>
+          <ul>
+            <li>一顆 GPU 由幾十個 <span class="term">Streaming Multiprocessor<small>（SM，串流多處理器）</small></span>組成，每個 SM 本質上是一個多執行緒的 SIMD 處理器，有自己的指令排程、很多 ALU、暫存器檔與晶片內記憶體。</li>
+            <li>程式設計師寫的是單一執行緒的程式（CUDA kernel），啟動時指定要幾千、幾萬個執行緒。執行緒分組成 thread block，一個 block 交給一個 SM。</li>
+            <li>硬體把執行緒 32 個一組成為一個 <span class="term">Warp<small>（執行緒束）</small></span>。同一個 warp 的 32 個執行緒<b>共用一個 PC</b>，每個 cycle 執行同一條指令、處理各自的資料。這叫 <span class="term">SIMT<small>（Single Instruction, Multiple Threads）</small></span>：硬體用 SIMD 的方式執行，但程式寫起來像獨立的執行緒。</li>
+          </ul>
+          <h3>延遲隱藏：靠大量 warp，不是靠快取或深管線</h3>
+          <p>GPU 的全域記憶體存取要幾百個 cycle。SM 同時掛著幾十個 warp，每個 warp 的暫存器都在暫存器檔裡各有一份，切換 warp 不必存回任何東西，幾乎零成本。warp 排程器每個 cycle 從「已經 ready」的 warp 裡挑一個發指令；一個 warp 發出 load 之後就去等，換別的 warp 上。這是一種細粒度的硬體多執行緒。考題說「GPU 靠很深的管線隱藏 DRAM 延遲」或「GPU 靠好幾百 MB 的 L3 cache 隱藏延遲」都是錯的。</p>
+          <p>需要幾個 warp？假設每個 warp 連續發 20 條指令（每條 1 cycle，最後一條是 load），load 要 400 cycles 才回來。一個 warp 等待的 400 cycles 要由其他 warp 補滿，每個補 20 cycles，需要 400 ÷ 20 = 20 個，加上它自己共 <b>21</b> 個。只有 10 個 warp 時，每 420 cycles 只有 10 × 20 = 200 cycles 有事做，使用率約 <b>47.6%</b>。這也說明 GPU 的弱點：要有非常多可以平行的執行緒，否則延遲藏不住。</p>
+          <h3>Branch divergence</h3>
+          <p>warp 只有一個 PC，如果裡面的執行緒在 if-else 走了不同路，硬體只能<b>兩路依序都執行</b>：先執行 if 那一路，把走 else 的執行緒 mask 掉（不寫入結果）；再執行 else 那一路，把走 if 的 mask 掉；兩路都走完後重新合流。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="mp-warp-divergence"></div>
+            <figcaption><b>圖 5</b>：<code>if (tid % 4 == 0) A(); else B();</code>，用 8 個 lane 示意（實際一個 warp 是 32 個）。A 要 20 cycles、B 要 10 cycles，但整個 warp 要花 20 + 10 = 30 cycles；虛線格是被 mask 掉、閒著的 lane。</figcaption>
+          </figure>
+          <p>以 32 個執行緒的 warp 計算：8 個走 A、24 個走 B，花 30 cycles；有用的 lane-cycle 是 8 × 20 + 24 × 10 = 400，總共 32 × 30 = 960，效率只有約 <b>41.7%</b>。如果條件改成以 warp 為單位一致（例如 <code>(tid / 32) % 4 == 0</code>），同一個 warp 走同一路就不會分歧，4 個 warp 合計 20 + 3 × 10 = 50 cycles，原本是 4 × 30 = 120 cycles，快了 2.4 倍。divergence 只在 warp <b>內部</b>有代價，不同 warp 走不同路沒有影響。</p>
+          <h3>GPU 的記憶體</h3>
+          <ul>
+            <li><span class="term">Memory Coalescing<small>（記憶體合併）</small></span>：warp 裡 32 個執行緒同時發 load 時，如果位址是連續的（例如執行緒 i 讀 a[i]），硬體把它們合併成少數幾個大的記憶體交易，充分利用頻寬；位址散亂（例如執行緒 i 讀 a[i × 32]）就要拆成很多次交易，有效頻寬大幅下降。CPU 的 scalar 程式一次只發一個存取，比較不需要這個機制。</li>
+            <li><span class="term">Shared Memory<small>（共享記憶體，scratchpad）</small></span>：每個 SM 裡由程式自己管理的晶片內小記憶體，同一個 thread block 的執行緒共用，用來放會重複使用的資料。它分成多個 bank，同一個 cycle 內多個執行緒存取<b>同一個 bank 的不同位址</b>就是 <b>bank conflict</b>，只能排隊依序服務。</li>
+            <li>快取：GPU 也有 L1、L2，但相對於它的運算量小很多，主要用來減少對 DRAM 的頻寬需求，而不是降低延遲。</li>
+            <li>GDDR 是焊在顯示卡上的晶片，HBM 是用矽中介層和 GPU 封裝在一起的堆疊 DRAM，兩者的介面都和主機板上的 DDR 插槽不同，不能互換。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：warpCycles() 與 warpsToHide()</summary>
+            <div class="code-block"><div class="code-head">warp divergence 的時間、隱藏延遲需要的 warp 數</div><pre class="code">/* 一個 warp 的 thread 依條件分兩路：只要兩路都有人走，兩路都要依序執行 */
+int warpCycles(const int takeIf[], int lanes, int ifCycles, int elseCycles) {
+  int nIf = 0;
+  for (int t = 0; t &lt; lanes; t++) nIf += takeIf[t];
+  int cycles = 0;
+  if (nIf &gt; 0) cycles += ifCycles;          /* 有人走 if：全 warp 跑 if，其他 lane 被 mask */
+  if (nIf &lt; lanes) cycles += elseCycles;    /* 有人走 else：再跑一次 else */
+  return cycles;
+}
+
+/* 每個 warp 連續算 compute 個 cycle 後發一次要等 latency 個 cycle 的 load；
+   要讓排程器每個 cycle 都有 warp 可發，至少需要幾個 warp */
+int warpsToHide(int compute, int latency) {
+  return (latency + compute - 1) / compute + 1;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="vector-simd">
+        <h2>向量處理器與 SIMD 指令</h2>
+        <div class="panel prose">
+          <p>GPU 之前，資料層級平行的經典做法是 <span class="term">Vector Processor<small>（向量處理器）</small></span>：有一組<b>向量暫存器</b>，每個能放一整串元素（例如 64 個 double），一條向量指令就對整串做同一個運算，例如把 X 整串乘上 a 再加到 Y 上，只要向量 load、向量乘、向量加、向量 store 幾條指令，取代 64 次純量迴圈。好處：</p>
+          <ul>
+            <li><b>指令數大幅減少</b>：一條指令做 64 個運算，取指與解碼的能量、迴圈的分支都少了很多。</li>
+            <li><b>元素之間保證獨立</b>：硬體不用檢查同一條向量指令內的資料危障，可以放心管線化，也可以用多條 <span class="term">Lane<small>（通道）</small></span>同時處理不同元素。</li>
+            <li><b>存取模式事先知道</b>：連續、固定間隔（stride）或用索引的 gather / scatter，記憶體系統可以整批搬。</li>
+          </ul>
+          <h3>Strip mining：長度不是剛好的時候</h3>
+          <p>向量暫存器有最大長度 MVL，陣列長度 n 卻是任意的。做法是把迴圈切成幾段，每段最多 MVL 個，用 <b>向量長度暫存器 VL</b> 告訴硬體這一段有幾個：n = 1000、MVL = 64 時，1000 = 15 × 64 + 40，共 ⌈1000 ÷ 64⌉ = <b>16</b> 段，第一段 VL = 40 先處理餘數，之後 15 段 VL = 64。同一份程式碼不論 n 是多少都能跑，硬體換成更長的 MVL 也不用重新編譯。</p>
+          <details class="code-fold">
+            <summary>看程式碼：daxpyStrip()</summary>
+            <div class="code-block"><div class="code-head">daxpyStrip()：Y = a × X + Y，用 strip mining 切成好幾段</div><pre class="code">/* 向量長度上限 mvl：n 個元素切成好幾段，第一段先處理餘數 */
+int daxpyStrip(int n, double a, const double x[], double y[], int mvl) {
+  int low = 0, segments = 0;
+  int vl = n % mvl;                             /* 第一段先處理餘數（可能是 0） */
+  if (vl == 0) vl = mvl;
+  for (int j = 0; j &lt;= (n - 1) / mvl; j++) {    /* 共 ceil(n / mvl) 段 */
+    for (int i = low; i &lt; low + vl; i++)        /* 這一段等於一組向量指令 */
+      y[i] = a * x[i] + y[i];
+    low += vl;
+    vl = mvl;                                   /* 之後每一段都是最長 */
+    segments++;
+  }
+  return segments;
+}</pre></div>
+          </details>
+          <h3>SIMD 擴充指令</h3>
+          <p>一般 CPU 的 SIMD 擴充（x86 的 SSE、AVX，ARM 的 NEON）是比較陽春的版本：暫存器寬度固定，一條指令能處理幾個元素就是<b>暫存器寬度 ÷ 元素寬度</b>。128-bit 暫存器放 4 個 32-bit 整數，所以理想上快 4 倍；256-bit 放 4 個 double 或 8 個 float。要注意：</p>
+          <ul>
+            <li>寬度寫死在指令裡，換更寬的硬體要用新指令、重新編譯；沒有 VL，剩下不滿一個暫存器的元素要另外處理。</li>
+            <li>多半只支援連續存取，像 <code>B[j][i]</code> 這種按欄走的存取位址不連續，要先轉置或用 gather，實際加速達不到理想值。</li>
+            <li>SIMD 與向量都要編譯器（或程式設計師）把可平行的迴圈找出來改寫；多核心（MIMD）則要作業系統把執行緒排到不同核心。</li>
+          </ul>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>比較</th><th>向量處理器</th><th>SIMD 擴充</th><th>GPU</th></tr></thead>
+              <tbody>
+                <tr><td>一次處理幾個</td><td>VL 個（執行期決定，≤ MVL）</td><td>固定（寬度 ÷ 元素寬度）</td><td>一個 warp 32 個，大量 warp</td></tr>
+                <tr><td>程式長相</td><td>向量指令</td><td>SIMD 指令（intrinsics）</td><td>單一執行緒的程式</td></tr>
+                <tr><td>分支</td><td>用 mask 暫存器</td><td>用 mask／blend</td><td>硬體自動 mask（divergence）</td></tr>
+                <tr><td>延遲隱藏</td><td>深管線、整批存取</td><td>靠 CPU 的快取</td><td>大量 warp 切換</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="accelerators">
+        <h2>加速器、Roofline 與功耗</h2>
+        <div class="panel prose">
+          <p>判斷一個工作在 GPU 或 AI 加速器上會卡在哪裡，最常用的是 roofline：可達效能 = min(峰值運算量, 記憶體頻寬 × arithmetic intensity)。公式、轉折點與 memory-bound／compute-bound 的判斷已經在 <a href="../performance/cpu-performance.html#roofline">CPU Time and CPI CPU 時間與 CPI 的 Roofline 一節</a>講過，這裡只整理和加速器有關的結論：</p>
+          <ul>
+            <li>例如峰值 100 TFLOP/s、頻寬 10 TB/s 的加速器，轉折點在 100 ÷ 10 = 10 FLOP/byte；intensity 4 的 kernel 只能跑到 10 × 4 = 40 TFLOP/s，是 memory-bound。</li>
+            <li>大模型推論每產生一個 token 要把所有參數讀一遍、每個參數只用一兩次，intensity 很低，幾乎都是 memory-bound。所以加速器設計最在意的是晶片內與晶片間的<b>持續頻寬</b>（HBM、NVLink），加更多運算單元碰不到屋頂；指令窗口、分支預測這些 CPU 單執行緒的技巧對它幫助不大。</li>
+            <li>峰值 ops/s 不等於實際效能，LLM 推論常用 tokens/s 衡量使用者感受到的速度。</li>
+            <li>CPU 和 GPU 之間、GPU 和 GPU 之間的資料搬移常常才是瓶頸：PCIe 的頻寬遠低於 HBM，把資料放在比較慢的記憶體（例如用 unified memory 讓 GPU 用 CPU 的記憶體）可以放更大的模型，但 memory-bound 的工作會跟著變慢。</li>
+            <li>GPU 一樣受功耗牆限制：它的時脈通常比 CPU 低，是靠大量平行的運算單元提高效能，而不是「避開」了功耗對時脈的限制；資料中心的電力與散熱更是 AI 系統最主要的成本之一。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>共享變數交錯：列出所有可能的最終值</td><td>很常考</td><td>每個 x++ 拆成 load／運算／store；先列一次做完一個運算的順序，再找「讀到舊值、晚寫回」的遺失更新；有 coherence 也照樣會 race</td><td><a class="q-link" href="#q-co-0078">例題</a> <a class="q-link" href="#q-co-0144">例題</a> <a class="q-link" href="#q-co-0088">例題</a> <a class="q-link" href="#q-co-0250">例題</a></td></tr>
+                <tr><td>GPU 架構觀念：SIMT、warp、divergence、coalescing、bank conflict</td><td>很常考（近年）</td><td>warp 共用 PC → 分歧時兩路都跑並 mask；連續位址才能合併；同一 bank 不同位址才衝突；延遲靠大量 warp 隱藏</td><td><a class="q-link" href="#q-co-0069">例題</a> <a class="q-link" href="#q-co-0071">例題</a> <a class="q-link" href="#q-co-0098">例題</a> <a class="q-link" href="#q-co-0252">例題</a> <a class="q-link" href="#q-co-0255">例題</a></td></tr>
+                <tr><td>同步指令 ll / sc、atomic swap</td><td>常考</td><td>ll 不上鎖；ll 到 sc 之間有別人寫或 context switch，sc 失敗回 0；sc 位址要等於 ll、檢查 sc 的結果暫存器</td><td><a class="q-link" href="#q-co-0137">例題</a> <a class="q-link" href="#q-co-0114">例題</a> <a class="q-link" href="#q-co-0246">例題</a></td></tr>
+                <tr><td>speedup、強擴展與弱擴展、負載不平衡</td><td>常考</td><td>T<sub>P</sub> = 序列 + 最忙的處理器的平行工作；strong 固定總量、weak 固定每核的量；Amdahl 的上限（籌備中）</td><td><a class="q-link" href="#q-co-0107">例題</a> <a class="q-link" href="#q-co-0190">例題</a> <a class="q-link" href="#q-co-0247">例題</a> <a class="q-link" href="#q-co-0248">例題</a> <a class="q-link" href="#q-co-0243">例題</a></td></tr>
+                <tr><td>MSI / MESI 狀態追蹤、bus 交易次數</td><td>常考</td><td>逐步畫表：請求端狀態、bus 交易、其他快取的反應；M 唯一、S 可多份；MESI 的 E 寫入不上 bus</td><td><a class="q-link" href="#q-co-0249">例題</a> <a class="q-link" href="#q-co-0245">例題</a></td></tr>
+                <tr><td>False sharing 與 block 大小</td><td>常考</td><td>先看兩個變數是否在同一個 block（位址 ÷ block 大小）；同一個 block 就會互相 invalidate；block 大 → compulsory 少、false sharing 多</td><td><a class="q-link" href="#q-co-0190">例題</a> <a class="q-link" href="#q-co-0254">例題</a></td></tr>
+                <tr><td>平行方式分類、SIMD／向量的加速倍數</td><td>常考</td><td>lane 數 = 暫存器寬度 ÷ 元素寬度；strip mining 段數 = ⌈n ÷ MVL⌉；多核心靠 OS、SIMD／向量靠編譯器；核心內多執行緒的 issue slot（籌備中）</td><td><a class="q-link" href="#q-co-0106">例題</a> <a class="q-link" href="#q-co-0127">例題</a> <a class="q-link" href="#q-co-0199">例題</a> <a class="q-link" href="#q-co-0251">例題</a></td></tr>
+                <tr><td>加速器、roofline、互連頻寬</td><td>常考（近年）</td><td>roofline 判斷 memory-bound（見 CPU 效能頁）；all-reduce 看 bisection bandwidth；chiplet 多出通訊開銷；推論要的是頻寬</td><td><a class="q-link" href="#q-co-0177">例題</a> <a class="q-link" href="#q-co-0083">例題</a> <a class="q-link" href="#q-co-0084">例題</a> <a class="q-link" href="#q-co-0185">例題</a> <a class="q-link" href="#q-co-0168">例題</a> <a class="q-link" href="#q-co-0253">例題</a></td></tr>
+                <tr><td>共享記憶體架構：SMP、UMA、NUMA、message passing</td><td>偶爾</td><td>UMA 存取時間相同；NUMA 本地快、遠端慢；cluster 各自私有記憶體、用 send / receive</td><td><a class="q-link" href="#q-co-0244">例題</a></td></tr>
+                <tr><td>Memory consistency：store buffer、TSO</td><td>偶爾</td><td>TSO 只允許 store→load（不同位址）重排；store→store、load→load 不重排</td><td><a class="q-link" href="#q-co-0085">例題</a></td></tr>
+                <tr><td>浮點數平行加總、異質多核心與功耗</td><td>偶爾</td><td>浮點沒有結合律，順序改變結果可能不同；big.LITTLE 為能源效率；GPU 也受功耗牆限制</td><td><a class="q-link" href="#q-co-0060">例題</a> <a class="q-link" href="#q-co-0151">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 系統有 cache coherence，共享變數就不會出錯</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> coherence 只保證同一位址的寫入順序一致，不會讓 load／運算／store 變成不可分割，照樣會遺失更新</span> <a class="q-link" href="#q-co-0144">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> ll 會把記憶體鎖住，沒有 context switch 時 sc 一定成功</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> ll 不上鎖；其他核心在中間寫入同一位址，sc 也會失敗回 0</span> <a class="q-link" href="#q-co-0137">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> strong scaling 是每個核心的工作量固定</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> strong 固定總問題大小（每核 S ÷ P）；每核固定、總量隨 P 變大的是 weak scaling</span> <a class="q-link" href="#q-co-0107">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 工作分得不平均，speedup 只少一點點</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 平行階段的時間由最忙的處理器決定；一個人多做一倍，整體就可能慢四成</span> <a class="q-link" href="#q-co-0248">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> GPU 靠很深的管線或很大的快取隱藏 DRAM 延遲</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 靠大量 warp 輪流執行（硬體多執行緒），一個 warp 等記憶體就換另一個</span> <a class="q-link" href="#q-co-0098">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> warp 分歧時，每個執行緒只執行自己要走的那一路</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> warp 共用 PC，兩路依序都要執行，不走的執行緒被 mask，時間是兩路相加</span> <a class="q-link" href="#q-co-0252">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 寫入 S 狀態的 block 不用上 bus；MESI 的 E 寫入也要送 BusRdX</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> S 可能有別人的副本，一定要先 invalidate；E 確定只有自己，可以不上 bus 直接變 M</span> <a class="q-link" href="#q-co-0245">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 兩個核心存取不同變數，就不會互相影響快取</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 落在同一個 block 就會 false sharing，block 越大越容易發生</span> <a class="q-link" href="#q-co-0254">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> TSO 下，兩個核心各自先 store 再 load 對方的變數，不可能都讀到 0</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> TSO 允許 store 留在 store buffer、後面的 load 先做，兩個都讀到 0 是可能的</span> <a class="q-link" href="#q-co-0085">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 128-bit SIMD 處理 32-bit 整數，快 2 倍（或和字長 64-bit 有關）</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> lane 數 = 128 ÷ 32 = 4，理想快 4 倍；多核心的 speedup 和字長無關</span> <a class="q-link" href="#q-co-0106">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 多 GPU 做 all-reduce，最重要的是單一跳的延遲</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 大量資料同時交換，看的是 bisection bandwidth</span> <a class="q-link" href="#q-co-0177">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 平行加總浮點數的結果一定和循序版本相同</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 浮點加法沒有結合律，加總順序改變，結果可能不同</span> <a class="q-link" href="#q-co-0060">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="multiprocessors"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/viz-core.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/viz/computer-organization/multiprocessors.js?v=cdf5c420"></script>
+</body>
+</html>

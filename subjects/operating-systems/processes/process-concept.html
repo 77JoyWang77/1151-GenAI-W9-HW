@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Process Concept 行程與行程狀態 · 作業系統 | 資工考研互動學習站</title>
+  <meta name="description" content="行程記憶體配置、五／七狀態轉移、PCB 與 context switch、fork／exec／wait、zombie 與 orphan。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=cdf5c420">
+  <script src="../../../assets/js/theme.js?v=cdf5c420"></script>
+</head>
+<body data-subject="operating-systems" data-chapter="processes" data-chno="2" data-topic="operating-systems/processes/process-concept" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Operating Systems 作業系統</a> › Ch2 Processes and Threads 行程與執行緒 › Process Concept 行程與行程狀態</nav>
+      <div class="topic-head">
+        <h1>Process Concept 行程與行程狀態<small>行程在記憶體裡的樣子、狀態怎麼轉移、fork 之後發生什麼事</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch2 Processes and Threads</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">process states</span>
+          <span class="chip">PCB</span>
+          <span class="chip">context switch</span>
+          <span class="chip">fork / exec / wait</span>
+          <span class="chip">zombie / orphan</span>
+        </div>
+      </div>
+
+      <section id="what-is-process">
+        <h2>程式與行程：記憶體裡長什麼樣</h2>
+        <div class="panel prose">
+          <p>硬碟上的執行檔只是一堆指令和資料，放著不會動，它是 <span class="term">Program<small>（程式）</small></span>，是<b>被動</b>的實體。把它載入記憶體、開始執行之後，才變成 <span class="term">Process<small>（行程）</small></span>：一個<b>正在執行中的程式</b>，有自己的 program counter（下一條要執行哪裡）、暫存器、記憶體空間和開啟的檔案，是<b>主動</b>的實體。同一個執行檔可以同時跑成好幾個行程（例如開三個終端機，各跑一個 bash），它們的程式碼一樣，但資料、stack、狀態各自獨立。</p>
+          <p>作業系統要同時管理很多行程，所以需要回答三個問題：行程在記憶體裡長什麼樣（這一節）、它現在在做什麼（行程狀態）、OS 怎麼記住它的一切以便暫停後接著跑（PCB 與 context switch）。</p>
+          <h3>位址空間的五個區段</h3>
+          <p>每個行程有自己的位址空間，典型的配置由低位址往高位址是：</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="process-concept-memory"></div>
+            <figcaption><b>圖 1</b>：行程的記憶體配置。text 在最低位址，往上依序是 initialized data、BSS、heap；stack 在高位址往下長，heap 往上長，中間的空白讓兩邊都有成長空間。</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>區段</th><th>放什麼</th><th>大小</th><th>例子</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Text Section<small>（程式碼區段）</small></span></td><td>機器碼、唯讀常數（字串常數通常在相鄰的唯讀區）</td><td>固定，唯讀</td><td>函式本體、<code>"hi"</code></td></tr>
+                <tr><td>Initialized data</td><td>有初值的 global 和 static 變數</td><td>固定</td><td><code>int g = 5;</code></td></tr>
+                <tr><td>BSS（uninitialized data）</td><td>沒有初值（或初值為 0）的 global 和 static 變數</td><td>固定，載入時清成 0</td><td><code>int g;</code>、<code>static int c = 0;</code></td></tr>
+                <tr><td><span class="term">Heap<small>（堆積區）</small></span></td><td>執行時動態配置的記憶體</td><td>往高位址長</td><td><code>malloc()</code> 拿到的空間</td></tr>
+                <tr><td><span class="term">Stack<small>（堆疊區）</small></span></td><td>每次函式呼叫的 activation record：參數、區域變數、返回位址</td><td>往低位址長</td><td>函式裡的 <code>int x;</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>BSS 在 initialized data 的<b>上面</b>：執行檔裡只要記錄 BSS 有多大，不必存一堆 0，載入時才配置並清成 0；initialized data 則要把初值存在執行檔裡。這個上下順序是填圖題最常錯的地方。</p>
+          <p>幾個常考的判斷：</p>
+          <ul>
+            <li><b>指標和它指的東西在不同地方</b>：<code>int *p = malloc(4);</code> 裡，<code>p</code> 是區域變數在 stack，<code>*p</code> 那 4 bytes 在 heap。</li>
+            <li><b>static 區域變數不在 stack</b>：它只是「名字只有這個函式看得到」，存放位置和 global 一樣在 data 或 BSS，函式返回後值仍保留。</li>
+            <li><b>遞迴太深吃的是 stack</b>：每一層呼叫都 push 一個 activation record，超過 stack 上限就是 stack overflow；和 heap 無關。</li>
+            <li><b>heap 的資料直接用 load／store 存取</b>：已經對映在自己的位址空間裡，不必每次都呼叫 system call（<code>malloc</code> 要擴大 heap 時才會用 <code>brk</code>／<code>mmap</code> 跟 kernel 要空間）。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：變數放在哪個區段</summary>
+            <div class="code-block"><div class="code-head">segments()：global、static、區域變數與 malloc</div><pre class="code">int g_init = 5;                /* initialized data：有初值的 global */
+int g_zero;                    /* BSS：沒有初值的 global，載入時清成 0 */
+const char *msg = "hi";        /* msg 本身在 data；字串常數 "hi" 在唯讀區（和 text 相鄰） */
+
+void segments(int param) {     /* param 和 local 一樣在 stack */
+  static int calls = 0;        /* static 區域變數：在 BSS（初值 0），不在 stack，函式返回仍保留 */
+  int local = param + 1;       /* stack：函式返回就消失 */
+  int *p = malloc(sizeof(int)); /* p 本身在 stack，*p 在 heap */
+  *p = local * g_init;
+  calls++;
+  printf("calls=%d local=%d *p=%d g_zero=%d msg=%s\n", calls, local, *p, g_zero, msg);
+  free(p);                     /* heap 要自己釋放 */
+}</pre></div>
+          </details>
+          <p><code>segments(1)</code>、<code>segments(2)</code> 連續呼叫兩次，<code>calls</code> 會從 1 變成 2（它不在 stack，不會每次重來），<code>local</code> 則每次重新算；<code>g_zero</code> 沒寫初值也一定是 0，因為 BSS 載入時被清成 0。</p>
+          <h3>讀懂 /proc/&lt;pid&gt;/maps</h3>
+          <p>Linux 可以用 <code>cat /proc/&lt;pid&gt;/maps</code> 看一個行程實際的位址空間，每一行是一段連續區域與權限（r 讀、w 寫、x 執行、p 私有）。判斷方法：<code>r-xp</code> 而且對映到執行檔的是 text；<code>rw-p</code> 對映到執行檔的是 data／BSS；標 <code>[heap]</code>、<code>[stack]</code> 的就是 heap 和 stack，它們都是 <code>rw-p</code> <b>沒有 x</b>，所以塞在 heap 或 stack 上的 shellcode 不能直接執行（NX 保護）。位址出現 <code>7ffc…</code> 這種超過 32 bits 的數字，代表是 64-bit 系統。這張表只描述這個行程<b>自己</b>的位址空間，看不出它有沒有 child。</p>
+        </div>
+      </section>
+
+      <section id="process-states">
+        <h2>行程狀態與轉移</h2>
+        <div class="panel prose">
+          <p>行程從建立到結束，會在幾個狀態之間移動。最常用的是 <span class="term">Five-State Model<small>（五狀態模型）</small></span>：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>狀態</th><th>意思</th></tr></thead>
+              <tbody>
+                <tr><td>new</td><td>正在建立：OS 配置 PCB、位址空間，還不能被排程</td></tr>
+                <tr><td>ready</td><td>萬事俱備，只差 CPU；在 ready queue 裡排隊</td></tr>
+                <tr><td>running</td><td>正在 CPU 上執行指令；一顆核心同一時間只有一個 running</td></tr>
+                <tr><td>waiting（blocked）</td><td>在等某個事件（I/O 完成、收到訊息、child 結束），就算給它 CPU 也沒用</td></tr>
+                <tr><td>terminated</td><td>執行完畢，資源回收中；PCB 還留著結束碼等 parent 取走</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="process-concept-states"></div>
+            <figcaption><b>圖 2</b>：五狀態圖。只有綠色的六條轉移存在；下方紅框的 ready → waiting、waiting → running 是考題最常拿來混淆的「不存在的轉移」。</figcaption>
+          </figure>
+          <p>六條轉移和觸發它的原因：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>轉移</th><th>原因</th><th>誰負責</th></tr></thead>
+              <tbody>
+                <tr><td>new → ready</td><td>建立完成，允許進入記憶體</td><td>long-term scheduler（admit）</td></tr>
+                <tr><td>ready → running</td><td>被選中使用 CPU</td><td>short-term scheduler 選人，dispatcher 切換</td></tr>
+                <tr><td>running → ready</td><td>被搶先：timer interrupt（time quantum 用完），或有更高優先權的行程變成 ready</td><td>interrupt＋排程器</td></tr>
+                <tr><td>running → waiting</td><td>發出 I/O 請求、呼叫 <code>wait()</code>、blocking <code>send()</code>／<code>receive()</code>、等 semaphore</td><td>行程自己的 system call</td></tr>
+                <tr><td>waiting → ready</td><td>等的事件發生了（I/O 完成的 device interrupt、<code>wakeup()</code>）</td><td>kernel</td></tr>
+                <tr><td>running → terminated</td><td>呼叫 <code>exit()</code> 或 main 返回</td><td>行程自己</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>判斷題只要抓住兩個原則：</p>
+          <ul>
+            <li><b>只有 running 會進 waiting</b>：要發出 I/O 請求，得先在 CPU 上執行那條 system call。ready 的行程沒在跑，不可能「從 ready 去等 I/O」。</li>
+            <li><b>waiting 一定先回 ready</b>：事件完成只代表「又可以跑了」，CPU 可能正被別人用著，所以先排進 ready queue，等排程器選中才 running。<code>wakeup()</code> 也是把行程移到 ready，不是 running。</li>
+          </ul>
+          <h3>interrupt 與 system call 會讓 running 的行程去哪</h3>
+          <p>考題常把三種事件放在一起問。關鍵是問自己：「<b>正在跑的這個行程</b>現在有沒有需要等的東西？」</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>事件</th><th>running 的行程</th><th>理由</th></tr></thead>
+              <tbody>
+                <tr><td>timer（clock）interrupt</td><td>→ ready</td><td>quantum 用完被搶先，它本身還想跑</td></tr>
+                <tr><td>device interrupt</td><td>先跑 ISR，處理完繼續 running（或被搶先 → ready）</td><td>完成的通常是<b>別人</b>等的 I/O，被喚醒的是那個行程；目前這個行程沒有在等任何事</td></tr>
+                <tr><td>I/O system call（如 <code>read</code>）</td><td>→ waiting</td><td>要等裝置完成</td></tr>
+                <tr><td>不需等待的 system call（如 <code>getpid</code>）</td><td>一直是 running</td><td>kernel 處理完立刻返回，不會先進 ready</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>另一個陷阱是 <b>spin-lock</b>：等 spin-lock 的行程是在 CPU 上不停跑迴圈檢查鎖（busy waiting），狀態仍是 <b>running</b>，不會進 waiting；會進 waiting 的是 blocking 的做法（例如 semaphore 的 <code>wait()</code> 把自己放進等待佇列）。反過來，一直待在 waiting 的行程不會被排程器選中，也就不會因為它而發生 context switch。spin-lock 和 semaphore 的細節在 Mutex Locks and Semaphores 互斥鎖與號誌（籌備中）。</p>
+          <h3>七狀態：加上 suspend</h3>
+          <p>記憶體不夠時，OS 可以把整個行程換出（swap out）到磁碟，這時要多兩個狀態：<b>ready/suspend</b>（在磁碟上、事件已就緒）和 <b>blocked/suspend</b>（在磁碟上、還在等事件）。新增的轉移有：ready → ready/suspend、waiting → blocked/suspend（suspend，換出）；ready/suspend → ready、blocked/suspend → waiting（resume，換回）；以及 blocked/suspend → ready/suspend（人還在磁碟上時事件就完成了）。負責換進換出的是 medium-term scheduler（下一節）。有些版本還會畫 running → ready/suspend 或 new → ready/suspend，考題若出現要看它採用哪一版。</p>
+          <details class="code-fold">
+            <summary>看程式碼：transition()：狀態轉移表</summary>
+            <div class="code-block"><div class="code-head">transition()：五狀態＋兩個 suspend 狀態</div><pre class="code">enum State { NEW, READY, RUNNING, WAITING, TERMINATED, READY_SUSPEND, BLOCKED_SUSPEND };
+enum Event { ADMIT, DISPATCH, TIMEOUT, IO_WAIT, IO_DONE, EXIT, SUSPEND, RESUME };
+
+/* 回傳新狀態；這個狀態下不可能發生這個事件就回傳 -1 */
+int transition(int s, int ev) {
+  switch (s) {
+  case NEW:
+    if (ev == ADMIT) return READY;              /* long-term scheduler 允許它進入記憶體 */
+    break;
+  case READY:
+    if (ev == DISPATCH) return RUNNING;         /* short-term scheduler 選中，dispatcher 切過去 */
+    if (ev == SUSPEND) return READY_SUSPEND;    /* medium-term scheduler 把它換出到磁碟 */
+    break;
+  case RUNNING:
+    if (ev == TIMEOUT) return READY;            /* timer interrupt：time quantum 用完被搶先 */
+    if (ev == IO_WAIT) return WAITING;          /* 發出 I/O 或等待某個事件 */
+    if (ev == EXIT) return TERMINATED;          /* 呼叫 exit()，等 parent 用 wait() 回收 */
+    break;
+  case WAITING:
+    if (ev == IO_DONE) return READY;            /* 事件完成：回 ready，不是直接 running */
+    if (ev == SUSPEND) return BLOCKED_SUSPEND;
+    break;
+  case READY_SUSPEND:
+    if (ev == RESUME) return READY;             /* 換回記憶體 */
+    break;
+  case BLOCKED_SUSPEND:
+    if (ev == IO_DONE) return READY_SUSPEND;    /* 事件完成了，但人還在磁碟上 */
+    if (ev == RESUME) return WAITING;
+    break;
+  }
+  return -1;                                    /* 非法轉移，例如 WAITING 直接 DISPATCH */
+}</pre></div>
+          </details>
+          <p>這個函式把每個狀態允許的事件寫成 <code>switch</code>：合法就回傳新狀態，其他組合一律回傳 −1。下面的動畫就照這張表移動行程。</p>
+        </div>
+        <div class="viz" data-viz="process-states"></div>
+        <div class="panel prose">
+          <p>操作方式：在輸入框依序寫事件，用空白隔開（admit、dispatch、timeout、io、done、exit，七狀態再加 suspend、resume），按「執行」。遇到不存在的轉移，動畫會停下來，用紅色虛線標出「想走卻不存在」的那一條並說明原因。四個例子分別是：一般的生命週期、waiting 直接 dispatch、ready 直接發 I/O、七狀態的換出與換回。</p>
+        </div>
+      </section>
+
+      <section id="pcb-context-switch">
+        <h2>PCB 與 Context Switch</h2>
+        <div class="panel prose">
+          <p>OS 為每個行程維護一個 <span class="term">Process Control Block<small>（行程控制區塊，PCB）</small></span>，也叫 task control block（Linux 裡是 <code>struct task_struct</code>）。它是「重新開始這個行程需要知道的一切」的存放處，放在 kernel 的記憶體裡，使用者程式碰不到。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>PCB 欄位</th><th>內容</th></tr></thead>
+              <tbody>
+                <tr><td>Process state</td><td>new、ready、running、waiting……</td></tr>
+                <tr><td>Program counter</td><td>下一條要執行的指令位址</td></tr>
+                <tr><td>CPU registers</td><td>累加器、索引暫存器、stack pointer、條件碼等，被中斷時存起來</td></tr>
+                <tr><td>CPU-scheduling information</td><td>優先權、在各個排程佇列中的指標</td></tr>
+                <tr><td>Memory-management information</td><td>base／limit 暫存器、page table 或 segment table 的位置</td></tr>
+                <tr><td>Accounting information</td><td>用了多少 CPU 時間、PID、時間限制</td></tr>
+                <tr><td>I/O status information</td><td>配置到的 I/O 裝置、開啟的檔案清單</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><b>PCB 不放行程的資料本身</b>：區域變數在行程自己的 stack、global 在 data section、<code>malloc</code> 的東西在 heap，這些都在行程的位址空間裡；PCB 只記錄「到哪裡找」（page table 位置）和 CPU 的狀態。「PCB 包含區域變數」是錯的敘述。</p>
+          <h3>Context switch 怎麼做</h3>
+          <p>CPU 從一個行程換到另一個時，要把舊行程的 CPU 狀態（暫存器、PC、狀態等，合稱 <span class="term">Context<small>（內容）</small></span>）存進它的 PCB，再從新行程的 PCB 載入，這個動作叫 <span class="term">Context Switch<small>（內容切換）</small></span>。觸發的時機是 interrupt（例如 timer）或 system call（例如發出 I/O、自己讓出 CPU）。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="process-concept-context-switch"></div>
+            <figcaption><b>圖 3</b>：P0 和 P1 之間來回切換。每次切換都要「存舊的、載新的」，這段時間 CPU 沒在跑任何使用者程式。</figcaption>
+          </figure>
+          <p>注意 interrupt 本身也要存 context：中斷發生時，CPU 要先保存目前行程的狀態才能去跑 kernel 的中斷處理程式，處理完再恢復。中斷處理完不一定會切到別的行程；只有排程器決定換人時，才是完整的 context switch。</p>
+          <h3>成本與硬體支援</h3>
+          <p>context switch 是<b>純 overhead</b>：切換期間系統沒做任何有用的工作，常見是幾微秒等級。成本分兩部分：</p>
+          <ul>
+            <li><b>直接成本</b>：存、載暫存器，切換 page table（換 page-table base register）。暫存器越多、要搬的就越多。</li>
+            <li><b>間接成本</b>：換到新的位址空間後，TLB 若沒有 ASID 就要清空，cache 裡也大多是舊行程的資料，切換後一段時間的記憶體存取會變慢。</li>
+          </ul>
+          <p>硬體可以幫忙：有些 CPU 提供<b>多組暫存器</b>，切換時只要改「目前用哪一組」的指標，不必真的搬資料（行程數比暫存器組多時還是得搬到記憶體）；TLB 帶 ASID 則可以不清空。同一個行程內的 thread 切換不用換 page table、TLB 不必清，所以比行程切換便宜，細節見 <a href="threads.html#shared-private">Threads and Multithreading Models 執行緒與多執行緒模型</a>。切換頻率和 time quantum 的取捨（quantum 太小，切換佔的比例就太高）在 <a href="../cpu-scheduling/cpu-scheduling.html#round-robin">CPU Scheduling Algorithms CPU 排程演算法</a> 有計算例子。</p>
+        </div>
+      </section>
+
+      <section id="scheduling-queues">
+        <h2>排程佇列與三種排程器</h2>
+        <div class="panel prose">
+          <p>OS 用佇列管理行程：剛建立的行程放進 <b>job queue</b>（系統中所有行程）；在記憶體裡、準備好要跑的放進 <b>ready queue</b>（通常是一串 PCB 的鏈結串列）；等某個事件的放進該事件的 <b>wait queue</b>（每個 I/O 裝置一個，也叫 device queue）。行程的一生就是在這些佇列之間移動，和上面的狀態圖一一對應：在 ready queue ↔ ready、在 wait queue ↔ waiting。</p>
+          <p>決定「誰從哪個佇列移到哪裡」的是三種排程器，差別在<b>多久做一次決定</b>：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>排程器</th><th>決定什麼</th><th>頻率</th><th>影響</th></tr></thead>
+              <tbody>
+                <tr><td><span class="term">Long-term Scheduler<small>（長期排程器，job scheduler）</small></span></td><td>哪些新工作可以進入記憶體（new → ready）</td><td>很低（幾秒、幾分鐘）</td><td>控制 <b>degree of multiprogramming</b>（記憶體裡同時有幾個行程）；要混合 I/O-bound 和 CPU-bound 的工作</td></tr>
+                <tr><td><span class="term">Medium-term Scheduler<small>（中期排程器）</small></span></td><td>把行程換出到磁碟或換回（suspend／resume）</td><td>中等</td><td>記憶體不夠或要調整工作組合時降低 multiprogramming 程度</td></tr>
+                <tr><td><span class="term">Short-term Scheduler<small>（短期排程器，CPU scheduler）</small></span></td><td>ready queue 裡下一個給誰 CPU（ready → running）</td><td>很高（每幾毫秒）</td><td>必須很快，否則排程本身就吃掉大量 CPU 時間</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><b>I/O-bound</b> 行程花在 I/O 的時間多、CPU burst 短；<b>CPU-bound</b> 行程大部分時間在計算。如果記憶體裡全是 I/O-bound，ready queue 常常是空的、CPU 閒著；全是 CPU-bound，裝置閒著、wait queue 是空的。long-term scheduler 的任務就是挑一個平衡的組合。現代分時系統（Linux、Windows）通常沒有 long-term scheduler，新行程直接進 ready queue，由使用者行為和記憶體限制自然控制數量。</p>
+          <p>short-term scheduler 選好人之後，<span class="term">Dispatcher<small>（分派器）</small></span>負責實際交出 CPU：做 context switch、切回 user mode、跳到該行程上次停下的位置；這段時間叫 dispatch latency。各種 CPU 排程演算法（FCFS、SJF、Priority、RR、多層佇列）在 <a href="../cpu-scheduling/cpu-scheduling.html">CPU Scheduling Algorithms CPU 排程演算法</a> 詳細說明，這一頁只需要知道三種排程器的角色。</p>
+        </div>
+      </section>
+
+      <section id="process-creation">
+        <h2>建立行程：fork、exec、wait</h2>
+        <div class="panel prose">
+          <p>行程可以建立新的行程：建立者叫 parent，被建立的叫 child，child 又可以再建立，形成一棵 <span class="term">Process Tree<small>（行程樹）</small></span>。每個行程有唯一的 <span class="term">PID<small>（行程識別碼）</small></span>。Linux 開機時 kernel 建立的第一個使用者行程是 <b>systemd</b>（傳統 UNIX 叫 <b>init</b>），PID = 1，它是所有使用者行程直接或間接的祖先；kernel 自己的 thread 則由 kthreadd（PID 2）負責。用 <code>ps -el</code> 或 <code>pstree</code> 可以看到這棵樹。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="process-concept-tree"></div>
+            <figcaption><b>圖 4</b>：一棵典型的 Linux 行程樹。使用者在 bash 裡執行 ps，ps 就是 bash 的 child；所有使用者行程往上追都會追到 systemd（PID 1）。</figcaption>
+          </figure>
+          <p>建立 child 時有幾種設計選擇：資源方面，child 可以和 parent 共用全部、部分或完全不共用資源；執行方面，parent 可以和 child 並行執行，或等 child 結束才繼續；位址空間方面，child 可以是 parent 的複本（UNIX 的 <code>fork</code>），或直接載入新程式（Windows 的 <code>CreateProcess</code>）。</p>
+          <h3>UNIX 的四個 system call</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>呼叫</th><th>做什麼</th><th>回傳</th></tr></thead>
+              <tbody>
+                <tr><td><code>fork()</code></td><td>建立 child，複製一份 parent 的位址空間（程式碼、data、heap、stack、開啟的檔案描述子），child 從 fork() 返回的地方開始跑</td><td><b>呼叫一次、返回兩次</b>：parent 拿到 child 的 PID（&gt; 0），child 拿到 0，失敗回傳 −1</td></tr>
+                <tr><td><code>exec()</code> 系列</td><td>用新的程式取代目前行程的位址空間；PID 不變</td><td>成功就不會返回（原本的程式碼已經不在了），失敗回傳 −1</td></tr>
+                <tr><td><code>wait()</code>／<code>waitpid()</code></td><td>parent 等某個 child 結束，取得結束碼並回收它</td><td>結束的 child 的 PID；沒有 child 時立刻回傳 −1（errno = ECHILD），不會阻塞</td></tr>
+                <tr><td><code>exit()</code></td><td>結束自己，結束碼交給 parent；資源由 OS 回收</td><td>不會返回</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>child 拿到的是<b>新的 PID</b>，不是繼承 parent 的；它的 parent PID（<code>getppid()</code>）才是 parent 的 PID。shell 執行一個指令的方式就是 fork 一個 child、child 呼叫 exec 換成那個指令，parent 用 wait 等它結束：</p>
+          <details class="code-fold">
+            <summary>看程式碼：fork + exec + wait</summary>
+            <div class="code-block"><div class="code-head">runCommand()：shell 執行指令的方式</div><pre class="code">void runCommand(void) {
+  pid_t pid = fork();
+  if (pid &lt; 0) {               /* fork 失敗：process 數到上限或記憶體不足 */
+    perror("fork");
+    return;
+  }
+  if (pid == 0) {              /* child：fork() 回傳 0 */
+    execlp("echo", "echo", "child runs echo", (char *)NULL);
+    perror("exec");            /* exec 成功就不會回來，回來代表失敗 */
+    exit(1);
+  }
+  int status;
+  waitpid(pid, &amp;status, 0);    /* parent：fork() 回傳 child 的 PID */
+  if (WIFEXITED(status))
+    printf("parent: child exited with %d\n", WEXITSTATUS(status));
+}</pre></div>
+          </details>
+          <h3>fork 之後變數各自獨立</h3>
+          <p>fork 複製的是整個位址空間，所以 parent 和 child 的 global 變數、heap、stack 都是<b>各自一份</b>，一邊改了另一邊看不到。這和 thread 不同：同一個行程的 thread 共用 data section，改了大家都看得到。</p>
+          <details class="code-fold">
+            <summary>看程式碼：fork 後變數各自獨立</summary>
+            <div class="code-block"><div class="code-head">forkValue()：child 改自己的複本</div><pre class="code">int value = 10;                /* data section：fork 之後 parent、child 各有一份 */
+
+void forkValue(int n) {
+  (void)n;
+  pid_t pid = fork();
+  if (pid == 0) {              /* child 改的是自己的複本 */
+    value += 10;
+    printf("child: value = %d\n", value);
+    exit(0);
+  }
+  wait(NULL);                  /* parent 等 child 結束，輸出順序因此固定 */
+  printf("parent: value = %d\n", value);
+}</pre></div>
+          </details>
+          <p>child 把自己那份 <code>value</code> 改成 20 並印出；parent 用 <code>wait(NULL)</code> 等 child 結束後才印，順序因此固定，印出的是自己那份沒被改過的 10。輸出是 <code>child: value = 20</code>、<code>parent: value = 10</code>。誤以為 parent 會印 20，就是把行程當成 thread 了。</p>
+          <h3>copy-on-write 與 vfork</h3>
+          <p>真的把整個位址空間複製一份很浪費，尤其 child 常常一 fork 完就 exec，複製的東西馬上被丟掉。現代系統用 <span class="term">Copy-on-Write<small>（寫入時複製，COW）</small></span>：fork 時 parent 和 child 共用同一批實體頁框，全部標成唯讀；誰先寫某一頁，才觸發 page fault、複製那一頁。程式看起來還是「各自一份」，只是複製被延到真正需要時（細節屬於 Demand Paging 需求分頁與有效存取時間（籌備中））。</p>
+          <p>更早期的 <code>vfork()</code> 更激進：<b>完全不複製</b>，child 直接借用 parent 的位址空間，parent 暫停到 child 呼叫 exec 或 exit 為止。它是專門設計給「fork 完馬上 exec」的情況，非常快，但 child 若在 exec 前改了變數，parent 會看到，用錯很危險。vfork 不使用 copy-on-write，「vfork 會複製 child 修改的頁」是 fork＋COW 的行為。</p>
+        </div>
+      </section>
+
+      <section id="fork-counting">
+        <h2>fork 輸出題怎麼算</h2>
+        <div class="panel prose">
+          <p>這是本主題最常考的計算題。只要記住兩件事就能一步步追：(1) <b>child 從 fork() 返回的地方接著跑</b>，帶著 parent 當下所有變數（包括迴圈變數）的複本；(2) <b>parent 拿到非 0、child 拿到 0</b>，程式用回傳值分岔時，照這個判斷每個行程走哪一邊。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>程式型態</th><th>process 總數（含原本的）</th><th>理由</th></tr></thead>
+              <tbody>
+                <tr><td><code>for (i = 0; i &lt; n; i++) fork();</code></td><td>2<sup>n</sup></td><td>每一輪所有行程都 fork 一次，數量翻倍；新建立的是 2<sup>n</sup> − 1 個</td></tr>
+                <tr><td>連續寫 n 個 <code>fork();</code></td><td>2<sup>n</sup></td><td>和迴圈一樣，每一行都讓數量翻倍</td></tr>
+                <tr><td>迴圈內 <code>fork(); printf(...);</code></td><td>2<sup>n</sup>，印 2<sup>n+1</sup> − 2 行</td><td>第 i 輪後有 2<sup>i+1</sup> 個行程各印一行：2 + 4 + … + 2<sup>n</sup></td></tr>
+                <tr><td><code>(fork() &amp;&amp; fork()) || fork()</code></td><td>5</td><td>短路求值，不是每個行程都做三次 fork</td></tr>
+                <tr><td>迴圈內 <code>if (fork() == 0) break;</code>（fan）</td><td>n + 1</td><td>child 一出生就離開迴圈，只有原本的行程在 fork</td></tr>
+                <tr><td>迴圈內 <code>if (fork() &gt; 0) break;</code>（chain）</td><td>n + 1</td><td>parent fork 完就離開，換 child 繼續，形成一條鏈</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <details class="code-fold">
+            <summary>看程式碼：五種 fork 計數題</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="迴圈 fork"><div class="code-head">loopFork()：2^n 個行程</div><pre class="code">/* (1) 迴圈裡 fork n 次，最後每個 process 印一行 */
+void loopFork(int n) {
+  for (int i = 0; i &lt; n; i++)
+    fork();
+  printf("hello\n");
+}</pre></div>
+              <div class="code-block" data-tab="迴圈內 printf"><div class="code-head">loopPrint()：印 2^(n+1) − 2 行</div><pre class="code">/* (2) 每一輪 fork 完都印出 i */
+void loopPrint(int n) {
+  for (int i = 0; i &lt; n; i++) {
+    fork();
+    printf("%d\n", i);
+  }
+}</pre></div>
+              <div class="code-block" data-tab="&amp;&amp; 與 ||"><div class="code-head">andOr()：5 個行程</div><pre class="code">/* (3) 短路求值：&amp;&amp; 左邊為 0 就不算右邊；|| 左邊非 0 就不算右邊 */
+void andOr(int n) {
+  (void)n;
+  if ((fork() &amp;&amp; fork()) || fork())
+    printf("T\n");
+  else
+    printf("F\n");
+}</pre></div>
+              <div class="code-block" data-tab="fan"><div class="code-head">fan()：n + 1 個行程</div><pre class="code">/* (4) fan：child 一出生就 break，只有原本的 process 在 fork */
+void fan(int n) {
+  int i;
+  for (i = 0; i &lt; n; i++)
+    if (fork() == 0) break;
+  printf("i=%d\n", i);
+}</pre></div>
+              <div class="code-block" data-tab="chain"><div class="code-head">chain()：n + 1 個行程</div><pre class="code">/* (5) chain：parent fork 完就 break，換 child 接著 fork */
+void chain(int n) {
+  int i;
+  for (i = 0; i &lt; n; i++)
+    if (fork() &gt; 0) break;
+  printf("i=%d\n", i);
+}</pre></div>
+            </div>
+          </details>
+          <p>以 <code>(fork() &amp;&amp; fork()) || fork()</code> 為例：P0 做第 1 個 fork 得到非 0（真），要繼續算 &amp;&amp; 右邊，做第 2 個 fork 又得到非 0，整個 &amp;&amp; 為真，|| 右邊不用算；第 1 個 fork 生出的 child 拿到 0，&amp;&amp; 直接為假，跳去做第 3 個 fork；第 2 個 fork 的 child 拿到 0，&amp;&amp; 為假，也去做第 3 個 fork。第 3 個 fork 共被做了 2 次，生出 2 個行程，它們拿到 0，整個條件為假。合計 1 + 1 + 1 + 2 = 5 個行程，3 個印 T、2 個印 F（下面的動畫可以逐步看）。</p>
+          <h3>輸出順序：找出先後限制</h3>
+          <p>沒有 <code>wait()</code> 時，parent 和 child 誰先印由排程決定，順序不固定，所以考題只會問「可能」的輸出。做法是把每個行程自己的執行順序列出來，再加上 <code>wait()</code> 帶來的限制（parent 在 wait 之後的輸出，一定在被等的 child 全部輸出之後），符合所有限制的排列才可能出現。例如 parent 先印 A 再 fork，child 印 B 後再 fork 一個孫行程印 C、自己 wait 後印 D，那 A 一定第一個、B 在 C 之前、C 在 D 之前；parent 在 fork 後印的 E 則可以插在 A 之後的任何位置。</p>
+          <h3>printf 的緩衝區也會被複製</h3>
+          <p><code>printf</code> 不是馬上把字送出去，而是先放在行程自己記憶體裡的 stdout 緩衝區：終端機是<b>行緩衝</b>（遇到換行才送出），導向檔案或 pipe 是<b>全緩衝</b>（緩衝區滿或結束才送出）。fork 會把還沒送出的緩衝區一起複製，於是同一段字被印兩次：</p>
+          <details class="code-fold">
+            <summary>看程式碼：printf 緩衝區被 fork 複製</summary>
+            <div class="code-block"><div class="code-head">bufferDup()：印出兩次 AB</div><pre class="code">void bufferDup(int n) {
+  (void)n;
+  printf("A");                 /* 沒有換行：還在 stdout 的緩衝區，沒送出 */
+  fork();                      /* 緩衝區也在記憶體裡，跟著被複製 */
+  printf("B\n");               /* 兩個 process 各自送出 "AB" */
+}</pre></div>
+          </details>
+          <p><code>printf("A")</code> 沒有換行，不管是終端機還是檔案都還留在緩衝區，fork 後兩個行程各有一個 "A"，最後輸出兩行 <code>AB</code>。若改成 <code>printf("A\n")</code>：在終端機上 A 已經送出，只印一次；導向檔案時仍在緩衝區，A 還是會出現兩次。要避免就在 fork 前呼叫 <code>fflush(stdout)</code>。考題若沒提到緩衝，通常假設每個 printf 立刻輸出。</p>
+        </div>
+        <div class="viz" data-viz="fork-tree"></div>
+        <div class="panel prose">
+          <p>操作方式：上排五個按鈕切換程式，輸入框是迴圈次數 n（0～4，「&amp;&amp; 與 ||」不用 n），按「執行」重跑。每一輪先用橘色標出「正在執行 fork() 的行程」，下一步紫色是剛出生的 child；最後綠色表示已印出，底部統計各種輸出的次數。可以試試 n = 0（沒有 fork）、n = 4（考古題的 16 個行程），比較「迴圈 fork」和「fan」「chain」同樣 n 下數量差多少。</p>
+        </div>
+      </section>
+
+      <section id="termination">
+        <h2>結束行程：exit、zombie、orphan</h2>
+        <div class="panel prose">
+          <p>行程執行完最後一行（或呼叫 <code>exit()</code>）就結束，OS 回收它的記憶體、關閉開啟的檔案。parent 也可以用 <code>kill()</code> 之類的方式強制結束 child，常見原因是 child 用了超過配額的資源、工作已經不需要，或 parent 自己要結束了。有些系統不允許 child 在 parent 結束後繼續存在，parent 結束時要把它所有的後代一起結束，這叫 <span class="term">Cascading Termination<small>（連鎖終止）</small></span>。</p>
+          <h3>Zombie 與 Orphan</h3>
+          <p>行程結束後，它的結束碼要交給 parent，所以 OS 不能立刻把它的 PCB 清掉：在 parent 呼叫 <code>wait()</code> 之前，這個已經結束、只剩 process table 裡一筆資料（PID、結束碼）的行程叫 <span class="term">Zombie Process<small>（殭屍行程）</small></span>。zombie 不佔記憶體，但佔著 PID 和 process table 的位置；parent 一直不 wait，zombie 越積越多，最後會耗盡 PID。zombie 已經死了，不能被「重新啟動」回 ready。</p>
+          <p>反過來，parent 先結束、沒有 wait 就走了，還活著的 child 叫 <span class="term">Orphan Process<small>（孤兒行程）</small></span>。UNIX 把 orphan 重新指派給 init／systemd（或某個設定成 subreaper 的行程）當新的 parent，init 會定期呼叫 <code>wait()</code>，所以 orphan 結束時不會一直卡成 zombie。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="process-concept-zombie-orphan"></div>
+            <figcaption><b>圖 5</b>：(a) child 先結束、parent 還在卻沒 wait，child 是 zombie；(b) parent 先結束，child 變成 orphan，被 init 收養。兩者方向相反，不要記混。</figcaption>
+          </figure>
+          <details class="code-fold">
+            <summary>看程式碼：製造 zombie 與 orphan</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="zombie"><div class="code-head">zombieDemo()：child 先結束、parent 晚點才 wait</div><pre class="code">/* 讀 /proc/&lt;pid&gt;/stat 的狀態欄：R 執行、S 睡眠、Z zombie；不存在回傳 '-' */
+char procState(pid_t pid) {
+  char path[64], st = '-';
+  snprintf(path, sizeof path, "/proc/%d/stat", (int)pid);
+  FILE *f = fopen(path, "r");
+  if (!f) return st;
+  if (fscanf(f, "%*d (%*[^)]) %c", &amp;st) != 1) st = '?';
+  fclose(f);
+  return st;
+}
+
+/* child 先結束、parent 還沒 wait：child 變成 zombie */
+void zombieDemo(void) {
+  pid_t pid = fork();
+  if (pid == 0)
+    exit(7);                   /* child 立刻結束，結束碼 7 */
+  siginfo_t info;
+  waitid(P_PID, pid, &amp;info, WEXITED | WNOWAIT);  /* 等它結束，但先不回收 */
+  printf("before wait: state %c\n", procState(pid));  /* Z：只剩 PCB 裡的 PID 和結束碼 */
+  int status;
+  waitpid(pid, &amp;status, 0);    /* 回收：PCB 和 PID 這時才釋放 */
+  printf("after wait: exit code %d, state %c\n", WEXITSTATUS(status), procState(pid));
+}</pre></div>
+              <div class="code-block" data-tab="orphan"><div class="code-head">orphanDemo()：parent 先結束</div><pre class="code">/* parent 先結束、child 還在：child 變成 orphan，被收養 */
+void orphanDemo(void) {
+  pid_t me = getpid();
+  if (fork() &gt; 0)
+    exit(0);                   /* parent 不 wait 就結束 */
+  while (getppid() == me)      /* child 等到 parent 真的結束 */
+    usleep(1000);
+  printf("orphan: adopted by a new parent\n");
+}</pre></div>
+            </div>
+          </details>
+          <p>zombie 範例用 <code>waitid(..., WNOWAIT)</code> 等 child 結束但先不回收，這時讀 <code>/proc/&lt;pid&gt;/stat</code> 會看到狀態 <code>Z</code>；<code>waitpid</code> 回收之後再讀，這個 PID 的資料已經不存在。orphan 範例是考古題常見的「補程式」題：parent 不 wait 直接 <code>exit(0)</code>，child 等到 <code>getppid()</code> 變了，代表原本的 parent 已經結束、自己被收養了。只要讓 parent 先結束就行，用 <code>sleep</code> 讓 child 晚一點檢查也是常見寫法。</p>
+          <p>用 <code>wait()</code> 時還有兩個細節：一次 <code>wait()</code> 只回收<b>一個</b> child，有好幾個 child 就要呼叫好幾次（常寫成 <code>while (wait(NULL) &gt; 0);</code>）；完全沒有 child 時 <code>wait()</code> 立刻回傳 −1，不會卡住。</p>
+        </div>
+      </section>
+
+      <section id="cooperating">
+        <h2>獨立行程與合作行程</h2>
+        <div class="panel prose">
+          <p>行程之間如果不共用任何資料，就是 independent process；會影響彼此、需要交換資料的叫 cooperating process。讓行程合作的理由有四個：<b>information sharing</b>（多個應用程式要用同一份資料）、<b>computation speedup</b>（把工作切成幾份平行做）、<b>modularity</b>（把系統拆成幾個行程分工）、<b>convenience</b>（使用者同時做好幾件事）。</p>
+          <p>因為 fork 之後位址空間是分開的，合作行程要交換資料就必須靠 OS 提供的 <span class="term">Interprocess Communication<small>（行程間通訊，IPC）</small></span>，兩大模型是 shared memory 和 message passing，pipe、socket 等機制都屬於這兩類，詳細內容在 Interprocess Communication 行程間通訊（籌備中）。</p>
+          <p>分散式系統還可以把行程整個搬到另一台機器上執行（process migration），理由包括 load balancing、computation speedup、硬體或軟體需求（只有某台機器有特定裝置或授權），以及 <b>data access</b>：資料很大時，把程式搬到資料所在的地方比搬資料划算。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>fork 計數（迴圈、連續 fork、&amp;&amp; ||）</td><td>很常考</td><td>逐輪追蹤每個行程；沒被 if 擋住就翻倍，2<sup>n</sup> 含原本的；短路求值看回傳值</td><td><a class="q-link" href="#q-os-0025">例題</a> <a class="q-link" href="#q-os-0263">例題</a> <a class="q-link" href="#q-os-0264">例題</a> <a class="q-link" href="#q-os-0267">例題</a></td></tr>
+                <tr><td>fork 後變數、輸出內容</td><td>很常考</td><td>位址空間各自一份，child 改的 parent 看不到；注意 printf 緩衝</td><td><a class="q-link" href="#q-os-0229">例題</a> <a class="q-link" href="#q-os-0265">例題</a></td></tr>
+                <tr><td>含 wait 的可能輸出順序</td><td>常考</td><td>列出每個行程自己的順序，加上 wait 的先後限制，逐一檢查選項</td><td><a class="q-link" href="#q-os-0159">例題</a> <a class="q-link" href="#q-os-0268">例題</a></td></tr>
+                <tr><td>狀態轉移判斷</td><td>很常考</td><td>只有 running 進 waiting、waiting 先回 ready、wakeup 到 ready；spin-lock 仍是 running</td><td><a class="q-link" href="#q-os-0065">例題</a> <a class="q-link" href="#q-os-0037">例題</a> <a class="q-link" href="#q-os-0162">例題</a> <a class="q-link" href="#q-os-0262">例題</a></td></tr>
+                <tr><td>interrupt／system call 造成的轉移</td><td>常考</td><td>問「目前這個行程有沒有要等的東西」：timer → ready，I/O call → waiting，其他維持 running</td><td><a class="q-link" href="#q-os-0153">例題</a></td></tr>
+                <tr><td>記憶體配置、變數放哪裡</td><td>常考</td><td>由低到高 text、data、BSS、heap、stack；指標本身和指向的空間分開判斷</td><td><a class="q-link" href="#q-os-0075">例題</a> <a class="q-link" href="#q-os-0176">例題</a> <a class="q-link" href="#q-os-0185">例題</a> <a class="q-link" href="#q-os-0260">例題</a></td></tr>
+                <tr><td>/proc/maps、heap 存取與保護</td><td>偶爾</td><td>r-xp 是 text、[heap]／[stack] 沒有 x；heap 直接存取不需 system call</td><td><a class="q-link" href="#q-os-0201">例題</a> <a class="q-link" href="#q-os-0198">例題</a></td></tr>
+                <tr><td>PCB 內容、context switch</td><td>常考</td><td>PCB 存狀態、暫存器、排程與記憶體管理資訊，不存區域變數；切換是純 overhead</td><td><a class="q-link" href="#q-os-0188">例題</a> <a class="q-link" href="#q-os-0261">例題</a> <a class="q-link" href="#q-os-0055">例題</a></td></tr>
+                <tr><td>三種排程器、七狀態</td><td>偶爾</td><td>long-term 控制 multiprogramming 程度、medium-term 做 swap、short-term 選 CPU</td><td><a class="q-link" href="#q-os-0266">例題</a></td></tr>
+                <tr><td>fork／exec／wait、vfork 與 COW</td><td>常考</td><td>fork 回傳兩次、child 有新 PID；exec 成功不返回；vfork 共用位址空間</td><td><a class="q-link" href="#q-os-0035">例題</a> <a class="q-link" href="#q-os-0122">例題</a></td></tr>
+                <tr><td>zombie、orphan、wait 的語意</td><td>很常考</td><td>child 先死沒人收是 zombie；parent 先死是 orphan，由 init 收養</td><td><a class="q-link" href="#q-os-0079">例題</a> <a class="q-link" href="#q-os-0145">例題</a> <a class="q-link" href="#q-os-0269">例題</a></td></tr>
+                <tr><td>是非綜合（init、合作行程、IPC 模型）</td><td>偶爾</td><td>逐句對照定義；IPC 只有 shared memory 和 message passing 兩大模型</td><td><a class="q-link" href="#q-os-0033">例題</a> <a class="q-link" href="#q-os-0124">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 迴圈 fork 4 次，共有 4 或 5 個行程</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每一輪所有行程都 fork，共 2<sup>4</sup> = 16 個（含原本的），新建 15 個</span> <a class="q-link" href="#q-os-0025">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> child 改了 global 變數，parent 也看得到</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> fork 複製位址空間，各自一份；共用 data 的是 thread</span> <a class="q-link" href="#q-os-0229">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> <code>(fork() &amp;&amp; fork()) || fork()</code> 每個行程都做 3 次 fork，共 8 個</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 短路求值，共 5 個行程</span> <a class="q-link" href="#q-os-0263">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 沒有換行的 printf 在 fork 之前就已經印出來了</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 還在緩衝區，會被複製到 child，印兩次</span> <a class="q-link" href="#q-os-0265">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> I/O 完成後，行程直接回到 running</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> waiting → ready，等排程器選中才 running；wakeup 也是到 ready</span> <a class="q-link" href="#q-os-0065">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> ready 的行程可以直接進 waiting</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 只有 running 的行程能發出 I/O 或等待事件</span> <a class="q-link" href="#q-os-0037">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 等 spin-lock 的行程進入 waiting</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> spin-lock 是 busy waiting，仍是 running；blocking 呼叫才進 waiting</span> <a class="q-link" href="#q-os-0162">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> device interrupt 發生時，正在跑的行程進入 waiting</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 它只是暫停去跑 ISR，沒有在等事件；timer interrupt 才讓它回 ready</span> <a class="q-link" href="#q-os-0153">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> BSS 在 initialized data 的下面</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 由低到高：text、initialized data、BSS、heap，stack 在最上面</span> <a class="q-link" href="#q-os-0075">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 遞迴太深會吃光 heap</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> activation record 在 stack，遞迴太深是 stack overflow</span> <a class="q-link" href="#q-os-0176">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> PCB 裡存著行程的區域變數</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 區域變數在行程自己的 stack；PCB 存狀態、暫存器、排程與記憶體管理資訊</span> <a class="q-link" href="#q-os-0198">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> fork 出來的 child 繼承 parent 的 PID</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> child 拿到新的 PID；fork 在 parent 回傳 child 的 PID、在 child 回傳 0</span> <a class="q-link" href="#q-os-0035">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> zombie 的 PID 在 parent wait 之前就釋放了</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要等 parent wait() 收屍，PID 和 PCB 才釋放</span> <a class="q-link" href="#q-os-0079">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> parent 先結束，child 就變成 zombie</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是 orphan，被 init 收養；zombie 是 child 先結束而 parent 沒 wait</span> <a class="q-link" href="#q-os-0269">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> vfork 用 copy-on-write 複製 child 修改的頁</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> vfork 完全不複製，child 直接用 parent 的位址空間</span> <a class="q-link" href="#q-os-0122">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="process-concept"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/viz-core.js?v=cdf5c420"></script>
+  <script src="../../../assets/js/viz/operating-systems/process-concept.js?v=cdf5c420"></script>
+</body>
+</html>

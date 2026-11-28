@@ -3991,7 +3991,7 @@
         "(d) AEBDC."
       ],
       "answer": "(a)(b)",
-      "explanation": "<p>先整理三個行程的先後限制：<br>\n• 父行程：印 A → fork → 印 E → 等子行程。<br>\n• 子行程 1：印 B → fork → <b>wait</b> 孫行程結束後才印 D。<br>\n• 孫行程：印 C。</p>\n<p>所以 A 一定第一個；B 在 C、D 之前（C、D 都在 B 之後才被 fork 或執行）；C 一定在 D 之前（D 要等孫行程結束）；E 只要在 A 之後，位置不受限。</p>\n<p>(a) ABCED：符合。(b) AEBCD：符合。(c) ABDCE：D 在 C 前面，不可能。(d) AEBDC：同樣 D 在 C 前面，不可能。答案 (a)(b)。</p>\n<p>補充：printf(\"A\") 沒有換行，若 stdout 是完全緩衝（例如導向檔案），\"A\" 還留在緩衝區時 fork 會被複製到子行程，實際輸出會出現多個 A；這題的出題意圖是忽略緩衝的效果。</p>"
+      "explanation": "<p>先整理三個行程的先後限制：<br>\n• 父行程：印 A → fork → 印 E → 等子行程。<br>\n• 子行程 1：印 B → fork → <b>wait</b> 孫行程結束後才印 D。<br>\n• 孫行程：印 C。</p>\n<p>所以 A 一定第一個；B 在 C、D 之前（C、D 都在 B 之後才被 fork 或執行）；C 一定在 D 之前（D 要等孫行程結束）；E 只要在 A 之後，位置不受限。</p>\n<p>(a) ABCED：符合。(b) AEBCD：符合。(c) ABDCE：D 在 C 前面，不可能。(d) AEBDC：同樣 D 在 C 前面，不可能。答案 (a)(b)。</p>\n<p>補充：printf(\"A\") 沒有換行，所以不論 stdout 是行緩衝（終端機）還是完全緩衝（導向檔案），fork 時 \"A\" 都還留在緩衝區，會被複製到子行程，實際執行會印出多個 A。若要真的只印一次，要寫 printf(\"A\\n\") 搭配終端機，或在 fork 前呼叫 fflush(stdout)。這題的出題意圖是忽略緩衝的效果。</p>"
     },
     {
       "id": "os-0160",
@@ -6457,6 +6457,193 @@
       ],
       "answer": "(A)(C)",
       "explanation": "<p>(A) 對：synchronous signal（非法存取、除以 0）是某個 thread 自己的動作造成的，就送給那個 thread。<br>(B) 錯：說反了。立刻 exec 的話，整個位址空間（包括所有 thread）都會被新程式取代，複製其他 thread 完全是浪費；POSIX 的 fork 本來就只複製呼叫者。<br>(C) 對：asynchronous signal（例如 kill、Ctrl-C）不是某個 thread 造成的，POSIX 規定送給 process 的 signal 交給任一個沒有 block 它的 thread；程式也可以用 <code>pthread_sigmask()</code> 安排一個專門處理 signal 的 thread。<br>(D) 錯：many-to-one 只有 1 個 kernel thread，同時只能用 1 顆核心，speedup 約 1。<br>(E) 錯：TLS 是「每個 thread 一份的 global 資料」，在該 thread 的所有函式之間都看得到，存在到 thread 結束為止；只有一個函式看得到、返回就消失的是區域變數。</p>"
+    },
+    {
+      "id": "os-0260",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列程式中各變數存放的位置，哪一個敘述正確？<pre class=\"code\">int a = 3;\nint b;\nvoid f(void) {\n  static int c;\n  int d = 0;\n  int *e = malloc(8);\n}</pre>",
+      "choices": [
+        "(A) a 和 b 都在 initialized data",
+        "(B) c 是區域變數，放在 stack",
+        "(C) d 和 e 在 stack，e 指向的 8 bytes 在 heap",
+        "(D) b 沒有初值，放在 heap"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>(A) 錯：a 有初值在 initialized data，b 沒有初值在 <b>BSS</b>。<br>(B) 錯：static 區域變數只是名字限定在 f 裡，存放位置和 global 一樣（沒有初值，在 BSS），函式返回後值仍保留。<br>(C) 對：d、e 都是一般區域變數，在 stack；e 是指標，它指向的那 8 bytes 是 malloc 從 heap 配置的。<br>(D) 錯：heap 只放執行時動態配置的空間，沒有初值的 global 在 BSS，載入時清成 0。</p>"
+    },
+    {
+      "id": "os-0261",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）下列哪些資訊會存放在行程的 PCB（process control block）裡？",
+      "choices": [
+        "(A) program counter",
+        "(B) CPU 暫存器的值",
+        "(C) 行程的區域變數",
+        "(D) 開啟的檔案清單",
+        "(E) page table 的位置等記憶體管理資訊"
+      ],
+      "answer": "(A)(B)(D)(E)",
+      "explanation": "<p>PCB 存的是「讓行程停下來之後能接著跑」需要的資訊：狀態、program counter、暫存器、排程資訊、記憶體管理資訊（base／limit 或 page table 位置）、accounting、I/O 狀態（開啟的檔案、配置的裝置）。<br>(C) 錯：區域變數在行程自己位址空間的 stack 裡，PCB 只記錄怎麼找到位址空間，不存資料本身。</p>"
+    },
+    {
+      "id": "os-0262",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）在標準的五狀態模型中，下列哪些轉移存在？",
+      "choices": [
+        "(A) running → waiting",
+        "(B) waiting → running",
+        "(C) ready → waiting",
+        "(D) running → ready",
+        "(E) new → running"
+      ],
+      "answer": "(A)(D)",
+      "explanation": "<p>五狀態的六條轉移是 new → ready、ready → running、running → ready、running → waiting、waiting → ready、running → terminated。<br>(A) 對：發出 I/O 或等待事件。<br>(B) 錯：事件完成後先回 ready，等排程器選中才 running。<br>(C) 錯：ready 的行程沒在 CPU 上執行，發不出 I/O 請求。<br>(D) 對：timer interrupt 或被更高優先權搶先。<br>(E) 錯：new 要先被 admit 進 ready queue。</p>"
+    },
+    {
+      "id": "os-0263",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "執行下列程式（假設 fork 都成功），共有幾個 process（含原本的）？印出幾個 T、幾個 F？<pre class=\"code\">if ((fork() &amp;&amp; fork()) || fork())\n  printf(\"T\\n\");\nelse\n  printf(\"F\\n\");</pre>",
+      "answer": "共 5 個 process；T 印 3 次、F 印 2 次。",
+      "explanation": "<p>記住 parent 拿到非 0（真）、child 拿到 0（假），再照短路求值走：</p><ul><li>P0：第 1 個 fork 為真 → 做第 2 個 fork 也為真 → &amp;&amp; 為真，|| 右邊不算 → 印 T。</li><li>第 1 個 fork 的 child：第 1 個為假 → &amp;&amp; 直接為假，不做第 2 個 → 做第 3 個 fork，自己拿到真 → 印 T；它生的 child 拿到假 → 印 F。</li><li>第 2 個 fork 的 child：第 2 個為假 → &amp;&amp; 為假 → 做第 3 個 fork，自己為真 → 印 T；它的 child 為假 → 印 F。</li></ul><p>共 1 + 1 + 1 + 2 = <b>5</b> 個 process，T ×3、F ×2（已用程式收集所有輸出驗證）。常見錯誤是以為每個行程都做 3 次 fork 而答 8。</p>"
+    },
+    {
+      "id": "os-0264",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "下列程式共印出幾行？其中印出 2 的有幾行？（假設每個 printf 立刻輸出）<pre class=\"code\">for (int i = 0; i &lt; 3; i++) {\n  fork();\n  printf(\"%d\\n\", i);\n}</pre>",
+      "answer": "共 14 行，其中 2 有 8 行。",
+      "explanation": "<p>child 會帶著 i 的複本繼續跑剩下的迴圈，所以每一輪行程數都翻倍：i = 0 這輪 fork 完有 2 個行程，各印一次 0 → 2 行；i = 1 後有 4 個 → 印 4 個 1；i = 2 後有 8 個 → 印 8 個 2。</p><p>總共 2 + 4 + 8 = <b>14</b> 行（一般式 2<sup>n+1</sup> − 2），其中 2 有 <b>8</b> 行；process 共 2<sup>3</sup> = 8 個。容易錯的是只算最後的 8 個行程而答 8 行，忘了前兩輪也有印。（已用程式收集輸出驗證：0 ×2、1 ×4、2 ×8。）</p>"
+    },
+    {
+      "id": "os-0265",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "在終端機上執行下列程式，輸出是什麼？<pre class=\"code\">printf(\"A\");\nfork();\nprintf(\"B\\n\");</pre>",
+      "choices": [
+        "(A) AB（一行）",
+        "(B) AB 和 B（兩行）",
+        "(C) AB 和 AB（兩行）",
+        "(D) A 之後接 BB"
+      ],
+      "answer": "(C)",
+      "explanation": "<p>printf 先把字放在 stdout 的緩衝區，終端機是行緩衝，遇到換行才送出。<code>printf(\"A\")</code> 沒有換行，fork 時 \"A\" 還在緩衝區裡；緩衝區屬於行程的記憶體，被複製到 child。之後兩個行程各自加上 \"B\\n\" 送出，所以印出兩行 <b>AB</b>（已用程式驗證）。</p><p>若改成 <code>printf(\"A\\n\")</code>，在終端機上 A 在 fork 前就送出，只會印一次（輸出 A、B、B）；導向檔案時是全緩衝，A 仍會出現兩次。fork 前呼叫 <code>fflush(stdout)</code> 就能避免。</p>"
+    },
+    {
+      "id": "os-0266",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）關於排程器與 suspend 狀態，下列哪些正確？",
+      "choices": [
+        "(A) long-term scheduler 決定哪些工作進入記憶體，控制 degree of multiprogramming",
+        "(B) medium-term scheduler 把行程換出到磁碟或換回，行程因此進出 suspend 狀態",
+        "(C) short-term scheduler 執行的頻率最低，所以可以慢慢挑",
+        "(D) blocked/suspend 的行程等待的事件完成後，會變成 ready/suspend",
+        "(E) 現代分時系統（如 Linux）一定有 long-term scheduler"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "<p>(A) 對：long-term（job）scheduler 控制同時在記憶體裡的行程數，也負責挑 I/O-bound 和 CPU-bound 的平衡組合。<br>(B) 對：medium-term scheduler 做 swap out／swap in。<br>(C) 錯：short-term scheduler 每幾毫秒就要選一次，頻率<b>最高</b>，所以必須很快。<br>(D) 對：事件完成了，但行程還在磁碟上，所以是 ready/suspend，還要 resume 換回記憶體才回到 ready。<br>(E) 錯：分時系統通常沒有 long-term scheduler，新行程直接進 ready queue。</p>"
+    },
+    {
+      "id": "os-0267",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "考慮下列程式（假設 fork 都成功、每個 printf 立刻輸出）：<pre class=\"code\">int main(void) {\n  int x = 1;\n  for (int i = 0; i &lt; 3; i++) {\n    if (fork() == 0)\n      x *= 2;\n    else\n      break;\n  }\n  printf(\"%d\\n\", x);\n  return 0;\n}</pre>(a) 共有幾個 process（含原本的）？印出哪些數字？<br>(b) 若把 <code>else break;</code> 兩行刪掉，共有幾個 process？每個數字各印幾次？所有印出數字的總和是多少？",
+      "answer": "(a) 4 個 process，印出 1、2、4、8 各一次。(b) 8 個 process；1 ×1、2 ×3、4 ×3、8 ×1，總和 27。",
+      "explanation": "<p><b>(a)</b> parent 拿到非 0 就 break，只有 child 繼續，形成一條 chain：P0 在 i = 0 fork 後 break，印 x = 1；它的 child 把自己的 x 變成 2，i = 1 再 fork 後 break，印 2；下一個 child x = 4，i = 2 fork 後 break，印 4；最後一個 child x = 8，i = 3 離開迴圈，印 8。共 n + 1 = <b>4</b> 個 process，每個行程的 x 是各自的複本，所以四個數字都不同。</p><p><b>(b)</b> 沒有 break，每一輪所有行程都 fork，共 2<sup>3</sup> = <b>8</b> 個。每個行程可以用一串 3 位元描述「在第 0、1、2 輪各是 parent 還是 child」，當 child 的那幾輪 x 各乘 2，所以 x = 2<sup>（當 child 的次數）</sup>。當 child 0 次的有 C(3,0) = 1 個、1 次的 C(3,1) = 3 個、2 次的 3 個、3 次的 1 個：1 ×1、2 ×3、4 ×3、8 ×1，總和 1 + 6 + 12 + 8 = <b>27</b>（= 3<sup>3</sup>，因為每一輪 x 的總和都變成原本的 1 + 2 = 3 倍）。兩個版本都已用程式收集輸出驗證。</p>"
+    },
+    {
+      "id": "os-0268",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）在終端機上執行下列程式，哪些輸出可能出現（每個字母單獨一行，這裡寫成一串）？<pre class=\"code\">printf(\"S\\n\");\npid_t a = fork();\nif (a == 0) { printf(\"X\\n\"); exit(0); }\npid_t b = fork();\nif (b == 0) { printf(\"Y\\n\"); exit(0); }\nwaitpid(a, NULL, 0);\nprintf(\"P\\n\");\nwait(NULL);\nprintf(\"Q\\n\");</pre>",
+      "choices": [
+        "(A) SXYPQ",
+        "(B) SYXPQ",
+        "(C) SXPYQ",
+        "(D) SPXYQ",
+        "(E) SXPQY"
+      ],
+      "answer": "(A)(B)(C)",
+      "explanation": "<p>先列出限制：S 在所有 fork 之前，一定第一個。P 在 <code>waitpid(a)</code> 之後，所以 X 在 P 之前；第二個 <code>wait(NULL)</code> 等的是唯一剩下的 child b，所以 Y 在 Q 之前；parent 自己的順序是 P 在 Q 之前。Y 和 X、P 之間沒有限制。</p><p>(A) SXYPQ、(B) SYXPQ、(C) SXPYQ 都滿足 X &lt; P &lt; Q 且 Y &lt; Q。(D) P 在 X 前面，違反 waitpid(a)。(E) Q 在 Y 前面，違反 wait。已用程式列舉所有交錯驗證，可能的輸出正好是這三種。</p>"
+    },
+    {
+      "id": "os-0269",
+      "topics": [
+        "process-concept"
+      ],
+      "level": "exam",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）關於 zombie 與 orphan，下列哪些正確？",
+      "choices": [
+        "(A) child 先 exit，而 parent 仍在執行、一直沒有呼叫 wait()，這段期間 child 是 zombie",
+        "(B) parent 先結束，仍在執行的 child 會變成 zombie",
+        "(C) orphan 會被 init（systemd）或某個 subreaper 收養，結束後由新的 parent 呼叫 wait() 回收",
+        "(D) zombie 的記憶體已經釋放，但仍佔用 PID 與 process table 的一筆資料",
+        "(E) 對 zombie 送 SIGKILL 就能把它清掉"
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<p>(A) 對：這正是 zombie 的定義，結束碼要等 parent 取走。<br>(B) 錯：parent 先結束、child 還活著，child 是 <b>orphan</b>，不是 zombie；方向剛好相反。<br>(C) 對：UNIX 把 orphan 重新指派給 init（或設定了 subreaper 的行程），它會定期 wait，避免 orphan 結束後一直卡成 zombie。<br>(D) 對：zombie 只剩 PID 和結束碼等資訊，parent 一直不 wait，zombie 累積下來會耗盡 PID。<br>(E) 錯：zombie 已經結束了，signal 對它沒有作用；只能讓 parent 呼叫 wait()，或結束 parent，讓 zombie 被 init 收養後回收。</p>"
     }
   ]
 }

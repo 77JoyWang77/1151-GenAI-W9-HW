@@ -33,7 +33,7 @@
             "clock rate",
             "roofline"
           ],
-          "updated": "2026-11-27"
+          "updated": "2026-11-28"
         },
         {
           "id": "amdahls-law",
@@ -335,8 +335,18 @@
           "en": "Multiprocessors and GPUs",
           "zh": "多處理器與 GPU",
           "book": "6.5–6.7",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 3,
+          "tags": [
+            "speedup",
+            "cache coherence",
+            "MSI/MESI",
+            "GPU",
+            "SIMT"
+          ],
+          "updated": "2026-11-28"
         }
       ]
     }
