@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Hazards and Forwarding 資料危障與轉送 · 計算機組織 | 資工考研互動學習站</title>
+  <meta name="description" content="RAW/WAR/WAW、forwarding unit 條件、double hazard、load-use 偵測與 bubble、重排指令。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=3694848e">
+  <script src="../../../assets/js/theme.js?v=3694848e"></script>
+</head>
+<body data-subject="computer-organization" data-chapter="processor" data-chno="4" data-topic="computer-organization/processor/data-hazards" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Computer Organization 計算機組織</a> › Ch4 The Processor 處理器 › Data Hazards and Forwarding 資料危障與轉送</nav>
+      <div class="topic-head">
+        <h1>Data Hazards and Forwarding 資料危障與轉送<small>硬體怎麼判斷要轉送、要停：forwarding unit 與 hazard detection unit</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch4 The Processor</span>
+          <span class="chip" data-difficulty="3">難度</span>
+          <span class="chip">RAW</span>
+          <span class="chip">forwarding unit</span>
+          <span class="chip">hazard detection</span>
+          <span class="chip">load-use</span>
+          <span class="chip">scheduling</span>
+        </div>
+      </div>
+
+      <section id="from-pipelining">
+        <h2>從管線化接著往下：硬體怎麼知道要轉送</h2>
+        <div class="panel prose">
+          <p><a href="pipelining.html">Pipelining 管線化</a>那一頁已經講過三種危障、forwarding 的基本想法、load-use 為什麼一定要停 1 個週期，也可以在動畫裡切換有／無 forwarding 看時序圖。這裡快速複習三句話就好：</p>
+          <ul>
+            <li>後面的指令要讀前面還沒寫回的暫存器，就是 <span class="term">Data Hazard<small>（資料危障）</small></span>。</li>
+            <li>ALU 的結果在 EX 結束就算好了，放在 EX/MEM 管線暫存器裡；把它直接送到下一條指令的 ALU 輸入，叫 <span class="term">Forwarding<small>（轉送，又叫 bypassing）</small></span>。</li>
+            <li>lw 的資料要到 MEM 結束才有，下一條指令馬上要用的話，轉送也來不及，要 stall 1 個週期。</li>
+          </ul>
+          <p>那一頁是用「看時序圖、數格子」的方式判斷要不要停。但真正的硬體沒有時序圖可以看：它每個週期只看得到管線暫存器裡存的東西——每條指令的暫存器編號、控制訊號。考題也越來越常問硬體層級的細節，例如「第 5 個週期 ForwardA 是多少」「插入 bubble 要設哪些訊號」「拿掉某一條轉送路徑後哪段程式會錯」。這一頁就是把那些規則拆開來講：</p>
+          <ol>
+            <li>先學會辨識三種相依（RAW、WAR、WAW），知道哪一種才會造成危障。</li>
+            <li>用「相依距離」一次整理出各種情況要停幾個週期，包含暫存器檔前半寫後半讀的影響。</li>
+            <li><span class="term">Forwarding Unit<small>（轉送單元）</small></span>的判斷條件：EX hazard、MEM hazard、為什麼要檢查 rd ≠ 0、兩個來源都命中時選誰。</li>
+            <li><span class="term">Hazard Detection Unit<small>（危障偵測單元）</small></span>怎麼認出 load-use、怎麼把 bubble 塞進管線。</li>
+            <li>延伸：分支提早到 ID 比較、轉送路徑的數量、軟體怎麼用重排指令把 stall 消掉。</li>
+          </ol>
+          <p>這一頁的例子都用 MIPS 五階段管線（IF、ID、EX、MEM、WB），暫存器檔<b>前半週期寫、後半週期讀</b>。RISC-V 的題目規則完全一樣，只是暫存器名稱寫成 x5、x10，欄位叫 rs1、rs2、rd。</p>
+        </div>
+      </section>
+
+      <section id="dependences">
+        <h2>三種相依：RAW、WAR、WAW</h2>
+        <div class="panel prose">
+          <p>兩條指令用到同一個暫存器，而且至少有一條要寫它，順序就不能隨便換，這叫 <span class="term">Dependence<small>（相依）</small></span>。設 i 在前、j 在後，依「誰讀誰寫」分成三種：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>名稱</th><th>情況</th><th>本質</th><th>能不能靠改暫存器名字消除</th></tr></thead>
+              <tbody>
+                <tr><td><b>RAW</b>（Read After Write）</td><td>i 寫 r，j 讀 r</td><td><span class="term">True Dependence<small>（真相依）</small></span>：j 真的需要 i 算出來的值</td><td>不能，只能等或轉送</td></tr>
+                <tr><td><b>WAR</b>（Write After Read）</td><td>i 讀 r，j 寫 r</td><td><span class="term">Anti-dependence<small>（反相依）</small></span>：只是剛好用同一個名字</td><td>能，j 改寫別的暫存器</td></tr>
+                <tr><td><b>WAW</b>（Write After Write）</td><td>i 寫 r，j 也寫 r</td><td><span class="term">Output Dependence<small>（輸出相依）</small></span>：最後留下的必須是 j 的值</td><td>能，其中一條改寫別的暫存器</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>WAR 和 WAW 合稱 <span class="term">Name Dependence<small>（名稱相依）</small></span>：兩條指令之間其實沒有資料流動，只是暫存器不夠用、重複用了同一個名字。把其中一條的暫存器換掉（<span class="term">Register Renaming<small>（暫存器重新命名）</small></span>），相依就消失了；RAW 不行，因為 j 要的就是 i 的結果，換名字只是把結果搬到別的地方，j 還是要等。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="data-hazards-dep-matrix"></div>
+            <figcaption><b>圖 1</b>：把每一對指令都檢查一次。格子裡寫出前面的 i（橫）和後面的 j（直）之間有哪些相依。I2 → I4 同時有 RAW 和 WAW（都和 $t1 有關）；I1 → I4 雖然 I1 寫、I4 讀同一個 $t0，但中間的 I3 又寫了一次，I4 真正需要的是 I3 的值，所以不算 I1 的 RAW。</figcaption>
+          </figure>
+          <h3>為什麼五階段管線只怕 RAW</h3>
+          <p>五階段管線是<b>依序</b>（in-order）的：每條指令照順序進每個階段，而且所有指令都在 ID 讀暫存器、在 WB 寫暫存器。所以：</p>
+          <ul>
+            <li><b>WAR 不會出事</b>：i 在 j 前面，i 的 ID（讀）一定比 j 的 WB（寫）早好幾個週期，i 不可能讀到 j 寫進去的新值。</li>
+            <li><b>WAW 不會出事</b>：i 的 WB 一定比 j 的 WB 早，最後留下的一定是 j 的值。</li>
+            <li><b>RAW 會出事</b>：j 的 ID（讀）比 i 的 WB（寫）早，j 會讀到舊值——這就是 data hazard。</li>
+          </ul>
+          <p>WAR、WAW 什麼時候會變成問題？當指令可以<b>不照順序</b>執行（out-of-order）、有不同長度的執行單元（例如浮點乘法比整數加法慢），或是編譯器想把指令重排的時候。例如 loop unrolling 把迴圈攤開後，每一份都用同一組暫存器，彼此之間到處是 WAR、WAW，不 rename 就排不動。這些在 Instruction-Level Parallelism 指令層級平行主題（籌備中）會詳細講；這一頁的硬體只需要處理 RAW。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> 判斷時先問「誰寫、誰讀」：前寫後讀是 RAW，前讀後寫是 WAR，兩個都寫是 WAW。RAW 只算「最近一次」寫的那一條；中間有別人又寫過，就不是它的 RAW。</p></div>
+          <details class="code-fold">
+            <summary>看程式碼：Inst 結構與 findDeps() 找出三種相依</summary>
+            <div class="code-block"><div class="code-head">Inst：每條指令讀寫哪些暫存器（用暫存器編號）</div><pre class="code">typedef struct {
+  char op[8];
+  int dst;            /* 寫入的暫存器編號（R 型的 rd、addi 與 lw 的 rt）；不寫暫存器為 -1 */
+  int rs, rt;         /* 讀取的暫存器編號；沒用到為 -1。rs → ALU 上方輸入，rt → 下方輸入或 sw 要存的資料 */
+  int regWrite;       /* 會寫回暫存器 */
+  int memRead;        /* lw：資料要到 MEM 結束才拿得到 */
+  int memWrite;       /* sw */
+  int off;            /* lw / sw 的位移，base 就是 rs */
+} Inst;</pre></div>
+            <div class="code-block"><div class="code-head">findDeps()：逐對檢查 RAW、WAR、WAW</div><pre class="code">void findDeps(const Inst *in, int n) {
+  for (int j = 1; j &lt; n; j++)
+    for (int i = 0; i &lt; j; i++) {
+      int r = in[i].dst, newest = 1;
+      for (int k = i + 1; k &lt; j; k++)       /* 中間有人又寫了 r，j 讀到的就不是 i 的結果 */
+        if (in[k].dst == r) newest = 0;
+      if (r &gt; 0 &amp;&amp; newest &amp;&amp; (r == in[j].rs || r == in[j].rt))
+        printf("  I%d → I%d：RAW（true dependence），$%d\n", i + 1, j + 1, r);
+      r = in[j].dst;
+      if (r &gt; 0 &amp;&amp; (r == in[i].rs || r == in[i].rt))
+        printf("  I%d → I%d：WAR（anti-dependence），$%d\n", i + 1, j + 1, r);
+      if (r &gt; 0 &amp;&amp; r == in[i].dst)
+        printf("  I%d → I%d：WAW（output dependence），$%d\n", i + 1, j + 1, r);
+    }
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="distance">
+        <h2>相依距離：要停幾個週期一次整理</h2>
+        <div class="panel prose">
+          <p>判斷 RAW 要不要停，關鍵只有一個數字：<b>相依距離</b> d = 使用者的位置 − 生產者的位置。相鄰的兩條 d = 1，中間隔一條 d = 2。</p>
+          <h3>暫存器檔前半寫、後半讀</h3>
+          <p>五階段管線的暫存器檔在一個週期的<b>前半</b>寫入、<b>後半</b>讀出，所以生產者在 WB 寫回的同一個週期，使用者在 ID 就已經讀得到新值。生產者在第 k 個週期 ID，第 k + 3 個週期 WB；使用者沒有 stall 時在第 k + d 個週期 ID。要 k + d ≥ k + 3，也就是 d ≥ 3 就完全不用管。沒有 forwarding 時：</p>
+          <pre class="formula">沒有 forwarding：stall（或要插的 NOP 數）= max(0, 3 − d)
+d = 1 → 2 個；d = 2 → 1 個；d ≥ 3 → 0 個</pre>
+          <p>如果題目說暫存器檔<b>不能</b>同一個週期先寫後讀，每處要多停 1 個（變成 max(0, 4 − d)）。這是常見的陷阱：五階段管線的標準設定是可以，題目沒特別說明就照前半寫後半讀算。</p>
+          <h3>各種情況的 stall 數</h3>
+          <p>下表是同一組例子在不同硬體下要停幾個週期（「只有 EX/MEM」「只有 MEM/WB」是指只做了其中一種轉送路徑，後面會用到）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>生產者 → 使用者</th><th>距離 d</th><th>沒有 forwarding</th><th>完整 forwarding</th><th>只有 EX/MEM 路徑</th><th>只有 MEM/WB 路徑</th><th>使用者是 ID 比較的 beq</th></tr></thead>
+              <tbody>
+                <tr><td>ALU 指令 → 使用</td><td>1</td><td>2</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+                <tr><td>ALU 指令 → 使用</td><td>2</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                <tr><td>lw → 使用</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td></tr>
+                <tr><td>lw → 使用</td><td>2</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+                <tr><td>任何 → 使用</td><td>≥ 3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>每一格都可以用「資料什麼時候在哪裡」推出來：ALU 結果在生產者 EX 的<b>下一個</b>週期待在 EX/MEM，再下一個週期待在 MEM/WB；lw 的資料只會出現在 MEM/WB（EX/MEM 裡的是 lw 算出的位址，不是資料）。使用者在 EX 的那個週期，資料剛好在哪一個管線暫存器、那條路徑有沒有做，就決定要不要停。例如「只有 MEM/WB」時，相鄰的 ALU 相依要多停 1 個週期，等結果從 EX/MEM 移到 MEM/WB 才拿得到；「只有 EX/MEM」時，lw 的資料永遠送不過去，只能等它寫回暫存器檔，相鄰的 load-use 要停 2 個。</p>
+          <h3>沒有硬體偵測時：軟體插 NOP</h3>
+          <p>有些處理器（或考題）<b>沒有 hazard detection unit</b>，硬體不會自動停下來，正確性要靠編譯器或寫程式的人在指令之間插入 nop。算法和 stall 一樣：從第一條往下，每遇到一個 RAW 就看「目前的距離」還差幾格，補足後再繼續——前面補進去的 nop 會拉長後面的距離，所以要依序算，不能每對各算各的。</p>
+          <p>例子（沒有 forwarding）：</p>
+          <pre class="formula">add $t1, $s1, $s2
+sub $t2, $t1, $s3      # 讀 add 的 $t1，d = 1 → 前面補 2 個 nop
+or  $t3, $t1, $t2      # 讀 sub 的 $t2：補完後 d = 1 → 再補 2 個；$t1 已經夠遠
+sw  $t3, 0($s0)        # 讀 or 的 $t3，d = 1 → 再補 2 個</pre>
+          <p>共 6 個 nop，總週期 = 5 + (4 + 6 − 1) = 14，比沒有相依時的 8 個週期多了 75%。若有完整 forwarding 但沒有偵測單元，這段完全不用插（三處都是 ALU → 使用）；只有 lw 後面緊接著使用時，才需要 1 個 nop。</p>
+          <p>不插的話會怎樣？硬體照樣往下走，使用者就讀到<b>舊值</b>。有些架構乾脆把這件事寫進規格：lw 後面那一格叫 <span class="term">Load Delay Slot<small>（載入延遲槽）</small></span>，放在裡面的指令看到的是載入<b>之前</b>的值，由編譯器負責塞一條有用的指令或 nop。這時「硬體會不會停」會直接改變程式的結果；反過來，只要硬體有正確處理（不管是用 stall 還是 forwarding），差別只在花幾個週期，程式看得到的暫存器、記憶體內容完全一樣。</p>
+          <p>延伸：浮點指令的題目常直接給「latency」，意思是後面的使用者至少要隔幾個週期才能拿到結果。算法和上面一樣：使用者若緊接在生產者後面，就要空等 latency 個週期，中間每多一條無關指令就少等一個。</p>
+        </div>
+      </section>
+
+      <section id="forwarding-unit">
+        <h2>Forwarding Unit：什麼時候轉送、從哪裡轉送</h2>
+        <div class="panel prose">
+          <p>ALU 的兩個輸入前面各加一個三選一的 mux：上方輸入（rs）的叫 A、下方輸入（rt）的叫 B。每個 mux 可以選三個來源，選擇線就是 <b>ForwardA</b>、<b>ForwardB</b>：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>選擇值</th><th>來源</th><th>代表什麼</th></tr></thead>
+              <tbody>
+                <tr><td>00</td><td>ID/EX</td><td>ID 階段從暫存器檔讀出來的值（不用轉送）</td></tr>
+                <tr><td>10</td><td>EX/MEM</td><td>上一條指令剛算好的 ALU 結果（EX hazard）</td></tr>
+                <tr><td>01</td><td>MEM/WB</td><td>上上一條指令要寫回的值：ALU 結果或 lw 讀到的資料（MEM hazard）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="data-hazards-forward-mux"></div>
+            <figcaption><b>圖 2</b>：forwarding 的兩個 mux（示意圖；實際的 EX/MEM、MEM/WB 在 ALU 右邊，結果是繞回來的）。綠色是兩個轉送來源，各接到 A、B 兩個 mux，總共 4 條轉送路徑。B mux 的輸出除了送進 ALU（中間還有一個選立即值的 ALUSrc mux），也是 sw 要寫進記憶體的資料。</figcaption>
+          </figure>
+          <h3>判斷條件</h3>
+          <p>Forwarding unit 放在 EX 階段，比較的是「正在 EX 的指令要讀哪些暫存器」（ID/EX 裡的 rs、rt 編號）和「前面兩條指令要寫哪個暫存器」（EX/MEM、MEM/WB 裡的 rd 編號）。lw 和 addi 的目的暫存器在指令的 rt 欄位，但經過 ID 階段選目的暫存器的 mux 之後，存進管線暫存器的都叫 rd。以 ForwardA 為例：</p>
+          <pre class="formula">EX hazard（ForwardA = 10）：
+    EX/MEM.RegWrite = 1
+    且 EX/MEM.rd ≠ 0
+    且 EX/MEM.rd = ID/EX.rs
+
+MEM hazard（ForwardA = 01）：
+    MEM/WB.RegWrite = 1
+    且 MEM/WB.rd ≠ 0
+    且 MEM/WB.rd = ID/EX.rs
+    且「不是」EX hazard（EX/MEM 沒有命中）</pre>
+          <p>ForwardB 一模一樣，只是把 rs 換成 rt。三個條件各有道理：</p>
+          <ul>
+            <li><b>RegWrite = 1</b>：前面那條真的會寫暫存器。sw、beq 的 rd 欄位裡雖然有數字，但它們不寫暫存器，不能轉送；bubble 的控制訊號全是 0，也自然不會被轉送。</li>
+            <li><b>rd ≠ 0</b>：MIPS 的 $zero 永遠是 0，寫進去的值會被丟掉。如果有指令以 $zero 為目的地（例如 <code>add $zero, $t1, $t2</code>，常用來當 nop），後面讀 $zero 的指令必須拿到 0，不能拿到被轉送過來的運算結果。少了這個檢查，結果就會錯。</li>
+            <li><b>rd = rs</b>：編號一樣才是真的相依。</li>
+          </ul>
+          <p>兩個常被忽略的細節：</p>
+          <ul>
+            <li><b>sw 要存的資料也會轉送</b>：sw 的 rt 是要寫進記憶體的值，在管線裡走的就是 B mux 的輸出，所以 <code>add $t2, …</code> 後面緊接著 <code>sw $t2, 4($s0)</code>，ForwardB = 10。</li>
+            <li><b>I 型指令的 ForwardB 不重要</b>：addi、lw 的第二個 ALU 運算元是立即值（ALUSrc = 1），B mux 的結果不會被用到。這一頁的程式把它們的 rt 當成「沒有讀」，ForwardB 一律算 00。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：forwardSel() 決定 ForwardA / ForwardB</summary>
+            <div class="code-block"><div class="code-head">forwardSel()：先檢查 EX/MEM，沒命中才看 MEM/WB</div><pre class="code">int forwardSel(int src, const Inst *exmem, const Inst *memwb) {
+  if (src &lt; 0) return 0;                                  /* 沒用到這個運算元 */
+  if (exmem &amp;&amp; exmem-&gt;regWrite &amp;&amp; exmem-&gt;dst != 0 &amp;&amp; exmem-&gt;dst == src)
+    return 2;                                             /* EX hazard：上一條剛算完 */
+  if (memwb &amp;&amp; memwb-&gt;regWrite &amp;&amp; memwb-&gt;dst != 0 &amp;&amp; memwb-&gt;dst == src)
+    return 1;                                             /* MEM hazard：EX/MEM 沒命中才輪到它 */
+  return 0;
+}</pre></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="double-hazard">
+        <h2>Double Data Hazard：兩個來源都命中時選誰</h2>
+        <div class="panel prose">
+          <p>MEM hazard 條件最後那一句「不是 EX hazard」是為了處理這種情況：連續好幾條指令都寫同一個暫存器，例如累加：</p>
+          <pre class="formula">add $t1, $t1, $t2
+add $t1, $t1, $t3
+add $t1, $t1, $t4</pre>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="data-hazards-double"></div>
+            <figcaption><b>圖 3</b>：週期 5 第三條 add 在 EX，EX/MEM 裡的第二條、MEM/WB 裡的第一條都要寫 $t1，兩個條件同時成立。正確答案是比較新的第二條（綠色），第一條（灰色）的值已經過時。</figcaption>
+          </figure>
+          <p>這叫 <span class="term">Double Data Hazard<small>（雙重資料危障）</small></span>。依照程式的意思，第三條要的是「最近一次」寫入的 $t1，也就是第二條的結果，所以 EX/MEM 的優先權比 MEM/WB 高。寫成程式就是先檢查 EX/MEM，命中就直接回傳，沒命中才輪到 MEM/WB——上面 forwardSel() 的 if 順序正好做到了「不是 EX hazard」那個條件。</p>
+          <p>判斷 ForwardA / ForwardB 的考題，步驟固定：</p>
+          <ol>
+            <li>先排出時序（有 load-use 要先把 stall 算進去），找出題目問的那個週期 EX 是哪條指令。</li>
+            <li>往前看：EX/MEM 裡是它的前一條、MEM/WB 裡是前兩條——注意 stall 插進來的 bubble 也佔一格，可能讓 EX/MEM 是空的。</li>
+            <li>對 rs、rt 各自比對：EX/MEM 命中 → 10；否則 MEM/WB 命中 → 01；都沒有 → 00。距離 ≥ 3 的相依已經寫回暫存器檔，是 00。</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="hazard-detection">
+        <h2>Hazard Detection Unit：偵測 load-use、插入 bubble</h2>
+        <div class="panel prose">
+          <p>Forwarding 解決不了 load-use，硬體必須主動讓管線停一下。負責的是 hazard detection unit，它放在 <b>ID 階段</b>：使用者還在 ID 時就要決定，因為下一個週期它就要進 EX 了，到 EX 才發現已經來不及。</p>
+          <pre class="formula">load-use 條件（停 1 個週期）：
+    ID/EX.MemRead = 1                        # EX 的指令是 lw
+    且 ( ID/EX.rt = IF/ID.rs  或  ID/EX.rt = IF/ID.rt )   # lw 要寫的正是 ID 的指令要讀的</pre>
+          <p>lw 的目的暫存器在 rt 欄位，所以這裡比的是 ID/EX.rt。偵測到之後做三件事：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>動作</th><th>訊號</th><th>目的</th></tr></thead>
+              <tbody>
+                <tr><td>PC 不更新</td><td>PCWrite = 0</td><td>IF 下一個週期重抓同一條指令</td></tr>
+                <tr><td>IF/ID 不更新</td><td>IF/IDWrite = 0</td><td>ID 的指令留在原地，下一個週期再解碼一次（這次就能接到轉送）</td></tr>
+                <tr><td>往 EX 塞 bubble</td><td>送進 ID/EX 的控制訊號全部清 0</td><td>這一格什麼都不寫（RegWrite = 0、MemWrite = 0），等於一條 nop</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>注意<b>不是</b>把 IF/ID 清空（flush）：清空是分支猜錯時丟掉抓錯的指令用的；stall 時 IF/ID 裡的指令是對的，只是要晚一點執行，必須留著。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="data-hazards-bubble"></div>
+            <figcaption><b>圖 4</b>：換個角度看管線：每一列是一個階段，每一行是一個週期。週期 3 hazard detection unit 發現 add 要用 lw 的 $t0；週期 4 IF、ID 的指令原地不動（橘色），EX 變成 nop；之後 nop 沿著對角線往 MEM、WB 走。週期 5 add 在 EX（藍色），lw 在 WB（綠色），資料從 MEM/WB 轉送過來。</figcaption>
+          </figure>
+          <p>從圖 4 可以直接回答「第 n 個週期 MEM 是誰」這種題目：bubble 是一個真實佔位的格子，週期 5 的 MEM 就是那個 nop，不是 lw 也不是 add。總週期也很好算：每個 bubble 讓所有後面的指令晚 1 個週期，總週期 = 5 + (n − 1) + stall 次數。</p>
+          <h3>兩個邊界情況</h3>
+          <ul>
+            <li><b>lw 後面緊接著 sw 存同一個值</b>（<code>lw $t0, 0($s0)</code>、<code>sw $t0, 4($s0)</code>）：sw 其實到 MEM 才需要資料，理論上可以多做一條「MEM/WB → MEM」的路徑而不用停。但標準的偵測條件只看暫存器編號，sw 讀 rt，條件成立，照樣停 1 個週期。考題沒特別說明時照標準的算。</li>
+            <li><b>比對 rt 欄位時不管指令型態</b>：如果硬體直接拿 IF/ID 的 rt 欄位去比，遇到 addi 這種 rt 是目的暫存器（不是讀）的指令，可能多停一次。結果仍然正確，只是保守。這一頁的程式只比對真的要讀的暫存器。</li>
+          </ul>
+          <details class="code-fold">
+            <summary>看程式碼：loadUseStall() 與 simulate() 逐週期模擬</summary>
+            <div class="code-block"><div class="code-head">loadUseStall()：EX 是 lw、ID 的指令要讀它的目的暫存器</div><pre class="code">int loadUseStall(const Inst *idex, const Inst *ifid) {
+  return idex &amp;&amp; ifid &amp;&amp; idex-&gt;memRead &amp;&amp;
+         (idex-&gt;dst == ifid-&gt;rs || idex-&gt;dst == ifid-&gt;rt);
+}</pre></div>
+            <div class="code-block"><div class="code-head">simulate()：每個週期先算 ForwardA / B、偵測 load-use，再一起往後移</div><pre class="code">int simulate(const Inst *in, int n, int verbose, int *nStall) {
+  int pc = 0, ifid = EMPTY, idex = EMPTY, exmem = EMPTY, memwb = EMPTY;
+  *nStall = 0;
+  for (int cycle = 1; ; cycle++) {
+    int fetch = pc &lt; n ? pc : EMPTY;        /* 這個週期 IF 抓的指令 */
+    if (fetch &lt; 0 &amp;&amp; ifid &lt; 0 &amp;&amp; idex &lt; 0 &amp;&amp; exmem &lt; 0 &amp;&amp; memwb &lt; 0) return cycle - 1;
+    if (idex &gt;= 0) {                        /* EX 的指令：forwarding unit 選 ALU 的兩個輸入 */
+      fwdA[idex] = forwardSel(in[idex].rs, AT(exmem), AT(memwb));
+      fwdB[idex] = forwardSel(in[idex].rt, AT(exmem), AT(memwb));
+    }
+    int stall = loadUseStall(AT(idex), AT(ifid));   /* ID 的指令要用 EX 那條 lw 的結果？ */
+    if (verbose) {
+      int st[5] = {fetch, ifid, idex, exmem, memwb};
+      trace(cycle, st, stall);
+    }
+    /* 時脈邊緣：管線暫存器一起往後移 */
+    memwb = exmem;
+    exmem = idex;
+    if (stall) {                            /* PCWrite = 0、IF/IDWrite = 0：PC 和 IF/ID 不動 */
+      idex = BUBBLE;                        /* 控制訊號清 0 送進 ID/EX：往 EX 塞一個 bubble */
+      (*nStall)++;
+    } else {
+      idex = ifid;
+      ifid = fetch;
+      if (fetch &gt;= 0) pc++;
+    }
+  }
+}</pre></div>
+          </details>
+          <h3>動手操作：forwarding unit 與 hazard detection unit</h3>
+          <p>輸入 2～7 條指令（用分號隔開），按「執行」後逐個週期看：上排是五個階段各是哪條指令，下面是兩個單元的判斷過程——forwarding unit 把 EX/MEM、MEM/WB 的 RegWrite、rd 和 EX 指令的 rs、rt 一個一個比，算出 ForwardA、ForwardB；hazard detection unit 檢查 ID/EX 是不是 lw、它的 rt 和 ID 的指令有沒有撞。最後一步整理出每條指令在 EX 時的 ForwardA / ForwardB，可以拿來對答案。</p>
+          <p>預設的例子（共 10 個週期，1 個 stall）：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>指令</th><th>EX 週期</th><th>ForwardA</th><th>ForwardB</th><th>原因</th></tr></thead>
+              <tbody>
+                <tr><td>I1 add $t1,$s1,$s2</td><td>3</td><td>00</td><td>00</td><td>前面沒有人寫 $s1、$s2</td></tr>
+                <tr><td>I2 sub $t1,$t1,$s3</td><td>4</td><td>10</td><td>00</td><td>$t1 是上一條 I1 剛算的</td></tr>
+                <tr><td>I3 lw $t0,0($t1)</td><td>5</td><td>10</td><td>—</td><td>I1、I2 都寫 $t1（double hazard），選比較新的 I2</td></tr>
+                <tr><td>I4 add $t2,$t0,$t1</td><td>7</td><td>01</td><td>00</td><td>load-use 停 1 後從 MEM/WB 拿 $t0；I2 的 $t1 在週期 6 已寫回</td></tr>
+                <tr><td>I5 sw $t2,4($s0)</td><td>8</td><td>00</td><td>10</td><td>要存的 $t2 是上一條 I4 剛算的</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="viz" data-viz="forwarding-unit"></div>
+      </section>
+
+      <section id="branch-in-id">
+        <h2>分支提早到 ID 比較時的資料危障</h2>
+        <div class="panel prose">
+          <p>為了減少分支的損失，常把 beq 的比較器和目標位址計算搬到 ID 階段（分支預測和 flush 的細節在 Control Hazards and Branch Prediction 控制危障與分支預測主題（籌備中）介紹）。代價是：beq 在 <b>ID</b> 就要用到暫存器的值，比一般指令在 EX 才用早了一個週期，資料危障變得更嚴重：</p>
+          <ul>
+            <li><b>ALU 指令 → beq（d = 1）</b>：ALU 結果在生產者 EX 結束才有，beq 的 ID 和生產者的 EX 在同一個週期，來不及 → <b>stall 1</b>，下一個週期再從 EX/MEM 轉送到 ID 的比較器。</li>
+            <li><b>lw → beq（d = 1）</b>：資料要到 lw 的 MEM 結束才有 → <b>stall 2</b>，beq 的 ID 和 lw 的 WB 同一個週期，直接讀暫存器檔。</li>
+            <li><b>lw → 無關指令 → beq（d = 2）</b>：仍要 stall 1。</li>
+          </ul>
+          <p>所以考題問「load 後面緊接著用它的結果做分支（在 ID 比較），要停幾個週期」，答案是 2 不是 1。同時硬體要多兩條轉送路徑：EX/MEM → ID 比較器的兩個輸入。MEM/WB → ID 不需要，因為那時生產者正在 WB，前半週期寫、後半週期讀，ID 直接從暫存器檔就讀得到。</p>
+          <p>例子：<code>lw $t0, 0($s0)</code>、<code>addi $t1, $t0, 4</code>、<code>beq $t1, $s3, L</code>。lw → addi 是 load-use，停 1；addi 停完之後，beq 的 ID 正好和 addi 的 EX 同一個週期，又要停 1。共 2 個 stall（還不算分支本身的控制危障）。</p>
+        </div>
+      </section>
+
+      <section id="forwarding-paths">
+        <h2>轉送路徑有幾條、拿掉一條會怎樣</h2>
+        <div class="panel prose">
+          <p>一條「轉送路徑」就是一個來源接到一個目的地。標準五階段管線（分支在 EX 或 MEM 決定）：</p>
+          <pre class="formula">ALU 前的轉送路徑 = 來源 2 個（EX/MEM、MEM/WB）× 目的地 2 個（A、B 兩個 mux）= 4 條
+Forwarding unit 的比較器 = 4 組（EX/MEM.rd、MEM/WB.rd 各和 rs、rt 比）
+分支在 ID 比較時再加：EX/MEM → 比較器兩個輸入 = 2 條，共 6 條</pre>
+          <p>考題常反過來問：「如果只做了某幾條路徑」或「某條路徑壞了」，哪些程式會錯、要多停幾個週期。做法是把相依一個一個分類：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>相依</th><th>用到的路徑</th></tr></thead>
+              <tbody>
+                <tr><td>ALU 指令 → 下一條，用在 rs</td><td>EX/MEM → A</td></tr>
+                <tr><td>ALU 指令 → 下一條，用在 rt（含 sw 要存的資料）</td><td>EX/MEM → B</td></tr>
+                <tr><td>任何寫暫存器的指令 → 隔一條，用在 rs／rt</td><td>MEM/WB → A／B</td></tr>
+                <tr><td>lw → 下一條（停 1 之後）</td><td>MEM/WB → A／B</td></tr>
+                <tr><td>距離 ≥ 3</td><td>不用轉送，讀暫存器檔</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>有兩個陷阱。第一，如果同一個暫存器在中間又被寫過，要看的是<b>最近的</b>那一條：例如 I1、I2 都寫 $s1，I3 讀 $s1，I3 用的是 I2 經 EX/MEM 轉送的值，MEM/WB 那條路徑壞了也沒關係。第二，「只有 EX/MEM 路徑」救不了 load-use：lw 的資料只會出現在 MEM/WB，路徑不存在的話只能等它寫回暫存器檔，相鄰的 load-use 要停 2 個週期，跟沒有 forwarding 一樣。</p>
+          <h3>目的暫存器編號要跟著指令走</h3>
+          <p>Forwarding unit 比對用的 rd 必須是「那條指令自己的」目的暫存器，所以 rd 編號要從 ID/EX、EX/MEM 一路傳到 MEM/WB，WB 寫回時用的也是 MEM/WB 裡的 rd。如果有一級沒接好（例如 WB 拿到的是 EX/MEM 裡的 rd），每個結果都會被寫進「下一條指令」的目的暫存器——這是考題愛出的「找 bug」題型，判斷方法就是逐個週期寫出 WB 的值和實際被寫的暫存器編號。</p>
+        </div>
+      </section>
+
+      <section id="scheduling">
+        <h2>重排指令避開 load-use</h2>
+        <div class="panel prose">
+          <p>硬體做完 forwarding，剩下的 load-use stall 可以交給編譯器：在 lw 和使用它的指令中間塞一條<b>無關</b>的指令，距離變成 2，就不用停了。這叫 <span class="term">Instruction Scheduling<small>（指令排程，又叫 code reordering）</small></span>，完全不用改硬體。</p>
+          <h3>什麼時候可以搬</h3>
+          <p>把指令 j 往前搬，越過原本在它前面的指令 i，要確定兩者交換順序不會改變結果：</p>
+          <ul>
+            <li>沒有 RAW：j 不讀 i 寫的暫存器（否則 j 會拿到舊值）。</li>
+            <li>沒有 WAR：j 不寫 i 要讀的暫存器（否則 i 會讀到 j 的新值）。</li>
+            <li>沒有 WAW：兩者不寫同一個暫存器（否則最後留下的值會變）。</li>
+            <li>記憶體：兩者至少有一個是 sw 時，必須能確定存取的不是同一個位址。同一個 base 暫存器、位移差 4 以上的 word 一定不重疊；base 不同就可能指向同一處，保守起見不換。</li>
+          </ul>
+          <h3>例子</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>原本順序</th><th>重排後</th></tr></thead>
+              <tbody>
+                <tr><td>lw $t0,0($a0)</td><td>lw $t0,0($a0)</td></tr>
+                <tr><td>lw $t1,4($a0)</td><td>lw $t1,4($a0)</td></tr>
+                <tr><td><i>stall</i>（sub 要用 $t1）</td><td><b>lw $t3,12($a0)</b>（搬上來）</td></tr>
+                <tr><td>sub $t2,$t0,$t1</td><td>sub $t2,$t0,$t1</td></tr>
+                <tr><td>sw $t2,8($a0)</td><td>sw $t2,8($a0)</td></tr>
+                <tr><td>lw $t3,12($a0)</td><td>addi $t4,$t3,1</td></tr>
+                <tr><td><i>stall</i>（addi 要用 $t3）</td><td>sw $t4,16($a0)</td></tr>
+                <tr><td>addi $t4,$t3,1</td><td></td></tr>
+                <tr><td>sw $t4,16($a0)</td><td></td></tr>
+                <tr><td>13 個週期</td><td>11 個週期（少 15%）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>lw $t3 往上越過 sw $t2,8($a0) 和 sub：和 sub 沒有任何暫存器相依；和 sw 都用 $a0 當 base，位址 12 和 8 不重疊，所以可以搬。搬完之後 sub 和 lw $t1 的距離變成 2，addi 和 lw $t3 的距離變成 3，兩個 stall 都消失。</p>
+          <h3>不一定能全部消除</h3>
+          <p>重排只能用程式裡現成的獨立指令。如果 lw 後面每一條都直接或間接依賴它（例如 <code>lw $t0</code>、<code>add $t1, $t0, …</code>、<code>sw $t1, …</code>），就沒有東西可以填，stall 留著；有時能填的指令不夠，只能從 2 個 nop 減到 1 個。另外，移動會受 WAR 限制：例如想把 <code>addi $s0, $s0, 8</code> 搬到 <code>lw $t2, 4($s0)</code> 前面，lw 就會讀到加過 8 的 $s0，位址錯了——除非同時把位移改成 −4，但那已經是「改指令」而不只是重排。</p>
+          <p>下面的程式用貪婪法：每個位置依原本順序找第一條可以合法搬上來、又不會和上一條形成 load-use 的指令；都不行就照原本順序放，接受那次 stall。這不保證是最佳解，但考題規模的程式通常都能找到最好的排法。</p>
+          <details class="code-fold">
+            <summary>看程式碼：conflict() 與 reorder() 重排指令</summary>
+            <div class="code-block"><div class="code-head">conflict()：a 原本在 b 前面，能不能交換</div><pre class="code">int conflict(const Inst *a, const Inst *b) {
+  if (a-&gt;dst &gt; 0 &amp;&amp; (a-&gt;dst == b-&gt;rs || a-&gt;dst == b-&gt;rt)) return 1;   /* RAW */
+  if (b-&gt;dst &gt; 0 &amp;&amp; (b-&gt;dst == a-&gt;rs || b-&gt;dst == a-&gt;rt)) return 1;   /* WAR */
+  if (a-&gt;dst &gt; 0 &amp;&amp; a-&gt;dst == b-&gt;dst) return 1;                       /* WAW */
+  if ((a-&gt;memWrite &amp;&amp; (b-&gt;memRead || b-&gt;memWrite)) || (b-&gt;memWrite &amp;&amp; a-&gt;memRead))
+    if (!(a-&gt;rs == b-&gt;rs &amp;&amp; abs(a-&gt;off - b-&gt;off) &gt;= 4)) return 1;    /* 可能是同一個位址 */
+  return 0;
+}</pre></div>
+            <div class="code-block"><div class="code-head">reorder()：每個位置挑一條不會 load-use 的指令</div><pre class="code">void reorder(const Inst *in, int n, int *order) {
+  int used[MAXN] = {0};
+  for (int k = 0; k &lt; n; k++) {
+    int pick = -1, first = -1;
+    for (int j = 0; j &lt; n &amp;&amp; pick &lt; 0; j++) {
+      if (used[j]) continue;
+      int ok = 1;
+      for (int i = 0; i &lt; j; i++)           /* 要跳過的每一條（原本在 j 前面、還沒排）都要能交換 */
+        if (!used[i] &amp;&amp; conflict(&amp;in[i], &amp;in[j])) { ok = 0; break; }
+      if (!ok) continue;
+      if (first &lt; 0) first = j;
+      if (k == 0 || !loadUseStall(&amp;in[order[k - 1]], &amp;in[j])) pick = j;
+    }
+    if (pick &lt; 0) pick = first;             /* 每一條都會停：照原本順序，接受這次 stall */
+    order[k] = pick;
+    used[pick] = 1;
+  }
+}</pre></div>
+          </details>
+          <h3>動手操作：重排前後比較</h3>
+          <p>左邊是原本的順序和 load-use stall 的位置，右邊一個位置一個位置填。每一步會說明檢查了哪些候選、為什麼不能選（RAW、WAR、WAW、可能同一個位址，或放了會造成 load-use）。快捷例子示範了被 WAR 擋住、因為 base 暫存器不同而不能越過 sw 的情況。</p>
+        </div>
+        <div class="viz" data-viz="load-use-reorder"></div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>有 forwarding 與 hazard detection：指定週期各階段是誰、總週期</td><td>很常考</td><td>先找 load-use 插 bubble；每個 bubble 讓後面全部晚 1 週期；總週期 = 5 + (n − 1) + stall；bubble 也佔 MEM、WB 的格子</td><td><a class="q-link" href="#q-co-0131">例題</a> <a class="q-link" href="#q-co-0167">例題</a> <a class="q-link" href="#q-co-0229">例題</a></td></tr>
+                <tr><td>沒有 forwarding：算 stall、NOP、完成週期</td><td>很常考</td><td>依序算每個 RAW 的距離 d，補到 max(0, 3 − d)；前面補的 nop 會拉開後面的距離；注意暫存器檔能不能同週期先寫後讀</td><td><a class="q-link" href="#q-co-0086">例題</a> <a class="q-link" href="#q-co-0076">例題</a> <a class="q-link" href="#q-co-0154">例題</a> <a class="q-link" href="#q-co-0228">例題</a></td></tr>
+                <tr><td>ForwardA / ForwardB 的值、ALU 輸入來源</td><td>常考</td><td>找出那個週期 EX 的指令；EX/MEM 命中 → 10，否則 MEM/WB 命中 → 01，否則 00；兩個都命中選 EX/MEM</td><td><a class="q-link" href="#q-co-0073">例題</a> <a class="q-link" href="#q-co-0163">例題</a> <a class="q-link" href="#q-co-0226">例題</a></td></tr>
+                <tr><td>forwarding、stall、重排的用途與限制（觀念選擇）</td><td>很常考</td><td>forwarding 減少但不消除 stall；branch prediction 是控制危障；load-use 的消除可以靠編譯器重排</td><td><a class="q-link" href="#q-co-0057">例題</a> <a class="q-link" href="#q-co-0059">例題</a> <a class="q-link" href="#q-co-0136">例題</a> <a class="q-link" href="#q-co-0064">例題</a></td></tr>
+                <tr><td>RAW / WAR / WAW 分類與 renaming</td><td>常考</td><td>前寫後讀 RAW、前讀後寫 WAR、都寫 WAW；只有 name dependence 能 rename；依序五階段只有 RAW 會出錯</td><td><a class="q-link" href="#q-co-0031">例題</a> <a class="q-link" href="#q-co-0117">例題</a> <a class="q-link" href="#q-co-0223">例題</a></td></tr>
+                <tr><td>插入 bubble 的控制訊號</td><td>常考</td><td>PCWrite = 0、IF/IDWrite = 0、ID/EX 控制訊號清 0；不是 IF.Flush</td><td><a class="q-link" href="#q-co-0129">例題</a> <a class="q-link" href="#q-co-0225">例題</a></td></tr>
+                <tr><td>分支在 ID 比較的資料危障</td><td>常考</td><td>ALU → beq 停 1、lw → beq 停 2、lw 隔一條再 beq 停 1；要加 EX/MEM → ID 的轉送</td><td><a class="q-link" href="#q-co-0148">例題</a> <a class="q-link" href="#q-co-0100">例題</a> <a class="q-link" href="#q-co-0232">例題</a></td></tr>
+                <tr><td>重排指令消除 stall</td><td>常考</td><td>找 lw 後面緊接的使用者；找一條能越過中間所有指令（無 RAW、WAR、WAW、位址不衝突）的獨立指令搬進去；說明是否能完全消除</td><td><a class="q-link" href="#q-co-0104">例題</a> <a class="q-link" href="#q-co-0230">例題</a></td></tr>
+                <tr><td>部分轉送路徑、路徑數量</td><td>偶爾</td><td>把每個相依分類成「EX/MEM 或 MEM/WB」×「A 或 B」；看最近的生產者；路徑 = 來源 × 目的地</td><td><a class="q-link" href="#q-co-0130">例題</a> <a class="q-link" href="#q-co-0231">例題</a> <a class="q-link" href="#q-co-0232">例題</a></td></tr>
+                <tr><td>沒有 interlock、load delay slot、結果是否改變</td><td>偶爾</td><td>硬體不停時使用者讀到舊值；硬體正確處理的各種方法只差在時間，架構結果相同</td><td><a class="q-link" href="#q-co-0194">例題</a> <a class="q-link" href="#q-co-0172">例題</a></td></tr>
+                <tr><td>$zero、目的暫存器編號與 datapath bug</td><td>偶爾</td><td>寫 $zero 的值不能轉送；逐週期寫出 WB 的值與實際被寫的暫存器</td><td><a class="q-link" href="#q-co-0187">例題</a> <a class="q-link" href="#q-co-0227">例題</a></td></tr>
+                <tr><td>給 latency 的浮點迴圈週期數</td><td>偶爾</td><td>每個使用者和生產者之間要空 latency 個週期，中間的無關指令可以抵掉</td><td><a class="q-link" href="#q-co-0197">例題</a> <a class="q-link" href="#q-co-0198">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 有了 forwarding 就沒有 data hazard stall</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> lw 的資料 MEM 結束才有，下一條馬上用（load-use）仍要停 1 個週期</span> <a class="q-link" href="#q-co-0064">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> forwarding 把資料傳給前面的指令</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 是把前面指令的結果傳給後面、還沒讀到新值的指令</span> <a class="q-link" href="#q-co-0016">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> RAW 可以用 register renaming 消除</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> RAW 是真相依，只能等或轉送；renaming 只能消除 WAR、WAW</span> <a class="q-link" href="#q-co-0031">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 五階段依序管線裡 WAR 也要 stall</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 前面的指令一定先在 ID 讀完，後面的才在 WB 寫，WAR、WAW 不會出錯</span> <a class="q-link" href="#q-co-0117">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 沒有 forwarding 時相鄰相依要停 3 個週期</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 暫存器檔前半寫後半讀，ID 可以和 WB 同一個週期，停 2 個</span> <a class="q-link" href="#q-co-0086">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> EX/MEM 和 MEM/WB 都命中時用 MEM/WB 的值</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 選最新的 EX/MEM（ForwardA = 10），MEM/WB 的值已經被蓋過</span> <a class="q-link" href="#q-co-0226">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> rd ≠ 0 的檢查可有可無</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 寫 $zero 的結果不能轉送，否則讀 $zero 的指令會拿到非 0 的值</span> <a class="q-link" href="#q-co-0227">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> ForwardB 只影響 ALU 的輸入</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> sw 要存的資料也經過 B mux，緊接在生產者後面的 sw 也要轉送</span> <a class="q-link" href="#q-co-0229">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> stall 時要把 IF/ID 清空</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 是 PCWrite = 0、IF/IDWrite = 0 保留指令，並把 ID/EX 的控制訊號清 0；flush 是分支猜錯用的</span> <a class="q-link" href="#q-co-0129">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> bubble 插進去就不見了</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> bubble 像一條 nop 依序經過 EX、MEM、WB，問「第 n 個週期 MEM 是誰」時答案可能是 bubble</span> <a class="q-link" href="#q-co-0167">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> lw 後面緊接著 beq（在 ID 比較）只要停 1 個週期</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> beq 在 ID 就要值，比一般指令早一個週期，要停 2 個</span> <a class="q-link" href="#q-co-0148">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 只要有 EX/MEM 轉送路徑，load-use 停 1 個就夠</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> lw 的資料只在 MEM/WB，沒有 MEM/WB 路徑就要等寫回，停 2 個</span> <a class="q-link" href="#q-co-0231">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 重排指令一定能消除所有 stall</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 要有足夠的獨立指令可以填；搬動還受 RAW、WAR、WAW 和記憶體位址限制</span> <a class="q-link" href="#q-co-0104">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="data-hazards"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz-core.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz/computer-organization/data-hazards.js?v=3694848e"></script>
+</body>
+</html>

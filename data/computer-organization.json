@@ -182,15 +182,25 @@
             "stall",
             "speedup"
           ],
-          "updated": "2026-11-21"
+          "updated": "2026-11-28"
         },
         {
           "id": "data-hazards",
           "en": "Data Hazards and Forwarding",
           "zh": "資料危障與轉送",
           "book": "4.7",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 3,
+          "tags": [
+            "RAW",
+            "forwarding unit",
+            "hazard detection",
+            "load-use",
+            "scheduling"
+          ],
+          "updated": "2026-11-28"
         },
         {
           "id": "control-hazards",

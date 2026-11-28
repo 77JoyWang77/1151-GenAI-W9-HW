@@ -249,15 +249,25 @@
             "multiplicity",
             "Cayley–Hamilton"
           ],
-          "updated": "2026-11-27"
+          "updated": "2026-11-28"
         },
         {
           "id": "diagonalization",
           "en": "Diagonalization",
           "zh": "對角化",
           "book": "6.3",
-          "status": "planned",
-          "priority": "high"
+          "status": "done",
+          "priority": "high",
+          "viz": true,
+          "difficulty": 2,
+          "tags": [
+            "diagonalizable",
+            "PDP⁻¹",
+            "multiplicity",
+            "matrix power",
+            "similarity"
+          ],
+          "updated": "2026-11-28"
         },
         {
           "id": "cayley-hamilton",

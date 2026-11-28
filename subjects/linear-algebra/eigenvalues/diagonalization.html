@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagonalization 對角化 · 線性代數 | 資工考研互動學習站</title>
+  <meta name="description" content="可對角化的判準（代數與幾何重數）、P 與 D 的構造、Aᵏ 與矩陣函數、線性遞迴與相似矩陣性質。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=3694848e">
+  <script src="../../../assets/js/theme.js?v=3694848e"></script>
+</head>
+<body data-subject="linear-algebra" data-chapter="eigenvalues" data-chno="6" data-topic="linear-algebra/eigenvalues/diagonalization" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Linear Algebra 線性代數</a> › Ch6 Eigenvalues 特徵值 › Diagonalization 對角化</nav>
+      <div class="topic-head">
+        <h1>Diagonalization 對角化<small>找 n 個線性獨立的特徵向量排成 P，A = PDP⁻¹，Aᵏ、矩陣函數、遞迴式都變成對角線上各算各的</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch6 Eigenvalues</span>
+          <span class="chip" data-difficulty="2">難度</span>
+          <span class="chip">diagonalizable</span>
+          <span class="chip">PDP⁻¹</span>
+          <span class="chip">multiplicity</span>
+          <span class="chip">matrix power</span>
+          <span class="chip">similarity</span>
+        </div>
+      </div>
+
+      <section id="motivation">
+        <h2>為什麼要對角化</h2>
+        <div class="panel prose">
+          <p>對角矩陣是最好算的矩陣：D = diag(2, 5) 乘一個向量，就是第 1 個分量乘 2、第 2 個分量乘 5，各管各的；D<sup>100</sup> 就是 diag(2<sup>100</sup>, 5<sup>100</sup>)，一步寫完；det D 是對角線乘積，D 的特徵值就寫在對角線上。一般的矩陣沒有這麼好的性質，A<sup>100</sup> 硬乘要做 99 次矩陣乘法，而且看不出 A 長期會把向量帶到哪裡。</p>
+          <p><span class="term">Diagonalization<small>（對角化）</small></span>的想法是：<b>換一組座標軸來看 A</b>。如果能找到 n 個線性獨立的特徵向量，拿它們當新的座標軸，A 在每個軸上都只是「乘以一個倍數」，在這組座標下 A 就變成對角矩陣。寫成矩陣就是</p>
+          <pre class="formula">A = P D P⁻¹      （P 的行是特徵向量，D 的對角線是對應的特徵值）</pre>
+          <p>有了這個分解，很多原本麻煩的計算都變成「對角線上各算各的」：</p>
+          <ul>
+            <li><b>高次方</b>：A<sup>k</sup> = P D<sup>k</sup> P<sup>−1</sup>，不管 k 是 12 還是 2004，都只要兩次矩陣乘法。考古題最愛出「A<sup>20</sup> 某個元素 mod 5」這種題。</li>
+            <li><b>矩陣函數</b>：多項式 p(A)、e<sup>A</sup>、平方根、立方根，都可以寫成 P f(D) P<sup>−1</sup>。</li>
+            <li><b>長期行為</b>：x<sub>k</sub> = A<sup>k</sup>x<sub>0</sub> 當 k → ∞ 會不會收斂，只看特徵值的絕對值是大於、等於還是小於 1。</li>
+            <li><b>線性遞迴</b>：Fibonacci 這類遞迴式可以寫成 u<sub>k+1</sub> = Au<sub>k</sub>，對角化之後直接得到封閉式。</li>
+          </ul>
+          <p>這一頁接在 <a href="eigenvalues-eigenvectors.html">特徵值與特徵向量</a> 之後：特徵值、特徵向量怎麼求、代數重數和幾何重數的定義都在那一頁，這裡只簡短帶過，重點放在<b>什麼時候可以對角化</b>、<b>P 和 D 怎麼組</b>、<b>A<sup>k</sup> 與矩陣函數</b>、<b>遞迴式</b>和<b>相似矩陣的性質</b>。</p>
+        </div>
+      </section>
+
+      <section id="definition">
+        <h2>定義：A = PDP⁻¹ 與 AP = PD</h2>
+        <div class="panel prose">
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>定義</b>：n×n 矩陣 A 稱為 <b>diagonalizable（可對角化）</b>，如果存在<b>可逆</b>矩陣 P 和<b>對角</b>矩陣 D 使得 A = PDP<sup>−1</sup>（等價地 P<sup>−1</sup>AP = D）。這時說 P 把 A 對角化。</p></div>
+          <h3>為什麼 P 的行一定是特徵向量</h3>
+          <p>A = PDP<sup>−1</sup> 兩邊右乘 P，得到 <b>AP = PD</b>。把 P 寫成行向量 P = [v<sub>1</sub> v<sub>2</sub> ⋯ v<sub>n</sub>]，D = diag(λ<sub>1</sub>, …, λ<sub>n</sub>)，兩邊逐行比較：</p>
+          <ul>
+            <li>AP 的第 j 行 = A 乘上 P 的第 j 行 = <b>Av<sub>j</sub></b>。</li>
+            <li>PD 的第 j 行 = P 的各行用 D 的第 j 行當係數組合，而 D 的第 j 行只有第 j 個位置是 λ<sub>j</sub>，所以是 <b>λ<sub>j</sub>v<sub>j</sub></b>。</li>
+          </ul>
+          <p>於是 AP = PD 正好等於 n 條式子 <b>Av<sub>j</sub> = λ<sub>j</sub>v<sub>j</sub></b>（j = 1, …, n）。P 可逆代表 v<sub>j</sub> 都不是零向量而且線性獨立，所以：</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bulb"></use></svg> A 可對角化 ⟺ A 有 <b>n 個線性獨立的特徵向量</b>。P 的第 j 行放第 j 個特徵向量，D 的第 j 個對角元素放它的特徵值，<b>兩者的順序必須對應</b>。</p></div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="diag-columns"></div>
+            <figcaption><b>圖 1</b>：A = [4 1; 2 3] 用 P = [−1 1; 2 1]、D = diag(2, 5) 對角化。藍色是第 1 行：A(−1, 2) = (−2, 4) = 2·(−1, 2)；綠色是第 2 行：A(1, 1) = (5, 5) = 5·(1, 1)。AP 和 PD 逐行相等，就是兩個特徵方程式。</figcaption>
+          </figure>
+          <h3>例子</h3>
+          <p>A = [4 1; 2 3]（第一列 4 1、第二列 2 3）。tr A = 7、det A = 10，特徵方程式 λ<sup>2</sup> − 7λ + 10 = (λ − 2)(λ − 5) = 0，特徵值 2、5（求法見 <a href="eigenvalues-eigenvectors.html#characteristic-polynomial">特徵多項式</a>）。解 (A − 2I)x = 0 得 v<sub>1</sub> = (−1, 2)，解 (A − 5I)x = 0 得 v<sub>2</sub> = (1, 1)，所以</p>
+          <pre class="formula">P = [−1  1]     D = [2  0]     P⁻¹ = [−1/3  1/3]
+    [ 2  1]         [0  5]           [ 2/3  1/3]</pre>
+          <p>驗算 PDP<sup>−1</sup>：PD = [−2 5; 4 5]，再乘 P<sup>−1</sup> 得 [−2·(−1/3) + 5·(2/3), −2·(1/3) + 5·(1/3); 4·(−1/3) + 5·(2/3), 4·(1/3) + 5·(1/3)] = [4 1; 2 3]，正好回到 A。實務上<b>驗算 AP = PD 比驗算 PDP<sup>−1</sup> 快</b>，因為不用求反矩陣，每一行就是一次 Av = λv。</p>
+          <h3>P、D 不唯一</h3>
+          <ul>
+            <li><b>特徵向量可以乘非零倍數</b>：P 的第 1 行換成 (1, −2) 或 (−3, 6) 都可以，D 不變。</li>
+            <li><b>順序可以換</b>：P = [1 −1; 1 2]（兩行對調）配 D = diag(5, 2) 也成立。但只換 D 不換 P 就錯了：P·diag(5, 2)·P<sup>−1</sup> = [3 −1; −2 4] ≠ A。</li>
+            <li><b>重根時選擇更多</b>：特徵空間是 2 維以上時，裡面任何一組基底都可以當那幾行，這就是有的考古題 P 裡會留一個自由參數的原因。</li>
+          </ul>
+          <p>唯一確定的是：D 的對角線（不計順序）一定是 A 的全部特徵值、照代數重數重複出現，因為 D 和 A 有相同的特徵多項式（下面「相似矩陣」一節）。</p>
+        </div>
+      </section>
+
+      <section id="criterion">
+        <h2>可對角化的判準：代數重數與幾何重數</h2>
+        <div class="panel prose">
+          <p>「有 n 個獨立特徵向量」要怎麼檢查？特徵向量是一個特徵空間一個特徵空間求出來的，所以要數每個特徵空間的維度。回顧兩種重數（定義見 <a href="eigenvalues-eigenvectors.html#multiplicity">代數重數與幾何重數</a>）：</p>
+          <ul>
+            <li><span class="term">Algebraic Multiplicity<small>（代數重數）</small></span> a(λ)：(λ − λ<sub>0</sub>) 在特徵多項式裡出現的次數。所有 a(λ) 加起來 = n。</li>
+            <li><span class="term">Geometric Multiplicity<small>（幾何重數）</small></span> g(λ) = dim E<sub>λ</sub> = n − rank(A − λI)。永遠有 1 ≤ g(λ) ≤ a(λ)。</li>
+          </ul>
+          <p>不同特徵空間的基底合在一起仍然線性獨立（這是「相異特徵值的特徵向量線性獨立」的推廣），所以能湊出的獨立特徵向量總數就是 Σ g(λ)。要湊滿 n 個，而每個 g(λ) 又不能超過 a(λ)、Σ a(λ) = n，只有一種可能：<b>每一個</b> g(λ) 都等於 a(λ)。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>判準</b>：A 可對角化 ⟺ 特徵多項式能分解成一次因式（在考慮的數系裡），而且<b>每個特徵值的幾何重數 = 代數重數</b> ⟺ Σ dim E<sub>λ</sub> = n。</p></div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>情況</th><th>結論</th><th>理由</th></tr></thead>
+              <tbody>
+                <tr><td>n 個<b>相異</b>特徵值</td><td>一定可對角化</td><td>每個 a(λ) = 1，而 1 ≤ g ≤ a 逼得 g = 1。這是<b>充分</b>條件，不是必要條件</td></tr>
+                <tr><td>有重根 λ<sub>0</sub>，rank(A − λ<sub>0</sub>I) = n − a(λ<sub>0</sub>)</td><td>這個特徵值沒問題</td><td>g = n − rank = a。例如 I<sub>n</sub>：λ = 1 重數 n，rank(I − I) = 0，g = n</td></tr>
+                <tr><td>有重根 λ<sub>0</sub>，rank(A − λ<sub>0</sub>I) &gt; n − a(λ<sub>0</sub>)</td><td>不能對角化</td><td>g &lt; a，少的特徵向量別的特徵值補不回來，稱為 <span class="term">Defective Matrix<small>（缺陷矩陣）</small></span></td></tr>
+                <tr><td>實矩陣有複數特徵值</td><td>在 ℝ 上不能，在 ℂ 上可能可以</td><td>旋轉 [0 −1; 1 0] 特徵值 ±i 相異：在 ℂ 上可對角化，P、D 要用複數</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="diag-criterion"></div>
+            <figcaption><b>圖 2</b>：三個 3×3 矩陣，每個特徵值上排的格數是代數重數、下排是幾何重數。前兩個每一格都配得上（綠），可對角化；第三個 λ = 3 的代數重數 2、幾何重數只有 1，缺一個特徵向量（紅），P 永遠湊不滿 3 行。</figcaption>
+          </figure>
+          <h3>實際判斷的步驟</h3>
+          <ol>
+            <li>求特徵多項式並分解，得到每個特徵值和代數重數。</li>
+            <li><b>單根不用檢查</b>（幾何重數一定是 1）。只對重根 λ<sub>0</sub> 算 rank(A − λ<sub>0</sub>I)，看 n − rank 是否等於代數重數。</li>
+            <li>全部相等就可對角化，接著求每個特徵空間的基底組 P；有一個不等就停，答「不可對角化」並寫出是哪個特徵值缺了幾個特徵向量。</li>
+          </ol>
+          <p><b>例子</b>：下面兩個矩陣的特徵多項式都是 −(λ − 1)(λ − 3)<sup>2</sup>，只差在 λ = 3 的 rank：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>A</th><th>A − 3I</th><th>rank</th><th>g(3)</th><th>結論</th></tr></thead>
+              <tbody>
+                <tr><td>[2 1 −1; −1 4 −1; −2 2 1]</td><td>[−1 1 −1; −1 1 −1; −2 2 −2]（三列成比例）</td><td>1</td><td>3 − 1 = 2 = a(3)</td><td>可對角化</td></tr>
+                <tr><td>[1 2 −1; −2 5 −1; −2 2 1]</td><td>[−2 2 −1; −2 2 −1; −2 2 −2]</td><td>2</td><td>3 − 2 = 1 &lt; a(3) = 2</td><td>不可對角化</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>看 rank 時常用的捷徑：A − λ<sub>0</sub>I 的各列都成比例 ⇒ rank 1；上三角而且對角線全相同的矩陣（例如 [2 1; 0 2]、對角全 1 的 4×4 上三角），A − λI 是嚴格上三角，只要上面有非零元素，rank 就 ≥ 1，幾何重數常常只剩 1。</p>
+          <h3>不能對角化的典型矩陣</h3>
+          <ul>
+            <li><b>Jordan 區塊</b> [λ 1; 0 λ]：特徵值 λ 二重，A − λI = [0 1; 0 0] 的 rank 是 1，g = 1 &lt; 2。</li>
+            <li><b>非零的冪零矩陣</b>（N<sup>m</sup> = 0 但 N ≠ 0）：特徵值全是 0；若可對角化則 N = P·0·P<sup>−1</sup> = 0，矛盾。</li>
+            <li>這類矩陣退而求其次的「最接近對角」的形式是 Jordan Canonical Form Jordan 標準式（籌備中）。</li>
+          </ul>
+          <p>反過來，有些矩陣「一定」可以對角化：n 個相異特徵值；實對稱矩陣（而且 P 可以選成正交矩陣，這是 Symmetric and Hermitian Matrices 對稱矩陣與譜定理（籌備中）的主題）；滿足 A<sup>2</sup> = A 的冪等矩陣（特徵值只有 0、1，且 Null(A) 和 Col(A) 合起來就是 ℝ<sup>n</sup>）。</p>
+        </div>
+      </section>
+
+      <section id="procedure">
+        <h2>對角化的步驟：組出 P 與 D</h2>
+        <div class="panel prose">
+          <p>把上面的判準和特徵向量的求法串起來，就是對角化的完整流程：</p>
+          <ol>
+            <li><b>求特徵值</b>：解 det(A − λI) = 0，記下代數重數（用 trace、det 驗算）。</li>
+            <li><b>每個特徵值求特徵空間</b>：把 A − λI 化成 RREF，自由變數個數 = 幾何重數；每個自由變數輪流設 1 得到一個基底向量。</li>
+            <li><b>判斷</b>：有任何 g(λ) &lt; a(λ) 就停，A 不可對角化。</li>
+            <li><b>組 P、D</b>：把所有基底向量依序排成 P 的行，D 的對角線在同樣的位置放對應的特徵值（重根就重複寫）。</li>
+            <li><b>驗算</b> AP = PD（逐行 Av = λv）；需要 P<sup>−1</sup> 時用 [P | I] 化簡（見 <a href="../linear-systems/matrix-inverse.html#gauss-jordan-inverse">用 [A | I] 求反矩陣</a>）。</li>
+          </ol>
+          <p><b>例子</b>：A = [2 1 −1; −1 4 −1; −2 2 1]。</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>步驟</th><th>計算</th><th>結果</th></tr></thead>
+              <tbody>
+                <tr><td>1. 特徵值</td><td>det(A − λI) = −λ<sup>3</sup> + 7λ<sup>2</sup> − 15λ + 9 = −(λ − 1)(λ − 3)<sup>2</sup></td><td>λ = 1（a = 1）、λ = 3（a = 2）；驗算 1 + 3 + 3 = 7 = tr A，1·3·3 = 9 = det A</td></tr>
+                <tr><td>2. λ = 1</td><td>A − I = [1 1 −1; −1 3 −1; −2 2 0] → RREF [1 0 −1/2; 0 1 −1/2; 0 0 0]</td><td>x<sub>3</sub> 自由，取 x<sub>3</sub> = 2：v<sub>1</sub> = (1, 1, 2)</td></tr>
+                <tr><td>2. λ = 3</td><td>A − 3I → RREF [1 −1 1; 0 0 0; 0 0 0]，rank 1</td><td>x<sub>2</sub>、x<sub>3</sub> 自由：v<sub>2</sub> = (1, 1, 0)、v<sub>3</sub> = (−1, 0, 1)</td></tr>
+                <tr><td>3. 判斷</td><td>g(1) = 1 = a(1)，g(3) = 2 = a(3)</td><td>可對角化</td></tr>
+                <tr><td>4. 組 P、D</td><td>P = [v<sub>1</sub> v<sub>2</sub> v<sub>3</sub>] = [1 1 −1; 1 1 0; 2 0 1]</td><td>D = diag(1, 3, 3)</td></tr>
+                <tr><td>5. 驗算</td><td>Av<sub>1</sub> = (1, 1, 2)、Av<sub>2</sub> = (3, 3, 0)、Av<sub>3</sub> = (−3, 0, 3)</td><td>分別是 1·v<sub>1</sub>、3·v<sub>2</sub>、3·v<sub>3</sub>，AP = PD 成立</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>注意第 4 步 D 的對角線是 1、3、3：λ = 3 有兩個特徵向量，就要在 D 寫兩次 3，而且放在 v<sub>2</sub>、v<sub>3</sub> 所在的第 2、3 行。程式也照同樣的順序做：每找到一個特徵空間，就把它的基底一個一個塞進 P 的下一行，同時在 D 的同一個位置寫上特徵值；遇到幾何重數不夠就立刻回傳「不可對角化」。</p>
+          <details class="code-fold">
+            <summary>看程式碼：diagonalize() / checkAPPD()：組出 P、D 並驗算</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="diagonalize()">
+                <div class="code-head">diagonalize()：每個特徵空間的基底依序排成 P 的行</div>
+                <pre class="code">int diagonalize(Frac A[MAXN][MAXN], Frac P[MAXN][MAXN], Frac D[MAXN][MAXN]) {   /* 可對角化回傳 1、缺陷回傳 0 */
+  Frac lam[MAXN], basis[MAXN][MAXN];
+  int alg[MAXN], col = 0;
+  Poly rest;
+  int k = eigenvalues(charPoly(A), lam, alg, &amp;rest);
+  if (rest.deg &gt; 0) return -1;                 /* 有無理根或複數根：P、D 不是有理數，這裡不處理 */
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) D[i][j] = frac(0, 1);
+  for (int t = 0; t &lt; k; t++) {
+    int g = eigenspace(A, lam[t], basis);      /* g = 幾何重數 = n − rank(A − λI) */
+    if (g &lt; alg[t]) return 0;                  /* 幾何重數 &lt; 代數重數：特徵向量不夠 n 個 */
+    for (int s = 0; s &lt; g; s++, col++) {
+      for (int i = 0; i &lt; n; i++) P[i][col] = basis[s][i];   /* 第 col 個特徵向量放進 P 的第 col 行 */
+      D[col][col] = lam[t];                    /* 對應的特徵值放在 D 的同一行 */
+    }
+  }
+  return 1;                                    /* 此時 col == n，P 的 n 行線性獨立 */
+}</pre>
+              </div>
+              <div class="code-block" data-tab="checkAPPD()">
+                <div class="code-head">checkAPPD()：驗算 AP = PD</div>
+                <pre class="code">int checkAPPD(Frac A[MAXN][MAXN], Frac P[MAXN][MAXN], Frac D[MAXN][MAXN]) {   /* 驗算 AP = PD */
+  Frac L[MAXN][MAXN], R[MAXN][MAXN];
+  matMul(A, P, L);                             /* AP 的第 j 行 = A·(P 的第 j 行) */
+  matMul(P, D, R);                             /* PD 的第 j 行 = d_jj·(P 的第 j 行) */
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++)
+      if (!feq(L[i][j], R[i][j])) return 0;
+  return 1;
+}</pre>
+              </div>
+              <div class="code-block" data-tab="inverse()">
+                <div class="code-head">inverse()：[P | I] → [I | P⁻¹]</div>
+                <pre class="code">int inverse(Frac P[MAXN][MAXN], Frac inv[MAXN][MAXN]) {   /* 不可逆回傳 0 */
+  Frac M[MAXN][2 * MAXN];
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; 2 * n; j++) M[i][j] = (j &lt; n) ? P[i][j] : frac(j - n == i, 1);
+  for (int c = 0; c &lt; n; c++) {
+    int p = c;
+    while (p &lt; n &amp;&amp; isZero(M[p][c])) p++;
+    if (p == n) return 0;                      /* 這一行找不到 pivot：P 不可逆 */
+    for (int j = 0; j &lt; 2 * n; j++) { Frac t = M[c][j]; M[c][j] = M[p][j]; M[p][j] = t; }
+    Frac piv = M[c][c];
+    for (int j = 0; j &lt; 2 * n; j++) M[c][j] = fdiv(M[c][j], piv);
+    for (int i = 0; i &lt; n; i++)
+      if (i != c &amp;&amp; !isZero(M[i][c])) {
+        Frac f = M[i][c];
+        for (int j = 0; j &lt; 2 * n; j++) M[i][j] = fsub(M[i][j], fmul(f, M[c][j]));
+      }
+  }
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) inv[i][j] = M[i][n + j];
+  return 1;
+}</pre>
+              </div>
+            </div>
+          </details>
+          <p>程式裡的 eigenvalues()（有理根定理求特徵值）和 eigenspace()（RREF 讀出特徵空間基底）就是 <a href="eigenvalues-eigenvectors.html#eigenspace">求特徵向量</a> 那一頁的版本。下面的動畫把整個流程串起來：輸入 2×2 或 3×3 矩陣（可以用分數），它會求特徵值、逐一算 rank(A − λI) 與幾何重數、判斷能不能對角化，把特徵向量排進 P、特徵值排進 D，逐行驗算 AP = PD；按「算 Aᵏ」還會求 P<sup>−1</sup>、D<sup>k</sup>，算出 A<sup>k</sup> = P D<sup>k</sup> P<sup>−1</sup>，並和直接連乘的結果比對、說明 k → ∞ 時的趨勢。遇到無理數或複數特徵值（例如 Fibonacci 矩陣）時會說明能不能對角化，並直接用快速冪算 A<sup>k</sup>。</p>
+        </div>
+        <div class="viz" data-viz="diag-solve"></div>
+      </section>
+
+      <section id="powers">
+        <h2>用對角化算 Aᵏ 與矩陣多項式</h2>
+        <div class="panel prose">
+          <h3>A<sup>k</sup> = P D<sup>k</sup> P<sup>−1</sup></h3>
+          <p>A<sup>2</sup> = (PDP<sup>−1</sup>)(PDP<sup>−1</sup>) = PD(P<sup>−1</sup>P)DP<sup>−1</sup> = PD<sup>2</sup>P<sup>−1</sup>，中間的 P<sup>−1</sup>P = I 消掉了。重複 k 次：</p>
+          <pre class="formula">A^k = P D^k P⁻¹ = P · diag(λ₁^k, λ₂^k, …, λₙ^k) · P⁻¹</pre>
+          <p>對角矩陣的次方只要把每個對角元素各自 k 次方，所以不管 k 多大，都是「兩次矩陣乘法」。<b>順序一定是 P 在左、P<sup>−1</sup> 在右</b>（P 的行是特徵向量）；寫成 P<sup>−1</sup>D<sup>k</sup>P 是最常見的錯誤，代 k = 1 檢查是否得到 A 就能抓到。</p>
+          <p><b>例子</b>：A = [4 1; 2 3]，P = [−1 1; 2 1]、D = diag(2, 5)、P<sup>−1</sup> = (1/3)[−1 1; 2 1]：</p>
+          <pre class="formula">A^k = (1/3) [ 2^k + 2·5^k      −2^k + 5^k   ]
+            [ −2·2^k + 2·5^k   2·2^k + 5^k  ]</pre>
+          <p>檢查 k = 1：(1/3)[2 + 10, −2 + 5; −4 + 10, 4 + 5] = [4 1; 2 3]。代 k = 5 得 A<sup>5</sup> = [2094 1031; 2062 1063]，和直接連乘 5 次相同（已用程式驗證）。k 很大時 5<sup>k</sup> 遠大於 2<sup>k</sup>，A<sup>k</sup> ≈ (5<sup>k</sup>/3)[2 1; 2 1]：最大的特徵值主導長期行為。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="diag-power"></div>
+            <figcaption><b>圖 3</b>：A<sup>k</sup>x = P D<sup>k</sup> P<sup>−1</sup>x 的三個步驟：P<sup>−1</sup> 把 x 換成「特徵向量座標」c（x = c<sub>1</sub>v<sub>1</sub> + c<sub>2</sub>v<sub>2</sub>），D<sup>k</sup> 讓每個座標各自乘 λ<sub>j</sub><sup>k</sup>，P 再換回標準座標；結果和虛線（直接乘 k 次）相同。</figcaption>
+          </figure>
+          <h3>另一種寫法：拆成特徵向量的組合</h3>
+          <p>圖 3 也可以直接寫成 <b>A<sup>k</sup>x = c<sub>1</sub>λ<sub>1</sub><sup>k</sup>v<sub>1</sub> + ⋯ + c<sub>n</sub>λ<sub>n</sub><sup>k</sup>v<sub>n</sub></b>，其中 c = P<sup>−1</sup>x。只問 A<sup>k</sup>x（不用整個 A<sup>k</sup>）時，解一次 Pc = x 比求 P<sup>−1</sup> 快。把矩陣本身拆開也行：A<sup>k</sup> = λ<sub>1</sub><sup>k</sup>E<sub>1</sub> + ⋯，其中 E<sub>i</sub> = (P 的第 i 行)(P<sup>−1</sup> 的第 i 列) 是只和 A 有關的固定矩陣；2×2、特徵值 λ<sub>1</sub> ≠ λ<sub>2</sub> 時 E<sub>1</sub> = (A − λ<sub>2</sub>I)/(λ<sub>1</sub> − λ<sub>2</sub>)，不用求 P 就能寫出 A<sup>k</sup>。</p>
+          <h3>k → ∞：看特徵值的絕對值</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>特徵值</th><th>λ<sup>k</sup> 的行為</th><th>A<sup>k</sup> 的極限</th></tr></thead>
+              <tbody>
+                <tr><td>全部 |λ| &lt; 1</td><td>都 → 0</td><td>A<sup>k</sup> → 0</td></tr>
+                <tr><td>λ = 1，其餘 |λ| &lt; 1</td><td>1<sup>k</sup> = 1 留下，其餘 → 0</td><td>收斂到 P·diag(1, 0, …, 0)·P<sup>−1</sup>，也就是投影到 E<sub>1</sub> 的矩陣</td></tr>
+                <tr><td>有 λ = −1（或其他 |λ| = 1 且 λ ≠ 1）</td><td>(−1)<sup>k</sup> 正負交替</td><td>不收斂（震盪）</td></tr>
+                <tr><td>有 |λ| &gt; 1</td><td>→ ∞</td><td>發散（除非初始向量在那個方向的座標剛好是 0）</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>第二種情況就是 Markov Chains 馬可夫鏈與非負矩陣（籌備中）的穩定狀態：例如 A = [1/2 1/4; 1/2 3/4] 每行和為 1，特徵值 1、1/4，特徵向量 (1, 2)、(−1, 1)；lim A<sup>k</sup> = [1/3 1/3; 2/3 2/3]，不管從哪個機率分布出發，最後都收斂到 (1/3, 2/3)。動畫的「分數（收斂）」按鈕就是這個矩陣。</p>
+          <h3>矩陣多項式與矩陣函數：f(A) = P f(D) P<sup>−1</sup></h3>
+          <p>多項式 p(A) = a<sub>m</sub>A<sup>m</sup> + ⋯ + a<sub>1</sub>A + a<sub>0</sub>I 的每一項都可以寫成 P(⋯)P<sup>−1</sup>，所以 <b>p(A) = P·diag(p(λ<sub>1</sub>), …, p(λ<sub>n</sub>))·P<sup>−1</sup></b>。推論：p(A) 的特徵值是 p(λ<sub>i</sub>)，det p(A) = Π p(λ<sub>i</sub>)；而且若 p(λ<sub>i</sub>) 全是 0（例如 p 是特徵多項式），p(A) = 0，這是可對角化情況下 Cayley–Hamilton 定理的一行證明（一般情況見 <a href="eigenvalues-eigenvectors.html#cayley-hamilton">Cayley–Hamilton 定理</a>）。</p>
+          <p>同樣的想法可以定義非多項式的函數：</p>
+          <ul>
+            <li><b>e<sup>A</sup></b> = Σ A<sup>k</sup>/k! = P·diag(e<sup>λ<sub>1</sub></sup>, …, e<sup>λ<sub>n</sub></sup>)·P<sup>−1</sup>，是解 x′ = Ax 的工具（Systems of Linear Differential Equations 線性微分方程組（籌備中））。若 A 的特徵值只有 0、1（冪等矩陣 A<sup>2</sup> = A），e<sup>A</sup> = I + (e − 1)A。</li>
+            <li><b>平方根、立方根</b>：要找 B 使 B<sup>2</sup> = A，取 B = P·diag(√λ<sub>1</sub>, …)·P<sup>−1</sup>。每個特徵值的根號可以取正或負，所以 2×2 相異正特徵值就有 4 個平方根；題目通常會加條件（例如「B 的特徵值為正」或「為實數」）讓答案唯一。</li>
+          </ul>
+          <p>例：A = [−2 3; −6 7]，特徵值 1、4，特徵向量 (1, 1)、(1, 2)。取 P = [1 1; 1 2]、P<sup>−1</sup> = [2 −1; −1 1]，B = P·diag(1, 2)·P<sup>−1</sup> = [0 1; −2 3]，直接驗算 B<sup>2</sup> = [−2 3; −6 7]。</p>
+          <details class="code-fold">
+            <summary>看程式碼：powerByDiag() / matPow()：Aᵏ 的兩種算法</summary>
+            <div class="code-tabs">
+              <div class="code-block" data-tab="powerByDiag()">
+                <div class="code-head">powerByDiag()：A^k = P D^k P⁻¹</div>
+                <pre class="code">void powerByDiag(Frac P[MAXN][MAXN], Frac D[MAXN][MAXN], int k, Frac Ak[MAXN][MAXN]) {
+  Frac Dk[MAXN][MAXN], Pinv[MAXN][MAXN], T[MAXN][MAXN];
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) Dk[i][j] = (i == j) ? fpow(D[i][i], k) : frac(0, 1);   /* D^k = diag(λ₁^k, …, λₙ^k) */
+  inverse(P, Pinv);
+  matMul(P, Dk, T);                            /* T = P D^k */
+  matMul(T, Pinv, Ak);                         /* A^k = P D^k P⁻¹ */
+}</pre>
+              </div>
+              <div class="code-block" data-tab="matPow()">
+                <div class="code-head">matPow()：快速冪直接算 A^k（對答案用）</div>
+                <pre class="code">void matPow(Frac A[MAXN][MAXN], int k, Frac R[MAXN][MAXN]) {   /* 直接算 A^k（快速冪），用來對答案 */
+  Frac B[MAXN][MAXN];
+  for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) { R[i][j] = frac(i == j, 1); B[i][j] = A[i][j]; }
+  while (k &gt; 0) {
+    if (k &amp; 1) matMul(R, B, R);                /* 二進位這一位是 1：乘進答案 */
+    matMul(B, B, B);                           /* B ← B²，只要 O(log k) 次矩陣乘法 */
+    k &gt;&gt;= 1;
+  }
+}</pre>
+              </div>
+              <div class="code-block" data-tab="fpow()">
+                <div class="code-head">fpow()：分數的 k 次方</div>
+                <pre class="code">Frac fpow(Frac x, int k) {                     /* x^k，k ≥ 0 */
+  Frac r = frac(1, 1);
+  for (int t = 0; t &lt; k; t++) r = fmul(r, x);
+  return r;
+}</pre>
+              </div>
+            </div>
+          </details>
+          <p>效能上的比較：直接連乘要 k − 1 次矩陣乘法（n×n 每次 n<sup>3</sup> 次乘法）；快速冪只要約 2 log<sub>2</sub>k 次；對角化之後是固定的 2 次矩陣乘法加 n 個純量次方，還多了一個<b>封閉式</b>，可以拿來分析趨勢、求極限、做 mod 運算。考試要的通常是封閉式，程式要的通常是快速冪（不怕特徵值是無理數）。</p>
+        </div>
+      </section>
+
+      <section id="recurrence">
+        <h2>遞迴式：Fibonacci 與線性遞迴</h2>
+        <div class="panel prose">
+          <p>二階線性遞迴 a<sub>k+2</sub> = p·a<sub>k+1</sub> + q·a<sub>k</sub> 每一步只依賴前兩項，把相鄰兩項打包成狀態向量 u<sub>k</sub> = (a<sub>k+1</sub>, a<sub>k</sub>)，就變成一階的矩陣遞迴：</p>
+          <pre class="formula">[a_{k+2}]   [p  q] [a_{k+1}]
+[a_{k+1}] = [1  0] [a_k    ]       即 u_{k+1} = A u_k，所以 u_k = A^k u_0</pre>
+          <p>A 的特徵多項式是 λ<sup>2</sup> − pλ − q，<b>正好是遞迴式的特徵方程式</b>。所以 <a href="../../discrete-math/advanced-counting/recurrence-relations.html#characteristic">離散數學的特徵根解法</a> 和這裡的對角化是同一件事：特徵根相異時 a<sub>k</sub> = αr<sub>1</sub><sup>k</sup> + βr<sub>2</sub><sup>k</sup>，對應 A 有兩個相異特徵值、可對角化；特徵根重根時通解要多一個 k·r<sup>k</sup>，對應這個 A 只有一個特徵向量（[p q; 1 0] − rI 的第 2 列 (1, −r) 永遠非零，rank 1），不能對角化。</p>
+          <h3>例 1：特徵根是整數</h3>
+          <p>a<sub>k+2</sub> = a<sub>k+1</sub> + 2a<sub>k</sub>，a<sub>0</sub> = 0、a<sub>1</sub> = 1。A = [1 2; 1 0]，特徵方程式 λ<sup>2</sup> − λ − 2 = (λ − 2)(λ + 1)，特徵值 2、−1。對 [p q; 1 0] 這種矩陣，λ 的特徵向量一定可以取 (λ, 1)（第 2 列說 x<sub>1</sub> = λx<sub>2</sub>），所以 P = [2 −1; 1 1]。</p>
+          <p>u<sub>0</sub> = (a<sub>1</sub>, a<sub>0</sub>) = (1, 0) = c<sub>1</sub>(2, 1) + c<sub>2</sub>(−1, 1)，解得 c<sub>1</sub> = 1/3、c<sub>2</sub> = −1/3。u<sub>k</sub> = (1/3)2<sup>k</sup>(2, 1) − (1/3)(−1)<sup>k</sup>(−1, 1)，取第 2 個分量：</p>
+          <pre class="formula">a_k = (2^k − (−1)^k) / 3        a_10 = (1024 − 1)/3 = 341</pre>
+          <p>程式對 k = 0～30 都用矩陣快速冪檢查過這個封閉式；動畫的「遞迴」按鈕會算出 A<sup>10</sup> = [683 682; 341 342]，第 2 列第 1 行的 341 就是 a<sub>10</sub>（A<sup>k</sup> 的第 2 列第 1 行 = a<sub>k</sub>，因為 u<sub>0</sub> = (1, 0) 只取出 A<sup>k</sup> 的第 1 行）。</p>
+          <h3>例 2：Fibonacci</h3>
+          <p>F<sub>k+2</sub> = F<sub>k+1</sub> + F<sub>k</sub>，A = [1 1; 1 0]，特徵方程式 λ<sup>2</sup> − λ − 1 = 0，特徵值 φ = (1 + √5)/2 ≈ 1.618、ψ = (1 − √5)/2 ≈ −0.618。兩根相異，所以 A 可對角化（P、D 含 √5）。同樣的推導得到 <span class="term">Binet's Formula<small>（比內公式）</small></span>：</p>
+          <pre class="formula">F_k = (φ^k − ψ^k) / √5          A^k = [F_{k+1}  F_k    ]
+                                        [F_k      F_{k−1}]</pre>
+          <p>|ψ| &lt; 1，所以 ψ<sup>k</sup> → 0，F<sub>k</sub> 是最接近 φ<sup>k</sup>/√5 的整數，F<sub>k+1</sub>/F<sub>k</sub> → φ（黃金比例）。這就是「最大特徵值主導長期行為」的例子。A<sup>k</sup> 的右邊那個等式（可以用歸納法證明）也給了 O(log k) 求 F<sub>k</sub> 的方法：用快速冪算 [1 1; 1 0]<sup>k</sup>，只要整數運算、不會有 √5 的誤差；F<sub>40</sub> = 102334155 就是這樣算出來核對的。</p>
+          <details class="code-fold">
+            <summary>看程式碼：recurByMatrix()：用 A^k 求線性遞迴的第 k 項</summary>
+            <div class="code-block">
+              <div class="code-head">recurByMatrix()：a_{k+2} = p·a_{k+1} + q·a_k</div>
+              <pre class="code">long long recurByMatrix(long long p, long long q, long long a0, long long a1, int k) {   /* 回傳 a_k */
+  Frac A[MAXN][MAXN], R[MAXN][MAXN];
+  n = 2;
+  A[0][0] = frac(p, 1); A[0][1] = frac(q, 1);  /* [a_{k+2}; a_{k+1}] = [p q; 1 0][a_{k+1}; a_k] */
+  A[1][0] = frac(1, 1); A[1][1] = frac(0, 1);
+  matPow(A, k, R);                             /* [a_{k+1}; a_k] = A^k [a_1; a_0] */
+  return fadd(fmul(R[1][0], frac(a1, 1)), fmul(R[1][1], frac(a0, 1))).n;
+}</pre>
+            </div>
+          </details>
+          <p>同樣的手法可以推廣：三階遞迴用 3×3 的狀態矩陣；兩個互相影響的序列（例如 x<sub>k+1</sub> = 2x<sub>k</sub> + y<sub>k</sub>、y<sub>k+1</sub> = x<sub>k</sub> + 2y<sub>k</sub>）直接寫成 u<sub>k+1</sub> = Au<sub>k</sub>。演算法裡用矩陣快速冪做 DP 加速（例如計算長度為 k 的路徑數 = 鄰接矩陣的 k 次方）也是同一個想法。</p>
+        </div>
+      </section>
+
+      <section id="similarity">
+        <h2>相似矩陣的性質</h2>
+        <div class="panel prose">
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>定義</b>：若存在可逆矩陣 P 使 B = P<sup>−1</sup>AP，就說 A 和 B <span class="term">Similar<small>（相似）</small></span>，記作 A ~ B。所以「A 可對角化」就是「A 和某個對角矩陣相似」。</p></div>
+          <p>相似的意思是：A 和 B 是<b>同一個線性轉換在兩組不同基底下的矩陣</b>，P 的行就是新基底在舊座標下的寫法（完整的線性轉換觀點見 Similarity 相似矩陣（籌備中）與 Change of Basis 基底變換（籌備中））。既然是同一個轉換，和「座標怎麼選」無關的量都應該一樣：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>相似矩陣相同的量</th><th>理由（B = P<sup>−1</sup>AP）</th></tr></thead>
+              <tbody>
+                <tr><td>特徵多項式、特徵值（含代數重數）</td><td>det(B − λI) = det(P<sup>−1</sup>(A − λI)P) = det(P<sup>−1</sup>)det(A − λI)det(P) = det(A − λI)</td></tr>
+                <tr><td>det、trace</td><td>分別是特徵值的積與和；也可直接用 det(XY) = det X det Y、tr(XY) = tr(YX)</td></tr>
+                <tr><td>rank、nullity</td><td>乘上可逆矩陣不改變 rank</td></tr>
+                <tr><td>每個特徵值的幾何重數</td><td>B − λI = P<sup>−1</sup>(A − λI)P，rank 相同，所以 dim E<sub>λ</sub> 相同</td></tr>
+                <tr><td>可不可逆、可不可對角化</td><td>A = QDQ<sup>−1</sup> ⇒ B = (P<sup>−1</sup>Q)D(P<sup>−1</sup>Q)<sup>−1</sup></td></tr>
+                <tr><td>B<sup>k</sup> ~ A<sup>k</sup>，p(B) ~ p(A)</td><td>B<sup>k</sup> = P<sup>−1</sup>A<sup>k</sup>P</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><b>會改變的</b>：特徵向量。若 Av = λv，則 B(P<sup>−1</sup>v) = P<sup>−1</sup>AP·P<sup>−1</sup>v = λ(P<sup>−1</sup>v)，B 的特徵向量是 P<sup>−1</sup>v，一般和 v 不同。對稱性、元素本身、列空間、行空間也都會變。</p>
+          <h3>反過來不成立：特徵值相同 ≠ 相似</h3>
+          <p>[1 1; 0 1] 和 I 的特徵多項式都是 (λ − 1)<sup>2</sup>，trace、det 都相同，但<b>不相似</b>：和 I 相似的矩陣只有 P<sup>−1</sup>IP = I 自己。用表格的不變量也看得出來：rank(A − I) 分別是 1 和 0，幾何重數不同。上面「判準」一節的兩個 3×3 矩陣也是同一個例子：特徵多項式相同，一個可對角化、一個不行，所以不相似。</p>
+          <p>但在<b>可對角化</b>的前提下就成立：若 A、B 都可對角化而且特徵值（含重數）相同，則 A ~ D ~ B，相似有遞移性，所以 A ~ B。實用版本：<b>兩個 n×n 矩陣都有同樣的 n 個相異特徵值 ⇒ 相似</b>。例如 [1 2; 0 3] 和 [1 0; 2 3] 的特徵值都是 1、3，相異，所以相似。</p>
+          <h3>常考的連帶結論</h3>
+          <ul>
+            <li>A 可對角化 ⇒ A<sup>T</sup> 可對角化：A = PDP<sup>−1</sup> 取轉置得 A<sup>T</sup> = (P<sup>T</sup>)<sup>−1</sup>DP<sup>T</sup>，令 Q = (P<sup>T</sup>)<sup>−1</sup> 即可。</li>
+            <li>A 可對角化 ⇒ A<sup>k</sup>、p(A) 可對角化（同一個 P）；A 可逆時 A<sup>−1</sup> = PD<sup>−1</sup>P<sup>−1</sup> 也可對角化。反之不一定：A<sup>2</sup> 可對角化不代表 A 可以（[0 1; 0 0]<sup>2</sup> = 0）。</li>
+            <li>A 可對角化 <b>與</b> A 可逆<b>沒有關係</b>：零矩陣可對角化但不可逆；[1 1; 0 1] 可逆但不可對角化。</li>
+            <li>兩個可對角化的矩陣若能用<b>同一個</b> P 對角化（simultaneously diagonalizable），則 AB = PD<sub>1</sub>D<sub>2</sub>P<sup>−1</sup> = BA，兩者可交換。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+            <table class="exam-map">
+              <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+              <tbody>
+                <tr><td>判斷可否對角化並求 P、D</td><td>很常考</td><td>求特徵值 → 只對重根算 rank(A − λI) → g = a 才組 P（特徵向量當行）、D（同順序）→ 驗算 AP = PD；不行時寫出哪個 λ 缺幾個特徵向量</td><td><a class="q-link" href="#q-la-0081">例題</a> <a class="q-link" href="#q-la-0152">例題</a> <a class="q-link" href="#q-la-0188">例題</a></td></tr>
+                <tr><td>重根、帶參數、特徵空間維度</td><td>常考</td><td>幾何重數 = n − rank(A − λI)；帶參數時看哪個參數讓 rank 降下來；三角矩陣看嚴格上三角部分</td><td><a class="q-link" href="#q-la-0121">例題</a> <a class="q-link" href="#q-la-0128">例題</a> <a class="q-link" href="#q-la-0189">例題</a></td></tr>
+                <tr><td>算 A<sup>k</sup>（元素、元素和、mod）與線性遞迴</td><td>很常考</td><td>A<sup>k</sup> = PD<sup>k</sup>P<sup>−1</sup> 寫出封閉式，代 k = 1 檢查；或 A<sup>k</sup> = Σ λ<sub>i</sub><sup>k</sup>E<sub>i</sub>；遞迴式先寫成 u<sub>k+1</sub> = Au<sub>k</sub>；mod 用 2<sup>4</sup> ≡ 1 (mod 5) 這類週期</td><td><a class="q-link" href="#q-la-0147">例題</a> <a class="q-link" href="#q-la-0164">例題</a> <a class="q-link" href="#q-la-0190">例題</a></td></tr>
+                <tr><td>lim A<sup>k</sup>、Markov 穩定狀態</td><td>常考</td><td>看 |λ|：&lt; 1 消失、= 1 留下、λ = −1 震盪、&gt; 1 發散；極限 = P·diag(留下的 1)·P<sup>−1</sup>；只問 A<sup>k</sup>x 就拆 x 成特徵向量組合</td><td><a class="q-link" href="#q-la-0064">例題</a> <a class="q-link" href="#q-la-0088">例題</a> <a class="q-link" href="#q-la-0193">例題</a></td></tr>
+                <tr><td>矩陣函數：p(A)、e<sup>A</sup>、平方根、立方根</td><td>常考</td><td>f(A) = P f(D) P<sup>−1</sup>；根號、立方根依條件選特徵值的根；冪等 A<sup>2</sup> = A 直接化簡；高次多項式也可用 Cayley–Hamilton 降次</td><td><a class="q-link" href="#q-la-0062">例題</a> <a class="q-link" href="#q-la-0135">例題</a> <a class="q-link" href="#q-la-0194">例題</a></td></tr>
+                <tr><td>可對角化性質是非（複選）</td><td>很常考</td><td>n 相異特徵值是充分非必要；可對角化與可逆無關；P、D 不唯一；Aᵀ、A<sup>k</sup> 也可對角化；錯的用 I、0、[1 1; 0 1] 當反例</td><td><a class="q-link" href="#q-la-0043">例題</a> <a class="q-link" href="#q-la-0110">例題</a> <a class="q-link" href="#q-la-0056">例題</a> <a class="q-link" href="#q-la-0187">例題</a></td></tr>
+                <tr><td>相似矩陣：判斷是否相似、不變量</td><td>偶爾</td><td>先比 trace、det、rank、特徵多項式（不同就不相似）；相同時再比每個 λ 的幾何重數；都可對角化且特徵值相同才相似</td><td><a class="q-link" href="#q-la-0043">例題</a> <a class="q-link" href="#q-la-0191">例題</a> <a class="q-link" href="#q-la-0195">例題</a></td></tr>
+                <tr><td>分解存在的條件、與對稱矩陣的比較</td><td>偶爾</td><td>PDP<sup>−1</sup> ⟺ n 個獨立特徵向量；PDP<sup>T</sup>（正交對角化）⟺ 對稱；對稱一定可對角化</td><td><a class="q-link" href="#q-la-0042">例題</a> <a class="q-link" href="#q-la-0069">例題</a></td></tr>
+                <tr><td>證明與推理（rank、冪零、冪等）</td><td>常考</td><td>用 g = n − rank 數特徵向量；冪零：特徵值全 0，可對角化就只能是 0；冪等：Col(A) ⊆ E<sub>1</sub>、Null(A) = E<sub>0</sub>，維度和 = n</td><td><a class="q-link" href="#q-la-0029">例題</a> <a class="q-link" href="#q-la-0192">例題</a> <a class="q-link" href="#q-la-0196">例題</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 可對角化一定要有 n 個相異特徵值</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 相異是充分條件、不是必要條件；I<sub>n</sub> 只有一個特徵值卻本身就是對角矩陣，看的是每個 λ 的幾何重數是否等於代數重數</span> <a class="q-link" href="#q-la-0043">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 有重根就不能對角化</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 重根只是「需要檢查」：rank(A − λI) = n − a(λ) 就沒問題，例如 λ = 3 二重而 A − 3I 三列成比例</span> <a class="q-link" href="#q-la-0110">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 特徵值重數是多少，特徵空間就是幾維</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 幾何重數要另外算 n − rank(A − λI)，只保證 1 ≤ g ≤ a；對角線全相同的上三角矩陣常常只有 1 維</span> <a class="q-link" href="#q-la-0128">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 可對角化就可逆，或可逆就可對角化</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 兩者無關：0 可對角化但不可逆，[1 1; 0 1] 可逆但不可對角化；可逆看 0 是不是特徵值，可對角化看特徵向量夠不夠</span> <a class="q-link" href="#q-la-0187">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> P 和 D 是唯一的，D 的順序隨便排</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> P 可以乘倍數、換順序，重根時特徵空間的基底也能任選；但 P 第 j 行的特徵向量一定要配 D 第 j 個對角元素</span> <a class="q-link" href="#q-la-0152">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> A<sup>k</sup> = P<sup>−1</sup>D<sup>k</sup>P</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> P 的行是特徵向量時是 A<sup>k</sup> = PD<sup>k</sup>P<sup>−1</sup>（P 在左）；寫完代 k = 1 看是否回到 A</span> <a class="q-link" href="#q-la-0188">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 特徵多項式（或 trace、det、rank）都相同就相似</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 還要比幾何重數；[1 1; 0 1] 和 I 特徵值相同但不相似。兩者都可對角化（例如都有 n 個相異特徵值）時才保證相似</span> <a class="q-link" href="#q-la-0195">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> lim A<sup>k</sup> 一定存在，把 λ<sup>k</sup> 換成極限就好</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 有 |λ| &gt; 1 就發散、有 λ = −1 就震盪；只有其餘 |λ| &lt; 1、留下的 |λ| = 1 都是 λ = 1 時才收斂</span> <a class="q-link" href="#q-la-0081">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> B<sup>3</sup> = A、B<sup>2</sup> = A 的解只有一個，直接把特徵值開根號</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每個特徵值的根有多種取法（平方根 ±、複數立方根），要依題目條件（實數、正特徵值）挑；B 用和 A 同一個 P</span> <a class="q-link" href="#q-la-0062">例題</a> <a class="q-link" href="#q-la-0194">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="diagonalization"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz-core.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz/linear-algebra/diagonalization.js?v=3694848e"></script>
+</body>
+</html>

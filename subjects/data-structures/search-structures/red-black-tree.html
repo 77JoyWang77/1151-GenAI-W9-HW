@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Red-Black Tree 紅黑樹 · 資料結構 | 資工考研互動學習站</title>
+  <meta name="description" content="紅黑樹的五條性質、高度上界、插入三種 case 與刪除 double black 四種 case，附逐步動畫。">
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=3694848e">
+  <script src="../../../assets/js/theme.js?v=3694848e"></script>
+</head>
+<body data-subject="data-structures" data-chapter="search-structures" data-chno="10" data-topic="data-structures/search-structures/red-black-tree" data-root="../../../">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../../index.html"><span class="logo">CS</span><span class="brand-name">資工考研互動學習站</span></a>
+      <nav class="nav-links">
+        <a href="../../../index.html#subjects">科目</a>
+        <a href="../../../exams/index.html">考古題</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>深色</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <main class="topic">
+      <nav class="breadcrumb"><a href="../../../index.html">首頁</a> › <a href="../index.html">Data Structures 資料結構</a> › Ch10 Search Structures 搜尋結構 › Red-Black Tree 紅黑樹</nav>
+      <div class="topic-head">
+        <h1>Red-Black Tree 紅黑樹<small>用紅黑兩色限制路徑長度，插入最多旋轉 2 次、刪除最多 3 次的平衡 BST</small></h1>
+        <div class="meta">
+          <span class="chip accent">Ch10 Search Structures</span>
+          <span class="chip" data-difficulty="3">難度</span>
+          <span class="chip">balanced BST</span>
+          <span class="chip">rotation</span>
+          <span class="chip">insert</span>
+          <span class="chip">delete</span>
+          <span class="chip">2-3-4 tree</span>
+        </div>
+      </div>
+
+      <section id="why-red-black">
+        <h2>為什麼需要紅黑樹</h2>
+        <div class="panel prose">
+          <p><a href="../tree/binary-search-tree.html">Binary Search Tree 二元搜尋樹</a>的搜尋、插入、刪除都是 <code>O(h)</code>，h 是樹高。資料隨機時 h 大約是 log n，可是只要資料是遞增插入（例如 1, 2, 3, …, n），BST 就會退化成一條鏈，h = n，所有操作都變成 <code>O(n)</code>，和直接用鏈結串列沒有差別。</p>
+          <p>解法是讓樹在插入、刪除之後<b>自己調整形狀</b>，一直把高度壓在 <code>O(log n)</code>，這類結構叫做 <span class="term">Self-Balancing BST<small>（自我平衡二元搜尋樹）</small></span>。最有名的兩種是 AVL 樹（籌備中）和本頁的 <span class="term">Red-Black Tree<small>（紅黑樹）</small></span>：</p>
+          <ul>
+            <li><b>AVL 樹</b>要求每個節點左右子樹高度差 ≤ 1，平衡得很嚴格，搜尋最快，但插入、刪除時常常要一路往上檢查、旋轉。</li>
+            <li><b>紅黑樹</b>把條件放寬：只保證「最長的路徑不超過最短路徑的 2 倍」。樹可能比 AVL 高一點，但每次插入最多旋轉 2 次、刪除最多 3 次，調整的成本比較低，所以實務上用得最多，例如 C++ 的 <code>std::map</code>、Java 的 <code>TreeMap</code>、Linux 的行程排程器都用紅黑樹。</li>
+          </ul>
+          <p>紅黑樹的做法是替每個節點塗上紅或黑，用幾條顏色規則間接限制樹高。讀這一頁的順序是：先看五條性質，再看它們為什麼保證 <code>O(log n)</code>，然後學旋轉，最後是插入與刪除的修正規則。搜尋和 BST 完全一樣，不用另外學。</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>本頁的畫法</b>：圖和動畫裡<b>方形 = 黑色節點、圓形 = 紅色節點</b>（和許多考卷的畫法一樣，不靠顏色也看得出來）；節點外框的顏色只代表「目前正在處理哪個節點」，和紅黑無關。文字中寫 <code>50B</code>、<code>62R</code> 代表 50 是黑、62 是紅。</p></div>
+        </div>
+      </section>
+
+      <section id="definition">
+        <h2>定義：五條性質</h2>
+        <div class="panel prose">
+          <p>紅黑樹是一棵 BST，每個節點多存一個顏色欄位，而且要同時滿足下面五條：</p>
+          <ol>
+            <li>每個節點不是紅就是黑。</li>
+            <li><b>根是黑色</b>。</li>
+            <li>所有 <span class="term">External Node<small>（外部節點，NIL）</small></span>都是黑色。NIL 就是空指標的位置，n 個內部節點的二元樹一定有 <b>n + 1</b> 個 NIL。</li>
+            <li><b>紅色節點的兩個子節點都是黑色</b>，也就是路徑上不會出現連續兩個紅色。</li>
+            <li>對每個節點，從它往下走到任何一個 NIL 的路徑，經過的<b>黑色節點數都相同</b>。</li>
+          </ol>
+          <p>第 5 條的那個數字叫做 <span class="term">Black Height<small>（黑高度，bh，有些題目叫 rank）</small></span>。常見的算法有兩種：「從根往下、含根、不含 NIL 的黑色節點數」或「不含根、含 NIL」。因為根一定是黑，這兩種算出來的數字<b>一樣</b>；但如果「根和 NIL 都算」就會多 1。作答時先寫清楚自己的定義，本頁一律用「含根、不含 NIL」。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="rbt-properties"></div>
+            <figcaption><b>圖 1</b>：一棵合法的紅黑樹，虛線框是 NIL。不論從根走到哪個 NIL，都恰好經過 2 個黑色內部節點，所以 bh = 2；紅色的 15、25、40、60 底下都是黑色。</figcaption>
+          </figure>
+          <p>幾個容易誤會的地方，考題很愛拿來出是非題：</p>
+          <ul>
+            <li><b>黑黑可以相連</b>：規則只禁止紅紅相連。全部塗黑的完美二元樹也是合法的紅黑樹，紅色節點可以是 0 個。</li>
+            <li><b>每條路徑「黑色」數一樣，紅色數不一定一樣</b>。圖 1 中 30 → 15 → 20 → 25 → NIL 經過 2 個紅，30 → 15 → 10 → NIL 只經過 1 個紅，但兩條都是 2 個黑。</li>
+            <li>紅黑樹<b>不保證</b>左右子樹高度差 ≤ 1，那是 AVL 的條件。</li>
+            <li>它本身就是 BST，中序走訪一樣是遞增排序。</li>
+          </ul>
+          <p>判斷一棵樹是不是合法的紅黑樹，要依序檢查：(1) 是不是 BST、(2) 根是不是黑、(3) 有沒有紅紅相連、(4) 每條根到 NIL 的路徑黑色數是不是都一樣。第 (4) 點最容易漏看<b>只有一個子節點的節點</b>：它的空的那一邊也是一條到 NIL 的路徑。</p>
+        <details class="code-fold">
+          <summary>看程式碼：節點結構與 NIL 的顏色</summary>
+        <div class="code-block">
+          <div class="code-head">節點結構、colorOf()</div>
+          <pre class="code">typedef enum { RED, BLACK } Color;
+
+typedef struct Node {
+  int key;
+  Color color;
+  struct Node *left, *right, *parent;
+} Node;
+
+Node *root = NULL;
+
+Color colorOf(Node *x) { return x == NULL ? BLACK : x-&gt;color; } /* NIL 是黑 */</pre>
+        </div>
+        </details>
+        </div>
+      </section>
+
+      <section id="height-bound">
+        <h2>為什麼高度是 O(log n)</h2>
+        <div class="panel prose">
+          <p>五條性質看起來和「高度」沒有直接關係，關鍵在第 4、5 條合起來的效果：</p>
+          <ul>
+            <li>每條路徑的黑色數都是 bh，所以<b>最短</b>的路徑至少有 bh 個節點（全黑）。</li>
+            <li>紅色不能相連，紅色最多只能夾在黑色之間，所以<b>最長</b>的路徑最多 2·bh 個節點（黑紅交錯）。</li>
+          </ul>
+          <p>所以任何一條根到 NIL 的路徑，長度都不會超過最短路徑的 2 倍。再來估計節點數：</p>
+          <div class="callout"><p><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-bookmark"></use></svg> <b>引理</b>：黑高度為 b 的紅黑樹至少有 2<sup>b</sup> − 1 個內部節點。直覺是「只看黑色節點，它們撐起一棵高度 b 的完美二元樹」，嚴格證明用數學歸納法（見 <a class="q-link" href="#q-ds-0379">例題</a>）。</p></div>
+          <p>設樹高為 h（根到最深 NIL 經過的內部節點數），最長路徑上至少一半是黑，所以 bh ≥ h/2。代入引理：</p>
+          <pre class="formula">n ≥ 2^bh − 1 ≥ 2^(h/2) − 1
+⇒ h ≤ 2 log2(n + 1)</pre>
+          <p>也就是說，紅黑樹最高也只是完美平衡樹（約 log<sub>2</sub> n 層）的 2 倍，搜尋最差是 <code>O(log n)</code>。例如 n = 10<sup>6</sup> 時，log<sub>2</sub> n ≈ 20，紅黑樹最多約 40 層，而退化的 BST 可能有一百萬層。</p>
+          <h3>給定黑高度：最少、最多幾個節點</h3>
+          <p>這是常見的計算題。黑高度 b（含根、不含 NIL）時：</p>
+          <ul>
+            <li><b>最少</b>：完全不用紅色，全黑的完美二元樹，高度 b，共 <b>2<sup>b</sup> − 1</b> 個。</li>
+            <li><b>最多</b>：每條路徑都黑紅交錯到長度 2b，而且每層都塞滿，是一棵高度 2b 的完美二元樹（黑、紅一層一層交替，最底層是紅），共 <b>2<sup>2b</sup> − 1 = 4<sup>b</sup> − 1</b> 個。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="rbt-bh-bounds"></div>
+            <figcaption><b>圖 2</b>：黑高度都是 2。左邊全黑最省，只要 3 個節點；右邊每個黑節點都掛滿紅色子節點，高度變成 4 層，有 15 個節點。兩者相差 5 倍，但黑高度一樣。</figcaption>
+          </figure>
+          <h3>給定節點數：最高能多高</h3>
+          <p>反過來，n 個節點的紅黑樹最高幾層？<b>不能直接套 2 log<sub>2</sub>(n + 1)</b>，那只是保證的上限，通常達不到。正確做法是算「高度 h 最少要幾個節點」：讓最長的那條路徑黑紅交錯，旁邊掛的子樹都用剛好補足黑高度的全黑完美樹。用程式算出來：</p>
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>高度 h（層）</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
+            <tbody>
+              <tr><td>紅黑樹最少節點</td><td>1</td><td>2</td><td>4</td><td>6</td><td>10</td><td>14</td><td>22</td><td>30</td></tr>
+              <tr><td>AVL 最少節點</td><td>1</td><td>2</td><td>4</td><td>7</td><td>12</td><td>20</td><td>33</td><td>54</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>例如 n = 15：紅黑樹最少節點 14 ≤ 15 &lt; 22，最高 6 層；AVL 是 12 ≤ 15 &lt; 20，最高 5 層；完美平衡的話是 4 層。上界 2 log<sub>2</sub> 16 = 8 層則根本達不到。從表也看得出 AVL 比紅黑樹「更平衡」：同樣的高度，AVL 需要的最少節點數比較多。</p>
+        </div>
+      </section>
+
+      <section id="rotation">
+        <h2>旋轉：只改指標、不破壞 BST</h2>
+        <div class="panel prose">
+          <p>調整形狀的基本工具是 <span class="term">Rotation<small>（旋轉）</small></span>，和 AVL 用的是同一種。<b>左旋 x</b>：把 x 的右子 y 轉上來當這棵子樹的根，x 變成 y 的左子，原本 y 的左子樹 β 改掛到 x 的右邊。右旋是鏡像。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="rbt-rotation"></div>
+            <figcaption><b>圖 3</b>：左旋與右旋互為逆操作。α、β、γ 是任意子樹，三棵子樹的內容都不變，只有 β（綠框）換了父節點；中序順序 α x β y γ 在旋轉前後完全一樣，所以 BST 性質不會被破壞。</figcaption>
+          </figure>
+          <p>旋轉只改常數個指標（x、y、β 的 parent 和 child，再加上原本父節點指向誰），所以是 <code>O(1)</code>。旋轉本身不改顏色，紅黑樹的修正都是「旋轉＋重新著色」一起用。要注意如果 x 原本是根，旋轉後 root 要改成 y，程式最容易漏掉這一步。</p>
+        <details class="code-fold">
+          <summary>看程式碼：左旋／右旋</summary>
+        <div class="code-tabs">
+          <div class="code-block" data-tab="左旋">
+            <div class="code-head">leftRotate()</div>
+            <pre class="code">void leftRotate(Node *x) {
+  Node *y = x-&gt;right;
+  x-&gt;right = y-&gt;left;                     /* β 搬到 x 的右邊 */
+  if (y-&gt;left != NULL) y-&gt;left-&gt;parent = x;
+  y-&gt;parent = x-&gt;parent;                  /* y 接到 x 原本的父節點 */
+  if (x-&gt;parent == NULL) root = y;
+  else if (x == x-&gt;parent-&gt;left) x-&gt;parent-&gt;left = y;
+  else x-&gt;parent-&gt;right = y;
+  y-&gt;left = x;                            /* x 變成 y 的左子 */
+  x-&gt;parent = y;
+}</pre>
+          </div>
+          <div class="code-block" data-tab="右旋">
+            <div class="code-head">rightRotate()</div>
+            <pre class="code">void rightRotate(Node *x) {
+  Node *y = x-&gt;left;
+  x-&gt;left = y-&gt;right;                     /* β 搬到 x 的左邊 */
+  if (y-&gt;right != NULL) y-&gt;right-&gt;parent = x;
+  y-&gt;parent = x-&gt;parent;
+  if (x-&gt;parent == NULL) root = y;
+  else if (x == x-&gt;parent-&gt;right) x-&gt;parent-&gt;right = y;
+  else x-&gt;parent-&gt;left = y;
+  y-&gt;right = x;                           /* x 變成 y 的右子 */
+  x-&gt;parent = y;
+}</pre>
+          </div>
+        </div>
+        </details>
+        </div>
+      </section>
+
+      <section id="insert">
+        <h2>插入：塗紅，再看叔叔</h2>
+        <div class="panel prose">
+          <p>插入分兩步：先照 BST 的規則把新節點 z 放到葉子的位置，<b>塗成紅色</b>；再呼叫 <code>insertFixup</code> 修正。為什麼塗紅？塗黑的話，經過 z 的路徑黑色數會多 1，第 5 條馬上被破壞，而且影響整棵樹；塗紅則黑色數完全不變，唯一可能出問題的是<b>父節點也是紅</b>（紅紅相連），這只牽涉 z 附近的幾個節點，可以局部修好。</p>
+          <p>如果父節點 p 是黑，什麼都不用做。如果 p 是紅，因為根是黑，p 一定不是根，祖父 g 一定存在而且是黑。這時看 <b>z 的叔叔 u</b>（p 的兄弟，也就是 g 的另一個子節點）。以下以「p 是 g 的左子」為例，p 是右子時左右對調：</p>
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>情況</th><th>條件</th><th>處理</th><th>之後</th></tr></thead>
+            <tbody>
+              <tr><td>case 1</td><td>叔叔 u 是<b>紅</b></td><td>p、u 塗黑，g 塗紅</td><td>g 變紅後可能又和它的父節點紅紅相連，令 z = g 往上繼續</td></tr>
+              <tr><td>case 2</td><td>u 是黑，z 是 p 的<b>右</b>子（g → p → z 是折線）</td><td>對 p 左旋，令 z = 原本的 p</td><td>變成 case 3</td></tr>
+              <tr><td>case 3</td><td>u 是黑，z 是 p 的<b>左</b>子（一直線）</td><td>p 塗黑、g 塗紅，對 g 右旋</td><td>子樹的根是黑，結束</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>另一種常見的命名是用兩個字母加叔叔的顏色：第一個字母是 p 在 g 的哪一邊、第二個是 z 在 p 的哪一邊，r / b 是叔叔的顏色。例如 <b>LLr、LRr、RLr、RRr 都是 case 1</b>（只變色）；<b>LRb、RLb 是 case 2 加 case 3</b>（旋轉 2 次）；<b>LLb、RRb 是 case 3</b>（旋轉 1 次）。兩套名字講的是同一件事。</p>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="rbt-insert-cases"></div>
+            <figcaption><b>圖 4</b>：插入的三種情況（p 是 g 的左子）。差別只在叔叔 u 的顏色（圓形紅、方形黑）和 z 在 p 的哪一邊；藍框是 p，橘框是 z。</figcaption>
+          </figure>
+          <h3>為什麼這樣做是對的</h3>
+          <ul>
+            <li><b>case 1</b>：g 原本是黑、兩個子是紅，變色後 g 紅、兩個子黑。g 底下每條路徑的黑色數不變，只是 g 自己可能和上面紅紅相連，所以問題往上移兩層。一路移到根的話，最後把根塗黑，整棵樹的黑高度 +1——這是黑高度<b>唯一</b>會增加的方式。</li>
+            <li><b>case 3</b>：右旋 g 之後，p 成為子樹的根並塗黑，原本的 g 變成 p 的紅色子節點。子樹的根仍是黑、黑高度不變，上面不可能再出問題，<b>迴圈直接結束</b>。</li>
+            <li><b>case 2</b> 只是把折線轉成直線，再交給 case 3。所以一次插入最多旋轉 <b>2 次</b>，case 1 則可能往上做 <code>O(log n)</code> 次（只變色，每次 <code>O(1)</code>）。</li>
+          </ul>
+          <p>特別注意：<b>叔叔是 NIL 時當成黑色</b>，要旋轉，不能變色。考題的陷阱幾乎都在這裡。</p>
+          <h3>例子：依序插入 40, 20, 10, 30, 35, 50, 45</h3>
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>插入</th><th>發生什麼事</th><th>插入後的樹</th></tr></thead>
+            <tbody>
+              <tr><td>40</td><td>成為根，塗黑</td><td><code>40B</code></td></tr>
+              <tr><td>20</td><td>父 40 黑，不用修</td><td><code>40B(20R, -)</code></td></tr>
+              <tr><td>10</td><td>父 20 紅、叔叔 NIL（黑），40 → 20 → 10 一直線：case 3（LLb），右旋 40</td><td><code>20B(10R, 40R)</code></td></tr>
+              <tr><td>30</td><td>父 40 紅、叔叔 10 紅：case 1（RLr），10、40 塗黑、20 塗紅，20 是根再塗回黑</td><td><code>20B(10B, 40B(30R, -))</code></td></tr>
+              <tr><td>35</td><td>父 30 紅、叔叔 NIL：40 → 30 → 35 是折線，case 2 左旋 30，再 case 3 右旋 40</td><td><code>20B(10B, 35B(30R, 40R))</code></td></tr>
+              <tr><td>50</td><td>父 40 紅、叔叔 30 紅：case 1（RRr），35 變紅，35 的父 20 是黑，停</td><td><code>20B(10B, 35R(30B, 40B(-, 50R)))</code></td></tr>
+              <tr><td>45</td><td>父 50 紅、叔叔 NIL：40 → 50 → 45 是折線（RLb），右旋 50、再左旋 40</td><td><code>20B(10B, 35R(30B, 45B(40R, 50R)))</code></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>7 次插入共旋轉 5 次、case 1 變色 2 次，最後樹高 4 層、黑高度 2。這組資料用普通 BST 也是 4 層，紅黑樹的好處要在「不好的」資料才看得出來：遞增插入 1～7，普通 BST 是 7 層的鏈，紅黑樹只有 4 層。</p>
+          <p>補充：有些教材介紹 <b>top-down</b> 的插入法，往下找位置的途中只要看到「黑節點有兩個紅子」就先變色（等於預先拆開 2-3-4 tree 的 4-node），到底之後最多再旋轉一次，不用往回走。結果的樹可能和本頁的 bottom-up 做法不同；考題沒特別說明時，都用本頁的做法。</p>
+        <details class="code-fold">
+          <summary>看程式碼：插入與修正</summary>
+        <div class="code-tabs">
+          <div class="code-block" data-tab="insertFixup">
+            <div class="code-head">insertFixup()：依叔叔顏色變色或旋轉</div>
+            <pre class="code">void insertFixup(Node *z) {
+  while (colorOf(z-&gt;parent) == RED) {     /* 父紅 → 祖父一定存在且是黑 */
+    Node *p = z-&gt;parent, *g = p-&gt;parent;
+    if (p == g-&gt;left) {
+      Node *u = g-&gt;right;                 /* 叔叔 */
+      if (colorOf(u) == RED) {            /* case 1：叔叔紅 → 變色，問題上移 */
+        p-&gt;color = BLACK;
+        u-&gt;color = BLACK;
+        g-&gt;color = RED;
+        z = g;
+      } else {
+        if (z == p-&gt;right) {              /* case 2：LR 型，先左旋父變 LL */
+          z = p;
+          leftRotate(z);
+          p = z-&gt;parent;
+        }
+        p-&gt;color = BLACK;                 /* case 3：LL 型，父祖換色再右旋 */
+        g-&gt;color = RED;
+        rightRotate(g);
+      }
+    } else {                              /* 鏡像：父是祖父的右子 */
+      Node *u = g-&gt;left;
+      if (colorOf(u) == RED) {            /* case 1（鏡像）：叔叔紅 → 變色 */
+        p-&gt;color = BLACK;
+        u-&gt;color = BLACK;
+        g-&gt;color = RED;
+        z = g;
+      } else {
+        if (z == p-&gt;left) {               /* case 2（鏡像）：RL 型，先右旋父 */
+          z = p;
+          rightRotate(z);
+          p = z-&gt;parent;
+        }
+        p-&gt;color = BLACK;                 /* case 3（鏡像）：RR 型，再左旋祖父 */
+        g-&gt;color = RED;
+        leftRotate(g);
+      }
+    }
+  }
+  root-&gt;color = BLACK;                    /* 根一定塗黑 */
+}</pre>
+          </div>
+          <div class="code-block" data-tab="rbInsert">
+            <div class="code-head">rbInsert()：BST 插入後塗紅</div>
+            <pre class="code">int rbInsert(int key) {
+  Node *p = NULL, *x = root;
+  while (x != NULL) {
+    p = x;
+    if (key == x-&gt;key) return 0;          /* 已存在，不插入 */
+    x = key &lt; x-&gt;key ? x-&gt;left : x-&gt;right;
+  }
+  Node *z = malloc(sizeof(Node));
+  z-&gt;key = key;
+  z-&gt;left = z-&gt;right = NULL;
+  z-&gt;parent = p;
+  z-&gt;color = RED;                         /* 新節點一律塗紅 */
+  if (p == NULL) root = z;
+  else if (key &lt; p-&gt;key) p-&gt;left = z;
+  else p-&gt;right = z;
+  insertFixup(z);
+  return 1;
+}</pre>
+          </div>
+        </div>
+        </details>
+        </div>
+      </section>
+
+      <section id="delete">
+        <h2>刪除：處理少掉的那個黑</h2>
+        <div class="panel prose">
+          <p>刪除的前半段和 BST 一樣：要刪的節點有兩個子節點時，找<b>左子樹最大（中序前驅）</b>或<b>右子樹最小（中序後繼）</b>，把它的 key 複製過來（<b>只換 key、不換顏色</b>），改成刪除那個前驅或後繼。它最多只有一個子節點，所以問題一定會變成「刪除一個最多只有一個子節點的節點 z」。本頁預設用前驅，動畫可以切換成後繼；兩種都對，但結果的樹可能不同，題目有指定時要照題目做。</p>
+          <h3>三種起點</h3>
+          <ul>
+            <li><b>z 是紅色葉子</b>：直接拿掉。紅色不影響任何路徑的黑色數，也不會造成紅紅相連，<b>不用任何調整</b>。</li>
+            <li><b>z 只有一個子節點</b>：這時一定是「z 黑、子紅」（若子是黑，z 兩邊的黑色數就不一樣了）。讓子節點頂替 z 的位置並<b>塗黑</b>，補回拿掉的那個黑，結束。</li>
+            <li><b>z 是黑色葉子</b>：拿掉後經過那裡的路徑少了一個黑，這是唯一麻煩的情況。想像那個位置多帶了一個黑，叫做 <span class="term">Double Black<small>（雙黑）</small></span>，記為 x，接著要把這個多出來的黑「還掉」。</li>
+          </ul>
+          <h3>double black 的四種 case</h3>
+          <p>以「x 是父節點 p 的左子」為例，s 是 x 的兄弟；s 靠近 x 那一側的子節點叫近姪、另一側叫遠姪（x 是右子時左右對調）：</p>
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>情況</th><th>條件</th><th>處理</th><th>之後</th></tr></thead>
+            <tbody>
+              <tr><td>case 1</td><td>兄弟 s 是<b>紅</b></td><td>s 塗黑、p 塗紅，對 p 左旋</td><td>x 換到一個黑色兄弟，進 case 2～4</td></tr>
+              <tr><td>case 2</td><td>s 黑，兩個姪子都黑</td><td>s 塗紅，x 往上移到 p</td><td>p 紅：塗黑結束；p 黑：p 成為新的 x，繼續</td></tr>
+              <tr><td>case 3</td><td>s 黑，遠姪黑、近姪紅</td><td>近姪塗黑、s 塗紅，對 s 右旋</td><td>變成 case 4</td></tr>
+              <tr><td>case 4</td><td>s 黑，遠姪<b>紅</b></td><td>s 取 p 的顏色、p 塗黑、遠姪塗黑，對 p 左旋</td><td>結束</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>直覺：x 這一邊少一個黑，要嘛<b>從兄弟那邊借</b>（case 3、4 靠旋轉把一個黑節點搬到 x 這邊），要嘛兄弟那邊<b>也減一個黑</b>扯平（case 2 把 s 塗紅），再把問題丟給上一層。case 1 只是準備動作，把紅色兄弟轉走。所以 case 4 做完一定結束，case 2 才可能一路往上走 <code>O(log n)</code> 次；整個刪除最多旋轉 <b>3 次</b>（case 1 → 3 → 4）。</p>
+          <h3>例子</h3>
+          <p>從上一節插入完的樹 <code>20B(10B, 35R(30B, 45B(40R, 50R)))</code> 開始，依序刪除：</p>
+          <ol>
+            <li><b>刪 10</b>：黑色葉子，x = 10。兄弟 35 是紅 → case 1：35 塗黑、20 塗紅、左旋 20，新的兄弟是 30（黑，兩個子都是 NIL）→ case 2：30 塗紅、x 移到 20；20 是紅，塗黑結束。結果 <code>35B(20B(-, 30R), 45B(40R, 50R))</code>。</li>
+            <li><b>刪 45</b>：兩個子節點，前驅是 40，把 40 複製上去，改刪原本的 40。它是紅色葉子，直接拿掉。結果 <code>35B(20B(-, 30R), 40B(-, 50R))</code>。</li>
+            <li><b>刪 20</b>：黑色、只有一個紅子 30 → 30 頂上並塗黑。結果 <code>35B(30B, 40B(-, 50R))</code>。</li>
+          </ol>
+          <p>case 3、case 4 可以在下面動畫按「例：刪除 42（前驅取代）」看到。</p>
+        <details class="code-fold">
+          <summary>看程式碼：刪除（左子樹最大／右子樹最小）與修正</summary>
+        <div class="code-tabs">
+          <div class="code-block" data-tab="左子樹最大（預設）">
+            <div class="code-head">rbDelete()：兩個子節點時用中序前驅</div>
+            <pre class="code">int rbDelete(int key) {
+  Node *z = search(key);
+  if (z == NULL) return 0;                /* 找不到 */
+  if (z-&gt;left != NULL &amp;&amp; z-&gt;right != NULL) {
+    Node *s = z-&gt;left;                    /* 左子樹最大 */
+    while (s-&gt;right != NULL) s = s-&gt;right;
+    z-&gt;key = s-&gt;key;                      /* 複製前驅的值 */
+    z = s;                                /* 改成刪除前驅，它沒有右子 */
+  }
+  removeOne(z);
+  return 1;
+}</pre>
+          </div>
+          <div class="code-block" data-tab="右子樹最小">
+            <div class="code-head">rbDeleteSucc()：兩個子節點時用中序後繼</div>
+            <pre class="code">int rbDeleteSucc(int key) {
+  Node *z = search(key);
+  if (z == NULL) return 0;
+  if (z-&gt;left != NULL &amp;&amp; z-&gt;right != NULL) {
+    Node *s = z-&gt;right;                   /* 右子樹最小 */
+    while (s-&gt;left != NULL) s = s-&gt;left;
+    z-&gt;key = s-&gt;key;                      /* 複製後繼的值 */
+    z = s;                                /* 改成刪除後繼，它沒有左子 */
+  }
+  removeOne(z);
+  return 1;
+}</pre>
+          </div>
+          <div class="code-block" data-tab="removeOne">
+            <div class="code-head">removeOne()：拿掉最多一個子節點的節點</div>
+            <pre class="code">void replaceNode(Node *u, Node *v) {
+  if (u-&gt;parent == NULL) root = v;
+  else if (u == u-&gt;parent-&gt;left) u-&gt;parent-&gt;left = v;
+  else u-&gt;parent-&gt;right = v;
+  if (v != NULL) v-&gt;parent = u-&gt;parent;
+}
+
+void removeOne(Node *z) {
+  Node *child = z-&gt;left != NULL ? z-&gt;left : z-&gt;right;
+  if (child != NULL) {                    /* z 黑、child 紅：child 頂上並塗黑 */
+    child-&gt;color = BLACK;
+    replaceNode(z, child);
+  } else {
+    if (z-&gt;color == BLACK) deleteFixup(z); /* 黑色葉子：先修 double black */
+    replaceNode(z, NULL);                 /* 紅色葉子：直接拿掉 */
+  }
+  free(z);
+}</pre>
+          </div>
+          <div class="code-block" data-tab="deleteFixup">
+            <div class="code-head">deleteFixup()：消除 double black</div>
+            <pre class="code">void deleteFixup(Node *x) {
+  while (x != root &amp;&amp; x-&gt;color == BLACK) {
+    Node *p = x-&gt;parent;
+    if (x == p-&gt;left) {
+      Node *s = p-&gt;right;                 /* 兄弟 */
+      if (colorOf(s) == RED) {            /* case 1：兄弟紅 → 旋轉成兄弟黑 */
+        s-&gt;color = BLACK;
+        p-&gt;color = RED;
+        leftRotate(p);
+        s = p-&gt;right;
+      }
+      if (colorOf(s-&gt;left) == BLACK &amp;&amp; colorOf(s-&gt;right) == BLACK) {
+        s-&gt;color = RED;                   /* case 2：兄弟黑、兩姪黑 → 兄弟變紅，上移 */
+        x = p;
+      } else {
+        if (colorOf(s-&gt;right) == BLACK) { /* case 3：遠姪黑、近姪紅 → 先右旋兄弟 */
+          s-&gt;left-&gt;color = BLACK;
+          s-&gt;color = RED;
+          rightRotate(s);
+          s = p-&gt;right;
+        }
+        s-&gt;color = p-&gt;color;              /* case 4：遠姪紅 → 左旋父，結束 */
+        p-&gt;color = BLACK;
+        s-&gt;right-&gt;color = BLACK;
+        leftRotate(p);
+        x = root;
+      }
+    } else {                              /* 鏡像：x 是右子 */
+      Node *s = p-&gt;left;
+      if (colorOf(s) == RED) {            /* case 1（鏡像）：兄弟紅 */
+        s-&gt;color = BLACK;
+        p-&gt;color = RED;
+        rightRotate(p);
+        s = p-&gt;left;
+      }
+      if (colorOf(s-&gt;left) == BLACK &amp;&amp; colorOf(s-&gt;right) == BLACK) {
+        s-&gt;color = RED;                   /* case 2（鏡像）：兩姪黑 */
+        x = p;
+      } else {
+        if (colorOf(s-&gt;left) == BLACK) {  /* case 3（鏡像）：遠姪黑、近姪紅 */
+          s-&gt;right-&gt;color = BLACK;
+          s-&gt;color = RED;
+          leftRotate(s);
+          s = p-&gt;left;
+        }
+        s-&gt;color = p-&gt;color;              /* case 4（鏡像）：遠姪紅 → 右旋父 */
+        p-&gt;color = BLACK;
+        s-&gt;left-&gt;color = BLACK;
+        rightRotate(p);
+        x = root;
+      }
+    }
+  }
+  x-&gt;color = BLACK;                       /* 紅色節點吸收多出來的黑 */
+}</pre>
+          </div>
+        </div>
+        </details>
+          <p>程式的小技巧：黑色葉子的情況，先把 z 本身當成 x 做修正，修完才把它拿掉。這樣 x 一定是真正存在的節點，不必處理「x 是 NULL 時找不到父節點」的麻煩。</p>
+        </div>
+      </section>
+
+      <section id="viz">
+        <h2>動手操作</h2>
+        <div class="panel prose">
+          <p>輸入一個 key，或用逗號隔開的一串 key（例如 <code>10,20,30,15</code>），按 insert 或 delete。右側程式碼會亮起正在執行的那一行，上方的指標標出 z、p（父）、g（祖父）、u（叔叔）或 x（雙黑）、s（兄弟）；叔叔或兄弟是 NIL 時會畫出虛線框。初始示範是插入 62，一次就看完 case 1、2、3；下面的例子按鈕分別示範空樹插入、刪除時兄弟紅（case 1 → 2）和前驅取代後的 case 3 → 4。</p>
+        </div>
+        <div class="viz" data-viz="rbt"></div>
+      </section>
+
+      <section id="two-three-four">
+        <h2>紅黑樹就是 2-3-4 tree</h2>
+        <div class="panel prose">
+          <p>2-3-4 樹（籌備中）是一種多路搜尋樹：每個節點放 1～3 個 key（稱為 2-node、3-node、4-node），而且<b>所有葉子都在同一層</b>。把紅黑樹中每個黑節點和它的紅色子節點合併成一個節點，就會得到一棵 2-3-4 tree：</p>
+          <ul>
+            <li>黑節點沒有紅子 → 2-node；有一個紅子 → 3-node；兩個紅子 → 4-node。</li>
+            <li>紅色節點不能相連，保證合併後每個節點最多 3 個 key。</li>
+            <li>紅黑樹的<b>黑高度</b> = 2-3-4 tree 的<b>高度</b>，所以「每條路徑黑色數相同」就是「所有葉子同一層」。</li>
+          </ul>
+          <figure class="fig">
+            <div class="fig-draw" data-fig="rbt-234"></div>
+            <figcaption><b>圖 5</b>：左邊的紅黑樹（藍線連到紅色子節點）合併後就是右邊的 2-3-4 tree：65 和紅子 50、80 合成 4-node，60 和紅子 62 合成 3-node，其餘是 2-node。</figcaption>
+          </figure>
+          <p>反過來，一棵 2-3-4 tree 可以對應好幾棵紅黑樹：4-node 只有一種畫法（中間的 key 黑、兩邊紅），3-node 有兩種（紅子在左或在右）。這個對應也解釋了插入的 case：case 1 變色就是把 4-node 拆開、把中間的 key 往上推（2-3-4 tree 的 split）；旋轉則是在同一個節點內換一個 key 當黑色代表。</p>
+          <p>注意：一般的紅黑樹對應的是 <b>2-3-4 tree</b>，不是 2-3 tree。只有限制「紅色只能當左子」的變形（Left-Leaning Red-Black Tree）才和 2-3 tree 一一對應。</p>
+        </div>
+      </section>
+
+      <section id="complexity">
+        <h2>效能整理與比較</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>操作</th><th>時間</th><th>旋轉次數</th><th>說明</th></tr></thead>
+            <tbody>
+              <tr><td>search</td><td><code>O(log n)</code></td><td>0</td><td>和 BST 完全一樣，顏色用不到</td></tr>
+              <tr><td>insert</td><td><code>O(log n)</code></td><td>最多 2</td><td>往下找位置 O(log n)；case 1 可能往上變色 O(log n) 次</td></tr>
+              <tr><td>delete</td><td><code>O(log n)</code></td><td>最多 3</td><td>case 2 可能往上 O(log n) 次</td></tr>
+              <tr><td>前驅 / 後繼、範圍查詢</td><td><code>O(log n)</code></td><td>0</td><td>資料保持排序，hash 做不到</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>常見的誤會是「紅黑樹插入是 <code>O(1)</code>」：<code>O(1)</code> 的是<b>旋轉次數</b>，往下找位置本身就要 <code>O(log n)</code>。</p>
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>結構</th><th>高度</th><th>插入／刪除的調整</th><th>適合</th></tr></thead>
+            <tbody>
+              <tr><td>BST</td><td>最差 n</td><td>不調整</td><td>資料隨機、不在乎最差情況</td></tr>
+              <tr><td>AVL 樹</td><td>約 1.44 log<sub>2</sub> n</td><td>刪除時可能一路旋轉 O(log n) 次</td><td>查詢遠多於修改</td></tr>
+              <tr><td>紅黑樹</td><td>≤ 2 log<sub>2</sub>(n + 1)</td><td>旋轉最多 2～3 次</td><td>插入刪除頻繁的記憶體內資料（map、set、排程器）</td></tr>
+              <tr><td>B-tree / B+ tree</td><td>log<sub>m</sub> n（m 很大）</td><td>節點分裂、合併</td><td>磁碟、資料庫索引：一個節點放滿一個 page，樹很矮，讀取次數少</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>紅黑樹每個節點只有 2 個分支，放在磁碟上時樹太高，每走一層就要讀一次 page，所以資料庫索引用 B-tree（籌備中）、B+ tree（籌備中）而不是紅黑樹。</p>
+          <p>紅黑樹也常被<b>擴充</b>：例如每個節點多存子樹大小 <code>size</code>，就能在 <code>O(log n)</code> 找出第 i 小的 key（order statistic tree）。擴充的欄位不影響顏色規則，只要在旋轉時順便更新兩個節點的 <code>size</code> 即可（旋轉只改變這兩個節點的子樹）。</p>
+        </div>
+      </section>
+
+      <section id="exam">
+        <h2>考研重點：題型地圖</h2>
+        <div class="panel prose">
+          <div class="table-scroll">
+          <table class="exam-map">
+            <thead><tr><th>題型</th><th>常見度</th><th>解題步驟</th><th>例題</th></tr></thead>
+            <tbody>
+              <tr><td>插入追蹤（給樹或從空樹，問顏色、父子、level order、旋轉次數）</td><td>很常考</td><td>BST 插入塗紅 → 父紅就看叔叔：紅 case 1 變色往上、黑看直線或折線旋轉 → 根塗黑；每做完一步檢查黑高度</td><td><a class="q-link" href="#q-ds-0144">例題</a> <a class="q-link" href="#q-ds-0222">例題</a> <a class="q-link" href="#q-ds-0132">例題</a> <a class="q-link" href="#q-ds-0376">例題</a></td></tr>
+              <tr><td>性質是非題</td><td>很常考</td><td>對照五條性質：根黑、NIL 黑、紅不相連、黑色數相同；黑黑可相連、紅色數不必相同、不保證高度差 ≤ 1</td><td><a class="q-link" href="#q-ds-0205">例題</a> <a class="q-link" href="#q-ds-0332">例題</a> <a class="q-link" href="#q-ds-0283">例題</a></td></tr>
+              <tr><td>由形狀反推顏色、判斷合法</td><td>常考</td><td>先檢查 BST；從最短的 NIL 路徑決定黑高度，再把長路徑上多出來的節點塗紅，確認沒有紅紅相連</td><td><a class="q-link" href="#q-ds-0261">例題</a> <a class="q-link" href="#q-ds-0270">例題</a> <a class="q-link" href="#q-ds-0338">例題</a></td></tr>
+              <tr><td>節點數與高度的界</td><td>常考</td><td>bh = b：最少 2<sup>b</sup> − 1、最多 4<sup>b</sup> − 1；n 個節點的最大高度用「高度 h 的最少節點數」反推，不要直接套 2 log<sub>2</sub>(n + 1)</td><td><a class="q-link" href="#q-ds-0336">例題</a> <a class="q-link" href="#q-ds-0316">例題</a> <a class="q-link" href="#q-ds-0253">例題</a> <a class="q-link" href="#q-ds-0380">例題</a></td></tr>
+              <tr><td>刪除追蹤</td><td>常考</td><td>兩個子節點先找前驅（或後繼）→ 紅葉直接刪、黑有紅子頂上塗黑、黑葉進 double black → 看兄弟與姪子的顏色決定 case</td><td><a class="q-link" href="#q-ds-0255">例題</a> <a class="q-link" href="#q-ds-0377">例題</a> <a class="q-link" href="#q-ds-0382">例題</a></td></tr>
+              <tr><td>與 2-3-4 tree 互轉</td><td>常考</td><td>黑節點 + 紅子合成一個節點；3-node 有 2 種畫法、4-node 1 種</td><td><a class="q-link" href="#q-ds-0132">例題</a> <a class="q-link" href="#q-ds-0145">例題</a> <a class="q-link" href="#q-ds-0378">例題</a></td></tr>
+              <tr><td>計數與證明（高度上界、特殊節點個數）</td><td>偶爾</td><td>引理 n ≥ 2<sup>bh</sup> − 1 加上 bh ≥ h/2；計數題用「每個紅節點只屬於一個黑父」配對</td><td><a class="q-link" href="#q-ds-0379">例題</a> <a class="q-link" href="#q-ds-0191">例題</a> <a class="q-link" href="#q-ds-0192">例題</a></td></tr>
+              <tr><td>與其他結構比較、擴充</td><td>常考</td><td>需要排序（前驅後繼、範圍）選平衡 BST；磁碟選 B-tree；擴充 size 時旋轉要更新兩個節點</td><td><a class="q-link" href="#q-ds-0325">例題</a> <a class="q-link" href="#q-ds-0327">例題</a> <a class="q-link" href="#q-ds-0309">例題</a></td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pitfalls">
+        <h2>易錯點</h2>
+        <div class="panel prose">
+          <ul class="pitfalls">
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 叔叔是 NIL，就當作沒有叔叔、只要變色</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> NIL 是黑色，叔叔黑就要旋轉（直線 1 次、折線 2 次）</span> <a class="q-link" href="#q-ds-0375">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> case 1 變色完就結束了</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 祖父變紅後要往上兩層再檢查，可能連續變色，或接著旋轉</span> <a class="q-link" href="#q-ds-0246">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 每條路徑上的紅色節點數也相同</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 相同的只有黑色數；黑黑相連完全合法，紅色可以一個都沒有</span> <a class="q-link" href="#q-ds-0205">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 紅黑樹插入是 O(1)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 找位置要 O(log n)；O(1) 的是旋轉次數（插入 ≤ 2、刪除 ≤ 3）</span> <a class="q-link" href="#q-ds-0205">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> n 個節點最高就是 2 log<sub>2</sub>(n + 1)</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是上界，要用「高度 h 的最少節點數」反推，例如 15 個節點最高 6 層而不是 8 層</span> <a class="q-link" href="#q-ds-0316">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 刪除紅色節點也要調整</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 紅色葉子直接刪；只有刪掉黑色葉子才會產生 double black</span> <a class="q-link" href="#q-ds-0332">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 紅黑樹對應 2-3 tree</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 對應 2-3-4 tree；只有 left-leaning 的變形才對應 2-3 tree</span> <a class="q-link" href="#q-ds-0145">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 紅黑樹左右子樹高度差 ≤ 1</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 那是 AVL；紅黑樹只保證最長路徑 ≤ 最短路徑的 2 倍</span> <a class="q-link" href="#q-ds-0283">例題</a></li>
+            <li><span class="bad"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-x-circle"></use></svg> 外部節點只有葉子底下那幾個</span> → <span class="ok"><svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-check-circle"></use></svg> 每個空指標都是一個 NIL，n 個內部節點共有 n + 1 個</span> <a class="q-link" href="#q-ds-0374">例題</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice">
+        <h2>練習題與考古題</h2>
+        <div class="practice-tools">
+          <span><button id="toggle-quiz" class="linkbtn" type="button">展開全部答案</button> <a class="linkbtn" href="../questions.html">到題庫篩選 <svg class="icon" aria-hidden="true"><use href="../../../assets/icons.svg#i-arrow-right"></use></svg></a></span>
+        </div>
+        <div class="qbank" data-questions="red-black-tree"></div>
+      </section>
+
+      <nav class="pager"></nav>
+    </main>
+    <aside class="toc"></aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
+  </footer>
+  <script src="../../../assets/js/site.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz-core.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz/data-structures/red-black-tree.js?v=3694848e"></script>
+</body>
+</html>

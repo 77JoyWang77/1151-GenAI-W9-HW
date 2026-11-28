@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Eigenvalues and Eigenvectors 特徵值與特徵向量 · 線性代數 | 資工考研互動學習站</title>
   <meta name="description" content="特徵值與特徵向量的幾何意義、特徵多項式、代數與幾何重數、trace/det 性質與 Cayley–Hamilton。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=329bbb96">
-  <script src="../../../assets/js/theme.js?v=329bbb96"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=3694848e">
+  <script src="../../../assets/js/theme.js?v=3694848e"></script>
 </head>
 <body data-subject="linear-algebra" data-chapter="eigenvalues" data-chno="6" data-topic="linear-algebra/eigenvalues/eigenvalues-eigenvectors" data-root="../../../">
   <header class="site-header">
@@ -43,7 +43,7 @@
           <p>但大多數矩陣都藏著幾個「特別的方向」：沿著這些方向的向量被 A 作用後<b>方向不變，只被拉長或縮短</b>（也可能反向）。只要找到這些方向，A 的行為就被拆成幾個最簡單的動作：「這個方向放大 5 倍、那個方向放大 2 倍」。這些方向上的向量叫 <span class="term">Eigenvector<small>（特徵向量）</small></span>，放大的倍數叫 <span class="term">Eigenvalue<small>（特徵值）</small></span>。</p>
           <p>為什麼值得花力氣找它們？因為很多問題只有在特徵向量的方向上才好算：</p>
           <ul>
-            <li><b>矩陣的高次方</b>：A<sup>100</sup> 直接乘要 99 次矩陣乘法；但若 Av = λv，則 A<sup>100</sup>v = λ<sup>100</sup>v，一次就算完。這是之後 Diagonalization 對角化（籌備中）的核心。</li>
+            <li><b>矩陣的高次方</b>：A<sup>100</sup> 直接乘要 99 次矩陣乘法；但若 Av = λv，則 A<sup>100</sup>v = λ<sup>100</sup>v，一次就算完。這是之後 <a href="diagonalization.html">Diagonalization（對角化）</a>的核心。</li>
             <li><b>動態系統與馬可夫鏈</b>：x<sub>k+1</sub> = Ax<sub>k</sub> 長期會往哪裡跑，由絕對值最大的特徵值決定。</li>
             <li><b>判斷可逆、算行列式</b>：0 是不是特徵值直接決定 A 可不可逆，特徵值的乘積就是 det A。</li>
             <li><b>資工應用</b>：PageRank 是某個矩陣在特徵值 1 的特徵向量；PCA 降維取的是共變異數矩陣最大特徵值的方向；圖的鄰接矩陣特徵值（spectral graph theory）可以拿來分群。</li>
@@ -356,7 +356,7 @@ void toInteger(Frac v[MAXN]) {                 /* 把向量乘上正數倍，化
               </tbody>
             </table>
           </div>
-          <p>兩者 λ = 1 的特徵空間都是 span{(1, 1, 2)}。第一個矩陣的幾何重數總和只有 1 + 1 = 2 &lt; 3，湊不出 3 個線性獨立的特徵向量，叫 <span class="term">Defective Matrix<small>（缺陷矩陣）</small></span>；第二個總和是 2 + 1 = 3，可以湊出 ℝ<sup>3</sup> 的一組特徵向量基底。這正是 Diagonalization 對角化（籌備中）的判準：<b>每個特徵值的幾何重數都等於代數重數，矩陣才能對角化</b>。動畫的「缺陷矩陣」「重根 2 維特徵空間」兩個按鈕就是這兩個矩陣，可以對照看 RREF 的差別。</p>
+          <p>兩者 λ = 1 的特徵空間都是 span{(1, 1, 2)}。第一個矩陣的幾何重數總和只有 1 + 1 = 2 &lt; 3，湊不出 3 個線性獨立的特徵向量，叫 <span class="term">Defective Matrix<small>（缺陷矩陣）</small></span>；第二個總和是 2 + 1 = 3，可以湊出 ℝ<sup>3</sup> 的一組特徵向量基底。這正是 <a href="diagonalization.html">Diagonalization（對角化）</a>的判準：<b>每個特徵值的幾何重數都等於代數重數，矩陣才能對角化</b>。動畫的「缺陷矩陣」「重根 2 維特徵空間」兩個按鈕就是這兩個矩陣，可以對照看 RREF 的差別。</p>
           <p>重點是：<b>只看特徵多項式分不出這兩種情況</b>，一定要算 rank(A − λI)。也因此「有重根就不能對角化」是錯的（反例：第二個矩陣，或單位矩陣 I）。</p>
         </div>
       </section>
@@ -551,10 +551,10 @@ void toInteger(Frac v[MAXN]) {                 /* 把向量乘上正數倍，化
   </div>
 
   <footer class="site-footer">
-    <div class="wrap">最後更新：2026-11-27 · 依 CLAUDE.md 規則產生</div>
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=329bbb96"></script>
-  <script src="../../../assets/js/viz-core.js?v=329bbb96"></script>
-  <script src="../../../assets/js/viz/linear-algebra/eigenvalues-eigenvectors.js?v=329bbb96"></script>
+  <script src="../../../assets/js/site.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz-core.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz/linear-algebra/eigenvalues-eigenvectors.js?v=3694848e"></script>
 </body>
 </html>

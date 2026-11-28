@@ -4193,6 +4193,188 @@
       "source": {
         "kind": "original"
       }
+    },
+    {
+      "id": "la-0185",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "已知 A = PDP<sup>−1</sup>，其中 P = [−1 1; 2 1]（第一列 −1 1、第二列 2 1）、D = diag(2, 5)。下列何者正確？",
+      "choices": [
+        "(A) A(−1, 2)<sup>T</sup> = 5(−1, 2)<sup>T</sup>",
+        "(B) A(1, 1)<sup>T</sup> = 5(1, 1)<sup>T</sup>",
+        "(C) A = P<sup>−1</sup>DP",
+        "(D) P·diag(5, 2)·P<sup>−1</sup> 也等於 A",
+        "(E) A 的特徵值是 −1 和 1"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>A = PDP<sup>−1</sup> ⟺ AP = PD，逐行看就是 Av<sub>j</sub> = d<sub>jj</sub>v<sub>j</sub>：P 的第 j 行是特徵向量，特徵值是 D 的第 j 個對角元素。</p><ul><li>(A) 錯：(−1, 2) 是第 1 行，配 D 的第 1 個對角元素 2，所以 A(−1, 2) = 2(−1, 2) = (−2, 4)。</li><li>(B) 對：(1, 1) 是第 2 行，配 5。實際算 A = [4 1; 2 3]，A(1, 1) = (5, 5)。</li><li>(C) 錯：P 的行是特徵向量時 A = PDP<sup>−1</sup>，P<sup>−1</sup>DP 一般是另一個矩陣。</li><li>(D) 錯：只換 D 不換 P，配對就錯了；P·diag(5, 2)·P<sup>−1</sup> = [3 −1; −2 4] ≠ A（程式驗算）。要換就 P 的兩行一起換。</li><li>(E) 錯：特徵值是 D 的對角線 2、5；−1、1 只是 P 的元素。</li></ul>"
+    },
+    {
+      "id": "la-0186",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "basic",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "3×3 矩陣 A 的特徵多項式是 −(λ − 1)<sup>2</sup>(λ − 2)，且 rank(A − I) = 2。則 λ = 1 的幾何重數是 ____，A ____（可以／不可以）對角化。",
+      "answer": "幾何重數 1；不可以對角化",
+      "explanation": "<p>幾何重數 = dim Null(A − I) = n − rank(A − I) = 3 − 2 = <b>1</b>。λ = 1 的代數重數是 2（(λ − 1)<sup>2</sup>），幾何重數 1 &lt; 2，少了一個特徵向量。</p><p>λ = 2 是單根，最多再貢獻 1 個特徵向量，總共只有 1 + 1 = 2 &lt; 3 個獨立特徵向量，湊不滿 P 的 3 行，所以<b>不可以</b>對角化。例子：A = [1 1 0; 0 1 0; 0 0 2]，rank(A − I) = 2（程式驗證不可對角化）。</p><p>常見錯誤：看到「有兩個不同的特徵值」就說可以，或把代數重數 2 當成特徵空間維度。</p>"
+    },
+    {
+      "id": "la-0187",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "basic",
+      "type": "簡答",
+      "source": {
+        "kind": "original"
+      },
+      "question": "判斷對錯並說明理由（A 為 n×n 實矩陣）：<br>(a) 若 A 可對角化，則 A 可逆。<br>(b) 若 A 可逆，則 A 可對角化。<br>(c) 若 A 有 n 個相異的實特徵值，則 A 可對角化。<br>(d) 若 A 可對角化，則 A 有 n 個相異的特徵值。<br>(e) 若 A 可對角化，則 A<sup>3</sup> 也可對角化。",
+      "answer": "(a) 錯　(b) 錯　(c) 對　(d) 錯　(e) 對",
+      "explanation": "<ul><li><b>(a) 錯</b>：零矩陣本身就是對角矩陣（P = I、D = 0），但不可逆。可逆看的是 0 是不是特徵值，可對角化看的是特徵向量夠不夠，兩者無關。</li><li><b>(b) 錯</b>：[1 1; 0 1] 的 det = 1 可逆，但 λ = 1 二重、rank(A − I) = 1，幾何重數 1 &lt; 2，不可對角化。</li><li><b>(c) 對</b>：相異特徵值的特徵向量線性獨立，n 個就湊滿 P。</li><li><b>(d) 錯</b>：I<sub>n</sub> 可對角化但只有一個特徵值 1。相異是充分、不是必要條件。</li><li><b>(e) 對</b>：A = PDP<sup>−1</sup> ⇒ A<sup>3</sup> = PD<sup>3</sup>P<sup>−1</sup>，D<sup>3</sup> 仍是對角矩陣，用同一個 P。</li></ul>"
+    },
+    {
+      "id": "la-0188",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "A = [5 −2; 4 −1]（第一列 5 −2、第二列 4 −1）。<br>(a) 將 A 對角化：求可逆 P 與對角 D 使 A = PDP<sup>−1</sup>。<br>(b) 求 A<sup>n</sup> 的封閉式，並寫出 A<sup>5</sup>。",
+      "answer": "(a) P = [1 1; 2 1]、D = diag(1, 3)（P、D 不唯一）　(b) A<sup>n</sup> = [2·3<sup>n</sup> − 1, 1 − 3<sup>n</sup>; 2·3<sup>n</sup> − 2, 2 − 3<sup>n</sup>]，A<sup>5</sup> = [485 −242; 484 −241]",
+      "explanation": "<p><b>(a)</b> tr A = 4、det A = −5 + 8 = 3，特徵方程式 λ<sup>2</sup> − 4λ + 3 = (λ − 1)(λ − 3) = 0，λ = 1、3 相異，一定可對角化。</p><ul><li>λ = 1：A − I = [4 −2; 4 −2]，4x<sub>1</sub> = 2x<sub>2</sub>，v<sub>1</sub> = (1, 2)。</li><li>λ = 3：A − 3I = [2 −2; 4 −4]，x<sub>1</sub> = x<sub>2</sub>，v<sub>2</sub> = (1, 1)。</li></ul><p>P = [1 1; 2 1]、D = diag(1, 3)。驗算：A(1, 2) = (1, 2)、A(1, 1) = (3, 3) = 3(1, 1)。</p><p><b>(b)</b> det P = 1 − 2 = −1，P<sup>−1</sup> = [−1 1; 2 −1]。</p><pre class=\"formula\">A^n = P diag(1, 3^n) P⁻¹ = [1  3^n] [−1  1]\n                           [2  3^n] [ 2 −1]\n    = [2·3^n − 1    1 − 3^n]\n      [2·3^n − 2    2 − 3^n]</pre><p>檢查 n = 1：[6 − 1, 1 − 3; 6 − 2, 2 − 3] = [5 −2; 4 −1] = A；n = 0 得 I。n = 5：3<sup>5</sup> = 243，A<sup>5</sup> = [485 −242; 484 −241]（程式直接連乘驗證，n = 0～7 全部相符）。</p><p>易錯：寫成 P<sup>−1</sup>D<sup>n</sup>P 會得到別的矩陣，代 n = 1 就會發現不是 A。</p>"
+    },
+    {
+      "id": "la-0189",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "A = [2 a b; 0 2 c; 0 0 1]（a、b、c 為實數）。a、b、c 滿足什麼條件時 A 可對角化？",
+      "answer": "a = 0（b、c 任意）",
+      "explanation": "<p>A 是上三角，特徵值就是對角線：λ = 2（代數重數 2）、λ = 1（單根，一定沒問題）。只要檢查 λ = 2：</p><pre class=\"formula\">A − 2I = [0  a   b]\n         [0  0   c]\n         [0  0  −1]</pre><p>第 3 列 (0, 0, −1) 一定非零。若 a ≠ 0，第 1 列 (0, a, b) 和第 3 列線性獨立，rank = 2，幾何重數 = 3 − 2 = 1 &lt; 2，不可對角化。若 a = 0，第 1、2 列都是 (0, 0, *)，和第 3 列成比例，rank = 1，幾何重數 = 2 = 代數重數，可對角化。</p><p>所以條件是 <b>a = 0</b>，b、c 不影響（程式代 (a, b, c) = (0, 3, −5)、(0, 7, 2) 可對角化，(1, 0, 0)、(2, 1, 1) 不可）。易錯：以為 b、c 也要是 0；b、c 只影響特徵向量長什麼樣子，不影響 rank。</p>"
+    },
+    {
+      "id": "la-0190",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "數列滿足 a<sub>n+2</sub> = a<sub>n+1</sub> + 6a<sub>n</sub>，a<sub>0</sub> = 0、a<sub>1</sub> = 5。把它寫成 u<sub>n+1</sub> = Au<sub>n</sub>（u<sub>n</sub> = (a<sub>n+1</sub>, a<sub>n</sub>)<sup>T</sup>），用對角化求 a<sub>n</sub> 的封閉式與 a<sub>10</sub>。",
+      "answer": "A = [1 6; 1 0]，a<sub>n</sub> = 3<sup>n</sup> − (−2)<sup>n</sup>，a<sub>10</sub> = 58025",
+      "explanation": "<p>(a<sub>n+2</sub>, a<sub>n+1</sub>) = (a<sub>n+1</sub> + 6a<sub>n</sub>, a<sub>n+1</sub>)，所以 A = [1 6; 1 0]，u<sub>n</sub> = A<sup>n</sup>u<sub>0</sub>、u<sub>0</sub> = (5, 0)。</p><p>特徵方程式 λ<sup>2</sup> − λ − 6 = (λ − 3)(λ + 2) = 0，特徵值 3、−2 相異。這種矩陣的特徵向量可取 (λ, 1)：v<sub>1</sub> = (3, 1)、v<sub>2</sub> = (−2, 1)。</p><p>把 u<sub>0</sub> 拆開：(5, 0) = c<sub>1</sub>(3, 1) + c<sub>2</sub>(−2, 1)，第 2 分量 c<sub>1</sub> + c<sub>2</sub> = 0、第 1 分量 3c<sub>1</sub> − 2c<sub>2</sub> = 5，得 c<sub>1</sub> = 1、c<sub>2</sub> = −1。</p><pre class=\"formula\">u_n = 3^n (3, 1) − (−2)^n (−2, 1)   ⇒   a_n（第 2 分量）= 3^n − (−2)^n</pre><p>檢查 a<sub>0</sub> = 1 − 1 = 0、a<sub>1</sub> = 3 + 2 = 5、a<sub>2</sub> = 9 − 4 = 5 = a<sub>1</sub> + 6a<sub>0</sub>。a<sub>10</sub> = 59049 − 1024 = <b>58025</b>（程式用遞迴直接算到 n = 20 全部相符）。</p><p>和離散數學的特徵根法比較：特徵方程式完全相同，對角化只是把「設 a<sub>n</sub> = αr<sub>1</sub><sup>n</sup> + βr<sub>2</sub><sup>n</sup>」的理由講清楚。</p>"
+    },
+    {
+      "id": "la-0191",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "advanced",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）下列哪幾組矩陣彼此相似？（矩陣依列列出）",
+      "choices": [
+        "(A) [1 1; 0 1] 與 [1 0; 0 1]",
+        "(B) [2 1; 0 3] 與 [3 0; 0 2]",
+        "(C) [1 2; 3 4] 與 [4 3; 2 1]",
+        "(D) [0 1; 0 0] 與 [0 0; 0 0]",
+        "(E) [1 2; 0 3] 與 [1 0; 2 3]"
+      ],
+      "answer": "(B)(C)(E)",
+      "explanation": "<p>判斷方法：先比特徵多項式（不同就一定不相似）；相同時，若兩者都可對角化就相似，若一個可、一個不可就不相似。</p><ul><li>(A) 不相似：特徵多項式都是 (λ − 1)<sup>2</sup>，但和 I 相似的矩陣只有 P<sup>−1</sup>IP = I 本身；[1 1; 0 1] 不可對角化。</li><li>(B) 相似：兩者特徵值都是 2、3（相異），都和 diag(2, 3) 相似，由遞移性彼此相似。</li><li>(C) 相似：trace 都是 5、det 都是 −2，特徵多項式 λ<sup>2</sup> − 5λ − 2 有兩個相異實根 (5 ± √33)/2，兩者都可對角化成同一個 D。</li><li>(D) 不相似：和零矩陣相似的只有零矩陣；[0 1; 0 0] 是非零冪零矩陣，不可對角化。</li><li>(E) 相似：兩者互為轉置，特徵值都是 1、3 相異，都可對角化。</li></ul><p>程式比較了每組的特徵多項式與可對角化性，結論相同。</p>"
+    },
+    {
+      "id": "la-0192",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "證明",
+      "source": {
+        "kind": "original"
+      },
+      "question": "(a) 設 N 是 n×n 矩陣，N ≠ 0 且 N<sup>m</sup> = 0（某個正整數 m）。證明 N 不可對角化。<br>(b) 證明：若 A 可對角化且所有特徵值都是 0 或 1，則 A<sup>2</sup> = A。",
+      "answer": "見詳解",
+      "explanation": "<p><b>(a)</b> 設 Nv = λv、v ≠ 0。則 N<sup>m</sup>v = λ<sup>m</sup>v，而 N<sup>m</sup> = 0，所以 λ<sup>m</sup>v = 0，v ≠ 0 ⇒ λ = 0。也就是 N 的特徵值全是 0。</p><p>若 N 可對角化，N = PDP<sup>−1</sup>，D 的對角線是 N 的特徵值，全是 0，D = 0，於是 N = P·0·P<sup>−1</sup> = 0，和 N ≠ 0 矛盾。所以 N 不可對角化。</p><p>（另一個角度：λ = 0 的代數重數是 n，幾何重數是 n − rank N；N ≠ 0 ⇒ rank N ≥ 1 ⇒ 幾何重數 &lt; n。）</p><p><b>(b)</b> A = PDP<sup>−1</sup>，D 的對角元素 d<sub>ii</sub> ∈ {0, 1}，所以 d<sub>ii</sub><sup>2</sup> = d<sub>ii</sub>，D<sup>2</sup> = D。於是 A<sup>2</sup> = PD<sup>2</sup>P<sup>−1</sup> = PDP<sup>−1</sup> = A。</p><p>注意 (b) 一定要「可對角化」：[0 1; 0 0] 的特徵值全是 0，但它的平方是 0 ≠ 自己。</p>"
+    },
+    {
+      "id": "la-0193",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "2×2 矩陣 A 以 (2, 1)<sup>T</sup> 為特徵值 1 的特徵向量、以 (1, −1)<sup>T</sup> 為特徵值 1/2 的特徵向量。<br>(a) 求 A。<br>(b) 求 lim<sub>n→∞</sub> A<sup>n</sup>，以及 x = (1, 2)<sup>T</sup> 時 lim<sub>n→∞</sub> A<sup>n</sup>x。",
+      "answer": "(a) A = [5/6 1/3; 1/6 2/3]　(b) lim A<sup>n</sup> = [2/3 2/3; 1/3 1/3]，lim A<sup>n</sup>x = (2, 1)<sup>T</sup>",
+      "explanation": "<p><b>(a)</b> 兩個特徵向量獨立，A = PDP<sup>−1</sup>，P = [2 1; 1 −1]、D = diag(1, 1/2)。det P = −3，P<sup>−1</sup> = (1/3)[1 1; 1 −2]。</p><pre class=\"formula\">PD = [2  1/2]      A = PD·P⁻¹ = [5/6  1/3]\n     [1 −1/2]                   [1/6  2/3]</pre><p>驗算：A(2, 1) = (5/3 + 1/3, 1/3 + 2/3) = (2, 1)；A(1, −1) = (1/2, −1/2) = (1/2)(1, −1)。另外每行和為 1，A 是 Markov 矩陣。</p><p><b>(b)</b> (1/2)<sup>n</sup> → 0，所以 A<sup>n</sup> = P·diag(1, (1/2)<sup>n</sup>)·P<sup>−1</sup> → P·diag(1, 0)·P<sup>−1</sup> = (2, 1)<sup>T</sup>·(1/3)(1, 1) = [2/3 2/3; 1/3 1/3]。</p><p>x = (1, 2) = c<sub>1</sub>(2, 1) + c<sub>2</sub>(1, −1)：c<sub>1</sub> = 1、c<sub>2</sub> = −1。A<sup>n</sup>x = (2, 1) − (1/2)<sup>n</sup>(1, −1) → <b>(2, 1)</b>。程式算 A<sup>30</sup>x ≈ (2.0000, 1.0000)。</p><p>直覺：Markov 過程總量守恆（1 + 2 = 3），最後依穩定向量 (2, 1) 的比例分配。</p>"
+    },
+    {
+      "id": "la-0194",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "A = [−2 3; −6 7]（依列列出）。求一個特徵值皆為正的矩陣 B 使 B<sup>2</sup> = A。若不限制 B 的特徵值，總共有幾個形如 P·diag(±1, ±2)·P<sup>−1</sup> 的平方根？",
+      "answer": "B = [0 1; −2 3]；共 4 個：[0 1; −2 3]、[4 −3; 6 −5]、[−4 3; −6 5]、[0 −1; 2 −3]",
+      "explanation": "<p>tr A = 5、det A = −14 + 18 = 4，特徵方程式 λ<sup>2</sup> − 5λ + 4 = (λ − 1)(λ − 4)，特徵值 1、4。</p><ul><li>λ = 1：A − I = [−3 3; −6 6]，v<sub>1</sub> = (1, 1)。</li><li>λ = 4：A − 4I = [−6 3; −6 3]，v<sub>2</sub> = (1, 2)。</li></ul><p>P = [1 1; 1 2]、det P = 1、P<sup>−1</sup> = [2 −1; −1 1]。特徵值要正，取 √1 = 1、√4 = 2：</p><pre class=\"formula\">B = P diag(1, 2) P⁻¹ = [1 2][ 2 −1] = [ 0  1]\n                       [1 4][−1  1]   [−2  3]</pre><p>驗算 B<sup>2</sup> = [0·0 + 1·(−2), 0·1 + 1·3; −2·0 + 3·(−2), −2·1 + 3·3] = [−2 3; −6 7] = A。</p><p>不限制時每個特徵值的平方根可取 ±，共 2 × 2 = <b>4 個</b>：diag(1, 2)、(1, −2)、(−1, 2)、(−1, −2) 分別得到 [0 1; −2 3]、[4 −3; 6 −5]、[−4 3; −6 5]、[0 −1; 2 −3]（程式逐一驗證平方都是 A）。這和考古題「B<sup>3</sup> = A 且 B 有實特徵值」用條件挑出唯一解是同一個想法。</p>"
+    },
+    {
+      "id": "la-0195",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "簡答",
+      "source": {
+        "kind": "original"
+      },
+      "question": "判斷對錯並說明理由（A、B 為 n×n 矩陣）：<br>(a) 若 A 與 B 相似，則 A、B 的特徵向量相同。<br>(b) 若 A 與 B 的特徵多項式相同，則 A 與 B 相似。<br>(c) 若 A 與 B 都有相同的 n 個相異特徵值，則 A 與 B 相似。<br>(d) 若 A 與 B 相似，則 rank(A − 3I) = rank(B − 3I)。",
+      "answer": "(a) 錯　(b) 錯　(c) 對　(d) 對",
+      "explanation": "<ul><li><b>(a) 錯</b>：B = P<sup>−1</sup>AP，若 Av = λv，則 B(P<sup>−1</sup>v) = λP<sup>−1</sup>v，B 的特徵向量是 P<sup>−1</sup>v。例：A = diag(1, 2) 與 B = [1 1; 0 2] 相似（特徵值 1、2 相異），A 對 λ = 2 的特徵向量是 (0, 1)，B 的是 (1, 1)。特徵值相同、特徵向量不同。</li><li><b>(b) 錯</b>：[1 1; 0 1] 和 I 的特徵多項式都是 (λ − 1)<sup>2</sup>，但和 I 相似的只有 I 自己。差別在幾何重數（1 vs 2）。</li><li><b>(c) 對</b>：兩者都可對角化成同一個 D = diag(λ<sub>1</sub>, …, λ<sub>n</sub>)：A = PDP<sup>−1</sup>、B = QDQ<sup>−1</sup>，所以 B = QP<sup>−1</sup>APQ<sup>−1</sup> = (PQ<sup>−1</sup>)<sup>−1</sup>A(PQ<sup>−1</sup>)。</li><li><b>(d) 對</b>：B − 3I = P<sup>−1</sup>AP − 3P<sup>−1</sup>P = P<sup>−1</sup>(A − 3I)P，乘上可逆矩陣不改變 rank。這也說明相似矩陣每個特徵值的幾何重數都相同。</li></ul>"
+    },
+    {
+      "id": "la-0196",
+      "topics": [
+        "diagonalization"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "3×3 矩陣 A 滿足 A<sup>2</sup> = A 且 rank A = 2。<br>(a) 說明 A 可對角化，並寫出一個與 A 相似的對角矩陣。<br>(b) 求 det(A + I) 與 tr A。",
+      "answer": "(a) A ~ diag(1, 1, 0)　(b) det(A + I) = 4，tr A = 2",
+      "explanation": "<p><b>特徵值</b>：Av = λv ⇒ A<sup>2</sup>v = λ<sup>2</sup>v，而 A<sup>2</sup> = A，所以 λ<sup>2</sup> = λ，λ ∈ {0, 1}。</p><p><b>(a)</b> 數特徵向量：</p><ul><li>E<sub>0</sub> = Null(A)，維度 = 3 − rank A = 1。</li><li>對任何 y = Ax ∈ Col(A)：Ay = A<sup>2</sup>x = Ax = y，所以 Col(A) 裡的非零向量都是 λ = 1 的特徵向量，dim E<sub>1</sub> ≥ dim Col(A) = 2。</li></ul><p>幾何重數總和 ≥ 1 + 2 = 3 = n，所以可對角化，而且 E<sub>1</sub> 恰為 2 維。A ~ <b>diag(1, 1, 0)</b>。</p><p><b>(b)</b> A + I 的特徵值是 1 + 1、1 + 1、0 + 1 = 2、2、1，det(A + I) = 2·2·1 = <b>4</b>；tr A = 1 + 1 + 0 = <b>2</b>（= rank A，冪等矩陣的 trace 等於 rank）。程式用 diag(1, 1, 0) 和考古題的 C = [3 −1 −2; 2 0 −2; 2 −1 −1]（C<sup>2</sup> = C、rank 2）驗證都得到 4 和 2。</p>"
     }
   ]
 }

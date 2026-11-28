@@ -282,7 +282,7 @@
             "insert",
             "delete"
           ],
-          "updated": "2026-11-16",
+          "updated": "2026-11-28",
           "book": "5.7",
           "priority": "high"
         },
@@ -605,9 +605,18 @@
           "en": "Red-Black Tree",
           "zh": "紅黑樹",
           "book": "10.5",
-          "status": "planned",
+          "status": "done",
           "priority": "high",
-          "viz": true
+          "viz": true,
+          "difficulty": 3,
+          "tags": [
+            "balanced BST",
+            "rotation",
+            "insert",
+            "delete",
+            "2-3-4 tree"
+          ],
+          "updated": "2026-11-28"
         },
         {
           "id": "2-3-4-tree",

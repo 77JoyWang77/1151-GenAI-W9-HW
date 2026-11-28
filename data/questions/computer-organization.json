@@ -159,7 +159,8 @@
     {
       "id": "co-0010",
       "topics": [
-        "pipelining"
+        "pipelining",
+        "data-hazards"
       ],
       "level": "advanced",
       "type": "追蹤",
@@ -173,7 +174,8 @@
     {
       "id": "co-0011",
       "topics": [
-        "pipelining"
+        "pipelining",
+        "data-hazards"
       ],
       "level": "exam",
       "type": "計算",
@@ -441,7 +443,8 @@
     {
       "id": "co-0022",
       "topics": [
-        "instruction-level-parallelism"
+        "instruction-level-parallelism",
+        "data-hazards"
       ],
       "level": "exam",
       "type": "選擇",
@@ -5624,6 +5627,166 @@
       ],
       "answer": "(A)(B)(E)",
       "explanation": "<p>可達效能 = min(峰值, 頻寬 × intensity)。</p><ul><li><b>(A) 對</b>：轉折點（ridge point）在 200 ÷ 25 = <b>8</b> FLOP/byte，intensity 小於 8 落在斜線區。</li><li><b>(B) 對</b>：K1：min(200, 25 × 2) = <b>50</b> GFLOP/s，只用到峰值的 25%，受記憶體頻寬限制。</li><li><b>(C) 錯</b>：K2：min(200, 25 × 16 = 400) = 200，已經在屋頂上（compute-bound）。頻寬加倍後斜線變成 50 × 16 = 800，可達效能仍是 200，不會變快。</li><li><b>(D) 錯</b>：K1 卡在斜線，峰值加倍只把屋頂抬高，min(400, 50) 仍是 50。</li><li><b>(E) 對</b>：intensity 6 &lt; 8，仍在斜線區：25 × 6 = <b>150</b> GFLOP/s，是原本的 3 倍。提高 intensity（重複使用已搬進 cache 的資料）是 memory-bound 程式最有效的優化之一。</li></ul>"
+    },
+    {
+      "id": "co-0223",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "（複選）下面的程式在五階段 MIPS 管線上執行：<pre class=\"formula\">I1: add $t2, $t1, $t3\nI2: lw  $t1, 0($t2)\nI3: sub $t3, $t1, $t2\nI4: and $t2, $t3, $t1</pre>哪些敘述正確？",
+      "choices": [
+        "(A) I1 → I2 同時有 RAW（$t2）和 WAR（$t1）",
+        "(B) I1 → I3 只有 WAR（$t3）",
+        "(C) I1 → I4 有 WAW（$t2）",
+        "(D) I4 讀的 $t1 來自 I2",
+        "(E) 在五階段依序管線中，I2 → I4 的 WAR（$t2）會讓 I2 讀到 I4 寫的新值，必須 stall"
+      ],
+      "answer": "(A)(C)(D)",
+      "explanation": "<p>逐對看「誰寫、誰讀」：</p><ul><li>(A) 對：I1 寫 $t2、I2 讀 $t2 → RAW；I1 讀 $t1、I2 寫 $t1 → WAR。</li><li>(B) 錯：I1 讀 $t3、I3 寫 $t3 是 WAR 沒錯，但 I3 也讀 $t2，而 $t2 最近一次是 I1 寫的（I2 寫的是 $t1），所以還有 RAW（$t2）。</li><li>(C) 對：I1、I4 都寫 $t2。</li><li>(D) 對：$t1 最近一次是 I2（lw）寫的。</li><li>(E) 錯：依序管線裡 I2 在 ID 讀 $t2 的時間比 I4 在 WB 寫 $t2 早好幾個週期，WAR 不會出錯，只有 RAW 需要處理。</li></ul><p>這段程式的 RAW 有 I1→I2（$t2）、I1→I3（$t2）、I2→I3（$t1）、I2→I4（$t1）、I3→I4（$t3）。</p>"
+    },
+    {
+      "id": "co-0224",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "在有 forwarding 的五階段 MIPS 管線中，forwarding unit 要把 ForwardA 設成 10（從 EX/MEM 轉送給 ALU 上方的輸入），必須同時滿足哪一組條件？",
+      "choices": [
+        "(A) EX/MEM.RegWrite = 1、EX/MEM.rd ≠ 0、EX/MEM.rd = ID/EX.rs",
+        "(B) EX/MEM.RegWrite = 1、EX/MEM.rd = ID/EX.rt",
+        "(C) MEM/WB.RegWrite = 1、MEM/WB.rd ≠ 0、MEM/WB.rd = ID/EX.rs",
+        "(D) ID/EX.MemRead = 1、ID/EX.rt = IF/ID.rs",
+        "(E) EX/MEM.MemRead = 1、EX/MEM.rd = ID/EX.rs"
+      ],
+      "answer": "(A)",
+      "explanation": "<p>ForwardA 管的是 rs（ALU 上方輸入），10 代表來源是 EX/MEM，也就是上一條指令剛算好的 ALU 結果。三個條件：上一條會寫暫存器（RegWrite = 1）、寫的不是 $zero（rd ≠ 0）、寫的正是 EX 指令要讀的 rs。</p><ul><li>(B) 是 ForwardB 的條件，而且少了 rd ≠ 0。</li><li>(C) 是 ForwardA = 01（MEM hazard），而且還要加上「EX/MEM 沒有命中」。</li><li>(D) 是 hazard detection unit 判斷 load-use 的條件。</li><li>(E) EX/MEM 裡如果是 lw，存的是位址不是資料，不能這樣轉送。</li></ul>"
+    },
+    {
+      "id": "co-0225",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "basic",
+      "type": "選擇",
+      "source": {
+        "kind": "original"
+      },
+      "question": "五階段 MIPS 管線的 hazard detection unit 偵測 load-use 時，下面哪一個描述正確？",
+      "choices": [
+        "(A) 在 EX 階段比較 EX/MEM.rd 與 ID/EX.rs、rt，相等就 stall",
+        "(B) 在 ID 階段檢查：ID/EX.MemRead = 1，而且 ID/EX.rt 等於 IF/ID.rs 或 IF/ID.rt",
+        "(C) 在 IF 階段檢查剛抓的指令是不是 lw，是的話下一條一律 stall",
+        "(D) 偵測到時把 IF/ID 清空（flush），讓 PC 重新抓這條指令"
+      ],
+      "answer": "(B)",
+      "explanation": "<p>使用者還在 ID 時就要決定，因為下一個週期它就進 EX 了。此時 EX 的指令就在 ID/EX 裡：MemRead = 1 表示它是 lw，它的目的暫存器在 rt 欄位，拿來和 ID 指令（IF/ID）要讀的 rs、rt 比對。</p><ul><li>(A) 到 EX 才發現已經來不及，而且比的是 forwarding 的欄位。</li><li>(C) 太保守：lw 後面不一定會用到它的結果。</li><li>(D) 錯：stall 要保留 IF/ID（IF/IDWrite = 0）、PC 不更新（PCWrite = 0），並把送進 ID/EX 的控制訊號清 0 塞一個 bubble；flush 是分支猜錯時用的。</li></ul>"
+    },
+    {
+      "id": "co-0226",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "advanced",
+      "type": "填空",
+      "source": {
+        "kind": "original"
+      },
+      "question": "有完整 forwarding 與 hazard detection 的五階段 MIPS 管線，從週期 1 開始執行：<pre class=\"formula\">I1: sub $t2, $t1, $t3\nI2: and $t2, $t2, $t5\nI3: or  $t4, $t2, $t2\nI4: add $t6, $t4, $t2\nI5: sw  $t6, 8($t2)</pre>寫出 I3、I4、I5 在 EX 階段時的 ForwardA、ForwardB（00：ID/EX、10：EX/MEM、01：MEM/WB）。",
+      "answer": "I3：ForwardA = 10、ForwardB = 10；I4：ForwardA = 10、ForwardB = 01；I5：ForwardA = 00、ForwardB = 10",
+      "explanation": "<p>沒有 lw，不會 stall，I3、I4、I5 的 EX 分別在週期 5、6、7。</p><div class=\"table-scroll\"><table><thead><tr><th>指令（EX 週期）</th><th>EX/MEM 裡</th><th>MEM/WB 裡</th><th>rs</th><th>rt</th></tr></thead><tbody><tr><td>I3 or（5）</td><td>I2，rd = $t2</td><td>I1，rd = $t2</td><td>$t2：兩邊都命中，選 EX/MEM → 10</td><td>$t2：同理 → 10</td></tr><tr><td>I4 add（6）</td><td>I3，rd = $t4</td><td>I2，rd = $t2</td><td>$t4 → 10</td><td>$t2：EX/MEM 不是，MEM/WB 是 → 01</td></tr><tr><td>I5 sw（7）</td><td>I4，rd = $t6</td><td>I3，rd = $t4</td><td>$t2：兩邊都不是 → 00</td><td>$t6（要存的資料）→ 10</td></tr></tbody></table></div><p>I3 是 double data hazard：I1、I2 都寫 $t2，要用最新的 I2。I5 的 $t2 由 I2 寫，I2 在週期 6 WB，I5 在週期 6 ID 讀暫存器（前半寫、後半讀），已經是新值，所以不用轉送。I5 的 ForwardB 轉送的是 sw 要寫進記憶體的資料。已用程式逐週期模擬驗證。</p>"
+    },
+    {
+      "id": "co-0227",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "某個 forwarding unit 的設計忘了檢查 rd ≠ 0，其餘條件都正確。初始 $s1 = 5、$s2 = 7、$s3 = 20，執行：<pre class=\"formula\">add $zero, $s1, $s2\nsub $t0,   $s3, $zero</pre>(1) 正確的 $t0 應該是多少？(2) 有 bug 的版本 $t0 會是多少？說明原因。",
+      "answer": "(1) 20　(2) 8",
+      "explanation": "<p><b>(1)</b> $zero 永遠是 0，寫進去的 12 會被丟掉，$t0 = 20 − 0 = <b>20</b>。</p><p><b>(2)</b> sub 在週期 4 進 EX，此時 EX/MEM 裡是 add：RegWrite = 1、rd = 0，正好等於 sub 的 rt（$zero = 0）。少了 rd ≠ 0 的檢查，forwarding unit 判定 EX hazard，ForwardB = 10，把 add 的 ALU 結果 5 + 7 = 12 送進來：$t0 = 20 − 12 = <b>8</b>，結果錯誤。暫存器檔本身不會把 $zero 寫壞，但轉送路徑繞過了暫存器檔，所以要在 forwarding unit 另外擋。</p>"
+    },
+    {
+      "id": "co-0228",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "advanced",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "五階段 MIPS 管線<b>沒有</b> hazard detection unit，正確性要靠軟體插入 nop。暫存器檔前半週期寫、後半週期讀。對下面的程式：<pre class=\"formula\">lw  $t0, 0($s0)\nadd $t1, $t0, $s1\nsub $t2, $t1, $t0\nsw  $t2, 4($s0)</pre>(1) 若也沒有 forwarding，最少要插幾個 nop？(2) 若有完整 forwarding（但仍沒有偵測單元），最少要插幾個 nop？",
+      "answer": "(1) 6 個　(2) 1 個",
+      "explanation": "<p><b>(1)</b> 沒有 forwarding 時，距離 d 的 RAW 要補到 max(0, 3 − d)。依序算：lw → add（$t0，d = 1）補 2；add → sub（$t1，d = 1）補 2，此時 sub 和 lw 的距離已經是 6，$t0 沒問題；sub → sw（$t2，d = 1）補 2。共 <b>6</b> 個：</p><pre class=\"formula\">lw  $t0, 0($s0)\nnop\nnop\nadd $t1, $t0, $s1\nnop\nnop\nsub $t2, $t1, $t0\nnop\nnop\nsw  $t2, 4($s0)</pre><p><b>(2)</b> 有 forwarding 時，只有 lw 後面緊接著使用要隔 1 格，ALU → 使用都能從 EX/MEM 轉送。只需要在 lw 和 add 之間插 <b>1</b> 個。已用程式驗算。</p><p>常見錯誤：每一對各算各的再加總。前面補進去的 nop 會拉開後面的距離，要從上往下依序算。</p>"
+    },
+    {
+      "id": "co-0229",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "追蹤",
+      "source": {
+        "kind": "original"
+      },
+      "question": "有完整 forwarding 與 hazard detection 的五階段 MIPS 管線，從週期 1 開始執行：<pre class=\"formula\">I1: lw  $t1, 0($s0)\nI2: add $t2, $t1, $s1\nI3: lw  $t3, 4($t2)\nI4: sw  $t3, 8($t1)\nI5: sub $t4, $t3, $t2\nI6: or  $t5, $t4, $t1</pre>(1) 總共幾次 stall、幾個週期？(2) 週期 6 時 IF、ID、EX、MEM、WB 各是哪條指令（bubble 寫 nop）？此時 EX 指令的 ForwardA 是多少？(3) 週期 8 時 EX 是哪條指令？ForwardA、ForwardB 各是多少？",
+      "answer": "(1) 2 次 stall，12 個週期　(2) IF I5、ID I4、EX I3、MEM I2、WB nop；ForwardA = 10　(3) EX 是 I4（sw）；ForwardA = 00、ForwardB = 01",
+      "explanation": "<p><b>(1)</b> load-use 有兩處：I1 → I2（$t1）、I3 → I4（$t3，sw 要存的資料）。其他相依：I2 → I3（$t2）EX/MEM 轉送；I3 → I5 隔一條；I5 → I6 EX/MEM 轉送。總週期 = 5 + (6 − 1) + 2 = <b>12</b>。</p><div class=\"table-scroll\"><table><thead><tr><th>週期</th><th>IF</th><th>ID</th><th>EX</th><th>MEM</th><th>WB</th></tr></thead><tbody><tr><td>3</td><td>I3</td><td>I2</td><td>I1</td><td>-</td><td>-</td></tr><tr><td>4</td><td>I3</td><td>I2</td><td>nop</td><td>I1</td><td>-</td></tr><tr><td>5</td><td>I4</td><td>I3</td><td>I2</td><td>nop</td><td>I1</td></tr><tr><td>6</td><td>I5</td><td>I4</td><td>I3</td><td>I2</td><td>nop</td></tr><tr><td>7</td><td>I5</td><td>I4</td><td>nop</td><td>I3</td><td>I2</td></tr><tr><td>8</td><td>I6</td><td>I5</td><td>I4</td><td>nop</td><td>I3</td></tr></tbody></table></div><p>週期 3、6 hazard detection unit 各偵測到一次 load-use。</p><p><b>(2)</b> 週期 6：EX 是 I3 lw $t3, 4($t2)，它的 base $t2 由上一條 I2 算出，I2 正在 MEM（EX/MEM 裡）→ ForwardA = <b>10</b>。lw 的第二個運算元是立即值，ForwardB 不重要。WB 是週期 4 塞進來的 bubble。</p><p><b>(3)</b> 週期 8：EX 是 I4 sw $t3, 8($t1)。rs = $t1 由 I1 寫，早在週期 5 寫回 → ForwardA = <b>00</b>；rt = $t3（要存的資料）由 I3 載入，EX/MEM 裡是 bubble，MEM/WB 裡是 I3 → ForwardB = <b>01</b>。已用程式逐週期模擬驗證。</p>"
+    },
+    {
+      "id": "co-0230",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "有完整 forwarding 與 hazard detection 的五階段 MIPS 管線執行：<pre class=\"formula\">I1: lw   $t0, 0($s0)\nI2: add  $t1, $t0, $t0\nI3: lw   $t2, 4($s0)\nI4: sub  $t3, $t2, $s1\nI5: addi $s0, $s0, 8\nI6: sw   $t1, 0($s1)\nI7: sw   $t3, 4($s1)</pre>(1) 會 stall 幾次？總共幾個週期？(2) 只重排、不改任何指令，消除所有 stall，寫出新順序與總週期數。(3) 能不能改成把 I5 搬到 I1 和 I2 之間來消除第一個 stall？為什麼？",
+      "answer": "(1) 2 次，13 個週期　(2) I1、I3、I2、I4、I5、I6、I7，0 次 stall，11 個週期　(3) 不行：I3 讀 $s0，I5 會改 $s0（WAR），搬過去 I3 的位址會錯",
+      "explanation": "<p><b>(1)</b> I1 → I2（$t0）、I3 → I4（$t2）都是 load-use，各停 1。總週期 = 5 + 6 + 2 = <b>13</b>。</p><p><b>(2)</b> 把 I3 搬到 I2 前面：I3 越過 I2，兩者沒有暫存器相依（I2 讀寫 $t0、$t1；I3 讀 $s0、寫 $t2），也都不是 sw，可以換。新順序 I1、I3、I2、I4、I5、I6、I7：I2 和 I1 距離 2、I4 和 I3 距離 2，都不用停，共 5 + 6 = <b>11</b> 個週期，少了 2 個（約 15%）。</p><p><b>(3)</b> 不行。I5 要越過 I2、I3、I4 才能到 I1 後面；I3 是 lw $t2, 4($s0)，要讀 $s0，而 I5 寫 $s0，這是 WAR，交換後 I3 會用加過 8 的 $s0 算位址。除非把 I3 的位移改成 −4，但那已經是改指令而不只是重排。</p>"
+    },
+    {
+      "id": "co-0231",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "五階段 MIPS 管線，暫存器檔前半週期寫、後半週期讀，hazard detection unit 會依照實際有的轉送路徑插入必要的 stall。執行：<pre class=\"formula\">add $t0, $s1, $s2\nsub $t1, $t0, $s3\nlw  $t2, 0($t1)\nor  $t3, $t2, $t0\nsw  $t3, 4($s0)</pre>分別求下列四種硬體的 stall 次數與總週期：(1) 完整 forwarding（EX/MEM、MEM/WB 都接到 ALU 兩個輸入）(2) 只有 EX/MEM → ALU 兩個輸入 (3) 只有 MEM/WB → ALU 兩個輸入 (4) 沒有 forwarding。",
+      "answer": "(1) 1 次、10 週期　(2) 2 次、11 週期　(3) 4 次、13 週期　(4) 8 次、17 週期",
+      "explanation": "<p>四個相鄰相依：add → sub（$t0）、sub → lw（$t1，base）、lw → or（$t2，load-use）、or → sw（$t3，要存的資料）。or 讀的 $t0 距離 3，已寫回。</p><div class=\"table-scroll\"><table><thead><tr><th>相依</th><th>完整</th><th>只有 EX/MEM</th><th>只有 MEM/WB</th><th>沒有</th></tr></thead><tbody><tr><td>add → sub</td><td>0</td><td>0</td><td>1</td><td>2</td></tr><tr><td>sub → lw</td><td>0</td><td>0</td><td>1</td><td>2</td></tr><tr><td>lw → or</td><td>1</td><td>2</td><td>1</td><td>2</td></tr><tr><td>or → sw</td><td>0</td><td>0</td><td>1</td><td>2</td></tr><tr><td>合計 stall</td><td>1</td><td>2</td><td>4</td><td>8</td></tr><tr><td>總週期 = 9 + stall</td><td>10</td><td>11</td><td>13</td><td>17</td></tr></tbody></table></div><ul><li>只有 EX/MEM：ALU 指令的結果在下一條的 EX 正好在 EX/MEM，沒問題；但 lw 的資料只會出現在 MEM/WB，沒有路徑就只能等 WB 寫回，相鄰的 load-use 要停 2 個，和沒有 forwarding 一樣。</li><li>只有 MEM/WB：相鄰的 ALU 相依要多等 1 個週期，讓結果從 EX/MEM 移到 MEM/WB；load-use 本來就是從 MEM/WB 拿，仍是 1。</li><li>沒有 forwarding：每個相鄰相依都要等到 WB，停 2 個。</li></ul><p>已用程式模擬四種設定驗算。</p>"
+    },
+    {
+      "id": "co-0232",
+      "topics": [
+        "data-hazards"
+      ],
+      "level": "exam",
+      "type": "計算",
+      "source": {
+        "kind": "original"
+      },
+      "question": "五階段 MIPS 管線把 beq 的比較器和目標位址計算都放在 ID 階段，暫存器檔前半週期寫、後半週期讀，hazard detection 與 forwarding 都正確實作。(1) ALU 前面需要幾條轉送路徑？(2) ID 的比較器前面至少要再加幾條轉送路徑？來源是哪一個管線暫存器？(3) 下面的程式會因為資料危障 stall 幾個週期（不算分支本身的控制危障）？如果 (2) 的路徑沒有做，又是幾個？<pre class=\"formula\">lw   $t0, 0($s0)\naddi $t1, $t0, 4\nbeq  $t1, $s3, L</pre>",
+      "answer": "(1) 4 條　(2) 2 條，都來自 EX/MEM　(3) 2 個；沒有 ID 的轉送路徑時 3 個",
+      "explanation": "<p><b>(1)</b> 來源 EX/MEM、MEM/WB 各接到 ALU 的 A、B 兩個 mux：2 × 2 = <b>4</b> 條。</p><p><b>(2)</b> 比較器有兩個輸入，各需要一條 EX/MEM → ID：ALU 指令緊接在 beq 前面時，停 1 個週期後結果正好在 EX/MEM，從這裡送過去。MEM/WB → ID 不需要：那時生產者在 WB，前半週期寫入、後半週期 ID 讀，暫存器檔就拿得到（lw → beq 停 2 個之後也是這種情況）。所以是 <b>2</b> 條。若假設暫存器檔不能同週期先寫後讀，才需要再加 MEM/WB → ID 的 2 條。</p><p><b>(3)</b> lw → addi 是 load-use，停 1；addi 停完之後在 EX 時，beq 正好在 ID 要用 $t1，結果還沒算好，再停 1，下一個週期從 EX/MEM 轉送到比較器。共 <b>2</b> 個。沒有 EX/MEM → ID 的路徑時，beq 要等 addi 的 WB，再多停 1 個，共 <b>3</b> 個。已用程式模擬驗算。</p>"
     }
   ]
 }

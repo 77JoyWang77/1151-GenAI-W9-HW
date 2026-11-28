@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Binary Search Tree 二元搜尋樹 · 資料結構 | 資工考研互動學習站</title>
   <meta name="description" content="左小右大的二元樹，搜尋、插入、刪除都是 O(h)；考研必考刪除的三種情況與樹高退化。">
-  <link rel="stylesheet" href="../../../assets/css/style.css?v=329bbb96">
-  <script src="../../../assets/js/theme.js?v=329bbb96"></script>
+  <link rel="stylesheet" href="../../../assets/css/style.css?v=3694848e">
+  <script src="../../../assets/js/theme.js?v=3694848e"></script>
 </head>
 <body data-subject="data-structures" data-chapter="tree" data-chno="5" data-topic="data-structures/tree/binary-search-tree" data-root="../../../">
   <header class="site-header">
@@ -256,7 +256,7 @@ Node *newNode(int x) {
             <li><b>最差</b>：退化成一條鏈，h = n。同樣 100 萬筆資料，最多要比較 100 萬次，和線性搜尋一樣慢。</li>
             <li><b>平均</b>：如果資料以隨機順序插入，節點的平均深度約為 2 ln n ≈ 1.39 log₂n，仍然是 <code>O(log n)</code>，只比完全平衡多約 39%。</li>
           </ul>
-          <p>問題在於實務上資料常常是有順序的，最差情況並不罕見。所以後面會學到 <span class="term">AVL Tree</span>、<span class="term">Red-Black Tree<small>（紅黑樹）</small></span>這類<b>自我平衡</b>的 BST：在插入和刪除時做旋轉調整，保證樹高一直維持在 <code>O(log n)</code>。</p>
+          <p>問題在於實務上資料常常是有順序的，最差情況並不罕見。所以後面會學到 <span class="term">AVL Tree</span>、<a href="../search-structures/red-black-tree.html">Red-Black Tree（紅黑樹）</a>這類<b>自我平衡</b>的 BST：在插入和刪除時做旋轉調整，保證樹高一直維持在 <code>O(log n)</code>。</p>
         </div>
       </section>
 
@@ -334,10 +334,10 @@ Node *newNode(int x) {
   </div>
 
   <footer class="site-footer">
-    <div class="wrap">最後更新：2026-11-16 · 依 CLAUDE.md 規則產生</div>
+    <div class="wrap">最後更新：2026-11-28 · 依 CLAUDE.md 規則產生</div>
   </footer>
-  <script src="../../../assets/js/site.js?v=329bbb96"></script>
-  <script src="../../../assets/js/viz-core.js?v=329bbb96"></script>
-  <script src="../../../assets/js/viz/data-structures/binary-search-tree.js?v=329bbb96"></script>
+  <script src="../../../assets/js/site.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz-core.js?v=3694848e"></script>
+  <script src="../../../assets/js/viz/data-structures/binary-search-tree.js?v=3694848e"></script>
 </body>
 </html>
